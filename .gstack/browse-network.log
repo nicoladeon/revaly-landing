@@ -1,5 +1,0 @@
-[2026-07-10T14:42:01.427Z] GET https://revaly.netlify.app/ → pending (?ms, ?B)
-[2026-07-10T14:42:05.715Z] POST https://dzqcffmkrttzruwjqvwi.supabase.co/functions/v1/waitlist → pending (?ms, ?B)
-[2026-07-10T14:45:43.748Z] GET https://revaly.netlify.app/ → pending (?ms, ?B)
-[2026-07-10T14:45:44.852Z] GET https://revaly.netlify.app/api/geo → pending (?ms, ?B)
-[2026-07-10T14:45:46.926Z] GET https://revaly.netlify.app/api/geo → 200 (124ms, 112B)

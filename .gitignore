@@ -1,2 +1,5 @@
 dist/
 .netlify/
+.gstack/
+.wrangler/
+.superpowers/
