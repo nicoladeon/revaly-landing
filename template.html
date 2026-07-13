@@ -382,6 +382,27 @@
     font-size: 14.5px; color: rgba(242,243,247,.75);
   }
   .night-close b { color: #fff; font-weight: 600; }
+
+  /* ── Bloc « 10 heures » ── */
+  .hours-grid { display: grid; gap: 14px; margin-top: 34px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .hour-tile {
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow-sm); padding: 22px 20px; text-align: center;
+  }
+  .hour-tile .h { margin: 0; font-family: var(--font-display); font-weight: 420; font-size: 34px; color: var(--iris); font-variant-numeric: tabular-nums; line-height: 1; }
+  .hour-tile .l { margin: 10px 0 0; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .hour-tile .d { margin: 5px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+  /* ── Bande preuve (dogfood) ── */
+  .proof-grid { display: grid; gap: 14px; margin-top: 34px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .proof-tile {
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow-sm); padding: 24px 20px; text-align: center;
+  }
+  .proof-tile .n { margin: 0; font-family: var(--font-display); font-weight: 420; font-size: 38px; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; }
+  .proof-tile .n b { color: var(--iris); font-weight: 420; }
+  .proof-tile .l { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+  .proof-note { margin: 18px 0 0; text-align: center; font-size: 13px; color: var(--subtle); }
   .tcard .skills span {
     padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 500;
     background: var(--iris-soft); color: var(--iris);
@@ -720,6 +741,9 @@
   /* ── Fixes mobile ── */
   @media (max-width: 520px) {
     .hero-bien .inner { padding-top: 76px; }
+    .hero-bien .scrim {
+      background: linear-gradient(to top, rgba(10,18,28,.96) 0%, rgba(13,24,38,.72) 55%, rgba(15,30,48,.38) 80%, rgba(18,34,54,.5) 100%);
+    }
     .post-thumb { flex-direction: column; }
     .post-thumb img { width: 100%; height: 130px; }
   }
@@ -908,6 +932,22 @@
       <p style="text-align:center; font-size:13.5px; color:var(--subtle); margin:18px 0 0;">Cinq agents en ligne aujourd'hui, un en formation — chaque nouvelle recrue est incluse, sans supplément.</p>
     </div>
   </div>
+
+  <!-- ═══════════════ D'OÙ VIENNENT LES 10 HEURES ═══════════════ -->
+  <section class="wrap" id="promesse">
+    <div class="rv" style="text-align:center;">
+      <span class="tag" style="justify-content:center;">La promesse</span>
+      <h2 class="title">D'où viennent les 10 heures ?</h2>
+      <p class="sub" style="margin-left:auto; margin-right:auto;">Ce que tu passes chaque semaine à faire à la main, ton équipe le prépare — tu ne fais plus que relire et décider.</p>
+    </div>
+    <div class="rv hours-grid" aria-label="Répartition des 10 heures récupérées par semaine">
+      <div class="hour-tile"><p class="h">≈ 3 h</p><p class="l">Annonces &amp; posts</p><p class="d">rédaction, visuels, déclinaisons portails et réseaux</p></div>
+      <div class="hour-tile"><p class="h">≈ 3 h</p><p class="l">Relances &amp; emails</p><p class="d">acquéreurs, vendeurs, comptes rendus personnalisés</p></div>
+      <div class="hour-tile"><p class="h">≈ 2 h</p><p class="l">Dossiers &amp; conformité</p><p class="d">DPE, pièces manquantes, expirations anticipées</p></div>
+      <div class="hour-tile"><p class="h">≈ 2 h</p><p class="l">Agenda &amp; coordination</p><p class="d">visites, confirmations, brief du matin</p></div>
+    </div>
+    <p class="rv" style="text-align:center; margin:22px 0 0; font-size:15.5px; color:var(--muted);">= <b style="color:var(--ink);">une dizaine d'heures par semaine</b>, rendues à la visite et à la signature.</p>
+  </section>
 
   <!-- ═══════════════ PENDANT QUE TU DORS ═══════════════ -->
   <section class="wrap" id="nuit">
@@ -1279,6 +1319,21 @@
     </div>
   </section>
 
+  <!-- ═══════════════ PREUVE (dogfood réel) ═══════════════ -->
+  <section class="wrap" id="preuve">
+    <div class="rv" style="text-align:center;">
+      <span class="tag" style="justify-content:center;">En production</span>
+      <h2 class="title">Pas une démo.</h2>
+      <p class="sub" style="margin-left:auto; margin-right:auto;">Revaly tourne chaque jour dans l'agence de son fondateur — voilà ce que son équipe a réellement au compteur.</p>
+    </div>
+    <div class="proof-grid rv">
+      <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="250">250</span>+</b></p><p class="l">contacts suivis dans Modelo, enrichis par l'équipe</p></div>
+      <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="900">900</span>+</b></p><p class="l">échanges avec les agents — brief, relances, dossiers</p></div>
+      <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="2898">2 898</span></b></p><p class="l">synchronisations Modelo sur les 30 derniers jours</p></div>
+    </div>
+    <p class="proof-note rv">Chiffres réels du compte de l'agence du fondateur — juillet 2026. Tes données à toi restent cloisonnées, jamais partagées.</p>
+  </section>
+
   <!-- ═══════════════ TARIF ═══════════════ -->
   <section class="wrap" id="tarif">
     <div class="rv" style="text-align: center;">
@@ -1509,7 +1564,7 @@
 
   const FAQ = [
     ["Qu'est-ce que j'y gagne, concrètement ?",
-     "Le temps que tu passes le soir sur les posts, les relances et les dossiers. Un mandat rentré = post prêt, visites proposées, dossier vérifié — sans y penser. Si au bout d'un mois tu ne vois pas la différence, tu arrêtes : c'est sans engagement."],
+     "Une dizaine d'heures par semaine : les annonces et les posts (≈3 h), les relances et les emails (≈3 h), les dossiers et la conformité (≈2 h), l'agenda et les comptes rendus (≈2 h). Un mandat rentré = photos retouchées, post prêt, visites proposées, dossier vérifié — sans y penser. Si au bout d'un mois tu ne vois pas la différence, tu arrêtes : c'est sans engagement."],
     ["Ça marche avec mon logiciel métier ?",
      "Oui. Revaly se branche sur Modelo / Netty : tes biens, photos, contacts et mandats sont synchronisés dans les deux sens. Un mandat rentré dans ton CRM, et ton équipe est déjà au courant."],
     ["Les agents peuvent-ils écrire à mes clients sans moi ?",
@@ -1517,7 +1572,7 @@
     ["Concrètement, Zoé publie comment ?",
      "Tu connectes ta page Facebook et ton compte Instagram en deux clics. Dès qu'un bien entre dans Modelo, Zoé prépare le post avec les photos du mandat et te prévient. Tu relis, tu publies ou tu programmes. Elle suit ensuite les j'aime, commentaires et demandes."],
     ["Je peux vraiment leur parler sur WhatsApp ?",
-     "Oui, comme à un collègue : « Max, prépare l'estimation du 12 rue X », « relance le vendeur d'Aix ». Chaque conseiller a SA propre équipe — tes dossiers ne croisent jamais ceux d'un autre."],
+     "Oui, comme à un collègue — même en vocal : « Max, déplace mon rendez-vous à demain », « relance le vendeur d'Aix ». Il exécute, te le confirme, et te propose la suite. Chaque conseiller a SA propre équipe — tes dossiers ne croisent jamais ceux d'un autre."],
     ["Où vont mes données ?",
      "Elles restent les tiennes : hébergement européen, cloisonnement strict par agence et par conseiller, aucune revente. Les agents n'accèdent qu'à ce que tu connectes, et tu peux tout déconnecter."],
     ["Combien de temps pour démarrer ?",
@@ -1578,11 +1633,13 @@
   // ── Le team-strip « rejoint l'équipe » (cascade au chargement) ──
   setTimeout(() => document.querySelector('.team-strip').classList.add('joined'), REDUCED ? 0 : 700);
 
-  // ── Vidéo hero : relance l'autoplay si le navigateur ne l'a pas démarré seul ──
+  // ── Vidéo hero : joue quand elle est à l'écran, se met en pause hors champ ──
   const hv = document.querySelector('.hero-video');
   if (hv && !REDUCED) {
     const tryPlay = () => { if (getComputedStyle(hv).display !== 'none' && hv.paused) hv.play().catch(() => {}); };
-    tryPlay();
+    new IntersectionObserver((entries) => {
+      entries.forEach((e) => { e.isIntersecting ? tryPlay() : hv.pause(); });
+    }, { threshold: 0.2 }).observe(hv);
     window.addEventListener('load', tryPlay, { once: true });
     document.addEventListener('click', tryPlay, { once: true, passive: true });
   }
@@ -1623,6 +1680,11 @@
       if (p < 1) requestAnimationFrame(tick);
     })(t0);
   }
+  // Les prix affichent le tarif plein AVANT d'être visibles, puis décomptent
+  // vers le prix de lancement — jamais de saut visible à l'écran.
+  if (!REDUCED) document.querySelectorAll('.count-price').forEach((el) => {
+    el.textContent = Number(el.dataset.from).toLocaleString('fr-FR');
+  });
   const cio = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (!e.isIntersecting) return;
@@ -1631,7 +1693,7 @@
       const to = Number(e.target.dataset.to);
       animNum(e.target, from, to, e.target.dataset.from ? 1100 : 900);
     });
-  }, { threshold: 0.6 });
+  }, { threshold: 0.35 });
   document.querySelectorAll('.cnt, .count-price').forEach((el) => cio.observe(el));
 
   // ── Timeline : la ligne se dessine, les points s'allument ──
