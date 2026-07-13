@@ -403,6 +403,30 @@
   .proof-tile .n b { color: var(--iris); font-weight: 420; }
   .proof-tile .l { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
   .proof-note { margin: 18px 0 0; text-align: center; font-size: 13px; color: var(--subtle); }
+
+  /* ── « Ton CRM devient vivant » : la séquence commande → fiche se JOUE au scroll ── */
+  .cr-slot { position: relative; }
+  .cr-typing { position: absolute; top: 0; left: 0; opacity: 0; }
+  html.js .cmd-result.armed .bubble.me { opacity: 0; transform: translateY(14px); }
+  html.js .cmd-result.armed .result-card { opacity: 0; transform: translateY(16px) scale(.97); }
+  html.js .cmd-result.armed .result-card li { opacity: 0; transform: translateX(-8px); }
+  .cmd-result.play .bubble.me { animation: crUp .55s cubic-bezier(.32,.72,0,1) .1s forwards; }
+  .cmd-result.play .cr-typing { animation: crTyping 1.1s linear .65s forwards; }
+  .cmd-result.play .result-card { animation: crPop .6s cubic-bezier(.34,1.3,.5,1) 1.75s forwards; }
+  .cmd-result.play .result-card .ok svg path { stroke-dasharray: 30; stroke-dashoffset: 30; animation: crCheck .5s ease-out 2.05s forwards; }
+  .cmd-result.play .result-card li:nth-child(1) { animation: crRow .4s ease-out 2.15s forwards; }
+  .cmd-result.play .result-card li:nth-child(2) { animation: crRow .4s ease-out 2.35s forwards; }
+  .cmd-result.play .result-card li:nth-child(3) { animation: crRow .4s ease-out 2.55s forwards; }
+  @keyframes crUp { to { opacity: 1; transform: none; } }
+  @keyframes crTyping { 0% { opacity: 0; } 12% { opacity: 1; } 86% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes crPop { to { opacity: 1; transform: none; } }
+  @keyframes crRow { to { opacity: 1; transform: none; } }
+  @keyframes crCheck { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .cmd-result.armed .bubble.me, html.js .cmd-result.armed .result-card,
+    html.js .cmd-result.armed .result-card li { opacity: 1; transform: none; }
+    .cmd-result.play .cr-typing { animation: none; }
+  }
   .tcard .skills span {
     padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 500;
     background: var(--iris-soft); color: var(--iris);
@@ -1114,6 +1138,8 @@
       </ul>
       <div class="cmd-result rv" aria-hidden="true">
         <div class="bubble me" style="justify-self: end;">Max, crée une fiche acquéreur pour M. Bernard : budget 450 000 €, cherche un T4 à <span class="geo-city">Aix</span> centre, rappelle-moi vendredi</div>
+        <div class="cr-slot">
+        <div class="cr-typing typing"><i></i><i></i><i></i></div>
         <div class="result-card">
           <p class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Créé dans Modelo</p>
           <ul>
@@ -1121,6 +1147,7 @@
             <li><span class="k">Recherche</span><span>T4 · <span class="geo-city">Aix-en-Provence</span> centre · ≤ 450 000 €</span></li>
             <li><span class="k">Tâche</span><span>Rappel vendredi 9 h — assignée à toi</span></li>
           </ul>
+        </div>
         </div>
       </div>
     </div>
@@ -1724,6 +1751,15 @@
       });
       b.addEventListener('mouseleave', () => { b.style.transform = ''; });
     });
+  }
+
+  // ── « Ton CRM devient vivant » : la séquence se joue à l'arrivée à l'écran ──
+  const cr = document.querySelector('.cmd-result');
+  if (cr && !REDUCED) {
+    cr.classList.add('armed');
+    new IntersectionObserver((entries, io) => {
+      entries.forEach((e) => { if (e.isIntersecting) { cr.classList.add('play'); io.disconnect(); } });
+    }, { threshold: 0.55 }).observe(cr);
   }
 
   // ── Spotlight : le halo suit le curseur sur les cartes ──
