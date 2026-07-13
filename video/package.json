@@ -1,0 +1,14 @@
+{
+  "name": "revaly-hero-video",
+  "private": true,
+  "scripts": {
+    "render": "remotion render src/index.ts hero ../assets/hero.mp4 --codec h264 --crf 23",
+    "poster": "remotion still src/index.ts hero ../assets/hero-poster.jpg --frame 40"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.242",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.242"
+  }
+}

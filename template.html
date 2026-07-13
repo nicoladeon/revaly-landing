@@ -1,6 +1,23 @@
-<title>Revaly — L'équipe qui fait tourner ton agence immobilière</title>
+<title>Revaly — Recrute ton équipe d'agents IA immobilière</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Ton équipe d'agents IA spécialisés immobilier — posts Facebook/Instagram, relances, mandats, dossiers — branchée sur Modelo. Rien ne part sans toi. Dès 129 €/mois." />
+<meta name="description" content="Recrute ton équipe d'agents IA spécialisés immobilier — posts Facebook/Instagram, relances, dossiers, mandats — branchée sur Modelo. Rien ne part sans toi. Dès 199 €/mois." />
+<link rel="canonical" href="https://revaly.io/" />
+<meta name="theme-color" content="#F4F5F8" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0B0D12" media="(prefers-color-scheme: dark)" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234F46E5'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Georgia,serif' font-size='42' fill='%23fff'%3Er.%3C/text%3E%3C/svg%3E" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Revaly" />
+<meta property="og:locale" content="fr_FR" />
+<meta property="og:url" content="https://revaly.io/" />
+<meta property="og:title" content="Revaly — Recrute ton équipe. Regagne 10 heures par semaine." />
+<meta property="og:description" content="Quatre agents IA formés au métier de conseiller immobilier : posts, relances, dossiers, mandats. Branchés sur Modelo, Gmail et WhatsApp. Rien ne part sans toi." />
+<meta property="og:image" content="https://revaly.io/og.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Revaly — Recrute ton équipe. Regagne 10 heures par semaine." />
+<meta name="twitter:description" content="Quatre agents IA formés au métier de conseiller immobilier. Branchés sur Modelo, Gmail et WhatsApp. Rien ne part sans toi." />
+<meta name="twitter:image" content="https://revaly.io/og.jpg" />
 <style>
   /* ── Tokens (DA Revaly : iris unique + porcelaine froide, light par défaut) ── */
   :root {
@@ -309,24 +326,6 @@
     position: absolute; top: 48px; right: 8px; width: 13px; height: 13px; border-radius: 50%;
     background: var(--success); box-shadow: 0 0 0 2.5px var(--bg);
   }
-  .member.offline img { filter: grayscale(1); opacity: .5; }
-  .member.offline .presence { background: var(--subtle); }
-  .member.offline .nm { color: var(--muted); }
-  .member.offline .soon-tag {
-    display: inline-block; margin-top: 3px; padding: 2px 8px; border-radius: 999px;
-    background: var(--bg-soft); border: 0.5px solid var(--line);
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--subtle);
-  }
-  .tcard.offline img { filter: grayscale(1); opacity: .55; }
-  .tcard.offline { background: color-mix(in srgb, var(--raised) 60%, var(--bg)); }
-  .tcard.offline .nm, .tcard.offline .pitch { color: var(--muted); }
-  .tcard .soon-badge {
-    display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px;
-    padding: 4px 12px; border-radius: 999px;
-    background: var(--bg-soft); border: 0.5px solid var(--line-strong);
-    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--subtle);
-  }
-  .tcard .soon-badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--subtle); }
   .tcard .skills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
   .tcard .skills span {
     padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 500;
@@ -336,7 +335,8 @@
   .brief-list li .face { flex: none; }
 
   /* ── Cartes équipe (portraits 512) ── */
-  .team-cards { display: grid; gap: 16px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .team-cards { display: grid; gap: 16px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
+  @media (max-width: 440px) { .team-cards { grid-template-columns: 1fr; } }
   .tcard {
     background: var(--raised); border-radius: 18px; border: 0.5px solid var(--line);
     box-shadow: var(--shadow-sm); padding: 26px 24px; text-align: left;
@@ -401,6 +401,7 @@
     font-size: 40px; line-height: 1; margin: 20px 0 0; font-variant-numeric: tabular-nums;
   }
   .plan .amount span { font-size: 14px; color: var(--subtle); font-family: var(--font-sans); }
+  .plan .amount .count-price { font-size: inherit; color: inherit; font-family: inherit; }
   .plan .per-day { margin: 8px 0 0; font-size: 12.5px; color: var(--subtle); }
   .plan .launch {
     display: inline-flex; align-items: center; gap: 6px; margin-top: 18px;
@@ -661,6 +662,104 @@
   .sticky-cta.show { transform: none; }
   .sticky-cta .btn { width: 100%; justify-content: center; }
   @media (max-width: 760px) { .sticky-cta { display: block; } }
+
+  /* ── Fixes mobile ── */
+  @media (max-width: 520px) {
+    .hero-bien .inner { padding-top: 76px; }
+    .post-thumb { flex-direction: column; }
+    .post-thumb img { width: 100%; height: 130px; }
+  }
+
+  /* ── Marquee connecteurs (pattern 21st porté vanilla) ── */
+  .conn-marquee { margin-top: 38px; display: grid; gap: 12px; overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+  .mq-row { display: flex; gap: 12px; width: max-content; }
+  .mq-row .mq-seq { display: flex; gap: 12px; padding-right: 12px; animation: mq var(--mq-dur, 46s) linear infinite; }
+  .mq-row.rev .mq-seq { animation-direction: reverse; }
+  .conn-marquee:hover .mq-seq { animation-play-state: paused; }
+  @keyframes mq { to { transform: translateX(-100%); } }
+  .mq-row .conn { flex: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .mq-row .mq-seq { animation: none; }
+    .mq-row { width: auto; flex-wrap: wrap; }
+    .mq-row .mq-seq { flex-wrap: wrap; }
+    .mq-row .mq-seq[aria-hidden="true"] { display: none; }
+    .conn-marquee { mask-image: none; -webkit-mask-image: none; }
+  }
+
+  /* ── Timeline qui se dessine au scroll ── */
+  .day::after {
+    content: ""; position: absolute; left: 74px; top: 8px; bottom: 8px; width: 2px;
+    background: var(--iris); border-radius: 2px; transform-origin: top;
+    transform: scaleY(var(--day-p, 0));
+  }
+  .step .dot { background: var(--line-strong); box-shadow: 0 0 0 4px var(--bg); transition: background .35s, box-shadow .35s; }
+  .step.lit .dot { background: var(--iris); box-shadow: 0 0 0 4px var(--bg), 0 0 14px var(--iris-glow); }
+  @media (prefers-reduced-motion: reduce) {
+    .day::after { transform: scaleY(1); }
+    .step .dot { background: var(--iris); }
+  }
+
+  /* ── Le team-strip « rejoint l'équipe » ── */
+  html.js .team-strip .member { opacity: 0; transform: translateY(14px) scale(.92); transition: opacity .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1); }
+  html.js .team-strip .member .presence { transform: scale(0); transition: transform .3s cubic-bezier(.34,1.56,.64,1) .35s; }
+  html.js .team-strip.joined .member { opacity: 1; transform: none; }
+  html.js .team-strip.joined .member .presence { transform: scale(1); }
+  html.js .team-strip .member:nth-child(1) { transition-delay: 0s; }
+  html.js .team-strip .member:nth-child(2) { transition-delay: .12s; }
+  html.js .team-strip .member:nth-child(3) { transition-delay: .24s; }
+  html.js .team-strip .member:nth-child(4) { transition-delay: .36s; }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .team-strip .member, html.js .team-strip .member .presence { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ── Glow lent du panneau marketing ── */
+  .dark-panel { position: relative; }
+  .dark-panel::before {
+    content: ""; position: absolute; inset: -30%; pointer-events: none;
+    background: radial-gradient(32% 26% at 30% 30%, rgba(99,102,241,.16), transparent 70%);
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+  @keyframes drift { to { transform: translate(24%, 18%); } }
+  @media (prefers-reduced-motion: reduce) { .dark-panel::before { animation: none; } }
+
+  /* ── Aurora hero (ambiance premium, très lente) ── */
+  .hero { position: relative; }
+  .hero::before {
+    content: ""; position: absolute; z-index: -1; top: -140px; left: 50%; width: min(920px, 96vw); height: 560px;
+    transform: translateX(-50%);
+    background:
+      radial-gradient(40% 46% at 32% 36%, color-mix(in srgb, var(--iris) 16%, transparent), transparent 70%),
+      radial-gradient(34% 40% at 68% 30%, rgba(165, 180, 252, .14), transparent 70%);
+    filter: blur(38px); pointer-events: none;
+    animation: aurora 16s ease-in-out infinite alternate;
+  }
+  @keyframes aurora {
+    to { transform: translateX(-50%) translateY(26px) scale(1.06) rotate(3deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .hero::before { animation: none; } }
+
+  /* ── Spotlight au survol (cartes équipe + tarifs) ── */
+  .tcard, .plan { position: relative; }
+  .tcard::before, .plan::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; border-radius: inherit;
+    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--iris) 9%, transparent), transparent 65%);
+    transition: opacity .25s;
+  }
+  .tcard:hover::before, .plan:hover::before { opacity: 1; }
+  @media (hover: none) { .tcard::before, .plan::before { display: none; } }
+
+  /* ── Vidéo hero (rendu Remotion) : desktop uniquement, la carte statique sert
+       de repli mobile + reduced-motion + no-JS ── */
+  .hero-video {
+    display: none; width: 100%; aspect-ratio: 1200 / 500; object-fit: cover;
+    border-radius: 22px; box-shadow: var(--shadow-xl); background: var(--night-1);
+  }
+  @media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
+    .hero-video { display: block; }
+    .hero-video + .hero-bien { display: none; }
+  }
 </style>
 
 <!-- ═══════════════ NAV ═══════════════ -->
@@ -685,16 +784,16 @@
 <main id="top">
   <!-- ═══════════════ HERO ═══════════════ -->
   <div class="wrap hero">
-    <p class="kicker h-in"><span id="geo-kicker">Pour les conseillers immobiliers</span> · branché sur Modelo</p>
-    <h1 class="h-in d1">Rentre le mandat.<br /><span style="color: var(--iris);">Ton équipe s'occupe du reste.</span></h1>
+    <p class="kicker h-in"><span id="geo-kicker">L'équipe d'agents IA des conseillers immobiliers</span> · branchée sur Modelo</p>
+    <h1 class="h-in d1">Recrute ton équipe.<br /><span style="color: var(--iris);">Regagne 10 heures par semaine.</span></h1>
     <p class="sub h-in d2">
-      Le vendeur qui demande « alors, des nouvelles ? », les acquéreurs qui ne rappellent
-      pas, le post du nouveau mandat toujours pas publié. Ton équipe s'en occupe —
-      toi, tu fais visiter et tu signes.
+      Quatre agents IA formés à ton métier : Max coordonne, Emma relance, Christine
+      vérifie les dossiers, Zoé publie. Ils travaillent dans Modelo, Gmail et WhatsApp
+      pendant que tu vends — toi, tu fais visiter et tu signes.
     </p>
     <div class="hero-cta h-in d3">
       <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-        <button type="button" class="btn" data-waitlist="solo">Prendre ma place <span class="arr" aria-hidden="true">→</span></button>
+        <button type="button" class="btn" data-waitlist="solo">Recruter mon équipe <span class="arr" aria-hidden="true">→</span></button>
         <a class="btn ghost" href="#journee">Voir une journée type ↓</a>
       </div>
       <span class="hint" style="display:inline-flex; align-items:center; gap:7px; flex-wrap:wrap; justify-content:center;">
@@ -713,6 +812,9 @@
         <span class="track"><span class="spark"></span></span>
         <span>ton équipe a veillé sur ton portefeuille</span>
       </div>
+      <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="hero-poster.jpg" aria-hidden="true">
+        <source src="hero.mp4" type="video/mp4" />
+      </video>
       <div class="hero-bien" aria-hidden="true">
         <img class="photo" src="__VILLA_HERO__" alt="" />
         <span class="scrim"></span>
@@ -746,10 +848,8 @@
         <div class="member"><img class="face" src="__EMMA128__" width="64" height="64" alt="Emma" /><span class="presence" aria-hidden="true"></span><p class="nm">Emma</p><p class="rl">Assistante</p></div>
         <div class="member"><img class="face" src="__CHRISTINE128__" width="64" height="64" alt="Christine" /><span class="presence" aria-hidden="true"></span><p class="nm">Christine</p><p class="rl">Juridique</p></div>
         <div class="member"><img class="face" src="__ZOE128__" width="64" height="64" alt="Zoé" /><span class="presence" aria-hidden="true"></span><p class="nm">Zoé</p><p class="rl">Réseaux sociaux</p></div>
-        <div class="member offline"><img class="face" src="__LUCAS128__" width="64" height="64" alt="Lucas" /><span class="presence" aria-hidden="true"></span><p class="nm">Lucas</p><p class="rl">Estimateur</p><span class="soon-tag">Bientôt</span></div>
-        <div class="member offline"><img class="face" src="__HUGO128__" width="64" height="64" alt="Hugo" /><span class="presence" aria-hidden="true"></span><p class="nm">Hugo</p><p class="rl">Prospection</p><span class="soon-tag">Bientôt</span></div>
       </div>
-      <p style="text-align:center; font-size:13.5px; color:var(--subtle); margin:18px 0 0;">Quatre en ligne aujourd’hui, deux en formation — chaque nouvelle recrue est incluse, sans supplément.</p>
+      <p style="text-align:center; font-size:13.5px; color:var(--subtle); margin:18px 0 0;">Quatre agents en ligne, dès aujourd'hui — et de nouvelles compétences chaque semaine, incluses.</p>
     </div>
   </div>
 
@@ -842,7 +942,7 @@
           <p class="lead">Le lendemain matin, ton brief t'attend.</p>
           <div class="app-card" style="max-width: 500px;" aria-hidden="true">
             <ul class="brief-list">
-              <li><img class="face" src="__ZOE128__" width="26" height="26" alt="" /><span>Ton post a fait <b class="n">47 j'aime</b> — dont une demande de visite à confirmer</span></li>
+              <li><img class="face" src="__ZOE128__" width="26" height="26" alt="" /><span>Ton post a fait <b class="n"><span class="cnt" data-to="47">47</span> j'aime</b> — dont une demande de visite à confirmer</span></li>
               <li><img class="face" src="__CHRISTINE128__" width="26" height="26" alt="" /><span>Le DPE est arrivé — le dossier de la villa est <b>complet</b></span></li>
               <li><img class="face" src="__EMMA128__" width="26" height="26" alt="" /><span>Tes <b class="n">3 relances</b> sont parties — 1 réponse déjà reçue</span></li>
             </ul>
@@ -853,7 +953,7 @@
 
     <div class="rv" style="margin-top: 44px; padding: 30px clamp(20px, 4vw, 40px); background: var(--raised); border: 0.5px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
       <p style="margin: 0; flex: 1; min-width: 240px; font-size: 17px; line-height: 1.5;"><b style="font-weight: 600;">Toi aussi tu réponds « on s'en occupe » au vendeur ?</b><br /><span style="color: var(--muted); font-size: 15px;">En sachant que ça finira à 22 h sur ton canapé. Chaque mandat sans équipe, c'est un post jamais publié et des relances trop tardives.</span></p>
-      <button type="button" class="btn" data-waitlist="solo" style="flex: none;">Je veux ma place <span class="arr" aria-hidden="true">→</span></button>
+      <button type="button" class="btn" data-waitlist="solo" style="flex: none;">Je recrute mon équipe <span class="arr" aria-hidden="true">→</span></button>
     </div>
   </section>
 
@@ -977,7 +1077,7 @@
       <div class="conn"><span class="ci"><svg width="26" height="26" aria-hidden="true" fill="#34A853" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google Sheets</title><path d="M11.318 12.545H7.91v-1.909h3.41v1.91zM14.728 0v6h6l-6-6zm1.363 10.636h-3.41v1.91h3.41v-1.91zm0 3.273h-3.41v1.91h3.41v-1.91zM20.727 6.5v15.864c0 .904-.732 1.636-1.636 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.318v6.5h6.5zm-3.273 2.773H6.545v7.909h10.91v-7.91zm-6.136 4.636H7.91v1.91h3.41v-1.91z"/></svg></span><span>Google Sheets</span></div>
       <div class="conn"><span class="ci"><svg width="26" height="26" aria-hidden="true" fill="#0061FF" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Dropbox</title><path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z"/></svg></span><span>Dropbox</span></div>
       <div class="conn"><span class="ci"><span class="ci-txt" style="background:#0F6CBD; color:#fff;">O</span></span><span>Outlook</span></div>
-      <div class="conn-more"><span><b>+ 2 700 autres applications</b> — si tu l'utilises, on peut le brancher</span></div>
+      <div class="conn-more"><span><b>+ <span class="cnt" data-to="2700">2 700</span> autres applications</b> — si tu l'utilises, on peut le brancher</span></div>
     </div>
   </section>
 
@@ -1013,20 +1113,8 @@
         <div class="skills"><span>Posts Facebook &amp; Instagram</span><span>Carrousels photos du bien</span><span>Calendrier éditorial</span><span>Stats des posts</span><span>Ta charte : logo, signature</span></div>
         <p class="quote">« Le post du nouveau mandat est prêt — veux-tu le relire ? »</p>
       </article>
-      <article class="tcard offline rv">
-        <span class="soon-badge"><i></i>Arrive bientôt</span>
-        <div class="top"><img class="face" src="__LUCAS512__" alt="Portrait de Lucas" style="width:62px;height:62px;border-radius:50%;" /><div><p class="nm">Lucas</p><p class="rl">Analyste de marché</p></div></div>
-        <p class="pitch">En formation. Estimera tes biens sur les ventes réelles de France (base DVF) et livrera un rapport prêt à présenter au vendeur.</p>
-        <p class="quote">Inclus dans ton abonnement dès son arrivée — le prix ne bouge pas.</p>
-      </article>
-      <article class="tcard offline rv">
-        <span class="soon-badge"><i></i>Arrive bientôt</span>
-        <div class="top"><img class="face" src="__HUGO512__" alt="Portrait de Hugo" style="width:62px;height:62px;border-radius:50%;" /><div><p class="nm">Hugo</p><p class="rl">Prospecteur</p></div></div>
-        <p class="pitch">En formation. Repérera les signaux de vente et préparera tes approches propriétaires, sans forcer la relation.</p>
-        <p class="quote">Inclus dans ton abonnement dès son arrivée — le prix ne bouge pas.</p>
-      </article>
     </div>
-    <p class="rv" style="text-align: center; font-size: 14px; color: var(--subtle); margin: 26px 0 0;">Plus de <b style="color: var(--iris);">50 compétences immobilières</b> déjà au travail — et il s'en ajoute chaque semaine.</p>
+    <p class="rv" style="text-align: center; font-size: 14px; color: var(--subtle); margin: 26px 0 0;">Plus de <b style="color: var(--iris);"><span class="cnt" data-to="50">50</span> compétences immobilières</b> déjà au travail — et il s'en ajoute chaque semaine.</p>
 
     <div class="rv" style="max-width: 660px; margin: 64px auto 0; padding: 30px 34px; background: var(--raised); border: 0.5px solid var(--line); border-left: 3px solid var(--iris); border-radius: 14px; box-shadow: var(--shadow-sm);">
       <p style="margin: 0; font-family: var(--font-display); font-size: 19px; line-height: 1.55; color: var(--ink);">« Revaly n'est pas né dans une boîte de tech. Il est né un dimanche soir, entre un post Facebook en retard et trois relances jamais parties. Je l'ai construit pour mon agence — maintenant il travaille aussi pour la tienne. »</p>
@@ -1085,23 +1173,23 @@
       <div class="plan rv">
         <h3>Solo</h3>
         <p class="for">Pour le conseiller indépendant</p>
-        <p class="launch">Prix de lancement — cohorte 1</p>
-        <p class="amount" style="margin-top: 6px;"><span class="was">179 €</span>129 €<span> /mois</span></p>
-        <p class="per-day">Verrouillé tant que tu restes abonné. Passera à 179 € quand l'équipe sera au complet.</p>
+        <p class="launch">Prix de lancement</p>
+        <p class="amount" style="margin-top: 6px;"><span class="was">229 €</span><span class="count-price" data-from="229" data-to="199">199</span> €<span> /mois</span></p>
+        <p class="per-day">Verrouillé tant que tu restes abonné. Passera à 229 € pour les inscriptions suivantes.</p>
         <ul class="checklist">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Toute l’équipe, toutes les compétences</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Modelo, Gmail, Agenda, Facebook &amp; Instagram</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Web, Telegram et WhatsApp</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les prochaines recrues incluses</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles compétences chaque semaine, incluses</li>
         </ul>
-        <button type="button" class="btn" data-waitlist="solo">Prendre ma place</button>
+        <button type="button" class="btn" data-waitlist="solo">Recruter mon équipe</button>
       </div>
       <div class="plan featured rv">
         <span class="badge">Recommandé</span>
         <h3>Agence</h3>
         <p class="for">Dès 3 conseillers</p>
-        <p class="launch">Prix de lancement — cohorte 1</p>
-        <p class="amount" style="margin-top: 6px;"><span class="was">149 €</span>109 €<span> /conseiller /mois</span></p>
+        <p class="launch">Prix de lancement</p>
+        <p class="amount" style="margin-top: 6px;"><span class="was">189 €</span><span class="count-price" data-from="189" data-to="169">169</span> €<span> /conseiller /mois</span></p>
         <p class="per-day">Verrouillé tant que l'agence reste abonnée. Chaque conseiller a SA propre équipe.</p>
         <ul class="checklist">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tout Solo, pour chaque conseiller</li>
@@ -1109,7 +1197,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Une seule facture pour l'agence</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Onboarding de l'équipe accompagné</li>
         </ul>
-        <button type="button" class="btn" data-waitlist="agence">Prendre ma place</button>
+        <button type="button" class="btn" data-waitlist="agence">Recruter mon équipe</button>
       </div>
       <div class="plan rv">
         <h3>Réseau</h3>
@@ -1122,10 +1210,10 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Déploiement et formation sur site</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Facturation centralisée</li>
         </ul>
-        <button type="button" class="btn ghost" data-waitlist="reseau">Prendre ma place</button>
+        <button type="button" class="btn ghost" data-waitlist="reseau">Recruter mon équipe</button>
       </div>
     </div>
-    <p class="plans-note rv">On ouvre par petites cohortes pour soigner chaque onboarding. Le prix de lancement est réservé à la liste d'attente : quand Lucas, Hugo et les prochaines recrues rejoignent l'équipe, le prix passe à 179 € — <b>pas pour toi</b>.</p>
+    <p class="plans-note rv">On ouvre progressivement pour soigner chaque onboarding. Le prix de lancement est réservé à la liste d'attente : il passera à 229 € pour les suivants — <b>pas pour toi</b>, tant que tu restes abonné.</p>
   </section>
 
   <!-- ═══════════════ FAQ ═══════════════ -->
@@ -1156,7 +1244,7 @@
         expirent en silence. Demain matin, ça peut être : post prêt, relances
         rédigées, dossier complet.
       </p>
-      <button type="button" class="btn" data-waitlist="solo" style="margin-top: 28px;">Prendre ma place <span class="arr" aria-hidden="true">→</span></button>
+      <button type="button" class="btn" data-waitlist="solo" style="margin-top: 28px;">Recruter mon équipe <span class="arr" aria-hidden="true">→</span></button>
     </div>
   </section>
 </main>
@@ -1193,7 +1281,7 @@
 </footer>
 
 <div class="sticky-cta">
-  <button type="button" class="btn" data-waitlist="solo">Prendre ma place — c'est gratuit <span class="arr" aria-hidden="true">→</span></button>
+  <button type="button" class="btn" data-waitlist="solo">Recruter mon équipe — inscription gratuite <span class="arr" aria-hidden="true">→</span></button>
 </div>
 
 <!-- ═══════════════ MODAL LISTE D'ATTENTE ═══════════════ -->
@@ -1201,8 +1289,8 @@
   <div class="wl-modal">
     <button type="button" class="wl-close" aria-label="Fermer" id="wl-x">✕</button>
     <div id="wl-form-zone">
-      <h3 id="wl-title">Prends ta place</h3>
-      <p class="wl-sub">On ouvre par petites cohortes. Ton inscription fixe ton rang et verrouille le prix de lancement — tu seras prévenu en premier.</p>
+      <h3 id="wl-title">Recrute ton équipe</h3>
+      <p class="wl-sub">Ton inscription verrouille le prix de lancement — on te prévient en premier dès l'ouverture.</p>
       <form class="wl-form" id="wl-form">
         <label>Prénom
           <input type="text" name="first_name" autocomplete="given-name" required maxlength="60" />
@@ -1212,22 +1300,22 @@
         </label>
         <label>Offre
           <select name="plan" id="wl-plan">
-            <option value="solo">Solo — 129 €/mois (lancement)</option>
-            <option value="agence">Agence — 109 €/conseiller/mois (lancement)</option>
+            <option value="solo">Solo — 199 €/mois (lancement)</option>
+            <option value="agence">Agence — 169 €/conseiller/mois (lancement)</option>
             <option value="reseau">Réseau — sur devis</option>
           </select>
         </label>
         <label class="wl-hp" aria-hidden="true">Site web
           <input type="text" name="website" tabindex="-1" autocomplete="off" />
         </label>
-        <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 6px;" id="wl-submit">Garantir ma place</button>
+        <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 6px;" id="wl-submit">Verrouiller le prix de lancement</button>
         <p class="wl-error" id="wl-error">L'inscription automatique n'a pas fonctionné ici — <a id="wl-mailto" href="mailto:support@revaly.io">clique pour nous écrire</a>, on t'ajoute à la main.</p>
       </form>
     </div>
     <div class="wl-success" id="wl-success" style="display: none;">
       <div class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
       <h3>Tu es sur la liste.</h3>
-      <p class="wl-sub">Ta place est prise. On te prévient dès l'ouverture de ta cohorte — ton équipe t'attendra.</p>
+      <p class="wl-sub">Ton prix de lancement est verrouillé. On te prévient dès l'ouverture — ton équipe t'attendra.</p>
     </div>
   </div>
 </div>
@@ -1285,17 +1373,21 @@
         + '&body=' + encodeURIComponent('Prénom : ' + payload.first_name + '\nEmail : ' + payload.email + '\nOffre : ' + payload.plan);
       document.getElementById('wl-error').style.display = 'block';
     } finally {
-      btn.disabled = false; btn.textContent = 'Garantir ma place';
+      btn.disabled = false; btn.textContent = 'Verrouiller le prix de lancement';
     }
   });
 
-  // CTA collant mobile : apparaît après le hero, disparaît près du CTA final.
+  // CTA collant mobile : après le hero, caché près du CTA final ET sur la section tarif
+  // (sinon il recouvre les boutons des cartes).
   const sticky = document.querySelector('.sticky-cta');
   const finalCta = document.querySelector('.final');
+  const tarifSec = document.getElementById('tarif');
   window.addEventListener('scroll', () => {
     const past = window.scrollY > 900;
     const nearEnd = finalCta && finalCta.getBoundingClientRect().top < window.innerHeight;
-    sticky.classList.toggle('show', past && !nearEnd);
+    const tr = tarifSec.getBoundingClientRect();
+    const onTarif = tr.top < window.innerHeight && tr.bottom > 0;
+    sticky.classList.toggle('show', past && !nearEnd && !onTarif);
   }, { passive: true });
 
   const FAQ = [
@@ -1351,7 +1443,7 @@
       const ville = city.trim().slice(0, 30);
       if (ville.length < 2 || !/^[\p{L} '’-]+$/u.test(ville)) return;
       const k = document.getElementById('geo-kicker');
-      if (k) k.textContent = 'Pour les conseillers immobiliers de ' + ville;
+      if (k) k.textContent = "L'équipe d'agents IA des conseillers immobiliers de " + ville;
       document.querySelectorAll('.geo-city').forEach((el) => { el.textContent = ville; });
     })
     .catch(() => {});
@@ -1363,4 +1455,97 @@
       sw.setAttribute('aria-checked', String(!on));
     });
   });
+
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Le team-strip « rejoint l'équipe » (cascade au chargement) ──
+  setTimeout(() => document.querySelector('.team-strip').classList.add('joined'), REDUCED ? 0 : 700);
+
+  // ── Connecteurs : grille → marquee 2 rangées (pattern 21st, vanilla) ──
+  (() => {
+    if (REDUCED) return;
+    const grid = document.querySelector('.connectors');
+    const tiles = Array.from(grid.querySelectorAll('.conn'));
+    const more = grid.querySelector('.conn-more');
+    const zone = document.createElement('div');
+    zone.className = 'conn-marquee rv in';
+    [tiles.slice(0, 12), tiles.slice(12)].forEach((row, i) => {
+      const r = document.createElement('div');
+      r.className = 'mq-row' + (i === 1 ? ' rev' : '');
+      r.style.setProperty('--mq-dur', i === 1 ? '54s' : '46s');
+      const seq = document.createElement('div');
+      seq.className = 'mq-seq';
+      row.forEach((t) => seq.appendChild(t));
+      const dup = seq.cloneNode(true);
+      dup.setAttribute('aria-hidden', 'true');
+      r.append(seq, dup);
+      zone.appendChild(r);
+    });
+    more.style.marginTop = '12px';
+    grid.replaceWith(zone);
+    zone.after(more);
+  })();
+
+  // ── Compteurs (47 j'aime, 50 compétences, 2 700 apps) + décompte des prix ──
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+  function animNum(el, from, to, dur) {
+    if (REDUCED) { el.textContent = to.toLocaleString('fr-FR'); return; }
+    const t0 = performance.now();
+    (function tick(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      el.textContent = Math.round(from + (to - from) * easeOut(p)).toLocaleString('fr-FR');
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+  const cio = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      cio.unobserve(e.target);
+      const from = Number(e.target.dataset.from || 0);
+      const to = Number(e.target.dataset.to);
+      animNum(e.target, from, to, e.target.dataset.from ? 1100 : 900);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.cnt, .count-price').forEach((el) => cio.observe(el));
+
+  // ── Timeline : la ligne se dessine, les points s'allument ──
+  (() => {
+    const day = document.querySelector('.day');
+    const steps = Array.from(day.querySelectorAll('.step'));
+    if (REDUCED) { steps.forEach((s) => s.classList.add('lit')); return; }
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = day.getBoundingClientRect();
+      const gate = window.innerHeight * 0.72;
+      day.style.setProperty('--day-p', Math.min(1, Math.max(0, (gate - r.top) / r.height)).toFixed(4));
+      steps.forEach((s) => s.classList.toggle('lit', s.getBoundingClientRect().top < gate));
+    };
+    window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+    update();
+  })();
+
+  // ── CTA légèrement magnétiques (desktop pointeur fin uniquement) ──
+  if (!REDUCED && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.btn').forEach((b) => {
+      b.addEventListener('mousemove', (e) => {
+        const r = b.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width - 0.5) * 6;
+        const y = ((e.clientY - r.top) / r.height - 0.5) * 4;
+        b.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+      });
+      b.addEventListener('mouseleave', () => { b.style.transform = ''; });
+    });
+  }
+
+  // ── Spotlight : le halo suit le curseur sur les cartes ──
+  if (window.matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.tcard, .plan').forEach((c) => {
+      c.addEventListener('mousemove', (e) => {
+        const r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+        c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+      });
+    });
+  }
 </script>

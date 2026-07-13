@@ -3,3 +3,4 @@ dist/
 .gstack/
 .wrangler/
 .superpowers/
+video/node_modules/
