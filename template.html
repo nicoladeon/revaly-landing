@@ -4,7 +4,7 @@
 <link rel="canonical" href="https://revaly.io/" />
 <meta name="theme-color" content="#F4F5F8" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#0B0D12" media="(prefers-color-scheme: dark)" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234F46E5'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Georgia,serif' font-size='42' fill='%23fff'%3Er.%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234F46E5'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='-apple-system,Segoe UI,Arial,sans-serif' font-weight='500' font-size='38' fill='%23fff'%3ER.%3C/text%3E%3C/svg%3E" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Revaly" />
 <meta property="og:locale" content="fr_FR" />
@@ -124,8 +124,9 @@
     border-bottom: 0.5px solid var(--line);
   }
   .nav { display: flex; align-items: center; gap: 20px; height: 64px; }
-  .logo { font-family: var(--font-display); font-size: 23px; font-weight: 500; letter-spacing: -0.02em; text-decoration: none; }
-  .logo b { color: var(--iris); font-weight: 500; }
+  /* Wordmark officiel (identique à la page de connexion de l'app) : Geist medium, point atténué */
+  .logo { font-family: var(--font-sans); font-size: 22px; font-weight: 500; letter-spacing: -0.025em; text-decoration: none; color: var(--ink); }
+  .logo b { color: var(--subtle); font-weight: 500; }
   .nav-links { display: flex; gap: 2px; flex: 1; }
   .nav-links a { padding: 13px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500; color: var(--muted); }
   .nav-links a:hover { color: var(--ink); background: var(--bg-soft); }
@@ -868,7 +869,7 @@
 <!-- ═══════════════ NAV ═══════════════ -->
 <div class="nav-shell">
   <nav class="nav wrap" aria-label="Navigation principale">
-    <a class="logo" href="#top">revaly<b>.</b></a>
+    <a class="logo" href="#top">Revaly<b>.</b></a>
     <div class="nav-links">
       <a href="#journee">Une journée</a>
       <a href="#modelo">Modelo</a>
@@ -1437,6 +1438,8 @@
         <img class="face" src="__EMMA128__" width="52" height="52" alt="" />
         <img class="face" src="__CHRISTINE128__" width="52" height="52" alt="" />
         <img class="face" src="__ZOE128__" width="52" height="52" alt="" />
+        <img class="face" src="__RAPHAEL128__" width="52" height="52" alt="" />
+        <img class="face" src="__LUCAS128__" width="52" height="52" alt="" style="filter: grayscale(1); opacity: .65;" />
       </span>
       <h2 class="title" style="font-size: clamp(30px, 4.6vw, 46px);">Ils peuvent commencer <span style="color: var(--iris);">ce soir</span>.</h2>
       <p class="sub" style="margin-left: auto; margin-right: auto; text-align: center;">
@@ -1454,7 +1457,7 @@
   <div class="wrap">
     <div class="foot">
       <div>
-        <p class="logo" style="margin: 0;">revaly<b>.</b></p>
+        <p class="logo" style="margin: 0;">Revaly<b>.</b></p>
         <p class="about">L'équipe d'agents IA des agents immobiliers français.</p>
       </div>
       <nav aria-label="Produit">
