@@ -18,7 +18,19 @@
 <meta name="twitter:title" content="Revaly — Recrute ton équipe. Regagne 10 heures par semaine." />
 <meta name="twitter:description" content="Quatre agents IA formés au métier de conseiller immobilier. Branchés sur Modelo, Gmail et WhatsApp. Rien ne part sans toi." />
 <meta name="twitter:image" content="https://revaly.io/og.jpg" />
+<link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-var.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="fonts/geist-var.woff2" crossorigin />
 <style>
+  @font-face {
+    font-family: Fraunces;
+    src: url("fonts/fraunces-var.woff2") format("woff2");
+    font-weight: 300 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: Geist;
+    src: url("fonts/geist-var.woff2") format("woff2");
+    font-weight: 100 900; font-style: normal; font-display: swap;
+  }
   /* ── Tokens (DA Revaly : iris unique + porcelaine froide, light par défaut) ── */
   :root {
     --bg: #F4F5F8;
@@ -326,7 +338,50 @@
     position: absolute; top: 48px; right: 8px; width: 13px; height: 13px; border-radius: 50%;
     background: var(--success); box-shadow: 0 0 0 2.5px var(--bg);
   }
+  .member.offline img { filter: grayscale(1); opacity: .5; }
+  .member.offline .presence { background: var(--subtle); }
+  .member.offline .nm { color: var(--muted); }
+  .member.offline .soon-tag {
+    display: inline-block; margin-top: 3px; padding: 2px 8px; border-radius: 999px;
+    background: var(--bg-soft); border: 0.5px solid var(--line);
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--subtle);
+  }
+  .tcard.offline img.face { filter: grayscale(1); opacity: .55; }
+  .tcard.offline { background: color-mix(in srgb, var(--raised) 60%, var(--bg)); }
+  .tcard.offline .nm, .tcard.offline .pitch { color: var(--muted); }
   .tcard .skills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .tcard .status {
+    display: inline-flex; align-items: center; gap: 7px; margin-left: auto;
+    padding: 4px 11px; border-radius: 999px; flex: none;
+    background: var(--bg-soft); border: 0.5px solid var(--line);
+    font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap;
+  }
+  .tcard .status i { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex: none; }
+  .tcard .status.off i { background: var(--subtle); }
+  .tcard .talk {
+    display: inline-flex; align-items: center; gap: 7px; margin-top: 16px;
+    font-size: 13.5px; font-weight: 600; color: var(--iris); text-decoration: none;
+    background: none; border: none; cursor: pointer; padding: 0; font-family: var(--font-sans);
+  }
+  .tcard .talk .arr { transition: transform .18s; }
+  .tcard .talk:hover .arr { transform: translateX(3px); }
+
+  /* ── Pendant que tu dors (nuit) ── */
+  .night-log { display: grid; gap: 10px; margin-top: 6px; }
+  .night-row {
+    display: flex; align-items: flex-start; gap: 13px;
+    background: rgba(242, 243, 247, 0.05); border: 0.5px solid rgba(242, 243, 247, 0.1);
+    border-radius: 13px; padding: 13px 16px;
+  }
+  .night-row .t { font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 650; color: #A5B4FC; padding-top: 3px; flex: none; width: 44px; }
+  .night-row .face { flex: none; margin-top: 1px; }
+  .night-row p { margin: 0; font-size: 14px; line-height: 1.55; color: rgba(242,243,247,.88); }
+  .night-row p b { color: #fff; font-weight: 600; }
+  .night-close {
+    display: flex; align-items: center; gap: 10px; margin-top: 16px;
+    font-size: 14.5px; color: rgba(242,243,247,.75);
+  }
+  .night-close b { color: #fff; font-weight: 600; }
   .tcard .skills span {
     padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 500;
     background: var(--iris-soft); color: var(--iris);
@@ -335,8 +390,7 @@
   .brief-list li .face { flex: none; }
 
   /* ── Cartes équipe (portraits 512) ── */
-  .team-cards { display: grid; gap: 16px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
-  @media (max-width: 440px) { .team-cards { grid-template-columns: 1fr; } }
+  .team-cards { display: grid; gap: 16px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
   .tcard {
     background: var(--raised); border-radius: 18px; border: 0.5px solid var(--line);
     box-shadow: var(--shadow-sm); padding: 26px 24px; text-align: left;
@@ -787,9 +841,9 @@
     <p class="kicker h-in"><span id="geo-kicker">L'équipe d'agents IA des conseillers immobiliers</span> · branchée sur Modelo</p>
     <h1 class="h-in d1">Recrute ton équipe.<br /><span style="color: var(--iris);">Regagne 10 heures par semaine.</span></h1>
     <p class="sub h-in d2">
-      Quatre agents IA formés à ton métier : Max coordonne, Emma relance, Christine
-      vérifie les dossiers, Zoé publie. Ils travaillent dans Modelo, Gmail et WhatsApp
-      pendant que tu vends — toi, tu fais visiter et tu signes.
+      Six agents IA formés à ton métier. Ils écrivent, relancent, publient, vérifient
+      et mettent tes biens en valeur — dans Modelo, Gmail et WhatsApp, même pendant
+      que tu dors. Toi, tu fais visiter et tu signes.
     </p>
     <div class="hero-cta h-in d3">
       <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
@@ -847,11 +901,36 @@
         <div class="member"><img class="face" src="__MAX128__" width="64" height="64" alt="Max" /><span class="presence" aria-hidden="true"></span><p class="nm">Max</p><p class="rl">Directeur d'agence</p></div>
         <div class="member"><img class="face" src="__EMMA128__" width="64" height="64" alt="Emma" /><span class="presence" aria-hidden="true"></span><p class="nm">Emma</p><p class="rl">Assistante</p></div>
         <div class="member"><img class="face" src="__CHRISTINE128__" width="64" height="64" alt="Christine" /><span class="presence" aria-hidden="true"></span><p class="nm">Christine</p><p class="rl">Juridique</p></div>
-        <div class="member"><img class="face" src="__ZOE128__" width="64" height="64" alt="Zoé" /><span class="presence" aria-hidden="true"></span><p class="nm">Zoé</p><p class="rl">Réseaux sociaux</p></div>
+        <div class="member"><img class="face" src="__ZOE128__" width="64" height="64" alt="Zoé" /><span class="presence" aria-hidden="true"></span><p class="nm">Zoé</p><p class="rl">Community manager</p></div>
+        <div class="member"><img class="face" src="__RAPHAEL128__" width="64" height="64" alt="Raphaël" /><span class="presence" aria-hidden="true"></span><p class="nm">Raphaël</p><p class="rl">Photographe</p></div>
+        <div class="member offline"><img class="face" src="__LUCAS128__" width="64" height="64" alt="Lucas" /><span class="presence" aria-hidden="true"></span><p class="nm">Lucas</p><p class="rl">Analyste de marché</p><span class="soon-tag">En formation</span></div>
       </div>
-      <p style="text-align:center; font-size:13.5px; color:var(--subtle); margin:18px 0 0;">Quatre agents en ligne, dès aujourd'hui — et de nouvelles compétences chaque semaine, incluses.</p>
+      <p style="text-align:center; font-size:13.5px; color:var(--subtle); margin:18px 0 0;">Cinq agents en ligne aujourd'hui, un en formation — chaque nouvelle recrue est incluse, sans supplément.</p>
     </div>
   </div>
+
+  <!-- ═══════════════ PENDANT QUE TU DORS ═══════════════ -->
+  <section class="wrap" id="nuit">
+    <div class="dark-panel rv">
+      <div>
+        <span class="tag" style="color:#A5B4FC;">01:40 → 07:00</span>
+        <h2 class="title">Pendant que tu dors,<br />ton équipe travaille</h2>
+        <p class="sub">Chaque nuit, tes agents préparent ta journée : les visuels, les relances,
+        les annonces, le brief. Au réveil, tout t'attend — il ne reste que tes décisions.</p>
+        <div class="night-close">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span><b>07:00</b> — tout est dans ton brief. Toi, tu as dormi.</span>
+        </div>
+      </div>
+      <div class="night-log" aria-hidden="true">
+        <div class="night-row"><span class="t">01:40</span><img class="face" src="__RAPHAEL128__" width="30" height="30" alt="" /><p><b>Raphaël</b> a retouché les photos des Cèdres — lumière corrigée, verticales redressées. Une annonce qui fait cliquer, c'est plus de leads.</p></div>
+        <div class="night-row"><span class="t">02:10</span><img class="face" src="__EMMA128__" width="30" height="30" alt="" /><p><b>Emma</b> a rédigé le texte de l'annonce et tes relances du matin, personnalisées visite par visite.</p></div>
+        <div class="night-row"><span class="t">03:35</span><img class="face" src="__MAX128__" width="30" height="30" alt="" /><p><b>Max</b> a comparé les Cèdres aux ventes DVF du quartier et repéré <b>2 alertes DPE</b> sur ton secteur.</p></div>
+        <div class="night-row"><span class="t">04:30</span><img class="face" src="__ZOE128__" width="30" height="30" alt="" /><p><b>Zoé</b> a décliné l'annonce pour les portails et les réseaux — publication proposée à 9 h.</p></div>
+        <div class="night-row"><span class="t">05:20</span><img class="face" src="__MAX128__" width="30" height="30" alt="" /><p><b>Max</b> a préparé deux attentions : l'anniversaire d'un client, l'anniversaire d'achat d'un autre. Tes anciens clients ne t'oublient pas.</p></div>
+      </div>
+    </div>
+  </section>
 
   <!-- ═══════════════ UNE JOURNÉE AVEC TON ÉQUIPE ═══════════════ -->
   <section class="wrap" id="journee">
@@ -895,6 +974,20 @@
       </div>
 
       <div class="step rv">
+        <div class="when">09:12</div><span class="dot"></span>
+        <div class="what">
+          <p class="lead"><img class="face who-face" src="__RAPHAEL128__" width="26" height="26" alt="Raphaël" />Raphaël a mis les photos au niveau.</p>
+          <div class="app-card" style="max-width: 480px;" aria-hidden="true">
+            <div class="hd">
+              <img class="face" src="__RAPHAEL128__" width="36" height="36" alt="" />
+              <div><p class="nm">Raphaël</p><p class="st">photos villa des Cèdres</p></div>
+            </div>
+            <p class="body">Lumière corrigée, verticales redressées, ciel nettoyé sur 8 photos. J'ai exporté 3 formats : portail, feed, story.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step rv">
         <div class="when">09:40</div><span class="dot"></span>
         <div class="what">
           <p class="lead"><img class="face who-face" src="__EMMA128__" width="26" height="26" alt="Emma" />Emma propose déjà des créneaux de visite.</p>
@@ -925,12 +1018,17 @@
       <div class="step rv">
         <div class="when">14:20</div><span class="dot"></span>
         <div class="what">
-          <p class="lead">Entre deux visites, tu écris à Max — sur WhatsApp.</p>
+          <p class="lead">Entre deux visites, tu dictes un vocal à Max — sur WhatsApp.</p>
           <div class="bubbles" aria-hidden="true">
-            <div class="bubble me">Max, relance les 3 acquéreurs qui ont visité la semaine dernière</div>
+            <div class="bubble me">Max, déplace mon rendez-vous de 15 h à demain</div>
             <div class="bubble them">
               <img class="face" src="__MAX128__" width="26" height="26" alt="" />
-              <span>C'est fait : Emma a mis les 3 relances en brouillon dans ta boîte Gmail, personnalisées avec le compte rendu de chaque visite. Tu relis et tu envoies.<span class="channel">WhatsApp · 14:21</span></span>
+              <span>C'est fait : rendez-vous déplacé à demain 15 h, l'invitation agenda est à jour. Veux-tu que je te prépare un SMS pour prévenir ton client ?<span class="channel">WhatsApp · 14:21</span></span>
+            </div>
+            <div class="bubble me">Oui, et relance les 3 acquéreurs qui ont visité la semaine dernière</div>
+            <div class="bubble them">
+              <img class="face" src="__MAX128__" width="26" height="26" alt="" />
+              <span>SMS prêt à envoyer. Et Emma a mis les 3 relances en brouillon dans ta boîte Gmail, personnalisées avec le compte rendu de chaque visite.<span class="channel">WhatsApp · 14:23</span></span>
             </div>
           </div>
         </div>
@@ -945,6 +1043,7 @@
               <li><img class="face" src="__ZOE128__" width="26" height="26" alt="" /><span>Ton post a fait <b class="n"><span class="cnt" data-to="47">47</span> j'aime</b> — dont une demande de visite à confirmer</span></li>
               <li><img class="face" src="__CHRISTINE128__" width="26" height="26" alt="" /><span>Le DPE est arrivé — le dossier de la villa est <b>complet</b></span></li>
               <li><img class="face" src="__EMMA128__" width="26" height="26" alt="" /><span>Tes <b class="n">3 relances</b> sont parties — 1 réponse déjà reçue</span></li>
+              <li><img class="face" src="__MAX128__" width="26" height="26" alt="" /><span><b class="n">2 alertes DPE</b> sur ton secteur — deux bonnes raisons de rappeler tes anciens clients</span></li>
             </ul>
           </div>
         </div>
@@ -996,6 +1095,7 @@
     </div>
     <div class="autos" aria-hidden="true">
       <div class="auto-row rv"><img class="face" src="__ZOE128__" width="40" height="40" alt="" /><div class="tx"><b>Nouveau bien → post prêt</b><span>Zoé prépare le post Facebook &amp; Instagram dès qu'un mandat entre dans Modelo</span></div><button type="button" class="switch" role="switch" aria-checked="true" aria-label="Activer ou désactiver cette automatisation"></button></div>
+      <div class="auto-row rv"><img class="face" src="__RAPHAEL128__" width="40" height="40" alt="" /><div class="tx"><b>Nouveau bien → visuels prêts</b><span>Raphaël retouche les photos et prépare les déclinaisons portail, feed et story</span></div><button type="button" class="switch" role="switch" aria-checked="true" aria-label="Activer ou désactiver cette automatisation"></button></div>
       <div class="auto-row rv"><img class="face" src="__EMMA128__" width="40" height="40" alt="" /><div class="tx"><b>Visite demain → confirmation client prête</b><span>La veille de chaque visite dans ton agenda, Emma prépare le message WhatsApp de confirmation — tu valides, il part. Fini les lapins.</span></div><button type="button" class="switch" role="switch" aria-checked="true" aria-label="Activer ou désactiver cette automatisation"></button></div>
       <div class="auto-row rv"><img class="face" src="__MAX128__" width="40" height="40" alt="" /><div class="tx"><b>Nouveau lead → réponse prête en 2 minutes</b><span>Un contact écrit sur Messenger ou WhatsApp : notification immédiate, réponse déjà rédigée. Le premier agent qui répond gagne le client.</span></div><button type="button" class="switch" role="switch" aria-checked="true" aria-label="Activer ou désactiver cette automatisation"></button></div>
       <div class="auto-row rv"><img class="face" src="__MAX128__" width="40" height="40" alt="" /><div class="tx"><b>Brief du matin à 7 h</b><span>Le bien qui bouge, les actions préparées, ce qu'il faut trancher — sur Telegram ou WhatsApp</span></div><button type="button" class="switch" role="switch" aria-checked="true" aria-label="Activer ou désactiver cette automatisation"></button></div>
@@ -1090,28 +1190,45 @@
     </div>
     <div class="team-cards">
       <article class="tcard rv">
-        <div class="top"><img class="face" src="__MAX512__" alt="Portrait de Max" /><div><p class="nm">Max</p><p class="rl">Directeur d'agence</p></div></div>
-        <p class="pitch">Ton point d'entrée. Il comprend le dossier, mobilise le bon expert et garde la mémoire de tous tes biens.</p>
-        <div class="skills"><span>Coordination de l'équipe</span><span>Mémoire de tes dossiers</span><span>Recherche dans Modelo</span><span>Création de contacts</span><span>Tâches &amp; rappels</span><span>Vocal transcrit</span></div>
+        <div class="top"><img class="face" src="__MAX512__" alt="Portrait de Max" /><div><p class="nm">Max</p><p class="rl">Directeur d'agence</p></div><span class="status"><i></i>Disponible</span></div>
+        <p class="pitch">Ton point d'entrée. Il écoute, comprend le dossier et mobilise le bon expert. Garde la mémoire de tous tes biens.</p>
+        <div class="skills"><span>Coordination</span><span>Mémoire dossiers</span><span>Priorisation</span><span>Recherche Modelo</span><span>Vocal transcrit</span></div>
         <p class="quote">« Dis-moi ce que tu veux, je mobilise le bon expert. »</p>
+        <button type="button" class="talk" data-waitlist="solo">Discuter avec Max <span class="arr" aria-hidden="true">→</span></button>
       </article>
       <article class="tcard rv">
-        <div class="top"><img class="face" src="__EMMA512__" alt="Portrait d'Emma" /><div><p class="nm">Emma</p><p class="rl">Assistante de direction</p></div></div>
-        <p class="pitch">Emails, agenda, relances. Connectée à ta boîte Gmail et ton Google Calendar — tout part en brouillon, jamais dans ton dos.</p>
-        <div class="skills"><span>Brouillons Gmail</span><span>Relances personnalisées</span><span>Google Calendar</span><span>Comptes rendus de visite</span><span>Fiches acquéreur</span><span>Import Excel</span></div>
+        <div class="top"><img class="face" src="__EMMA512__" alt="Portrait d'Emma" /><div><p class="nm">Emma</p><p class="rl">Assistante de direction</p></div><span class="status"><i></i>Tout à jour</span></div>
+        <p class="pitch">Écrit tes emails, gère ton agenda, envoie les relances. Connectée à Gmail et Google Calendar — tout part en brouillon, jamais dans ton dos.</p>
+        <div class="skills"><span>Emails</span><span>Agenda</span><span>Relances</span><span>Comptes rendus</span><span>Import Excel</span></div>
         <p class="quote">« Tes trois relances du jour sont en brouillon, tu n'as qu'à relire. »</p>
+        <button type="button" class="talk" data-waitlist="solo">Discuter avec Emma <span class="arr" aria-hidden="true">→</span></button>
       </article>
       <article class="tcard rv">
-        <div class="top"><img class="face" src="__CHRISTINE512__" alt="Portrait de Christine" /><div><p class="nm">Christine</p><p class="rl">Conseillère juridique</p></div></div>
-        <p class="pitch">Mandats relus, clauses risquées signalées, diagnostics suivis, expirations anticipées. Jamais une signature à l'aveugle.</p>
-        <div class="skills"><span>Mandat loi Hoguet</span><span>Diagnostics obligatoires</span><span>Alertes expiration</span><span>Analyse de dossier</span><span>Conformité des annonces</span></div>
+        <div class="top"><img class="face" src="__CHRISTINE512__" alt="Portrait de Christine" /><div><p class="nm">Christine</p><p class="rl">Conseillère juridique</p></div><span class="status"><i></i>À jour</span></div>
+        <p class="pitch">Relit tes mandats, signale les clauses risquées, suit les diagnostics obligatoires. Jamais une signature à l'aveugle.</p>
+        <div class="skills"><span>Mandat Hoguet</span><span>Diagnostics</span><span>Conformité</span><span>Alertes expiration</span></div>
         <p class="quote">« Ton mandat du 12 rue X expire dans 18 jours — on le renouvelle ? »</p>
+        <button type="button" class="talk" data-waitlist="solo">Discuter avec Christine <span class="arr" aria-hidden="true">→</span></button>
       </article>
       <article class="tcard rv">
-        <div class="top"><img class="face" src="__ZOE512__" alt="Portrait de Zoé" /><div><p class="nm">Zoé</p><p class="rl">Community manager</p></div></div>
-        <p class="pitch">Chaque nouveau bien devient un post Facebook et Instagram avec les photos du mandat. Elle publie quand tu valides, puis suit ce que ça génère.</p>
-        <div class="skills"><span>Posts Facebook &amp; Instagram</span><span>Carrousels photos du bien</span><span>Calendrier éditorial</span><span>Stats des posts</span><span>Ta charte : logo, signature</span></div>
+        <div class="top"><img class="face" src="__ZOE512__" alt="Portrait de Zoé" /><div><p class="nm">Zoé</p><p class="rl">Community manager</p></div><span class="status"><i></i>Prête à publier</span></div>
+        <p class="pitch">Rédige tes annonces multi-portails, publie sur Facebook, Instagram et LinkedIn, optimise les visuels. Ta voix, mise en ligne.</p>
+        <div class="skills"><span>Annonces</span><span>Réseaux</span><span>Calendrier éditorial</span><span>Stats des posts</span></div>
         <p class="quote">« Le post du nouveau mandat est prêt — veux-tu le relire ? »</p>
+        <button type="button" class="talk" data-waitlist="solo">Discuter avec Zoé <span class="arr" aria-hidden="true">→</span></button>
+      </article>
+      <article class="tcard rv">
+        <div class="top"><img class="face" src="__RAPHAEL512__" alt="Portrait de Raphaël" /><div><p class="nm">Raphaël</p><p class="rl">Photographe immobilier</p></div><span class="status"><i></i>Disponible</span></div>
+        <p class="pitch">Retouche les photos de tes biens, corrige la lumière, redresse les verticales, décline les visuels pour portails et réseaux. Chaque bien sous son meilleur jour.</p>
+        <div class="skills"><span>Retouche photo</span><span>Visuels de posts</span><span>Ta charte</span></div>
+        <p class="quote">« Les photos du salon sont prêtes — j'ai corrigé la lumière. »</p>
+        <button type="button" class="talk" data-waitlist="solo">Discuter avec Raphaël <span class="arr" aria-hidden="true">→</span></button>
+      </article>
+      <article class="tcard offline rv">
+        <div class="top"><img class="face" src="__LUCAS512__" alt="Portrait de Lucas" style="width:62px;height:62px;border-radius:50%;" /><div><p class="nm">Lucas</p><p class="rl">Analyste de marché</p></div><span class="status off"><i></i>En formation</span></div>
+        <p class="pitch">Estimera tes biens à partir des ventes réelles (base DVF), analysera les quartiers, suivra les tendances. Un rapport prêt à présenter au vendeur.</p>
+        <div class="skills"><span>Estimation DVF</span><span>Analyse quartier</span><span>Rapport PDF</span></div>
+        <p class="quote">Inclus dans ton abonnement dès son arrivée — le prix ne bouge pas.</p>
       </article>
     </div>
     <p class="rv" style="text-align: center; font-size: 14px; color: var(--subtle); margin: 26px 0 0;">Plus de <b style="color: var(--iris);"><span class="cnt" data-to="50">50</span> compétences immobilières</b> déjà au travail — et il s'en ajoute chaque semaine.</p>
@@ -1460,6 +1577,15 @@
 
   // ── Le team-strip « rejoint l'équipe » (cascade au chargement) ──
   setTimeout(() => document.querySelector('.team-strip').classList.add('joined'), REDUCED ? 0 : 700);
+
+  // ── Vidéo hero : relance l'autoplay si le navigateur ne l'a pas démarré seul ──
+  const hv = document.querySelector('.hero-video');
+  if (hv && !REDUCED) {
+    const tryPlay = () => { if (getComputedStyle(hv).display !== 'none' && hv.paused) hv.play().catch(() => {}); };
+    tryPlay();
+    window.addEventListener('load', tryPlay, { once: true });
+    document.addEventListener('click', tryPlay, { once: true, passive: true });
+  }
 
   // ── Connecteurs : grille → marquee 2 rangées (pattern 21st, vanilla) ──
   (() => {

@@ -7,7 +7,7 @@ ROOT = pathlib.Path(__file__).parent
 def uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode((ROOT / path).read_bytes()).decode()
 repl = {}
-for k in ["max", "emma", "christine", "zoe"]:
+for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:
     repl[f"__{k.upper()}128__"] = uri(f"assets/portraits/{k}@128.webp", "image/webp")
     repl[f"__{k.upper()}512__"] = uri(f"assets/portraits/{k}@512.webp", "image/webp")
 repl["__VILLA_HERO__"] = uri("assets/villa_hero.jpg", "image/jpeg")
@@ -26,6 +26,9 @@ for static in ["og.jpg", "hero.mp4", "hero-poster.jpg"]:
     src = ROOT / "assets" / static
     if src.exists():
         shutil.copy(src, ROOT / "dist" / static)
+(ROOT / "dist" / "fonts").mkdir(exist_ok=True)
+for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
+    shutil.copy(f, ROOT / "dist" / "fonts" / f.name)
 leftover = [t for t in repl if t in html]
-unknown = [t for t in ("__LUCAS128__", "__LUCAS512__", "__HUGO128__", "__HUGO512__") if t in html]
+unknown = [t for t in ("__HUGO128__", "__HUGO512__") if t in html]
 print("build ok →", ROOT / "dist/index.html", f"({len(html)//1024} KB)", "| tokens restants:", (leftover + unknown) or "aucun")
