@@ -156,9 +156,17 @@ fondateur (contenus à venir, ne bloquent pas le build).
 Titre conservé : « Une équipe entière, au prix d'une demi-journée d'assistante. »
 Ancrage explicite : assistante à mi-temps ≈ 1 200 €/mois.
 
+**Toggle Mensuel / Annuel** au-dessus de la grille. Annuel = **2 mois offerts**
+(message simple, honnête, calcul de tête facile) : Solo 970 €/an (≈ 81 €/mois),
+Agence 2 290 €/an (≈ 191 €/mois). Défaut affiché : Mensuel, avec badge
+« 2 mois offerts en annuel » sur le toggle (cohérent marque honnête — on ne
+gonfle pas la perception avec un prix annuel affiché par défaut). L'essai
+7 jours s'applique aux deux ; si annuel, le montant débité en fin d'essai est
+annoncé noir sur blanc dans le micro-texte.
+
 | | **Solo** | **Agence** (Recommandé) | **Réseaux** |
 |---|---|---|---|
-| Prix | **97 €/mois** | **229 €/mois** — « à partir de 46 €/conseiller » | Nous contacter |
+| Prix | **97 €/mois** ou 970 €/an | **229 €/mois** ou 2 290 €/an — « à partir de 46 €/conseiller » | Nous contacter |
 | Conseillers | 1 | jusqu'à 5 (workspace partagé) | sur mesure |
 | Agents IA | **les 6, inclus** | **les 6, pour chacun** | les 6 |
 | Studio | inclus : 30 photos + 3 vidéos/mois | inclus : 100 photos + 8 vidéos/mois (partagées) | sur mesure |
@@ -215,15 +223,37 @@ Générées depuis agents.json. Structure :
 - Sourcing initial : top ~100 apps Pipedream pertinentes métier ; revendication
   « 3 200+ » en bandeau. CTA essai en pied.
 
-## 6. Design & DA
+## 6. Design & DA — objectif : largement au-dessus de Limova
 
-- **On garde** : Fraunces + Geist auto-hébergées, DA iris/porcelaine light+dark,
-  wordmark « Revaly. » (Geist medium, point atténué), motion vanilla (marquee,
-  spotlight, compteurs, stagger), scrim mobile, reduced-motion/no-JS statique partout.
-- **Signature de la refonte** : la vidéo « 24 h en 15 s » + les cartes agents vivantes.
-  Le reste reste sobre (la carte de style : une seule prise de risque à la fois).
-- Accessibilité : contrastes AA, focus visibles, cibles ≥ 44 px, heading hierarchy
-  propre par page.
+Socle conservé : Fraunces + Geist auto-hébergées, DA iris/porcelaine light+dark,
+wordmark « Revaly. », scrim mobile, reduced-motion/no-JS statique partout.
+Notre avantage sur Limova (template SaaS générique) : une DA typographique
+caractérielle + des agents qu'on met en scène au lieu de les décrire.
+
+**Chaque section de la home a UN moment visuel signé** (jamais deux effets qui se
+concurrencent dans la même section — la sobriété autour du moment fait le premium) :
+
+| Section | Moment signé | Mécanique |
+|---|---|---|
+| 1. Hero | **La journée en 15 s** : horloge Fraunces 7h→7h, notifications jour/nuit | Remotion remontée ; mobile/reduced = ticker statique de notifications horodatées (poster) |
+| 2. Équipe | **Les conversations se jouent en vrai** : indicateur de frappe → la réponse de l'agent se construit → chiffres qui claquent | réutilise la mécanique #modelo existante (IO + typing dots + stagger), un déclenchement par carte au scroll, portraits + pastille « en ligne » |
+| 3. Rien ne part sans toi | **Storyboard 3 temps** : brouillon → notif WhatsApp → « ok envoie » tapé → coche envoyée | scroll-triggered, coche stroke-dasharray (mécanique existante), UNE seule séquence, grande |
+| 4. Formés à ton métier | **La fiche Modelo qui se remplit toute seule** (l'animation « CRM vivant » actuelle, déjà excellente, déplacée ici) | conservée telle quelle |
+| 5. Le gain | **Le calcul qui s'empile** : 4 barres (annonces 3 h / relances 3 h / dossiers 2 h / agenda 2 h) qui se remplissent → total 10 h, puis bande de vrais chiffres en tabular figures | compteurs existants + barres CSS transform |
+| 6. Tarifs | **Le toggle Mensuel/Annuel** qui fait glisser les prix + spotlight curseur sur les cartes (existant) | prix en tabular-nums, aucun saut de layout |
+| 7. FAQ | sobre volontairement : accordéons nets, pas d'effet | — |
+| 8. CTA final | les 6 visages en cascade « l'équipe se présente » (stagger existant) | — |
+
+Pages agents : le hero rejoue la conversation de la carte (même mécanique, pas de
+nouveau système). /integrations : la recherche filtre en direct, c'est SA démo.
+
+Règles transverses : motion tokens uniques (durées 150-300 ms, ease-out entrée),
+1 seule animation par viewport, transform/opacity uniquement, stagger 30-50 ms,
+interruptible, reduced-motion = tout statique. Accessibilité : contrastes AA,
+focus visibles, cibles ≥ 44 px, heading hierarchy propre par page.
+QA visuelle systématique au build : screenshots 1440/390 light+dark par section,
+comparaison côte à côte avec limova.ai — si une section paraît moins finie, on
+la retravaille avant d'avancer.
 
 ## 7. Technique & SEO/GEO
 
@@ -242,9 +272,12 @@ Générées depuis agents.json. Structure :
 2. Parcours : home → carte agent → page agent → CTA ; /integrations recherche ; ancres nav.
 3. OG : partage WhatsApp de / et d'une page agent.
 4. robots.txt + sitemap.xml servis et valides ; schema testé (validator Google).
-5. Chiffres : aucun compteur pollué, prix 97/229 partout (modal comprise), plus aucune
-   trace de 199/169 ni du compteur barré.
-6. Deploy = geste Julien (`! npx wrangler pages deploy dist --project-name revaly`).
+5. Chiffres : aucun compteur pollué, prix 97/229 + annuels 970/2 290 cohérents partout
+   (modal comprise), toggle sans saut de layout, plus aucune trace de 199/169 ni du
+   compteur barré.
+6. Test d'œil final : chaque section de la home comparée à limova.ai en screenshots
+   côte à côte — aucune section ne doit paraître moins finie que la leur.
+7. Deploy = geste Julien (`! npx wrangler pages deploy dist --project-name revaly`).
 
 ## 9. Hors périmètre (tracé ailleurs)
 
