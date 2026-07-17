@@ -64,6 +64,24 @@ must("~10 h de paperasse en moins par semaine" in idx, "ligne de soutien ~10 h d
 must(idx.count('class="vs-row"') == 6, "pile de valeur : 6 lignes de postes")
 must("Tarifs marché sourcés" in idx, "sources des tarifs marché en commentaire HTML")
 
+# ── Section #tarif (Task 8) : pricing 97/229, toggle annuel, garanties, modal ──
+text = text.replace("&nbsp;", " ").replace(" ", " ")  # espaces insécables → espaces
+must("97 €" in text, "tarif Solo : 97 €")
+must("229 €" in text, "tarif Agence : 229 €")
+must("970 €" in text, "tarif Solo annuel : 970 €")
+must("2 290 €" in text, "tarif Agence annuel : 2 290 €")
+must("2 mois offerts" in text, "badge toggle : 2 mois offerts")
+must("Réserve ton essai" in idx, "modal re-titrée « Réserve ton essai »")
+must("≈ 81 €" in text and "≈ 191 €" in text, "équivalents mensuels annualisés ≈ 81 / ≈ 191")
+must("Une assistante à mi-temps, c'est ~1 200 €/mois." in text, "ancrage assistante ~1 200 €/mois")
+must("mailto:support@revaly.io" in idx, "Réseaux → mailto support@revaly.io")
+must("199" not in text, "ancien prix 199 absent du texte")
+must("169 €" not in text, "ancien prix 169 € absent du texte")
+must("count-price" not in idx, "mécanisme count-price supprimé")
+must("limité" not in text.lower(), "jamais le mot « limité »")
+must(text.count("0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics") >= 3,
+     "micro-texte de désamorçage sous les CTA tarifs + modal")
+
 # ── data/faq.json (Task 2) : 8 Q/R, alimente aussi le schema.org FAQPage ──
 faq_path = ROOT / "data" / "faq.json"
 must(faq_path.exists(), "data/faq.json existe")

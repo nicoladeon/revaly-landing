@@ -300,57 +300,89 @@
   </section>
 
   <!-- ═══════════════ TARIF ═══════════════ -->
-  <section class="wrap" id="tarif">
+  <section class="wrap" id="tarif" data-billing="monthly">
     <div class="rv" style="text-align: center;">
-      <span class="tag">Tarif</span>
-      <h2 class="title">Une équipe entière, au prix d'une demi-journée d'assistante</h2>
-      <p class="sub" style="margin-left: auto; margin-right: auto;">Tout est inclus. Sans engagement : tu pars quand tu veux, avec tes données. Choisis ton offre et prends ta place.</p>
+      <span class="tag">Tarifs</span>
+      <h2 class="title">Une équipe entière, au prix d'une demi-journée d'assistante.</h2>
+      <p class="sub" style="margin-left: auto; margin-right: auto;">Une assistante à mi-temps, c'est ~1&nbsp;200&nbsp;€/mois. Ici, les six agents sont inclus dans chaque offre — et tu pars quand tu veux, avec tes données.</p>
+    </div>
+    <div class="bill-toggle rv" role="radiogroup" aria-label="Rythme de facturation">
+      <label class="bt-opt">
+        <input type="radio" name="billing" value="monthly" checked />
+        <span class="bt-label">Mensuel</span>
+      </label>
+      <label class="bt-opt">
+        <input type="radio" name="billing" value="yearly" />
+        <span class="bt-label">Annuel</span>
+        <span class="bt-badge">2 mois offerts</span>
+      </label>
     </div>
     <div class="plans">
       <div class="plan rv">
         <h3>Solo</h3>
         <p class="for">Pour le conseiller indépendant</p>
-        <p class="launch">Prix de lancement</p>
-        <p class="amount" style="margin-top: 6px;"><span class="was">229 €</span><span class="count-price" data-from="229" data-to="199">199</span> €<span> /mois</span></p>
-        <p class="per-day">Verrouillé tant que tu restes abonné. Passera à 229 € pour les inscriptions suivantes.</p>
+        <p class="amount">
+          <span class="swap"><span class="sw-m" data-monthly>97 €<span class="unit"> /mois</span></span><span class="sw-y" data-yearly aria-hidden="true">≈ 81 €<span class="unit"> /mois</span></span></span>
+        </p>
+        <p class="bill-note">
+          <span class="swap"><span class="sw-m" data-monthly>Facturé au mois, sans engagement</span><span class="sw-y" data-yearly aria-hidden="true">Facturé 970 € une fois par an</span></span>
+        </p>
         <ul class="checklist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Toute l’équipe, toutes les compétences</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Modelo, Gmail, Agenda, Facebook &amp; Instagram</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Web, Telegram et WhatsApp</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles compétences chaque semaine, incluses</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>1 conseiller</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, inclus</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 30 photos studio + 3 vidéos par mois</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
         </ul>
         <button type="button" class="btn" data-waitlist="solo">Essayer 7 jours</button>
+        <p class="plan-hint">
+          <span class="swap"><span class="sw-m" data-monthly>0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</span><span class="sw-y" data-yearly aria-hidden="true">0 € aujourd'hui · 970 € à la fin de l'essai, annoncé par email · annulation en 2 clics</span></span>
+        </p>
       </div>
       <div class="plan featured rv">
         <span class="badge">Recommandé</span>
         <h3>Agence</h3>
-        <p class="for">Dès 3 conseillers</p>
-        <p class="launch">Prix de lancement</p>
-        <p class="amount" style="margin-top: 6px;"><span class="was">189 €</span><span class="count-price" data-from="189" data-to="169">169</span> €<span> /conseiller /mois</span></p>
-        <p class="per-day">Verrouillé tant que l'agence reste abonnée. Chaque conseiller a SA propre équipe.</p>
+        <p class="for">Pour l'agence — workspace partagé</p>
+        <p class="amount">
+          <span class="swap"><span class="sw-m" data-monthly>229 €<span class="unit"> /mois</span></span><span class="sw-y" data-yearly aria-hidden="true">≈ 191 €<span class="unit"> /mois</span></span></span>
+        </p>
+        <p class="bill-note">
+          <span class="swap"><span class="sw-m" data-monthly>Facturé au mois, sans engagement</span><span class="sw-y" data-yearly aria-hidden="true">Facturé 2 290 € une fois par an</span></span>
+        </p>
         <ul class="checklist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tout Solo, pour chaque conseiller</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Dossiers cloisonnés par conseiller</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Une seule facture pour l'agence</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Onboarding de l'équipe accompagné</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Jusqu'à 5 conseillers — à partir de 46&nbsp;€/conseiller</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, pour chaque conseiller</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 100 photos + 8 vidéos par mois, partagées</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
         </ul>
         <button type="button" class="btn" data-waitlist="agence">Essayer 7 jours</button>
+        <p class="plan-hint">
+          <span class="swap"><span class="sw-m" data-monthly>0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</span><span class="sw-y" data-yearly aria-hidden="true">0 € aujourd'hui · 2 290 € à la fin de l'essai, annoncé par email · annulation en 2 clics</span></span>
+        </p>
       </div>
       <div class="plan rv">
-        <h3>Réseau</h3>
+        <h3>Réseaux</h3>
         <p class="for">Franchises et réseaux</p>
-        <p class="amount" style="font-size: 30px; padding-top: 8px;">Sur devis</p>
-        <p class="per-day">Déploiement multi-agences</p>
+        <p class="amount" style="font-size: 30px; padding-top: 8px;">Sur mesure</p>
+        <p class="bill-note">Volume, déploiement et facturation adaptés au réseau</p>
         <ul class="checklist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tout Agence, à l'échelle du réseau</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Interlocuteur dédié</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Déploiement et formation sur site</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Facturation centralisée</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Conseillers et agences : sur mesure</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, pour chaque conseiller</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Studio photos + vidéos, volume sur mesure</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Interlocuteur dédié, facturation centralisée</li>
         </ul>
-        <button type="button" class="btn ghost" data-waitlist="reseau">Essayer 7 jours</button>
+        <a class="btn ghost" href="mailto:support@revaly.io">Nous contacter</a>
+        <p class="plan-hint">Réponse d'un humain sous 24 h · sans engagement</p>
       </div>
     </div>
-    <p class="plans-note rv">On ouvre progressivement pour soigner chaque onboarding. Le prix de lancement est réservé à la liste d'attente : il passera à 229 € pour les suivants — <b>pas pour toi</b>, tant que tu restes abonné.</p>
+    <ul class="garanties rv">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>0 € aujourd'hui</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Rappel par email avant la fin de l'essai</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Annulation en 2 clics</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sans engagement</li>
+    </ul>
   </section>
 
   <!-- ═══════════════ FAQ ═══════════════ -->
@@ -429,8 +461,8 @@
   <div class="wl-modal">
     <button type="button" class="wl-close" aria-label="Fermer" id="wl-x">✕</button>
     <div id="wl-form-zone">
-      <h3 id="wl-title">Recrute ton équipe</h3>
-      <p class="wl-sub">Ton inscription verrouille le prix de lancement — on te prévient en premier dès l'ouverture.</p>
+      <h3 id="wl-title">Réserve ton essai — on t'ouvre l'accès sous 24 h</h3>
+      <p class="wl-sub">Prénom, email, c'est tout : un humain t'ouvre l'accès et t'accompagne pour brancher tes outils.</p>
       <form class="wl-form" id="wl-form">
         <label>Prénom
           <input type="text" name="first_name" autocomplete="given-name" required maxlength="60" />
@@ -440,22 +472,23 @@
         </label>
         <label>Offre
           <select name="plan" id="wl-plan">
-            <option value="solo">Solo — 199 €/mois (lancement)</option>
-            <option value="agence">Agence — 169 €/conseiller/mois (lancement)</option>
-            <option value="reseau">Réseau — sur devis</option>
+            <option value="solo">Solo — 97 €/mois, essai 7 jours</option>
+            <option value="agence">Agence — 229 €/mois, essai 7 jours</option>
+            <option value="reseau">Réseaux — sur mesure</option>
           </select>
         </label>
         <label class="wl-hp" aria-hidden="true">Site web
           <input type="text" name="website" tabindex="-1" autocomplete="off" />
         </label>
-        <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 6px;" id="wl-submit">Verrouiller le prix de lancement</button>
-        <p class="wl-error" id="wl-error">L'inscription automatique n'a pas fonctionné ici — <a id="wl-mailto" href="mailto:support@revaly.io">clique pour nous écrire</a>, on t'ajoute à la main.</p>
+        <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 6px;" id="wl-submit">Réserver mon essai</button>
+        <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+        <p class="wl-error" id="wl-error">La réservation automatique n'a pas fonctionné ici — <a id="wl-mailto" href="mailto:support@revaly.io">clique pour nous écrire</a>, on t'ouvre l'accès à la main.</p>
       </form>
     </div>
     <div class="wl-success" id="wl-success" style="display: none;">
       <div class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-      <h3>Tu es sur la liste.</h3>
-      <p class="wl-sub">Ton prix de lancement est verrouillé. On te prévient dès l'ouverture — ton équipe t'attendra.</p>
+      <h3>C'est réservé.</h3>
+      <p class="wl-sub">On t'écrit sous 24 h pour t'ouvrir l'accès — ton équipe t'attendra.</p>
     </div>
   </div>
 </div>
@@ -509,11 +542,11 @@
       document.getElementById('wl-success').style.display = '';
     } catch (_err) {
       const m = document.getElementById('wl-mailto');
-      m.href = 'mailto:support@revaly.io?subject=' + encodeURIComponent("Liste d'attente Revaly — " + payload.plan)
+      m.href = 'mailto:support@revaly.io?subject=' + encodeURIComponent('Essai Revaly — ' + payload.plan)
         + '&body=' + encodeURIComponent('Prénom : ' + payload.first_name + '\nEmail : ' + payload.email + '\nOffre : ' + payload.plan);
       document.getElementById('wl-error').style.display = 'block';
     } finally {
-      btn.disabled = false; btn.textContent = 'Verrouiller le prix de lancement';
+      btn.disabled = false; btn.textContent = 'Réserver mon essai';
     }
   });
 
@@ -637,7 +670,7 @@
     zone.after(more);
   })();
 
-  // ── Compteurs (47 j'aime, 50 compétences, 2 700 apps) + décompte des prix ──
+  // ── Compteurs (j'aime, compétences, connecteurs, bande de preuve) ──
   const easeOut = (t) => 1 - Math.pow(1 - t, 3);
   function animNum(el, from, to, dur) {
     if (REDUCED) { el.textContent = to.toLocaleString('fr-FR'); return; }
@@ -648,21 +681,29 @@
       if (p < 1) requestAnimationFrame(tick);
     })(t0);
   }
-  // Les prix affichent le tarif plein AVANT d'être visibles, puis décomptent
-  // vers le prix de lancement — jamais de saut visible à l'écran.
-  if (!REDUCED) document.querySelectorAll('.count-price').forEach((el) => {
-    el.textContent = Number(el.dataset.from).toLocaleString('fr-FR');
-  });
   const cio = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (!e.isIntersecting) return;
       cio.unobserve(e.target);
-      const from = Number(e.target.dataset.from || 0);
-      const to = Number(e.target.dataset.to);
-      animNum(e.target, from, to, e.target.dataset.from ? 1100 : 900);
+      animNum(e.target, 0, Number(e.target.dataset.to), 900);
     });
   }, { threshold: 0.35 });
-  document.querySelectorAll('.cnt, .count-price').forEach((el) => cio.observe(el));
+  document.querySelectorAll('.cnt').forEach((el) => cio.observe(el));
+
+  // ── Tarifs : toggle Mensuel/Annuel — le glissement des prix est le moment
+  //    signé de la section. Les deux variantes ([data-monthly]/[data-yearly])
+  //    sont empilées dans une grid : largeur/hauteur réservées = zéro saut de
+  //    layout, la bascule ne touche que transform/opacity (220 ms). ──
+  (() => {
+    const sec = document.getElementById('tarif');
+    function setBilling(mode) {
+      sec.dataset.billing = mode;
+      sec.querySelectorAll('[data-monthly]').forEach((el) => el.setAttribute('aria-hidden', String(mode !== 'monthly')));
+      sec.querySelectorAll('[data-yearly]').forEach((el) => el.setAttribute('aria-hidden', String(mode !== 'yearly')));
+    }
+    sec.querySelectorAll('input[name="billing"]').forEach((r) =>
+      r.addEventListener('change', () => setBilling(r.value)));
+  })();
 
   // ── CTA légèrement magnétiques (desktop pointeur fin uniquement) ──
   if (!REDUCED && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
