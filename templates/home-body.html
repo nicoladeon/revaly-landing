@@ -318,7 +318,7 @@
         <ul class="checklist">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>1 conseiller</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, inclus</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 30 photos studio + 3 vidéos par mois</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 30 photos studio + 4 vidéos par mois</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
         </ul>
@@ -340,7 +340,7 @@
         <ul class="checklist">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Jusqu'à 5 conseillers — à partir de 46&nbsp;€/conseiller</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, pour chaque conseiller</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 100 photos + 8 vidéos par mois, partagées</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 100 photos + 16 vidéos par mois, partagées</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
         </ul>
@@ -503,8 +503,23 @@
     wl.classList.remove('open');
     if (wlLastFocus) wlLastFocus.focus();
   }
+  // ── Vente directe : CTA « Essayer 7 jours » → Stripe Payment Link (essai 7 j).
+  //    La périodicité suit le toggle Mensuel/Annuel des tarifs (défaut mensuel).
+  //    Liens non configurés (PAYMENT_LINKS vides) → repli propre sur la liste
+  //    d'attente : déployer avant de remplir les URLs ne change rien au live. ──
+  const PAYMENT_LINKS = __PAYMENT_LINKS_JSON__;
+  function billingPeriod() {
+    const r = document.querySelector('input[name="billing"]:checked');
+    return r && r.value === 'yearly' ? 'yearly' : 'monthly';
+  }
+  function startCheckout(plan) {
+    const p = plan === 'agence' ? 'agence' : 'solo';
+    const url = PAYMENT_LINKS[p + '/' + billingPeriod()];
+    if (url) { window.location.href = url; return; }
+    wlOpen(p);
+  }
   document.querySelectorAll('[data-waitlist]').forEach((b) =>
-    b.addEventListener('click', () => wlOpen(b.dataset.waitlist)));
+    b.addEventListener('click', () => startCheckout(b.dataset.waitlist)));
   document.getElementById('wl-x').addEventListener('click', wlClose);
   wl.addEventListener('click', (e) => { if (e.target === wl) wlClose(); });
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && wl.classList.contains('open')) wlClose(); });

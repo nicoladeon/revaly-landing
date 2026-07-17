@@ -188,4 +188,21 @@ must("https://revaly.io/agents/" in _sm, "sitemap.xml contient /agents/")
 must(_sm.count("<url>") == 9, f"sitemap : 9 URLs attendues (trouvées: {_sm.count('<url>')})")
 must('href="/integrations/"' in idx, "nav de la home pointe vers /integrations/")
 
+# ── Vente directe : CTA → Stripe Payment Links (+ repli liste d'attente) ──
+must('const PAYMENT_LINKS = {' in idx, "home : objet PAYMENT_LINKS injecté")
+must('"solo/monthly"' in idx and '"agence/yearly"' in idx, "home : 4 clés plan/périodicité")
+must("function startCheckout" in idx, "home : handler startCheckout (Stripe ou repli liste d'attente)")
+must("input[name=\"billing\"]:checked" in idx, "home : la périodicité suit le toggle Mensuel/Annuel")
+must("4 vidéos par mois" in idx and "16 vidéos par mois" in idx,
+     "quotas vidéos alignés sur le déployé (Solo 4, Agence 16)")
+
+# ── Page /bienvenue (atterrissage post-paiement) : noindex, hors sitemap ──
+bienv = (dist / "bienvenue" / "index.html")
+must(bienv.exists(), "/bienvenue/ générée")
+bt = bienv.read_text()
+must('name="robots" content="noindex' in bt, "/bienvenue/ en noindex (page de tunnel)")
+must('https://app.revaly.io/login' in bt, "/bienvenue/ : lien vers l'app")
+must("lien de connexion par email" in bt, "/bienvenue/ : message « va voir tes emails »")
+must("https://revaly.io/bienvenue/" not in _sm, "/bienvenue/ absente du sitemap (noindex)")
+
 print("OK")
