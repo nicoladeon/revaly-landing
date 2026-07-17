@@ -102,47 +102,78 @@ Format par carte : question du conseiller → réponse de l'agent à la 1ʳᵉ p
 avec chiffres → 3 capacités phares → « Voir tout ce que X sait faire → » (page agent).
 Cartes animées (stagger existant), cliquables, + « Discuter avec X » (modal actuelle).
 
-Copy de départ (à ajuster au build après inventaire des tools réels dans le code de l'app) :
+Copy VÉRIFIÉE contre la prod le 16/07 (tables `agents`/`agent_tools` + crons —
+inventaire complet en annexe A ; règle absolue : rien sur une carte qui ne soit
+pas un tool ou cron actif) :
 
 - **Max — coordinateur**
   « Max, ma journée ? »
-  → « Brief de 7 h : deux visites (10 h Bihorel, 15 h rive droite), trois relances
-  parties cette nuit, le DPE du pavillon des Sapins est arrivé. Et c'est
-  l'anniversaire de Mme Lefèvre — ton message est prêt. »
-  Capacités : brief quotidien 7 h · vocaux WhatsApp (« déplace mon rdv de 14 h ») ·
-  **prospection DPE : chaque nouveau DPE déposé dans ton code postal = un bien qui
-  prépare peut-être sa vente, signalé avant qu'il arrive sur le marché** ·
-  anniversaires clients & achats
+  → « Brief de 7 h : deux visites (10 h Bihorel, 15 h rive droite), trois emails
+  importants triés, l'anniversaire de Mme Lefèvre — et deux DPE tout frais dans
+  ton secteur. Je te refais le point ce soir à 19 h. »
+  Capacités : brief du matin 7 h + bilan du soir 19 h · vocaux WhatsApp/Telegram
+  (« déplace mon rdv de 14 h ») · active ou coupe chaque automatisation d'une
+  phrase · crée les tâches et suit ce qui traîne
+  (vérifié : daily-briefing, evening-recap, set-automation-preference,
+  create-task, connect-telegram/whatsapp)
 - **Emma — assistante admin**
-  « Emma, où en sont mes relances ? »
-  → « J'ai relancé 14 acquéreurs sur le T3 rue Jeanne-d'Arc. Trois réponses, une
-  visite calée samedi 11 h — déjà dans ton agenda, confirmation envoyée. »
-  Capacités : relances qui n'oublient jamais · brouillon prêt à chaque email entrant ·
-  agenda & confirmations de rendez-vous
+  « Emma, quoi de neuf ? »
+  → « Trois emails importants ce matin, brouillons de réponse prêts. La visite de
+  15 h est confirmée. Et la fiche de Mme Dubois est dans Modelo — budget
+  280 000 €, 3 chambres : elle recevra les biens correspondants automatiquement. »
+  Capacités : un brouillon prêt pour chaque email qui compte · **écrit les fiches
+  contact ET les fiches recherche acquéreur dans Modelo** (le rapprochement, c'est
+  Modelo qui l'envoie — on ne réinvente pas ton CRM) · compte-rendu de visite
+  rédigé depuis ta note vocale · relances des prospects inactifs : TU les actives,
+  tu règles le délai, le ton et le canal
+  (vérifié : read-inbox, draft-email, send-visit-confirmation,
+  create/update-modelo-contact, create-modelo-search, write-visite-report,
+  auto-relances opt-in, track-loan, upcoming-birthdays, import-contacts-file)
+  ⚠️ INTERDIT sur la page : « Emma relance tes acquéreurs toute seule » et toute
+  mention de rapprochement fait par Revaly (correctif Julien 16/07).
 - **Christine — juridique & mandats**
   « Christine, le dossier Perrin ? »
-  → « Mandat exclusif prêt à signer. Il manquait le diagnostic amiante : cabinet
-  relancé ce matin, reçu à 11 h 42. Dossier de vente complet. »
-  Capacités : dossier de vente complet pièce par pièce · mandats préparés ·
-  veille juridique immo chaque semaine
+  → « Compromis complet sauf l'assainissement — je te l'ai mis en tâche. Délai de
+  rétractation : J+7, il expire mardi. Et deux mandats arrivent à échéance ce
+  mois-ci, renouvellements à préparer. »
+  Capacités : dossier de vente analysé pièce par pièce · échéances sous contrôle
+  (fins de mandat, rétractation, conditions suspensives, actes) · conformité et
+  diagnostics vérifiés · veille juridique immo chaque semaine
+  (vérifié : analyze-sale-file, analyze-legal-docs, mandate-deadlines,
+  check-compliance, check-diagnostics, weekly-legal-digest)
 - **Zoé — community manager**
   « Zoé, qu'est-ce qui part cette semaine ? »
   → « Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte),
   ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part
-  demain 18 h. »
-  Capacités : posts Instagram & Facebook avec visuels à ta charte · calendrier édito ·
-  nouveau mandat = post proposé automatiquement
+  demain 18 h — et tes stats de la semaine arrivent lundi. »
+  Capacités : posts Instagram & Facebook, visuels générés à ta charte · calendrier
+  éditorial + publication programmée · nouveau mandat = post proposé tout seul ·
+  stats sociales chaque semaine
+  (vérifié : generate-image, editorial-calendar, publish-social, schedule-content,
+  social-stats, brand-kit/marketing-profile, cron-mandat-social-posts,
+  cron-publish-scheduled, cron-social-stats, open-in-canva)
 - **Raphaël — photographe**
   « Raphaël, les photos du pavillon ? »
   → « 18 photos retouchées : ciel dégagé, verticales redressées, lumière studio.
-  Le salon vide est meublé en home staging virtuel — ta photo de couverture est prête. »
-  Capacités : retouche pro en lot · home staging virtuel · vidéo du bien à partir d'une photo
+  Le salon vide est meublé en home staging virtuel, ton logo est posé en filigrane
+  — et la vidéo du bien est prête. »
+  Capacités : retouche pro en lot (même direct depuis ton Drive) · home staging
+  virtuel · vidéo du bien à partir d'une photo · filigrane et visuels à ta marque
+  (vérifié : enhance-photo, retouche-photo, home-staging, improve-drive-photos,
+  generate-video, apply-watermark, remove-background, clarity-upscale,
+  create-visual, brand-kit)
 - **Lucas — estimation & marché**
   « Lucas, l'appartement rue Verte, il vaut quoi ? »
-  → « Entre 242 000 et 255 000 € — douze ventes comparables dans un rayon de 400 m
-  sur 18 mois. Ton rapport de marché en PDF est prêt pour le rendez-vous de 16 h. »
-  Capacités : estimation sur les ventes réelles · rapport de marché à ta marque ·
-  argumentaire prix pour le vendeur
+  → « Entre 242 000 et 255 000 € — douze ventes notariées comparables dans le
+  quartier. Ton rapport de marché à ta marque est prêt pour le rendez-vous de
+  16 h. Au passage : quatre DPE tout frais cette semaine sur ta commune. »
+  Capacités : estimation sur les ventes réelles (base notariée) · rapport de
+  marché PDF à ta marque, graphiques inclus · **radar DPE : les nouveaux
+  diagnostics de ta commune, signal précoce d'une mise en vente** · point marché
+  chaque semaine
+  (vérifié : estimation-dvf, query-dvf, generate-market-report, dpe-recents,
+  search-dpe, weekly-market-digest, generate-estimation-pdf ; l'ALERTE push DPE
+  = cron-dpe-alerts, rayon réglable autour de l'agence, envoyée sur Telegram)
 
 ### 3.3 Autonomes, pas incontrôlés
 Titre : « **Rien ne part sans toi.** »
@@ -155,12 +186,14 @@ Deux preuves reines (mises en avant par Julien 16/07) + la largeur :
 - **Modelo/Netty natif : ils écrivent les contacts et les fiches acquéreurs à ta
   place.** L'animation « CRM vivant » actuelle montre exactement ça — conservée ici,
   avec une copy explicite sur la corvée supprimée (« la saisie, c'est fini »).
-- **La prospection DPE** (correctif Julien : TOUS les nouveaux DPE du code postal
-  choisi, pas seulement F/G) : « Un DPE vient d'être déposé dans ton secteur ?
-  C'est souvent un bien qui prépare sa mise en vente — tu le sais avant qu'il
-  arrive sur le marché. » Et la couche loi Climat en bonus : classé F ou G =
-  un propriétaire qui devra vendre ou rénover. L'alerte DPE se vend comme
-  machine à trouver des biens, pas comme notification.
+- **La prospection DPE** (vérifié dans le code 16/07 — TOUS les nouveaux DPE,
+  pas seulement F/G) : « Un DPE vient d'être déposé dans ton secteur ? C'est
+  souvent un bien qui prépare sa mise en vente — tu le sais avant qu'il arrive
+  sur le marché. » Mécanique réelle : alerte push Telegram sur un rayon réglable
+  autour de l'agence (cron-dpe-alerts) + interrogation par commune à la demande
+  via Lucas (dpe-recents). Couche loi Climat en bonus : classé F ou G = un
+  propriétaire qui devra vendre ou rénover. Se vend comme machine à trouver des
+  biens, pas comme notification.
 - Les ventes réelles (DVF), les dossiers, les mandats, le droit immo français.
 - Une ligne largeur : « Et pour tout le reste : 3 200+ outils connectés → » /integrations.
 
@@ -254,8 +287,8 @@ Générées depuis agents.json. Structure :
    rapport Lucas).
 5. Le reste de l'équipe (5 mini-cartes) + CTA essai.
 
-**Au build : inventaire exhaustif des tools + crons réels dans le code de l'app
-(rosters + supabase/functions cron-*) → agents.json. Ne rien inventer, ne rien oublier.**
+**L'inventaire réel est FAIT (annexe A, prod du 16/07) → il seed agents.json.
+Ne rien inventer, ne rien oublier — et re-vérifier l'annexe juste avant le build.**
 
 ## 5. Page /integrations
 
@@ -321,6 +354,60 @@ la retravaille avant d'avancer.
 6. Test d'œil final : chaque section de la home comparée à limova.ai en screenshots
    côte à côte — aucune section ne doit paraître moins finie que la leur.
 7. Deploy = geste Julien (`! npx wrangler pages deploy dist --project-name revaly`).
+
+## Annexe A — Inventaire VÉRIFIÉ (prod 16/07/2026, tables agents/agent_tools + supabase/functions)
+
+**Agents actifs** : Max (orchestrateur), Emma (admin, 45 tools), Christine
+(juridique), Zoé (community-manager), Raphaël (visuel), Lucas (estimateur,
+`is_active=true` — le CLAUDE.md de l'app qui le dit « coupé » est périmé).
+**Hugo (prospection) : `is_active=false` → HORS PAGE** (linkedin, SIRENE,
+dpe-alerts chat lui appartiennent — ne pas les revendiquer).
+
+Tools actifs par agent (slugs prod) :
+- **Max** : daily-briefing · evening-recap · set-automation-preference ·
+  create-task · connect-telegram · connect-whatsapp · analyze-sale-file ·
+  query-dossier · get-mandat-contacts · list-biens · search-documents · Drive
+- **Emma** : read-inbox · read/search/trash-emails · draft-email · gmail-labels ·
+  create/read/update/delete-calendar-event · send-visit-confirmation ·
+  visite-followup (délai+canal au choix) · write-visite-report (note vocale → CR,
+  trouve l'email du vendeur via le mandat) · auto-relances (OPT-IN : délai, ton,
+  canal réglables) · create-modelo-contact · update-modelo-contact (statut, notes,
+  tags — PAS email/tél/nom) · create-modelo-search (fiche recherche → **le
+  rapprochement et les alertes biens = Modelo**) · create-modelo-agenda-task ·
+  import-contacts-file · track-loan (financement du simu à l'offre) ·
+  analyze-tenant (dossier locataire scoré 30 s) · price-stagnation-alert
+  (mandat immobile 60 j, seuil réglable) · upcoming-birthdays ·
+  mandate-deadlines · search-contact · get-contact-activity ·
+  record-contact-interaction · query-dossier · Drive
+- **Christine** : analyze-sale-file · analyze-legal-docs · analyze-document ·
+  search-legal-docs · check-compliance · check-diagnostics · mandate-deadlines
+  (fins de mandat, rétractation, conditions suspensives, actes) ·
+  weekly-legal-digest · query-dossier · Drive
+- **Zoé** : generate-image · save-content · schedule-content · publish-content ·
+  publish-social · editorial-calendar · social-stats · set-brand-asset ·
+  save-marketing-profile · open-in-canva · web-search-immo · query-dossier · Drive
+- **Raphaël** : enhance-photo · retouche-photo · home-staging ·
+  improve-drive-photos · export-photos-drive · generate-video · apply-watermark ·
+  remove-background · clarity-upscale · create-visual · brand-kit ·
+  decline-formats · open-in-canva · Drive
+- **Lucas** : estimation-dvf · query-dvf · review-estimation ·
+  generate-estimation-pdf · generate-market-report (PDF brandé, graphiques,
+  base DVF/DGFiP) · query-dpe · search-dpe · dpe-recents (par commune —
+  « un DPE tout neuf annonce souvent une mise en vente ») ·
+  weekly-market-digest · web-search-immo · query-dossier · Drive
+
+Crons marketables (20 au total, infra exclue) : morning-briefing 7 h ·
+evening-recap 19 h · dpe-alerts (rayon agence, Telegram) · anniversaries ·
+mandat-expiration · price-stagnation · visit-reminders · visite-followup ·
+relances (tâches de confirmation AVEC consentement) · mandat-social-posts ·
+publish-scheduled · social-stats · email-notify · weekly-legal-digest ·
+weekly-market. (Infra, ne pas marketer : modelo-batch-flush/retry/offers,
+health-check, replay-webhooks, agent-learning.)
+
+Garde-fous de copy issus du code : envois verrouillés drafts-only
+(send-email-guard : refuse sans draft + confirmation) → nourrit la section
+« Rien ne part sans toi » ; automations sortantes soumises à consentement
+(automation-consent) ; rapprochement biens↔acquéreurs = Modelo, jamais nous.
 
 ## 9. Hors périmètre (tracé ailleurs)
 
