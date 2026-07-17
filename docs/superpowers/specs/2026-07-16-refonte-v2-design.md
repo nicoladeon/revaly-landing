@@ -48,19 +48,20 @@ data/integrations.json   → catalogue connecteurs (nom, catégorie, slug, descr
 data/faq.json            → FAQ (alimente aussi le schema.org)
 
 dist/
-  index.html                    la home compressée (8 sections)
-  agents/max/…/lucas/  (6)      fiches de poste complètes
+  index.html                    la home — TOUT y est visible, agents compris
   integrations/                 catalogue avec recherche client-side
   robots.txt                    VRAI fichier (fix du fallback 873 Ko)
-  sitemap.xml                   nouveau (multi-page ⇒ obligatoire)
+  sitemap.xml                   2 URLs
 ```
 
+**CORRECTIF Julien 16/07 : PAS de pages par agent.** Le modèle = la home de
+Limova : chaque agent est un bloc COMPLET directement sur la home
+(conversation + capacités + automatisations visibles). La seule page
+secondaire est /integrations (c'était l'objet réel de la demande multi-page).
+
 - Nav (toutes pages) : **Équipe · Intégrations · Tarifs · FAQ** + CTA « Essayer 7 jours ».
-  Tarifs et FAQ = ancres de la home. Connexion : lien conservé (état actuel).
-- Chaque page : canonical propre, title/description dédiés, OG (défaut = og.jpg actuel ;
-  OG par agent = itération ultérieure).
-- Les 6 pages agents = futures destinations Ads + SEO
-  (« IA estimation immobilière », « community manager immobilier IA », …).
+  Équipe/Tarifs/FAQ = ancres de la home. Connexion : lien conservé (état actuel).
+- Chaque page : canonical propre, title/description dédiés, OG.
 - /integrations = playbook Zapier : recherche + catégories, top ~100 connecteurs
   détaillés + revendication « 3 200+ outils connectés ». SEO longue traîne.
 
@@ -97,10 +98,14 @@ CTA    : [ Essayer 7 jours ]   + micro-texte de désamorçage
   Instagram, Facebook… + badge « **+ 3 200 outils via connecteurs** » → lien /integrations.
   (Marquee 2 rangées existante réutilisée.)
 
-### 3.2 L'équipe — les 6 cartes (la machine à convertir)
-Format par carte : question du conseiller → réponse de l'agent à la 1ʳᵉ personne
-avec chiffres → 3 capacités phares → « Voir tout ce que X sait faire → » (page agent).
-Cartes animées (stagger existant), cliquables, + « Discuter avec X » (modal actuelle).
+### 3.2 L'équipe — 6 BLOCS COMPLETS sur la home (la machine à convertir)
+Modèle = home Limova (correctif Julien 16/07 : tout visible, pas de sous-pages).
+Chaque agent = un bloc entier, empilés (layout alterné gauche/droite en desktop) :
+① portrait + pastille « en ligne » + rôle ② la conversation qui se joue (question
+du conseiller → typing → réponse 1ʳᵉ personne avec chiffres) ③ ses capacités
+(checks) ④ **« Ses automatisations » VISIBLES** : puces titre+pitch tirées de
+fiche.automatisations/outils (agents.json) — les plus vendeuses, 4-6 par agent
+⑤ « Discuter avec X » (modal actuelle). Bloc animé au scroll (stagger existant).
 
 Copy VÉRIFIÉE contre la prod le 16/07 (tables `agents`/`agent_tools` + crons —
 inventaire complet en annexe A ; règle absolue : rien sur une carte qui ne soit
@@ -274,21 +279,13 @@ annoncé noir sur blanc dans le micro-texte.
 ### 3.8 CTA final
 « **Ton équipe peut commencer ce soir.** » + 6 visages + CTA + micro-texte.
 
-## 4. Pages agents (/agents/{slug}) — fiches de poste
+## 4. ~~Pages agents~~ — SUPPRIMÉ (correctif Julien 16/07)
 
-Générées depuis agents.json. Structure :
-1. Hero agent : portrait, rôle, la conversation de la carte en grand (animée).
-2. « Ses automatisations » : CHAQUE cron/automatisation marketée en bénéfice —
-   règle : un cron = « il y pense pour toi, tous les jours, sans qu'on lui demande ».
-   (Ex. Max : « Alerte DPE — un bien classé F/G apparaît dans ton secteur ? Tu le
-   sais avant tout le monde. »)
-3. « Ses outils » : ce qu'il sait faire à la demande.
-4. Exemples de production (visuels réels quand dispo : post Zoé, photo Raphaël,
-   rapport Lucas).
-5. Le reste de l'équipe (5 mini-cartes) + CTA essai.
-
-**L'inventaire réel est FAIT (annexe A, prod du 16/07) → il seed agents.json.
-Ne rien inventer, ne rien oublier — et re-vérifier l'annexe juste avant le build.**
+Pas de pages par agent : tout le contenu fiche de poste (automatisations
+marketées, outils) vit DANS les blocs agents de la home (§3.2). La règle
+d'écriture reste : un cron = « il y pense pour toi, tous les jours, sans
+qu'on lui demande ». **L'inventaire réel est FAIT (annexe A, prod du 16/07)
+→ il seed agents.json. Ne rien inventer, ne rien oublier.**
 
 ## 5. Page /integrations
 
@@ -320,8 +317,7 @@ concurrencent dans la même section — la sobriété autour du moment fait le p
 | 7. FAQ | sobre volontairement : accordéons nets, pas d'effet | — |
 | 8. CTA final | les 6 visages en cascade « l'équipe se présente » (stagger existant) | — |
 
-Pages agents : le hero rejoue la conversation de la carte (même mécanique, pas de
-nouveau système). /integrations : la recherche filtre en direct, c'est SA démo.
+/integrations : la recherche filtre en direct, c'est SA démo.
 
 Règles transverses : motion tokens uniques (durées 150-300 ms, ease-out entrée),
 1 seule animation par viewport, transform/opacity uniquement, stagger 30-50 ms,
@@ -344,9 +340,9 @@ la retravaille avant d'avancer.
 
 ## 8. Recette (avant deploy)
 
-1. QA 1440 + 390, light + dark, reduced-motion, no-JS sur les 8 pages.
-2. Parcours : home → carte agent → page agent → CTA ; /integrations recherche ; ancres nav.
-3. OG : partage WhatsApp de / et d'une page agent.
+1. QA 1440 + 390, light + dark, reduced-motion, no-JS sur les 2 pages (home + integrations).
+2. Parcours : home → blocs agents (6 conversations jouées) → CTA ; /integrations recherche ; ancres nav.
+3. OG : partage WhatsApp de / et de /integrations/.
 4. robots.txt + sitemap.xml servis et valides ; schema testé (validator Google).
 5. Chiffres : aucun compteur pollué, prix 97/229 + annuels 970/2 290 cohérents partout
    (modal comprise), toggle sans saut de layout, plus aucune trace de 199/169 ni du
