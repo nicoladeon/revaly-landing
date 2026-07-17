@@ -7,7 +7,7 @@ export const Root: React.FC = () => (
     id="hero"
     component={Hero}
     durationInFrames={480}
-    fps={30}
+    fps={24}
     width={1200}
     height={500}
   />

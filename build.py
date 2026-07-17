@@ -9,7 +9,10 @@ ROOT = pathlib.Path(__file__).parent
 def uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode((ROOT / path).read_bytes()).decode()
 
-repl = {}
+# URL Calendly « Réserver une démo » — À REMPLACER par Julien quand le Calendly existe.
+CALENDLY_URL = "https://calendly.com/revaly-io/demo"
+
+repl = {"__CALENDLY__": CALENDLY_URL}
 for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:
     repl[f"__{k.upper()}128__"] = uri(f"assets/portraits/{k}@128.webp", "image/webp")
     repl[f"__{k.upper()}512__"] = uri(f"assets/portraits/{k}@512.webp", "image/webp")
@@ -151,8 +154,16 @@ def agent_main(a, agents):
     <span class="tag">Le reste de l'équipe</span>
     <h2 class="title">{name} ne travaille jamais seul{"e" if fem else ""}</h2>
     <div class="ag-others">{others}</div>
-    <div style="text-align:center; margin-top: 40px;">
-      <button type="button" class="btn" data-waitlist="solo">Recruter toute l'équipe — Essayer 7 jours</button>
+  </section>
+
+  <section class="wrap">
+    <div class="ag-recall rv">
+      <p class="ag-recall-t">{name} et toute l'équipe — les six agents — dès <b>97 €/mois</b>.</p>
+      <p class="ag-recall-s">Formée à ton métier, disponible 24 h/24, dans tes outils.</p>
+      <div class="crsl-actions" style="justify-content: center;">
+        <button type="button" class="btn" data-waitlist="solo">Essayer 7 jours</button>
+        <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener">Réserver une démo</a>
+      </div>
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
     </div>
   </section>'''
@@ -271,13 +282,45 @@ IT_CATS = ["CRM", "Email", "Agenda", "Réseaux sociaux", "Stockage", "Compta & f
 def _attr(s):
     return html.escape(s, quote=True)
 
+
+# Couleurs de marque pour les monogrammes du catalogue (meilleur effort sans
+# embarquer 111 logos ; repli = teinte déterministe par nom).
+BRAND_COLORS = {
+    "Gmail": "#EA4335", "Google Calendar": "#4285F4", "Google Drive": "#FBBC04",
+    "Google Sheets": "#34A853", "Google Docs": "#4285F4", "Google Meet": "#00897B",
+    "Google Contacts": "#1A73E8", "Google Forms": "#673AB7", "Outlook": "#0F6CBD",
+    "Microsoft Teams": "#6264A7", "OneDrive": "#0364B8", "Excel": "#217346",
+    "Instagram": "#E4405F", "Facebook Pages": "#1877F2", "Facebook": "#1877F2",
+    "LinkedIn": "#0A66C2", "WhatsApp Business": "#25D366", "Telegram": "#26A5E4",
+    "X (Twitter)": "#111111", "YouTube": "#FF0000", "TikTok": "#111111",
+    "Pinterest": "#E60023", "Slack": "#611F69", "Discord": "#5865F2",
+    "Notion": "#111111", "Airtable": "#FCB400", "Trello": "#0079BF",
+    "Asana": "#F06A6A", "ClickUp": "#7B68EE", "Monday.com": "#FF3D57",
+    "Dropbox": "#0061FF", "Box": "#0061D5", "DocuSign": "#FFCC22",
+    "Stripe": "#635BFF", "PayPal": "#003087", "QuickBooks": "#2CA01C",
+    "Mailchimp": "#FFE01B", "MailChimp": "#FFE01B", "Brevo": "#0B996E",
+    "Calendly": "#006BFF", "Zoom": "#0B5CFF", "Typeform": "#262627",
+    "HubSpot": "#FF7A59", "Zendesk": "#03363D", "Intercom": "#1F8DED",
+    "Canva": "#8B3DFF", "Aircall": "#00BD82", "Ringover": "#00D18C",
+    "Zapier": "#FF4F00", "Shopify": "#96BF48", "WordPress": "#21759B",
+}
+
+def _mono_colors(name):
+    c = BRAND_COLORS.get(name)
+    if not c:
+        h = sum(name.encode()) * 37 % 360
+        return f"hsl({h} 55% 42%)", "#fff"
+    r, g, bl = int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16)
+    lum = 0.299 * r + 0.587 * g + 0.114 * bl
+    return c, ("#1B1E26" if lum > 168 else "#fff")
+
 def integrations_ctx():
     apps = json.loads((ROOT / "data" / "integrations.json").read_text())
     bad = [a["name"] for a in apps if a["cat"] not in IT_CATS]
     if bad:
         raise SystemExit(f"integrations.json : catégorie inconnue pour {bad}")
     tiles = "\n      ".join(
-        f'<article class="it-tile" data-name="{_attr(a["name"])}" data-cat="{_attr(a["cat"])}">'
+        f'<article class="it-tile" data-name="{_attr(a["name"])}" data-cat="{_attr(a["cat"])}" style="--mono:{_mono_colors(a["name"])[0]};--mono-ink:{_mono_colors(a["name"])[1]}">'
         f'<span class="it-mono" aria-hidden="true">{_esc(a["name"][0].upper())}</span>'
         f'<div><h3>{_esc(a["name"])}</h3><p class="it-cat">{_esc(a["cat"])}</p>'
         f'<p class="it-desc">{_esc(a["desc"])}</p></div></article>'

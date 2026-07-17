@@ -91,10 +91,13 @@
   .it-tile:hover { transform: translateY(-2px); border-color: var(--iris); }
   .it-tile[hidden] { display: none; }
   .it-mono {
-    width: 34px; height: 34px; flex: none; display: grid; place-items: center;
-    border-radius: 9px; background: var(--iris-soft); color: var(--iris);
-    font-size: 14px; font-weight: 700; letter-spacing: -0.02em;
+    width: 38px; height: 38px; flex: none; display: grid; place-items: center;
+    border-radius: 10px; background: var(--mono, var(--iris-soft));
+    color: var(--mono-ink, var(--iris));
+    font-size: 16px; font-weight: 700; letter-spacing: -0.02em;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
   }
+  .it-tile:hover { box-shadow: var(--shadow-md); }
   .it-tile h3 { margin: 0; font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.35; }
   .it-cat { margin: 2px 0 0; font-size: 10.5px; font-weight: 650; text-transform: uppercase; letter-spacing: .08em; color: var(--subtle); }
   .it-desc { margin: 7px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
