@@ -16,8 +16,11 @@ const INK = "#171A21";
 const SANS = "Geist, -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif";
 const SERIF = "Fraunces, 'Iowan Old Style', Palatino, Georgia, serif";
 
-// Phase nuit : 0 → 165 (5,5 s) · Phase jour : 165 → 480 (10,5 s)
-const NIGHT_END = 165;
+// 480 frames @30fps = 16 s : une journée complète 07:00 → 07:00.
+// Le jour domine (07:00→19:00 sur 0→290), la nuit passe vite (290→436),
+// finale « Six agents. 24 h/24. » (436→476), boucle propre à 480.
+const FINALE_IN = 436;
+const FINALE_OUT = 474;
 
 const useBrandFonts = () => {
   const [handle] = useState(() => delayRender("fonts"));
@@ -38,49 +41,15 @@ const useBrandFonts = () => {
   }, [handle]);
 };
 
-type NightItem = { at: number; time: string; avatar: string; text: React.ReactNode };
-const NIGHT_LOG: NightItem[] = [
-  {
-    at: 18,
-    time: "01:40",
-    avatar: "raphael@128.webp",
-    text: (
-      <>
-        <b>Raphaël</b> a retouché les 8 photos — lumière, verticales, 3 formats
-      </>
-    ),
-  },
-  {
-    at: 52,
-    time: "02:10",
-    avatar: "emma@128.webp",
-    text: (
-      <>
-        <b>Emma</b> a rédigé le texte de l'annonce et tes relances du matin
-      </>
-    ),
-  },
-  {
-    at: 86,
-    time: "03:35",
-    avatar: "max@128.webp",
-    text: (
-      <>
-        <b>Max</b> a comparé le bien aux ventes DVF · 2 alertes DPE sur ton secteur
-      </>
-    ),
-  },
-  {
-    at: 120,
-    time: "05:20",
-    avatar: "max@128.webp",
-    text: (
-      <>
-        <b>Max</b> a préparé 2 attentions clients — anniversaire, anniversaire d'achat
-      </>
-    ),
-  },
-];
+// Horloge continue : paires [frame, heure décimale] (heures > 24 = lendemain).
+const CLOCK_FRAMES = [0, 12, 52, 94, 140, 186, 232, 290, 344, 390, 424, 448, 480];
+const CLOCK_HOURS = [7, 7.1, 9.2, 11.68, 14.33, 16, 18, 22.78, 25.67, 29.33, 30.6, 31, 31];
+
+const fmtClock = (h: number) => {
+  const hh = Math.floor(h) % 24;
+  const mm = Math.floor((h % 1) * 60);
+  return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+};
 
 type Note = {
   avatar: string;
@@ -91,65 +60,133 @@ type Note = {
   to: number;
 };
 
+// Contenus adossés au réel (data/agents.json / annexe A du spec).
 const NOTES: Note[] = [
-  {
-    avatar: "zoe@128.webp",
-    name: "Zoé",
-    role: "Community manager · 09:06",
-    text: (
-      <>
-        Le post Facebook &amp; Instagram est <b>prêt à relire</b> — texte d'Emma,
-        photos de Raphaël.
-      </>
-    ),
-    from: NIGHT_END + 15,
-    to: NIGHT_END + 90,
-  },
-  {
-    avatar: "emma@128.webp",
-    name: "Emma",
-    role: "Assistante · 09:40",
-    text: (
-      <>
-        2 acquéreurs correspondent à ce bien — <b>proposition de visite</b> samedi
-        10 h préparée. Tu valides ?
-      </>
-    ),
-    from: NIGHT_END + 90,
-    to: NIGHT_END + 165,
-  },
-  {
-    avatar: "max@128.webp",
-    name: "Max",
-    role: "WhatsApp · 14:21",
-    text: (
-      <>
-        Rendez-vous déplacé à demain 15 h. <b>Veux-tu que je prépare un SMS</b> pour
-        prévenir ton client ?
-      </>
-    ),
-    from: NIGHT_END + 165,
-    to: NIGHT_END + 240,
-  },
   {
     avatar: "max@128.webp",
     name: "Max",
     role: "Brief du matin · 07:00",
     text: (
       <>
-        Ton post a fait <b>47 j'aime</b>, le dossier est <b>complet</b>, tes 3
-        relances sont parties.
+        Deux visites aujourd'hui (<b>10 h</b> Bihorel, <b>15 h</b> rive droite),
+        trois emails importants triés — et <b>deux DPE tout frais</b> dans ton
+        secteur.
       </>
     ),
-    from: NIGHT_END + 240,
-    to: 468,
+    from: 8,
+    to: 48,
+  },
+  {
+    avatar: "emma@128.webp",
+    name: "Emma",
+    role: "Assistante · 09:12",
+    text: (
+      <>
+        Brouillon de réponse <b>prêt</b> pour M. Moreau — tu relis, tu ajustes,
+        tu envoies.
+      </>
+    ),
+    from: 54,
+    to: 90,
+  },
+  {
+    avatar: "emma@128.webp",
+    name: "Emma",
+    role: "Assistante · 11:41",
+    text: (
+      <>
+        Visite de samedi <b>11 h confirmée</b> — c'est dans ton agenda.
+      </>
+    ),
+    from: 96,
+    to: 134,
+  },
+  {
+    avatar: "max@128.webp",
+    name: "Max",
+    role: "WhatsApp · 14:20",
+    text: (
+      <>
+        Vocal reçu : « déplace mon rdv de 14 h ». <b>Fait</b> — demain 15 h,
+        client prévenu après ta validation.
+      </>
+    ),
+    from: 142,
+    to: 182,
+  },
+  {
+    avatar: "lucas@128.webp",
+    name: "Lucas",
+    role: "Estimation · 16:00",
+    text: (
+      <>
+        Rapport de marché <b>prêt</b> pour ton rendez-vous — douze ventes
+        comparables, à ta marque.
+      </>
+    ),
+    from: 188,
+    to: 228,
+  },
+  {
+    avatar: "zoe@128.webp",
+    name: "Zoé",
+    role: "Community manager · 18:00",
+    text: (
+      <>
+        Le post de l'exclusivité est <b>parti</b> — visuel à ta charte, Instagram
+        &amp; Facebook.
+      </>
+    ),
+    from: 234,
+    to: 274,
+  },
+  {
+    avatar: "emma@128.webp",
+    name: "Emma",
+    role: "Assistante · 22:47",
+    text: (
+      <>
+        Un vendeur a écrit à 22 h 41 — <b>brouillon de réponse prêt</b> pour
+        demain matin.
+      </>
+    ),
+    from: 292,
+    to: 330,
+  },
+  {
+    avatar: "raphael@128.webp",
+    name: "Raphaël",
+    role: "Photographe · 01:40",
+    text: (
+      <>
+        <b>18 photos retouchées</b> — lumière, verticales, home staging du
+        salon vide.
+      </>
+    ),
+    from: 340,
+    to: 378,
+  },
+  {
+    avatar: "max@128.webp",
+    name: "Max",
+    role: "Coordination · 05:20",
+    text: (
+      <>
+        Modelo synchronisé, fiches à jour — <b>ton brief de 7 h est prêt</b>.
+      </>
+    ),
+    from: 386,
+    to: 422,
   },
 ];
 
-const CHIPS = [
-  { avatar: "emma@128.webp", label: "Emma :", strong: "3 relances prêtes", at: NIGHT_END + 20 },
-  { avatar: "raphael@128.webp", label: "Raphaël :", strong: "photos prêtes", at: NIGHT_END + 34 },
-  { avatar: "zoe@128.webp", label: "Zoé :", strong: "post prêt", at: NIGHT_END + 48 },
+const AVATARS = [
+  "max@128.webp",
+  "emma@128.webp",
+  "christine@128.webp",
+  "zoe@128.webp",
+  "raphael@128.webp",
+  "lucas@128.webp",
 ];
 
 const NoteCard: React.FC<{ note: Note }> = ({ note }) => {
@@ -220,15 +257,35 @@ export const Hero: React.FC = () => {
     [0, durationInFrames / 2, durationInFrames],
     [1.03, 1.08, 1.03]
   );
-  // Voile de nuit : présent au début, se lève à l'aube (NIGHT_END), revient à la toute fin pour la boucle.
+
+  const hour = interpolate(frame, CLOCK_FRAMES, CLOCK_HOURS, {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const clock = fmtClock(hour);
+  const isNight = hour % 24 >= 20.5 || hour % 24 < 6.3;
+
+  // Voile de nuit LÉGER (le jour domine, la nuit passe vite) : monte vers 21 h,
+  // se lève à l'aube (~06:20). Jamais aussi sombre que l'ancienne version.
+  const hNorm = hour; // 7 → 31
   const nightVeil = interpolate(
-    frame,
-    [0, NIGHT_END - 25, NIGHT_END, durationInFrames - 14, durationInFrames],
-    [1, 1, 0, 0, 1],
+    hNorm,
+    [19.5, 21.5, 28.5, 30.3],
+    [0, 0.72, 0.72, 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
   );
-  const clockTime =
-    frame < 45 ? "01:40" : frame < 82 ? "02:10" : frame < 116 ? "03:35" : frame < 148 ? "05:20" : "06:55";
+
+  // Finale : « Six agents. 24 h/24. »
+  const finaleIn = spring({
+    frame: frame - FINALE_IN,
+    fps,
+    config: { damping: 16, stiffness: 110 },
+  });
+  const finaleOut = interpolate(frame, [FINALE_OUT, durationInFrames - 2], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const finaleOpacity = frame < FINALE_IN ? 0 : finaleIn * (1 - finaleOut);
 
   return (
     <AbsoluteFill style={{ background: "#090B0F", overflow: "hidden" }}>
@@ -249,49 +306,16 @@ export const Hero: React.FC = () => {
             "linear-gradient(to top, rgba(10,18,28,.94) 0%, rgba(13,24,38,.5) 46%, rgba(15,30,48,.12) 72%, rgba(18,34,54,.4) 100%)",
         }}
       />
-      {/* Voile de nuit */}
+      {/* Voile de nuit (léger) */}
       <AbsoluteFill
         style={{
           background:
-            "linear-gradient(to bottom, rgba(6,9,18,.9) 0%, rgba(8,11,22,.82) 55%, rgba(10,14,26,.9) 100%)",
+            "linear-gradient(to bottom, rgba(6,9,18,.9) 0%, rgba(8,11,22,.8) 55%, rgba(10,14,26,.9) 100%)",
           opacity: nightVeil,
         }}
       />
 
-      {/* Badge priorité (jour) */}
-      <div
-        style={{
-          position: "absolute",
-          top: 26,
-          left: 30,
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          background: IRIS,
-          color: "#fff",
-          fontFamily: SANS,
-          fontSize: 13,
-          fontWeight: 650,
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          padding: "8px 14px",
-          borderRadius: 9,
-          opacity: 1 - nightVeil,
-        }}
-      >
-        <div
-          style={{
-            width: 7,
-            height: 7,
-            borderRadius: "50%",
-            background: "#fff",
-            opacity: 0.5 + 0.5 * Math.abs(Math.sin(frame / 14)),
-          }}
-        />
-        À traiter en priorité
-      </div>
-
-      {/* Horloge + titre de nuit */}
+      {/* Horloge continue 07:00 → 07:00 */}
       <div
         style={{
           position: "absolute",
@@ -299,7 +323,6 @@ export const Hero: React.FC = () => {
           left: 34,
           fontFamily: SANS,
           color: "#fff",
-          opacity: nightVeil,
         }}
       >
         <div
@@ -311,7 +334,7 @@ export const Hero: React.FC = () => {
             color: "#A5B4FC",
           }}
         >
-          Pendant que tu dors
+          Une journée avec ton équipe
         </div>
         <div
           style={{
@@ -321,83 +344,25 @@ export const Hero: React.FC = () => {
             lineHeight: 1,
             marginTop: 10,
             letterSpacing: "-0.01em",
+            textShadow: "0 2px 18px rgba(9,11,15,.45)",
           }}
         >
-          {clockTime}
+          {clock}
         </div>
-        <div style={{ fontSize: 15, marginTop: 8, color: "rgba(255,255,255,.72)" }}>
-          ton équipe travaille
+        <div style={{ fontSize: 15, marginTop: 8, color: "rgba(255,255,255,.75)" }}>
+          {isNight ? "ton équipe travaille encore" : "ton équipe est au travail"}
         </div>
       </div>
 
-      {/* Log de nuit */}
-      <div
-        style={{
-          position: "absolute",
-          right: 44,
-          top: 46,
-          width: 430,
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-          fontFamily: SANS,
-          opacity: nightVeil,
-        }}
-      >
-        {NIGHT_LOG.map((n) => {
-          const s = spring({
-            frame: frame - n.at,
-            fps,
-            config: { damping: 15, stiffness: 120 },
-          });
-          return (
-            <div
-              key={n.time}
-              style={{
-                display: "flex",
-                gap: 11,
-                alignItems: "flex-start",
-                background: "rgba(20,24,34,.86)",
-                border: "0.5px solid rgba(242,243,247,.16)",
-                borderRadius: 13,
-                padding: "12px 15px",
-                color: "rgba(242,243,247,.9)",
-                fontSize: 14.5,
-                lineHeight: 1.45,
-                opacity: s,
-                transform: `translateY(${(1 - s) * 18}px)`,
-              }}
-            >
-              <span
-                style={{
-                  color: "#A5B4FC",
-                  fontWeight: 650,
-                  fontVariantNumeric: "tabular-nums",
-                  flex: "none",
-                  paddingTop: 1,
-                }}
-              >
-                {n.time}
-              </span>
-              <Img
-                src={staticFile(n.avatar)}
-                style={{ width: 26, height: 26, borderRadius: "50%", flex: "none" }}
-              />
-              <span>{n.text}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Identité du bien (jour) */}
+      {/* Identité du bien (jour uniquement) */}
       <div
         style={{
           position: "absolute",
           left: 34,
-          bottom: 104,
+          bottom: 32,
           color: "#fff",
           fontFamily: SANS,
-          opacity: 1 - nightVeil,
+          opacity: (1 - nightVeil) * (1 - finaleOpacity),
         }}
       >
         <div
@@ -409,12 +374,12 @@ export const Hero: React.FC = () => {
             color: "rgba(255,255,255,.66)",
           }}
         >
-          Le bien qui bouge ce matin
+          Mandat exclusif
         </div>
         <div
           style={{
             fontFamily: SERIF,
-            fontSize: 40,
+            fontSize: 36,
             lineHeight: 1.12,
             marginTop: 8,
             letterSpacing: "-0.02em",
@@ -423,63 +388,70 @@ export const Hero: React.FC = () => {
         >
           Villa des Cèdres — Aix-en-Provence
         </div>
-        <div style={{ marginTop: 8, fontSize: 17, color: "rgba(255,255,255,.8)" }}>
-          <span style={{ fontSize: 25, fontWeight: 550, color: "#fff" }}>
+        <div style={{ marginTop: 6, fontSize: 16, color: "rgba(255,255,255,.8)" }}>
+          <span style={{ fontSize: 23, fontWeight: 550, color: "#fff" }}>
             875 000 €
           </span>
-          {"   "}· Villa · 210 m² · 6 pièces · piscine · mandat exclusif
+          {"  "}· Villa · 210 m² · 6 pièces · piscine
         </div>
       </div>
 
-      {/* Chips agents (jour) */}
-      <div
-        style={{
-          position: "absolute",
-          left: 34,
-          bottom: 32,
-          display: "flex",
-          gap: 10,
-          fontFamily: SANS,
-          opacity: 1 - nightVeil,
-        }}
-      >
-        {CHIPS.map((c) => {
-          const s = spring({
-            frame: frame - c.at,
-            fps,
-            config: { damping: 15, stiffness: 140 },
-          });
-          return (
-            <div
-              key={c.avatar + c.strong}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 9,
-                padding: "9px 15px 9px 10px",
-                borderRadius: 11,
-                background: "rgba(255,255,255,.13)",
-                border: "0.5px solid rgba(255,255,255,.22)",
-                backdropFilter: "blur(10px)",
-                color: "rgba(255,255,255,.94)",
-                fontSize: 15,
-                opacity: s,
-                transform: `translateY(${(1 - s) * 14}px)`,
-              }}
-            >
-              <Img
-                src={staticFile(c.avatar)}
-                style={{ width: 27, height: 27, borderRadius: "50%" }}
-              />
-              {c.label} <b style={{ color: "#fff" }}>{c.strong}</b>
-            </div>
-          );
-        })}
-      </div>
-
+      {/* Notifications de la journée */}
       {NOTES.map((n) => (
         <NoteCard key={n.role} note={n} />
       ))}
+
+      {/* Finale : Six agents. 24 h/24. */}
+      <AbsoluteFill
+        style={{
+          background: "rgba(9,11,15,.78)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          opacity: finaleOpacity,
+        }}
+      >
+        <div style={{ textAlign: "center", fontFamily: SANS, color: "#fff" }}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            {AVATARS.map((a, i) => (
+              <Img
+                key={a}
+                src={staticFile(a)}
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  border: "2.5px solid rgba(255,255,255,.9)",
+                  marginLeft: i === 0 ? 0 : -14,
+                  transform: `translateY(${
+                    (1 -
+                      spring({
+                        frame: frame - FINALE_IN - i * 3,
+                        fps,
+                        config: { damping: 14, stiffness: 140 },
+                      })) *
+                    16
+                  }px)`,
+                }}
+              />
+            ))}
+          </div>
+          <div
+            style={{
+              fontFamily: SERIF,
+              fontSize: 54,
+              letterSpacing: "-0.015em",
+              marginTop: 22,
+              fontWeight: 480,
+            }}
+          >
+            Six agents. 24 h/24.
+          </div>
+          <div style={{ marginTop: 10, fontSize: 17, color: "#A5B4FC" }}>
+            Toi, tu fais visiter et tu signes.
+          </div>
+        </div>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
