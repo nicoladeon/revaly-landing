@@ -46,6 +46,14 @@ must("{{" not in idx, "aucun token {{...}} orphelin dans index.html")
 must('id="controle"' in idx, "section #controle présente")
 must("Rien ne part sans toi" in idx, "titre « Rien ne part sans toi »")
 
+# ── Section #modelo « Formés à ton métier » (Task 6) : CRM vivant + radar DPE ──
+must("Formés à ton métier" in idx, "titre « Formés à ton métier »")
+must("la saisie, c'est fini" in idx, "copy « la saisie, c'est fini »")
+must("tu le sais avant qu'il arrive sur le marché" in idx, "copy radar DPE (spec §3.4)")
+must("3 200+ outils" in idx, "ligne largeur « 3 200+ outils connectés » → /integrations/")
+must(idx.find('id="controle"') < idx.find('id="modelo"') < idx.find('id="preuve"'),
+     "ordre de page : #controle → #modelo (Formés à ton métier) → #preuve")
+
 # ── data/faq.json (Task 2) : 8 Q/R, alimente aussi le schema.org FAQPage ──
 faq_path = ROOT / "data" / "faq.json"
 must(faq_path.exists(), "data/faq.json existe")

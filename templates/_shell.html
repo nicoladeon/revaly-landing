@@ -567,6 +567,42 @@
   .cap-list li span b { font-weight: 600; }
   .cap-list li span i { display: block; font-style: normal; font-size: 13.5px; color: var(--muted); margin-top: 1px; }
 
+  /* ── « Formés à ton métier » (task 6) : sous-titres des deux preuves + radar DPE.
+       Le moment signé de la section reste l'animation CRM (.cmd-result) ; la carte
+       DPE est une notification STATIQUE — reveal .rv générique uniquement. ── */
+  .metier-h3 {
+    margin: 0; font-family: var(--font-display); font-weight: 420;
+    font-size: clamp(21px, 2.6vw, 26px); line-height: 1.2; letter-spacing: -0.015em;
+  }
+  .metier-p { margin: 10px 0 0; font-size: 15px; line-height: 1.65; color: var(--muted); max-width: 560px; }
+  .metier-p b { color: var(--ink); font-weight: 600; }
+  .modelo-grid .cap-list { margin-top: 22px; }
+  .dpe-grid {
+    display: grid; gap: 40px; margin-top: clamp(56px, 8vw, 76px);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: center;
+  }
+  .dpe-card {
+    max-width: 440px; width: 100%;
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 18px;
+    box-shadow: var(--shadow-md); padding: 18px; display: grid; gap: 12px;
+    align-content: start;
+  }
+  .dpe-head { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--subtle); }
+  .dpe-head b { color: var(--muted); font-weight: 600; }
+  .dpe-head time { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .dpe-tg { width: 20px; height: 20px; border-radius: 6px; background: #26A5E4; display: grid; place-items: center; flex: none; }
+  .dpe-tg svg { width: 12px; height: 12px; fill: #fff; display: block; }
+  .dpe-msg { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink); }
+  .dpe-msg b { display: block; font-weight: 650; margin-bottom: 2px; }
+  .dpe-msg strong {
+    font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums;
+    background: var(--iris-soft); border-radius: 5px; padding: 0 3px; margin: 0 -1px;
+    white-space: nowrap;
+  }
+  .metier-breadth { margin: clamp(48px, 7vw, 64px) auto 0; text-align: center; font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 700px; }
+  .metier-breadth b { color: var(--ink); font-weight: 600; }
+  .metier-more { margin-top: 22px; }
+
   /* ── Interrupteur (0 usage aujourd'hui — réutilisé tel quel par le toggle
        Mensuel/Annuel des tarifs, task 8, cf design-notes-v2.md §4.5) ── */
   .switch {
