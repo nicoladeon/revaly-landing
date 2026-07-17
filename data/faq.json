@@ -1,0 +1,42 @@
+[
+  {
+    "question": "Pourquoi demander ma carte pour l'essai ?",
+    "reponse": "On te demande une carte parce que l'essai s'enchaîne directement sur l'abonnement si tu ne fais rien — pas d'étape supplémentaire à recréer plus tard. Concrètement : 0 € aujourd'hui, l'essai dure 7 jours et rien n'est débité avant la fin. Tu reçois un rappel par email avant la fin de l'essai, avec le montant exact qui serait prélevé. Si ce n'est pas pour toi, l'annulation se fait en 2 clics, sans justification à donner.",
+    "schema": true
+  },
+  {
+    "question": "Comment j'annule ?",
+    "reponse": "L'annulation se fait directement depuis ton compte, en 2 clics, à tout moment — pendant l'essai ou après. Aucun appel, aucun email à envoyer : tu confirmes, et l'abonnement s'arrête à la fin de la période en cours. Si tu annules pendant les 7 jours d'essai, tu ne seras jamais débité : 0 € aujourd'hui reste vrai jusqu'au bout. Un rappel par email arrive de toute façon avant la fin de l'essai, au cas où tu voudrais continuer.",
+    "schema": true
+  },
+  {
+    "question": "Je suis indépendant, sans agence : comment je me connecte à Modelo ?",
+    "reponse": "Modelo/Netty demande un accès API pour connecter ton compte, et cet accès s'obtient directement auprès de Modelo. Si tu es indépendant et que tu ne l'as pas encore, on t'accompagne dans la démarche pour l'obtenir — la procédure exacte dépend de ton contrat Modelo/Septeo. En attendant cet accès, tu peux déjà utiliser ton équipe sur tes autres outils (email, agenda, réseaux sociaux) : la connexion Modelo vient se brancher dès qu'elle est prête. Écris-nous et on s'occupe du reste avec toi.",
+    "schema": true
+  },
+  {
+    "question": "Est-ce que l'IA écrit à mes clients sans moi ?",
+    "reponse": "Non. Chaque email, chaque post, chaque message sortant est d'abord préparé en brouillon — rien ne part sans ta validation. Le système est verrouillé côté envoi : sans brouillon validé et confirmé de ta part, aucun message ne peut sortir. Pour les automatisations qui touchent tes contacts, comme les relances, c'est toi qui actives l'option, qui règles le délai, le ton et le canal — jamais l'inverse. Tu gardes la main sur tout ce qui part en ton nom.",
+    "schema": true
+  },
+  {
+    "question": "Ça marche avec quels outils ?",
+    "reponse": "Modelo et Netty sont branchés nativement : les agents écrivent directement dans ton CRM, sans export ni copier-coller. Autour, plus de 3 200 outils sont connectables — email, agenda, réseaux sociaux, comptabilité, signature électronique, et bien d'autres. Le catalogue complet, avec recherche par nom ou par catégorie, est sur la page /integrations. Si l'outil que tu utilises déjà n'y est pas encore listé, dis-le-nous : on regarde comment le brancher.",
+    "schema": true
+  },
+  {
+    "question": "Où sont mes données ?",
+    "reponse": "Tes données sont hébergées dans l'Union européenne, chez des prestataires conformes au RGPD. Elles ne sont ni vendues, ni partagées avec des tiers à des fins commerciales. Tu restes propriétaire de tes contacts, de tes dossiers et de tes contenus : en cas de résiliation, tu peux les récupérer ou en demander la suppression. Le détail complet du traitement des données figure dans les mentions légales et la politique de confidentialité de l'application.",
+    "schema": true
+  },
+  {
+    "question": "« ~10 h de paperasse en moins », d'où ça sort ?",
+    "reponse": "C'est une estimation construite poste par poste, pas un chiffre en l'air. Environ 3 heures par semaine sur les annonces et les posts réseaux sociaux (rédaction, visuels, publication), environ 3 heures sur les relances et les emails, environ 2 heures sur les dossiers (compromis, diagnostics, conformité), et environ 2 heures sur l'agenda et les confirmations de visite. Additionnées, ces tâches représentent environ 10 heures de paperasse par semaine pour un conseiller actif — c'est ce que l'équipe reprend à sa charge. Le temps réellement gagné dépend évidemment de ton volume d'activité.",
+    "schema": true
+  },
+  {
+    "question": "Quelle différence avec un assistant IA généraliste ?",
+    "reponse": "Un assistant généraliste sait écrire un email ou résumer un texte ; ton équipe, elle, est formée au métier de conseiller immobilier. Elle raisonne sur des ventes réelles (base notariée DVF) pour estimer un bien, pas sur une moyenne approximative. Elle connaît le vocabulaire des mandats, des compromis, des délais de rétractation et du droit immobilier français — pas seulement le français courant. Et elle est branchée nativement sur Modelo/Netty, ton CRM métier, là où un outil générique s'arrête à un chat sans mémoire de ton activité.",
+    "schema": true
+  }
+]

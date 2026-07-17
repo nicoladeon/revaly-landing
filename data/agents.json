@@ -1,0 +1,310 @@
+[
+  {
+    "slug": "max",
+    "name": "Max",
+    "role": "coordinateur",
+    "question": "Max, ma journée ?",
+    "reponse": "Brief de 7 h : deux visites (10 h Bihorel, 15 h rive droite), trois emails importants triés, l'anniversaire de Mme Lefèvre — et deux DPE tout frais dans ton secteur. Je te refais le point ce soir à 19 h.",
+    "capacites": [
+      "Brief du matin 7 h + bilan du soir 19 h",
+      "Vocaux WhatsApp/Telegram (« déplace mon rdv de 14 h »)",
+      "Active ou coupe chaque automatisation d'une phrase",
+      "Crée les tâches et suit ce qui traîne"
+    ],
+    "fiche": {
+      "automatisations": [
+        {
+          "titre": "Brief du matin — 7 h",
+          "pitch": "Rendez-vous du jour, emails importants, anniversaires et nouveaux DPE du secteur : ton point de la journée tombe chaque matin à 7 h, sans que tu le demandes.",
+          "source": "cron-morning-briefing"
+        },
+        {
+          "titre": "Bilan du soir — 19 h",
+          "pitch": "Ce qui a été fait, ce qui reste en attente : le récap tombe chaque soir à 19 h, il y pense pour toi.",
+          "source": "cron-evening-recap"
+        }
+      ],
+      "outils": [
+        {
+          "titre": "Pilotage vocal WhatsApp & Telegram",
+          "pitch": "« Déplace mon rdv de 14 h » suffit : il comprend et exécute, en vocal, depuis WhatsApp ou Telegram.",
+          "source": "connect-whatsapp, connect-telegram"
+        },
+        {
+          "titre": "Automatisations à la carte",
+          "pitch": "Active ou coupe chaque automatisation de l'équipe d'une phrase — c'est toi qui décides.",
+          "source": "set-automation-preference"
+        },
+        {
+          "titre": "Suivi des tâches",
+          "pitch": "Il crée les tâches et relance ce qui traîne, pour que rien ne tombe entre deux dossiers.",
+          "source": "create-task"
+        },
+        {
+          "titre": "Vue d'ensemble du secteur",
+          "pitch": "La liste des biens en cours et les contacts liés à chaque mandat, en un coup d'œil.",
+          "source": "list-biens, get-mandat-contacts"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "emma",
+    "name": "Emma",
+    "role": "assistante admin",
+    "question": "Emma, quoi de neuf ?",
+    "reponse": "Trois emails importants ce matin, brouillons de réponse prêts. La visite de 15 h est confirmée. Et la fiche de Mme Dubois est dans Modelo — budget 280 000 €, 3 chambres : elle recevra les biens correspondants automatiquement.",
+    "capacites": [
+      "Un brouillon prêt pour chaque email qui compte",
+      "Écrit les fiches contact ET les fiches recherche acquéreur dans Modelo (le rapprochement, c'est Modelo qui l'envoie — on ne réinvente pas ton CRM)",
+      "Compte-rendu de visite rédigé depuis ta note vocale",
+      "Relances des prospects inactifs : TU les actives, tu règles le délai, le ton et le canal"
+    ],
+    "fiche": {
+      "automatisations": [
+        {
+          "titre": "Relances prospects inactifs (sur option)",
+          "pitch": "Tu actives, tu choisis le délai et le canal — ensuite les relances partent automatiquement, sans que tu aies à y repenser à chaque prospect.",
+          "source": "cron-relances"
+        },
+        {
+          "titre": "Suivi après visite",
+          "pitch": "Après chaque visite, elle relance au délai et sur le canal que tu as choisis — elle y pense pour toi.",
+          "source": "cron-visite-followup"
+        },
+        {
+          "titre": "Alerte mandat qui stagne",
+          "pitch": "Un bien sans mouvement depuis 60 jours (seuil réglable) ? Elle te prévient avant que le vendeur s'impatiente.",
+          "source": "cron-price-stagnation"
+        },
+        {
+          "titre": "Anniversaires clients",
+          "pitch": "Elle repère les anniversaires à venir et te les rappelle — comme celui de Mme Lefèvre.",
+          "source": "cron-anniversaries"
+        }
+      ],
+      "outils": [
+        {
+          "titre": "Brouillons de réponse",
+          "pitch": "Un brouillon prêt pour chaque email qui compte : tu relis, tu ajustes si besoin, tu envoies.",
+          "source": "draft-email"
+        },
+        {
+          "titre": "Fiches Modelo à jour",
+          "pitch": "Elle écrit les fiches contact et les fiches recherche acquéreur dans Modelo — le rapprochement avec les biens, c'est Modelo qui s'en charge.",
+          "source": "create-modelo-contact, update-modelo-contact, create-modelo-search"
+        },
+        {
+          "titre": "Compte-rendu de visite",
+          "pitch": "Une note vocale après la visite, et le compte-rendu est rédigé — l'email du vendeur est retrouvé automatiquement via le mandat.",
+          "source": "write-visite-report"
+        },
+        {
+          "titre": "Suivi de financement",
+          "pitch": "De la simulation à l'offre de prêt, elle suit où en est le financement de chaque acquéreur.",
+          "source": "track-loan"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "christine",
+    "name": "Christine",
+    "role": "juridique & mandats",
+    "question": "Christine, le dossier Perrin ?",
+    "reponse": "Compromis complet sauf l'assainissement — je te l'ai mis en tâche. Délai de rétractation : J+7, il expire mardi. Et deux mandats arrivent à échéance ce mois-ci, renouvellements à préparer.",
+    "capacites": [
+      "Dossier de vente analysé pièce par pièce",
+      "Échéances sous contrôle (fins de mandat, rétractation, conditions suspensives, actes)",
+      "Conformité et diagnostics vérifiés",
+      "Veille juridique immo chaque semaine"
+    ],
+    "fiche": {
+      "automatisations": [
+        {
+          "titre": "Échéances de mandat sous contrôle",
+          "pitch": "Fin de mandat, délai de rétractation, conditions suspensives : elle surveille chaque échéance et te prévient avant qu'elle n'expire — comme un délai de rétractation qui tombe mardi.",
+          "source": "cron-mandat-expiration"
+        },
+        {
+          "titre": "Veille juridique immo",
+          "pitch": "Chaque semaine, le point sur ce qui change en droit immobilier, sans que tu ailles le chercher.",
+          "source": "cron-weekly-legal-digest"
+        }
+      ],
+      "outils": [
+        {
+          "titre": "Dossier de vente passé au crible",
+          "pitch": "Compromis, diagnostics, pièces obligatoires : elle relit le dossier pièce par pièce et te dit ce qui manque.",
+          "source": "analyze-sale-file"
+        },
+        {
+          "titre": "Lecture de tes documents juridiques",
+          "pitch": "Compromis, actes, avenants : elle les lit et en sort les points d'attention.",
+          "source": "analyze-legal-docs, analyze-document"
+        },
+        {
+          "titre": "Conformité vérifiée",
+          "pitch": "Elle vérifie que le dossier respecte les obligations légales avant que ça bloque une signature.",
+          "source": "check-compliance"
+        },
+        {
+          "titre": "Diagnostics à jour",
+          "pitch": "DPE, amiante, plomb : elle vérifie que tous les diagnostics obligatoires sont présents et à jour.",
+          "source": "check-diagnostics"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "zoe",
+    "name": "Zoé",
+    "role": "community manager",
+    "question": "Zoé, qu'est-ce qui part cette semaine ?",
+    "reponse": "Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
+    "capacites": [
+      "Posts Instagram & Facebook, visuels générés à ta charte",
+      "Calendrier éditorial + publication programmée",
+      "Nouveau mandat = post proposé tout seul",
+      "Stats sociales chaque semaine"
+    ],
+    "fiche": {
+      "automatisations": [
+        {
+          "titre": "Post proposé à chaque nouveau mandat",
+          "pitch": "Un nouveau mandat entre en portefeuille ? Un post est déjà proposé, prêt à valider.",
+          "source": "cron-mandat-social-posts"
+        },
+        {
+          "titre": "Calendrier éditorial tenu",
+          "pitch": "Les posts programmés partent à l'heure prévue, sans que tu aies à cliquer publier.",
+          "source": "cron-publish-scheduled"
+        },
+        {
+          "titre": "Stats sociales chaque semaine",
+          "pitch": "Le récap de ce qui a marché sur Instagram et Facebook arrive chaque lundi.",
+          "source": "cron-social-stats"
+        }
+      ],
+      "outils": [
+        {
+          "titre": "Visuels générés à ta charte",
+          "pitch": "Un visuel à ta charte graphique pour chaque annonce, prêt en quelques secondes.",
+          "source": "generate-image"
+        },
+        {
+          "titre": "Calendrier éditorial",
+          "pitch": "Elle organise le calendrier de publication pour la semaine, tu ajustes si besoin.",
+          "source": "editorial-calendar"
+        },
+        {
+          "titre": "Charte de marque appliquée",
+          "pitch": "Logo, couleurs, ton : une fois réglés, chaque visuel les respecte automatiquement.",
+          "source": "set-brand-asset, save-marketing-profile"
+        },
+        {
+          "titre": "Retouche fine dans Canva",
+          "pitch": "Besoin d'un dernier ajustement ? Le visuel s'ouvre directement dans Canva.",
+          "source": "open-in-canva"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "raphael",
+    "name": "Raphaël",
+    "role": "photographe",
+    "question": "Raphaël, les photos du pavillon ?",
+    "reponse": "18 photos retouchées : ciel dégagé, verticales redressées, lumière studio. Le salon vide est meublé en home staging virtuel, ton logo est posé en filigrane — et la vidéo du bien est prête.",
+    "capacites": [
+      "Retouche pro en lot (même direct depuis ton Drive)",
+      "Home staging virtuel",
+      "Vidéo du bien à partir d'une photo",
+      "Filigrane et visuels à ta marque"
+    ],
+    "fiche": {
+      "automatisations": [],
+      "outils": [
+        {
+          "titre": "Retouche pro en lot",
+          "pitch": "Ciel dégagé, verticales redressées, lumière studio : un lot entier de photos retouché en une fois.",
+          "source": "enhance-photo, retouche-photo"
+        },
+        {
+          "titre": "Home staging virtuel",
+          "pitch": "Un salon vide ? Il est meublé virtuellement, en quelques secondes.",
+          "source": "home-staging"
+        },
+        {
+          "titre": "Vidéo du bien",
+          "pitch": "Une vidéo du bien générée à partir d'une seule photo, prête à poster.",
+          "source": "generate-video"
+        },
+        {
+          "titre": "Filigrane et visuels à ta marque",
+          "pitch": "Ton logo posé en filigrane, tes couleurs respectées sur chaque visuel.",
+          "source": "apply-watermark, brand-kit"
+        },
+        {
+          "titre": "Détourage et mise en valeur",
+          "pitch": "Fond détouré, image nette même agrandie : le visuel est prêt pour l'annonce ou les réseaux.",
+          "source": "remove-background, clarity-upscale, create-visual"
+        },
+        {
+          "titre": "Directement depuis ton Drive",
+          "pitch": "Dépose tes photos dans ton Drive, il te les retourne retouchées au même endroit.",
+          "source": "Drive"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "lucas",
+    "name": "Lucas",
+    "role": "estimation & marché",
+    "question": "Lucas, l'appartement rue Verte, il vaut quoi ?",
+    "reponse": "Entre 242 000 et 255 000 € — douze ventes notariées comparables dans le quartier. Ton rapport de marché à ta marque est prêt pour le rendez-vous de 16 h. Au passage : quatre DPE tout frais cette semaine sur ta commune.",
+    "capacites": [
+      "Estimation sur les ventes réelles (base notariée)",
+      "Rapport de marché PDF à ta marque, graphiques inclus",
+      "Radar DPE : les nouveaux diagnostics de ta commune, signal précoce d'une mise en vente",
+      "Point marché chaque semaine"
+    ],
+    "fiche": {
+      "automatisations": [
+        {
+          "titre": "Radar DPE",
+          "pitch": "Un nouveau diagnostic tombe dans ton secteur (rayon réglable autour de l'agence) : tu le sais avant tout le monde, alerte envoyée sur Telegram.",
+          "source": "cron-dpe-alerts"
+        },
+        {
+          "titre": "Point marché chaque semaine",
+          "pitch": "Le marché de ta zone résumé chaque semaine, sans avoir à compiler les chiffres toi-même.",
+          "source": "cron-weekly-market"
+        }
+      ],
+      "outils": [
+        {
+          "titre": "Estimation sur ventes réelles",
+          "pitch": "Une estimation basée sur les ventes notariées comparables du quartier, pas une moyenne au doigt mouillé.",
+          "source": "estimation-dvf, query-dvf"
+        },
+        {
+          "titre": "Rapport de marché à ta marque",
+          "pitch": "PDF brandé, graphiques inclus, prêt pour le rendez-vous vendeur.",
+          "source": "generate-market-report"
+        },
+        {
+          "titre": "Recherche DPE par commune",
+          "pitch": "Tu demandes une commune, il sort les diagnostics récents — souvent le signe d'une mise en vente à venir.",
+          "source": "search-dpe, dpe-recents"
+        },
+        {
+          "titre": "Estimation formalisée en PDF",
+          "pitch": "L'estimation devient un document propre à remettre au client.",
+          "source": "generate-estimation-pdf"
+        }
+      ]
+    }
+  }
+]
