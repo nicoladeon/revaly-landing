@@ -110,7 +110,8 @@ Copy de départ (à ajuster au build après inventaire des tools réels dans le 
   parties cette nuit, le DPE du pavillon des Sapins est arrivé. Et c'est
   l'anniversaire de Mme Lefèvre — ton message est prêt. »
   Capacités : brief quotidien 7 h · vocaux WhatsApp (« déplace mon rdv de 14 h ») ·
-  alertes DPE dans ton secteur · anniversaires clients & achats
+  **prospection DPE : les biens F/G de ton secteur repérés avant l'agence d'en face** ·
+  anniversaires clients & achats
 - **Emma — assistante admin**
   « Emma, où en sont mes relances ? »
   → « J'ai relancé 14 acquéreurs sur le T3 rue Jeanne-d'Arc. Trois réponses, une
@@ -149,8 +150,14 @@ Mise en scène du flux d'approbation : brouillon → notification WhatsApp → �
 quand tu valides. » (Réutiliser la mécanique d'animation de l'actuel #modelo si pertinent.)
 
 ### 3.4 Formés à ton métier
-- Modelo/Netty natif : la fiche qui se remplit toute seule (animation « CRM vivant »
-  actuelle conservée ici).
+Deux preuves reines (mises en avant par Julien 16/07) + la largeur :
+- **Modelo/Netty natif : ils écrivent les contacts et les fiches acquéreurs à ta
+  place.** L'animation « CRM vivant » actuelle montre exactement ça — conservée ici,
+  avec une copy explicite sur la corvée supprimée (« la saisie, c'est fini »).
+- **La prospection DPE** : « Un bien classé F ou G apparaît dans ton secteur ?
+  C'est un propriétaire qui devra vendre ou rénover — et tu le sais avant
+  l'agence d'en face. » L'alerte DPE se vend comme machine à trouver des biens,
+  pas comme notification.
 - Les ventes réelles (DVF), les dossiers, les mandats, le droit immo français.
 - Une ligne largeur : « Et pour tout le reste : 3 200+ outils connectés → » /integrations.
 
