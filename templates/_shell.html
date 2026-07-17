@@ -299,8 +299,116 @@
     background: var(--bg-soft); border: 0.5px solid var(--line);
     font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--subtle);
   }
-  /* ── Bande preuve (dogfood) ── */
-  .proof-grid { display: grid; gap: 14px; margin-top: 34px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  /* ── #preuve : la pile de valeur (spec §3.5, design-notes §4.4).
+       Séquence unique : 6 lignes en stagger 50 ms (400 ms chacune) → compteur RAF
+       animNum 0→2 000 (1,5 s, démarré une fois la pile posée) → « plus de
+       2 000 €/mois » se raye (scaleX — transform only) → « 97 € » tombe en spring.
+       UN SEUL IO sur .vzone, trigger once. no-JS / reduced-motion : état final
+       complet (pile visible, total déjà rayé, 97 € posé), zéro animation. ── */
+  .vzone { max-width: 760px; margin: 44px auto 0; }
+  .vstack {
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px;
+    box-shadow: var(--shadow-md); padding: 6px 28px 0;
+  }
+  .vs-head, .vs-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) 172px 116px;
+    column-gap: 18px; align-items: center;
+  }
+  .vs-head { padding: 15px 0 11px; border-bottom: 0.5px solid var(--line); }
+  .vs-head span { font-size: 10.5px; font-weight: 650; text-transform: uppercase; letter-spacing: .1em; color: var(--subtle); }
+  .vs-head span + span { text-align: right; }
+  .vs-row { padding: 13px 0; border-bottom: 0.5px solid var(--line); }
+  .vstack .vs-row:nth-last-child(2) { border-bottom: none; }
+  .vs-job { margin: 0; font-size: 14px; line-height: 1.45; color: var(--ink); font-weight: 500; }
+  .vs-price { margin: 0; text-align: right; }
+  .vs-price .amt {
+    font-family: var(--font-display); font-weight: 420; font-size: 18px;
+    color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .vs-price .per { display: block; font-size: 11.5px; line-height: 1.4; color: var(--subtle); }
+  .vs-price .none { font-size: 13px; color: var(--subtle); }
+  .vs-agent { margin: 0; display: flex; align-items: center; gap: 9px; justify-content: flex-end; font-size: 14px; }
+  .vs-agent b { font-weight: 600; }
+  .vs-agent .face { box-shadow: inset 0 0 0 1px var(--line-strong); }
+  .vs-total {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline;
+    gap: 2px 18px; padding: 16px 0 18px; border-top: 1.5px solid var(--line-strong);
+  }
+  .vs-total-l { margin: 0; font-size: 13.5px; color: var(--muted); transition: color .35s; }
+  .vs-sum {
+    position: relative; margin-left: auto; text-decoration: none; white-space: nowrap;
+    font-size: 15px; color: var(--ink); display: inline-flex; align-items: baseline; gap: 7px;
+    transition: color .35s;
+  }
+  .vs-sum b {
+    font-family: var(--font-display); font-weight: 420; letter-spacing: -0.01em;
+    font-size: clamp(24px, 3.2vw, 31px); line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .vs-sum .unit { font-size: 13px; color: currentColor; opacity: .72; }
+  .vs-sum::after {
+    content: ""; position: absolute; left: -2%; right: -2%; top: 54%; height: 2.5px;
+    border-radius: 2px; background: currentColor;
+    transform: scaleX(1); transform-origin: left center;
+    transition: transform .32s ease-out;
+  }
+  .vs-punch { text-align: center; margin-top: clamp(30px, 5vw, 44px); }
+  .vs-97 { margin: 0; font-family: var(--font-display); font-weight: 420; font-size: clamp(21px, 3vw, 27px); letter-spacing: -0.015em; color: var(--ink); }
+  .vs-97 b {
+    display: block; margin-top: 8px; font-weight: 440; color: var(--iris);
+    font-size: clamp(64px, 11vw, 112px); line-height: .95; letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .vs-97 .pm { font-size: clamp(20px, 3.4vw, 32px); font-weight: 420; letter-spacing: -0.01em; color: var(--subtle); margin-left: 2px; }
+  .vs-sub { margin: 16px auto 0; font-size: 16.5px; line-height: 1.6; color: var(--muted); max-width: 460px; }
+
+  /* La séquence (armed = état initial, play/struck/landed = timeline pilotée JS) */
+  html.js .vzone.armed .vs-head { opacity: 0; }
+  html.js .vzone.armed .vs-row { opacity: 0; transform: translateY(16px); }
+  html.js .vzone.armed .vs-total { opacity: 0; }
+  html.js .vzone.armed .vs-punch { opacity: 0; transform: translateY(-10px) scale(1.06); }
+  html.js .vzone.armed .vs-sum::after { transform: scaleX(0); }
+  .vzone.play .vs-head { animation: vsIn .4s cubic-bezier(.32,.72,0,1) forwards; }
+  .vzone.play .vs-row:nth-child(2) { animation: vsIn .4s cubic-bezier(.32,.72,0,1) .10s forwards; }
+  .vzone.play .vs-row:nth-child(3) { animation: vsIn .4s cubic-bezier(.32,.72,0,1) .15s forwards; }
+  .vzone.play .vs-row:nth-child(4) { animation: vsIn .4s cubic-bezier(.32,.72,0,1) .20s forwards; }
+  .vzone.play .vs-row:nth-child(5) { animation: vsIn .4s cubic-bezier(.32,.72,0,1) .25s forwards; }
+  .vzone.play .vs-row:nth-child(6) { animation: vsIn .4s cubic-bezier(.32,.72,0,1) .30s forwards; }
+  .vzone.play .vs-row:nth-child(7) { animation: vsIn .4s cubic-bezier(.32,.72,0,1) .35s forwards; }
+  .vzone.play .vs-total { animation: vsIn .45s cubic-bezier(.32,.72,0,1) .8s forwards; }
+  html.js .vzone.struck .vs-sum::after { transform: scaleX(1); }
+  .vzone.landed .vs-sum, .vzone.landed .vs-total-l { color: var(--subtle); }
+  .vzone.landed .vs-punch { animation: vsDrop .45s cubic-bezier(.34,1.3,.5,1) forwards; }
+  @keyframes vsIn { to { opacity: 1; transform: none; } }
+  @keyframes vsDrop { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .vzone.armed .vs-head, html.js .vzone.armed .vs-row,
+    html.js .vzone.armed .vs-total, html.js .vzone.armed .vs-punch { opacity: 1; transform: none; }
+    html.js .vzone.armed .vs-sum::after { transform: scaleX(1); }
+  }
+
+  /* Mobile 390 : le tableau devient des lignes empilées — jamais de scroll horizontal */
+  @media (max-width: 640px) {
+    .vstack { padding: 4px 18px 0; }
+    .vs-head { display: none; }
+    .vs-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "job job" "price agent";
+      row-gap: 7px; padding: 14px 0;
+    }
+    .vs-job { grid-area: job; }
+    .vs-price { grid-area: price; text-align: left; }
+    .vs-price .per { display: inline; margin-left: 4px; }
+    .vs-agent { grid-area: agent; }
+  }
+
+  /* ── Bande preuve (dogfood, fusionnée sous la pile) ── */
+  .vs-proof { margin-top: clamp(56px, 8vw, 72px); }
+  .vs-proof-lead { margin: 0 auto; text-align: center; font-size: 15px; line-height: 1.6; color: var(--muted); max-width: 560px; }
+  .vs-proof-lead b { color: var(--ink); font-weight: 600; }
+  .vs-hours { margin: 22px 0 0; text-align: center; font-size: 14.5px; line-height: 1.6; color: var(--muted); }
+  .vs-hours b { color: var(--ink); font-weight: 600; }
+  .vs-hours .faqref { color: var(--subtle); font-size: 13px; }
+  .proof-grid { display: grid; gap: 14px; margin-top: 26px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
   .proof-tile {
     background: var(--raised); border: 0.5px solid var(--line); border-radius: 16px;
     box-shadow: var(--shadow-sm); padding: 24px 20px; text-align: center;

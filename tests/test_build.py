@@ -54,6 +54,16 @@ must("3 200+ outils" in idx, "ligne largeur « 3 200+ outils connectés » → /
 must(idx.find('id="controle"') < idx.find('id="modelo"') < idx.find('id="preuve"'),
      "ordre de page : #controle → #modelo (Formés à ton métier) → #preuve")
 
+# ── Section #preuve (Task 7) : pile de valeur + bande de preuve fusionnée ──
+must("ça coûte combien" in idx, "titre « Recruter cette équipe, en vrai, ça coûte combien ? »")
+text = re.sub(r"<[^>]+>", "", idx)  # copy contiguë hors balises (spans typographiques)
+must("97 €/mois" in text, "chute « Ton équipe : 97 €/mois »")
+must("plus de 2 000 €" in text, "total « plus de 2 000 €/mois » (état final statique)")
+must("2 898" in idx, "bande de preuve : 2 898 syncs Modelo/30 j conservée")
+must("~10 h de paperasse en moins par semaine" in idx, "ligne de soutien ~10 h de paperasse")
+must(idx.count('class="vs-row"') == 6, "pile de valeur : 6 lignes de postes")
+must("Tarifs marché sourcés" in idx, "sources des tarifs marché en commentaire HTML")
+
 # ── data/faq.json (Task 2) : 8 Q/R, alimente aussi le schema.org FAQPage ──
 faq_path = ROOT / "data" / "faq.json"
 must(faq_path.exists(), "data/faq.json existe")

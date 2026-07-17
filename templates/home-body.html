@@ -239,19 +239,64 @@
     <a class="conn-more metier-more rv" href="/integrations/"><span>Et pour tout le reste : <b>3 200+ outils connectés</b> <span class="arr" aria-hidden="true">→</span></span></a>
   </section>
 
-  <!-- ═══════════════ PREUVE (dogfood réel) ═══════════════ -->
+  <!-- ═══════════════ PREUVE : LA PILE DE VALEUR (spec §3.5) ═══════════════ -->
+  <!-- Tarifs marché sourcés le 16/07/2026 — ordres de grandeur CONSERVATEURS du spec
+       confirmés, jamais gonflés :
+       · Assistante immobilière : 24 000-35 000 € brut/an temps plein (fr.talent.com,
+         hellowork.com, top-metiers.fr — CCN immobilier n°3090, avenant n°110 du 04/03/2026)
+         → mi-temps chargé employeur ≥ 1 200 €/mois. Spec ~1 200 € : fourchette basse.
+       · Community manager freelance : petits forfaits 500-800 €/mois, fourchette
+         courante 300-2 000 €/mois (facemweb.com, anthonyrusso.fr, plateya.fr grille 2026).
+         Spec ~400 € : fourchette basse.
+       · Photographe immobilier : 80-250 €/séance en moyenne nationale, forfait standard
+         avec retouche 200-400 € (mondevis.com, nodalview.com, pixinshot.fr).
+         Spec ~150 €/bien : fourchette basse.
+       · Analyste marché ~300 €/rapport : bas de fourchette des avis de valeur / études
+         de marché facturés à l'unité. -->
   <section class="wrap" id="preuve">
     <div class="rv" style="text-align:center;">
-      <span class="tag" style="justify-content:center;">En production</span>
-      <h2 class="title">Pas une démo.</h2>
-      <p class="sub" style="margin-left:auto; margin-right:auto;">Revaly tourne chaque jour dans l'agence de son fondateur — voilà ce que son équipe a réellement au compteur.</p>
+      <span class="tag" style="justify-content:center;">Fais le calcul</span>
+      <h2 class="title">Recruter cette équipe, en vrai, ça coûte combien ?</h2>
+      <p class="sub" style="margin-left:auto; margin-right:auto;">Poste par poste, au tarif du marché français — fourchettes basses, jamais gonflées.</p>
     </div>
-    <div class="proof-grid rv">
-      <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="250">250</span>+</b></p><p class="l">contacts suivis dans Modelo, enrichis par l'équipe</p></div>
-      <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="900">900</span>+</b></p><p class="l">échanges avec les agents — brief, relances, dossiers</p></div>
-      <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="2898">2 898</span></b></p><p class="l">synchronisations Modelo sur les 30 derniers jours</p></div>
+
+    <!-- La pile qui s'empile : 6 lignes en stagger → compteur → total rayé → chute 97 €.
+         no-JS / reduced-motion : tout est statique, total déjà rayé, 97 € déjà posé. -->
+    <div class="vzone">
+      <div class="vstack">
+        <div class="vs-head"><span>Le poste</span><span>Au tarif du marché</span><span>Dans ton équipe</span></div>
+        <div class="vs-row"><p class="vs-job">Assistante — relances, emails, agenda</p><p class="vs-price"><span class="amt">~1 200 €</span><span class="per">/mois à mi-temps</span></p><p class="vs-agent"><img class="face" src="__EMMA128__" width="26" height="26" alt="" /><b>Emma</b></p></div>
+        <div class="vs-row"><p class="vs-job">Community manager — posts, visuels à ta charte</p><p class="vs-price"><span class="amt">~400 €</span><span class="per">/mois en freelance</span></p><p class="vs-agent"><img class="face" src="__ZOE128__" width="26" height="26" alt="" /><b>Zoé</b></p></div>
+        <div class="vs-row"><p class="vs-job">Retouche photo, home staging, vidéos de biens</p><p class="vs-price"><span class="amt">~150 €</span><span class="per">/bien</span></p><p class="vs-agent"><img class="face" src="__RAPHAEL128__" width="26" height="26" alt="" /><b>Raphaël</b></p></div>
+        <div class="vs-row"><p class="vs-job">Analyste marché — estimations, rapports</p><p class="vs-price"><span class="amt">~300 €</span><span class="per">/rapport</span></p><p class="vs-agent"><img class="face" src="__LUCAS128__" width="26" height="26" alt="" /><b>Lucas</b></p></div>
+        <div class="vs-row"><p class="vs-job">Suivi juridique des mandats, dossiers complets</p><p class="vs-price"><span class="none">facturé à l'acte</span></p><p class="vs-agent"><img class="face" src="__CHRISTINE128__" width="26" height="26" alt="" /><b>Christine</b></p></div>
+        <div class="vs-row"><p class="vs-job">Un coordinateur qui repère les opportunités du secteur et orchestre tout</p><p class="vs-price"><span class="none">introuvable</span></p><p class="vs-agent"><img class="face" src="__MAX128__" width="26" height="26" alt="" /><b>Max</b></p></div>
+        <div class="vs-total">
+          <p class="vs-total-l">Une vraie équipe, au tarif du marché</p>
+          <s class="vs-sum">plus de <b><span id="vs-cnt">2 000</span> €</b><span class="unit">/mois</span></s>
+        </div>
+      </div>
+      <div class="vs-punch">
+        <p class="vs-97">Ton équipe : <b>97 €<span class="pm">/mois.</span></b></p>
+        <p class="vs-sub">Formée au métier, jamais malade, disponible 24 h/24.</p>
+      </div>
     </div>
-    <p class="proof-note rv">Chiffres réels du compte de l'agence du fondateur — juillet 2026. Tes données à toi restent cloisonnées, jamais partagées.</p>
+
+    <!-- Bande de preuve (dogfood réel, fusion de l'ancien #preuve « Pas une démo ») -->
+    <div class="vs-proof rv">
+      <p class="vs-proof-lead"><b>Pas une démo.</b> Revaly tourne chaque jour dans l'agence de son fondateur — voilà ce que son équipe a réellement au compteur.</p>
+      <div class="proof-grid">
+        <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="250">250</span>+</b></p><p class="l">contacts suivis dans Modelo, enrichis par l'équipe</p></div>
+        <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="900">900</span>+</b></p><p class="l">échanges avec les agents — brief, relances, dossiers</p></div>
+        <div class="proof-tile"><p class="n"><b><span class="cnt" data-to="2898">2 898</span></b></p><p class="l">synchronisations Modelo sur les 30 derniers jours</p></div>
+      </div>
+      <p class="vs-hours">et accessoirement : <b>~10 h de paperasse en moins par semaine</b><span class="faqref"> — le calcul détaillé est dans la FAQ</span></p>
+      <p class="proof-note">Chiffres réels du compte de l'agence du fondateur — juillet 2026. Tes données à toi restent cloisonnées, jamais partagées.</p>
+    </div>
+    <!-- Emplacement réservé (spec §3.5, ne bloque pas le build) : témoignages bêta —
+         2-3 citations courtes d'agents en essai (prénom, agence/réseau), sous la bande de preuve. -->
+    <!-- Emplacement réservé : note fondateur — si elle descend ici depuis #equipe,
+         version courte 2 lignes + portrait, juste avant #tarif. -->
   </section>
 
   <!-- ═══════════════ TARIF ═══════════════ -->
@@ -669,6 +714,30 @@
       });
     }, { threshold: 0.55 });
     blocks.forEach((b) => tio.observe(b.querySelector('.tc-panel')));
+  })();
+
+  // ── Pile de valeur (#preuve) : lignes en stagger → compteur animNum →
+  //    « plus de 2 000 €/mois » rayé → chute « 97 € » (design-notes §4.4).
+  //    UN SEUL IO pour toute la séquence, trigger once. reduced-motion / no-JS :
+  //    le HTML porte déjà l'état final (total rayé, 97 € posé). ──
+  (() => {
+    const vz = document.querySelector('.vzone');
+    if (!vz || REDUCED) return;
+    const cnt = document.getElementById('vs-cnt');
+    vz.classList.add('armed');
+    cnt.textContent = '0';
+    // seuil ~0.35, borné pour rester atteignable quand la pile mobile dépasse le viewport
+    const th = Math.min(0.35, (window.innerHeight * 0.5) / Math.max(1, vz.offsetHeight));
+    new IntersectionObserver((entries, io) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        vz.classList.add('play');                                  // pile : fin ≈ 750 ms
+        setTimeout(() => animNum(cnt, 0, 2000, 1500), 850);        // compteur, pile posée
+        setTimeout(() => vz.classList.add('struck'), 2500);        // compteur stable +150 ms
+        setTimeout(() => vz.classList.add('landed'), 2920);        // trait tracé +100 ms
+      });
+    }, { threshold: th }).observe(vz);
   })();
 
   // ── Spotlight : le halo suit le curseur sur les cartes ──
