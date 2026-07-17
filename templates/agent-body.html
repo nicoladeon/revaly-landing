@@ -1,0 +1,161 @@
+<!-- ═══════════════ NAV ═══════════════ -->
+<div class="nav-shell">
+  <nav class="nav wrap" aria-label="Navigation principale">
+    <a class="logo" href="/">Revaly<b>.</b></a>
+    <div class="nav-links">
+      <a href="/agents/" aria-current="page" style="color: var(--ink);">Agents</a>
+      <a href="/integrations/">Intégrations</a>
+      <a href="/#tarif">Tarifs</a>
+      <a href="/#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a class="link-quiet" href="https://app.revaly.io/login">Connexion</a>
+      <button type="button" class="btn small" data-waitlist="solo">Essayer 7 jours</button>
+    </div>
+  </nav>
+</div>
+
+{{AGENT_MAIN}}
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <p class="logo" style="margin: 0;">Revaly<b>.</b></p>
+        <p class="about">L'équipe d'agents IA des agents immobiliers français.</p>
+      </div>
+      <nav aria-label="Produit">
+        <h4>Produit</h4>
+        <a href="/agents/">Agents</a>
+        <a href="/integrations/">Intégrations</a>
+        <a href="/#tarif">Tarifs</a>
+        <a href="/#faq">FAQ</a>
+      </nav>
+      <nav aria-label="Légal">
+        <h4>Légal</h4>
+        <a href="https://app.revaly.io/cgu">Conditions d'utilisation</a>
+        <a href="https://app.revaly.io/confidentialite">Confidentialité</a>
+        <a href="https://app.revaly.io/mentions-legales">Mentions légales</a>
+      </nav>
+      <nav aria-label="Compte">
+        <h4>Compte</h4>
+        <a href="https://app.revaly.io/login">Connexion</a>
+        <a href="mailto:support@revaly.io">support@revaly.io</a>
+      </nav>
+    </div>
+    <p class="copyright">© 2026 Revaly — fait avec sérieux pour les agents immobiliers.</p>
+  </div>
+</footer>
+
+<!-- ═══════════════ MODAL LISTE D'ATTENTE (identique home) ═══════════════ -->
+<div class="wl-overlay" id="wl" role="dialog" aria-modal="true" aria-labelledby="wl-title">
+  <div class="wl-modal">
+    <button type="button" class="wl-close" aria-label="Fermer" id="wl-x">✕</button>
+    <div id="wl-form-zone">
+      <h3 id="wl-title">Réserve ton essai — on t'ouvre l'accès sous 24 h</h3>
+      <p class="wl-sub">Prénom, email, c'est tout : un humain t'ouvre l'accès et t'accompagne pour brancher tes outils.</p>
+      <form class="wl-form" id="wl-form">
+        <label>Prénom
+          <input type="text" name="first_name" autocomplete="given-name" required maxlength="60" />
+        </label>
+        <label>Email
+          <input type="email" name="email" autocomplete="email" required maxlength="120" />
+        </label>
+        <label>Offre
+          <select name="plan" id="wl-plan">
+            <option value="solo">Solo — 97 €/mois, essai 7 jours</option>
+            <option value="agence">Agence — 229 €/mois, essai 7 jours</option>
+            <option value="reseau">Réseaux — sur mesure</option>
+          </select>
+        </label>
+        <label class="wl-hp" aria-hidden="true">Site web
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+        <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 6px;" id="wl-submit">Réserver mon essai</button>
+        <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+        <p class="wl-error" id="wl-error">La réservation automatique n'a pas fonctionné ici — <a id="wl-mailto" href="mailto:support@revaly.io">clique pour nous écrire</a>, on t'ouvre l'accès à la main.</p>
+      </form>
+    </div>
+    <div class="wl-success" id="wl-success" style="display: none;">
+      <div class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h3>C'est réservé.</h3>
+      <p class="wl-sub">On t'écrit sous 24 h pour t'ouvrir l'accès — ton équipe t'attendra.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.documentElement.classList.add('js');
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Liste d'attente (identique home) ──
+  const WL_ENDPOINT = 'https://dzqcffmkrttzruwjqvwi.supabase.co/functions/v1/waitlist';
+  const wl = document.getElementById('wl');
+  let wlLastFocus = null;
+  function wlOpen(plan) {
+    wlLastFocus = document.activeElement;
+    document.getElementById('wl-plan').value = plan || 'solo';
+    document.getElementById('wl-form-zone').style.display = '';
+    document.getElementById('wl-success').style.display = 'none';
+    document.getElementById('wl-error').style.display = 'none';
+    wl.classList.add('open');
+    setTimeout(() => wl.querySelector('input[name="first_name"]').focus(), 60);
+  }
+  function wlClose() {
+    wl.classList.remove('open');
+    if (wlLastFocus) wlLastFocus.focus();
+  }
+  document.querySelectorAll('[data-waitlist]').forEach((b) =>
+    b.addEventListener('click', () => wlOpen(b.dataset.waitlist)));
+  document.getElementById('wl-x').addEventListener('click', wlClose);
+  wl.addEventListener('click', (e) => { if (e.target === wl) wlClose(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && wl.classList.contains('open')) wlClose(); });
+
+  document.getElementById('wl-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    if (f.website.value) return; // honeypot
+    const payload = {
+      first_name: f.first_name.value.trim(),
+      email: f.email.value.trim(),
+      plan: f.plan.value,
+      source: 'landing-agents',
+    };
+    const btn = document.getElementById('wl-submit');
+    btn.disabled = true; btn.textContent = 'Un instant…';
+    try {
+      const r = await fetch(WL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) throw new Error(String(r.status));
+      document.getElementById('wl-form-zone').style.display = 'none';
+      document.getElementById('wl-success').style.display = '';
+    } catch (_err) {
+      const m = document.getElementById('wl-mailto');
+      m.href = 'mailto:support@revaly.io?subject=' + encodeURIComponent('Essai Revaly — ' + payload.plan)
+        + '&body=' + encodeURIComponent('Prénom : ' + payload.first_name + '\nEmail : ' + payload.email + '\nOffre : ' + payload.plan);
+      document.getElementById('wl-error').style.display = 'block';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Réserver mon essai';
+    }
+  });
+
+  // ── Reveal au scroll (mécanique .rv de la home) ──
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '-60px' });
+  document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+  setTimeout(() => document.querySelectorAll('.rv:not(.in)').forEach((el) => el.classList.add('in')), 3000);
+
+  // ── La conversation du hero se rejoue au chargement (mêmes classes que la home ;
+  //    reduced-motion : l'état final est déjà posé par le CSS, on ne fait rien) ──
+  (() => {
+    const zone = document.querySelector('.ag-grid');
+    if (!zone || REDUCED) return;
+    zone.classList.add('armed');
+    setTimeout(() => zone.classList.add('play'), 350);
+  })();
+</script>

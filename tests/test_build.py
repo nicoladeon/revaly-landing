@@ -30,15 +30,26 @@ for a in agents:
         must(bool(e.get("source")), f"{a['slug']} : entrée fiche '{e.get('titre')}' a un champ source")
         must(bool(e.get("titre")) and bool(e.get("pitch")), f"{a['slug']} : entrée fiche complète (titre+pitch)")
 
-# ── Section #equipe (Task 4) : 6 blocs complets générés dans dist/index.html ──
+# ── Section #equipe : carrousel façon Limova (6 slides + onglets) + pages agents ──
+must('class="crsl-tabs' in idx and 'crsl-arrow next' in idx, "carrousel équipe présent (onglets + flèches)")
 for a in agents:
-    must(f'id="agent-{a["slug"]}"' in idx, f"bloc #{a['slug']} généré dans index.html")
+    must(f'id="agent-{a["slug"]}"' in idx, f"slide #{a['slug']} générée dans index.html")
+    must(f'href="/agents/{a["slug"]}/"' in idx, f"lien fiche /agents/{a['slug']}/ depuis la home")
+must((dist / "agents" / "index.html").exists(), "/agents/ (index équipe) généré")
+for a in agents:
+    ap = dist / "agents" / a["slug"] / "index.html"
+    must(ap.exists(), f"page /agents/{a['slug']}/ générée")
+    page = ap.read_text()
+    must(html.escape(a["name"], quote=False) in page, f"{a['slug']} : nom présent sur sa page")
+    must(f'https://revaly.io/agents/{a["slug"]}/' in page, f"{a['slug']} : canonical propre")
+    entries = a.get("fiche", {}).get("automatisations", []) + a.get("fiche", {}).get("outils", [])
+    shown = sum(1 for e in entries if html.escape(e["pitch"], quote=False) in page)
+    must(shown >= 4, f"{a['slug']} : au moins 4 pitchs sur sa page (trouvés: {shown})")
     must(f'Discuter avec {a["name"]}' in idx, f"{a['slug']} : nom + bouton « Discuter avec » présents")
     must(html.escape(a["question"], quote=False) in idx, f"{a['slug']} : question verbatim")
     fiche = a.get("fiche", {})
     entries = fiche.get("automatisations", []) + fiche.get("outils", [])
-    shown = sum(1 for e in entries if html.escape(e["pitch"], quote=False) in idx)
-    must(shown >= 4, f"{a['slug']} : au moins 4 pitchs d'automatisations dans index.html (trouvés: {shown})")
+    pass  # fiches désormais sur /agents/{slug}/ — vérifiées ci-dessus
 must("<strong>" in idx, "réponses : chiffres en <strong>")
 must("{{" not in idx, "aucun token {{...}} orphelin dans index.html")
 
@@ -165,15 +176,17 @@ must(integ.find("Intégration native") < integ.find('id="catalogue"'),
 must('id="it-q"' in integ and 'data-name="Gmail"' in integ, "recherche + tuiles data-name")
 must('data-cat="Compta &amp; facturation"' in integ, "data-cat échappé (& → &amp;)")
 must("Aucun résultat" in integ and "demande-nous" in integ, "état vide « Aucun résultat … demande-nous »")
-must('href="/#equipe"' in integ and 'href="/#tarif"' in integ and 'href="/#faq"' in integ,
-     "nav/footer : ancres absolues vers la home (/#equipe, /#tarif, /#faq)")
+must('href="/agents/"' in integ and 'href="/#tarif"' in integ and 'href="/#faq"' in integ,
+     "nav/footer : Agents + ancres absolues vers la home (/#tarif, /#faq)")
 must("cloudflareinsights.com/beacon" in integ, "beacon analytics présent sur /integrations/")
 must("cloudflareinsights.com/beacon" in idx, "beacon analytics présent sur la home")
 must("0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics" in integ,
      "micro-texte habituel sous le CTA essai de /integrations/")
 must("{{" not in integ, "aucun token {{...}} orphelin dans integrations/index.html")
-must("https://revaly.io/integrations/" in (dist / "sitemap.xml").read_text(),
-     "sitemap.xml contient /integrations/")
+_sm = (dist / "sitemap.xml").read_text()
+must("https://revaly.io/integrations/" in _sm, "sitemap.xml contient /integrations/")
+must("https://revaly.io/agents/" in _sm, "sitemap.xml contient /agents/")
+must(_sm.count("<url>") == 9, f"sitemap : 9 URLs attendues (trouvées: {_sm.count('<url>')})")
 must('href="/integrations/"' in idx, "nav de la home pointe vers /integrations/")
 
 print("OK")

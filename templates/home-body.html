@@ -3,7 +3,7 @@
   <nav class="nav wrap" aria-label="Navigation principale">
     <a class="logo" href="#top">Revaly<b>.</b></a>
     <div class="nav-links">
-      <a href="#equipe">Équipe</a>
+      <a href="/agents/">Agents</a>
       <a href="/integrations/">Intégrations</a>
       <a href="#tarif">Tarifs</a>
       <a href="#faq">FAQ</a>
@@ -438,7 +438,7 @@
       </div>
       <nav aria-label="Produit">
         <h4>Produit</h4>
-        <a href="#equipe">Équipe</a>
+        <a href="/agents/">Agents</a>
         <a href="/integrations/">Intégrations</a>
         <a href="#tarif">Tarifs</a>
         <a href="#faq">FAQ</a>
@@ -733,6 +733,42 @@
       });
     }, { threshold: 0.55 });
     blocks.forEach((b) => tio.observe(b.querySelector('.tc-panel')));
+  })();
+
+  // ── Carrousel équipe (façon Limova) : onglets + flèches + swipe scroll-snap.
+  //    La slide visible rejoue sa conversation via l'observer tio ci-dessus
+  //    (une slide horizontale hors écran n'intersecte pas → ne joue pas). ──
+  (() => {
+    const crsl = document.getElementById('crsl');
+    if (!crsl) return;
+    const tabs = Array.from(document.querySelectorAll('.crsl-tab'));
+    const prev = document.querySelector('.crsl-arrow.prev');
+    const next = document.querySelector('.crsl-arrow.next');
+    const n = crsl.children.length;
+    let cur = 0;
+    function goTo(i, smooth = true) {
+      i = Math.max(0, Math.min(n - 1, i));
+      crsl.scrollTo({ left: i * crsl.clientWidth, behavior: (smooth && !REDUCED) ? 'smooth' : 'auto' });
+    }
+    function sync() {
+      const i = Math.round(crsl.scrollLeft / Math.max(1, crsl.clientWidth));
+      if (i === cur) return;
+      cur = i;
+      tabs.forEach((t, k) => { t.classList.toggle('on', k === i); t.setAttribute('aria-selected', String(k === i)); });
+      prev.disabled = i === 0;
+      next.disabled = i === n - 1;
+      tabs[i]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: REDUCED ? 'auto' : 'smooth' });
+    }
+    tabs.forEach((t) => t.addEventListener('click', () => goTo(Number(t.dataset.i))));
+    prev.addEventListener('click', () => goTo(cur - 1));
+    next.addEventListener('click', () => goTo(cur + 1));
+    let raf = 0;
+    crsl.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(sync); }, { passive: true });
+    crsl.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); goTo(cur + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(cur - 1); }
+    });
+    window.addEventListener('resize', () => goTo(cur, false));
   })();
 
   // ── Pile de valeur (#preuve) : lignes en stagger → compteur animNum →

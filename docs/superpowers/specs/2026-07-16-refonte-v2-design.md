@@ -51,16 +51,18 @@ data/integrations.json   → catalogue connecteurs (nom, catégorie, slug, descr
 data/faq.json            → FAQ (alimente aussi le schema.org)
 
 dist/
-  index.html                    la home — TOUT y est visible, agents compris
+  index.html                    la home — carrousel agents façon Limova
+  agents/ + agents/{slug}/ (7)  onglet Agents : index équipe + 6 fiches de poste
   integrations/                 catalogue avec recherche client-side
   robots.txt                    VRAI fichier (fix du fallback 873 Ko)
-  sitemap.xml                   2 URLs
+  sitemap.xml                   9 URLs
 ```
 
-**CORRECTIF Julien 16/07 : PAS de pages par agent.** Le modèle = la home de
-Limova : chaque agent est un bloc COMPLET directement sur la home
-(conversation + capacités + automatisations visibles). La seule page
-secondaire est /integrations (c'était l'objet réel de la demande multi-page).
+**DÉCISION FINALE Julien 16/07 (v3)** : sur la home, les agents défilent en
+CARROUSEL façon limova.ai (onglets têtes + slides swipe/flèches, conversation
+jouée par slide) ; ET un onglet « Agents » dans la nav mène à /agents/ + une
+page fiche de poste par agent (automatisations + outils complets, générées
+depuis agents.json via templates/agent-body.html).
 
 - Nav (toutes pages) : **Équipe · Intégrations · Tarifs · FAQ** + CTA « Essayer 7 jours ».
   Équipe/Tarifs/FAQ = ancres de la home. Connexion : lien conservé (état actuel).
@@ -101,14 +103,13 @@ CTA    : [ Essayer 7 jours ]   + micro-texte de désamorçage
   Instagram, Facebook… + badge « **+ 3 200 outils via connecteurs** » → lien /integrations.
   (Marquee 2 rangées existante réutilisée.)
 
-### 3.2 L'équipe — 6 BLOCS COMPLETS sur la home (la machine à convertir)
-Modèle = home Limova (correctif Julien 16/07 : tout visible, pas de sous-pages).
-Chaque agent = un bloc entier, empilés (layout alterné gauche/droite en desktop) :
-① portrait + pastille « en ligne » + rôle ② la conversation qui se joue (question
-du conseiller → typing → réponse 1ʳᵉ personne avec chiffres) ③ ses capacités
-(checks) ④ **« Ses automatisations » VISIBLES** : puces titre+pitch tirées de
-fiche.automatisations/outils (agents.json) — les plus vendeuses, 4-6 par agent
-⑤ « Discuter avec X » (modal actuelle). Bloc animé au scroll (stagger existant).
+### 3.2 L'équipe — CARROUSEL façon Limova (v3, décision finale Julien 16/07)
+Onglets = les 6 têtes d'agents ; slides scroll-snap (swipe mobile, flèches
+desktop, clavier ←→). Chaque slide : portrait + pastille + rôle, la conversation
+qui se joue (question → typing → réponse chiffrée), 4 capacités en checks,
+« Voir tout ce que X sait faire → /agents/{slug}/ » + « Discuter avec X ».
+Les fiches complètes (automatisations + outils, TOUT l'inventaire annexe A)
+vivent sur les pages agents.
 
 Copy VÉRIFIÉE contre la prod le 16/07 (tables `agents`/`agent_tools` + crons —
 inventaire complet en annexe A ; règle absolue : rien sur une carte qui ne soit
@@ -282,13 +283,13 @@ annoncé noir sur blanc dans le micro-texte.
 ### 3.8 CTA final
 « **Ton équipe peut commencer ce soir.** » + 6 visages + CTA + micro-texte.
 
-## 4. ~~Pages agents~~ — SUPPRIMÉ (correctif Julien 16/07)
+## 4. Pages agents (/agents/ + /agents/{slug}/) — RESTAURÉES (v3)
 
-Pas de pages par agent : tout le contenu fiche de poste (automatisations
-marketées, outils) vit DANS les blocs agents de la home (§3.2). La règle
-d'écriture reste : un cron = « il y pense pour toi, tous les jours, sans
-qu'on lui demande ». **L'inventaire réel est FAIT (annexe A, prod du 16/07)
-→ il seed agents.json. Ne rien inventer, ne rien oublier.**
+Onglet « Agents » dans la nav. /agents/ = index (6 cartes). Chaque fiche :
+hero (portrait 112, conversation rejouée au chargement), « Ses automatisations »
+({Il/Elle} y pense pour toi, sans qu'on lui demande), « Ses outils », le reste
+de l'équipe, CTA + micro-texte. Générées depuis agents.json + agent-body.html.
+**Inventaire annexe A = seule source. Ne rien inventer, ne rien oublier.**
 
 ## 5. Page /integrations
 

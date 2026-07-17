@@ -36,29 +36,11 @@ _STRONG_RE = re.compile(rf"(J\+\d+|\d+(?:[ {_NBSP}]\d{{3}})*(?:[ {_NBSP}]?€)?(
 def _esc(s):  # texte (jamais d'attribut avec guillemets doubles dans les données)
     return html.escape(s, quote=False)
 
-def team_blocks():
-    agents = json.loads((ROOT / "data" / "agents.json").read_text())
-    blocks = []
-    for i, a in enumerate(agents):
-        k, name = a["slug"].upper(), _esc(a["name"])
-        de = "d'" if a["name"][0].lower() in "aeéiou" else "de "
-        reponse = _STRONG_RE.sub(r"<strong>\1</strong>", _esc(a["reponse"]))
-        caps = "".join(f"<li>{_CHECK}<span>{_esc(c)}</span></li>" for c in a["capacites"])
-        fiche = a.get("fiche", {})
-        # Les plus vendeuses d'abord : les vraies automatisations (crons), puis les outils.
-        entries = (fiche.get("automatisations", []) + fiche.get("outils", []))[:5]
-        autos = "".join(f"<li><b>{_esc(e['titre'])}</b><span>{_esc(e['pitch'])}</span></li>"
-                        for e in entries)
-        alt = " tb-alt" if i % 2 else ""
-        blocks.append(f'''<article class="tblock{alt}" id="agent-{a["slug"]}">
-        <header class="tb-head rv">
-          <span class="tb-ava"><img class="face" src="__{k}512__" width="84" height="84" alt="Portrait {de}{name}" /><i class="tb-dot" aria-hidden="true"></i></span>
-          <div>
-            <h3 class="tb-name">{name}</h3>
-            <p class="tb-role">{_esc(a["role"])}</p>
-          </div>
-        </header>
-        <div class="tc-panel">
+def _conv_panel(a):
+    """Panneau conversation (question → typing → réponse) — partagé carrousel/pages."""
+    k, name = a["slug"].upper(), _esc(a["name"])
+    reponse = _STRONG_RE.sub(r"<strong>\1</strong>", _esc(a["reponse"]))
+    return f'''<div class="tc-panel">
           <div class="tc-head"><img class="face" src="__{k}128__" width="30" height="30" alt="" /><span class="tc-who">{name}</span><span class="tc-live"><i></i>en ligne</span></div>
           <div class="tc-thread">
             <div class="bubble me tc-q">{_esc(a["question"])}</div>
@@ -67,17 +49,133 @@ def team_blocks():
               <div class="bubble them tc-a"><span>{reponse}</span></div>
             </div>
           </div>
-        </div>
+        </div>'''
+
+
+def team_blocks():
+    """Carrousel façon Limova (demande Julien 16/07) : onglets têtes d'agents +
+    slides défilantes (scroll-snap), une conversation par slide, fiche complète
+    sur /agents/{slug}/."""
+    agents = json.loads((ROOT / "data" / "agents.json").read_text())
+    tabs, slides = [], []
+    for i, a in enumerate(agents):
+        k, name = a["slug"].upper(), _esc(a["name"])
+        de = "d'" if a["name"][0].lower() in "aeéiou" else "de "
+        caps = "".join(f"<li>{_CHECK}<span>{_esc(c)}</span></li>" for c in a["capacites"][:4])
+        on = " on" if i == 0 else ""
+        sel = "true" if i == 0 else "false"
+        tabs.append(
+            f'<button type="button" class="crsl-tab{on}" data-i="{i}" role="tab" '
+            f'aria-selected="{sel}" aria-controls="agent-{a["slug"]}">'
+            f'<img class="face" src="__{k}128__" width="40" height="40" alt="" />'
+            f'<span>{name}</span></button>')
+        slides.append(f'''<div class="crsl-item" role="tabpanel" id="agent-{a["slug"]}" aria-label="{name}">
+        <article class="tblock">
+        <header class="tb-head">
+          <span class="tb-ava"><img class="face" src="__{k}512__" width="84" height="84" alt="Portrait {de}{name}" /><i class="tb-dot" aria-hidden="true"></i></span>
+          <div>
+            <h3 class="tb-name">{name}</h3>
+            <p class="tb-role">{_esc(a["role"])}</p>
+          </div>
+        </header>
+        {_conv_panel(a)}
         <div class="tb-detail">
           <ul class="tb-caps">{caps}</ul>
-          <div class="tb-autos">
-            <p class="tb-autos-t">Ses automatisations</p>
-            <ul>{autos}</ul>
+          <div class="crsl-actions">
+            <a class="btn small" href="/agents/{a["slug"]}/">Voir tout ce que {name} sait faire <span class="arr" aria-hidden="true">→</span></a>
+            <button type="button" class="btn ghost small tb-talk" data-waitlist="solo">Discuter avec {name}</button>
           </div>
-          <button type="button" class="btn ghost small tb-talk" data-waitlist="solo">Discuter avec {name} <span class="arr" aria-hidden="true">→</span></button>
         </div>
-      </article>''')
-    return "\n      ".join(blocks)
+      </article>
+      </div>''')
+    return f'''<div class="crsl-tabs rv" role="tablist" aria-label="Choisir un agent">{"".join(tabs)}</div>
+    <div class="crsl-zone rv">
+      <button type="button" class="crsl-arrow prev" aria-label="Agent précédent" disabled>&larr;</button>
+      <div class="crsl" id="crsl" tabindex="0" aria-live="polite">{"".join(slides)}</div>
+      <button type="button" class="crsl-arrow next" aria-label="Agent suivant">&rarr;</button>
+    </div>'''
+
+
+def agent_main(a, agents):
+    """Contenu d'une page agent : fiche de poste complète depuis agents.json."""
+    k, name = a["slug"].upper(), _esc(a["name"])
+    de = "d'" if a["name"][0].lower() in "aeéiou" else "de "
+    caps = "".join(f"<li>{_CHECK}<span>{_esc(c)}</span></li>" for c in a["capacites"])
+    fiche = a.get("fiche", {})
+    autos = "".join(f'<li class="rv"><b>{_esc(e["titre"])}</b><span>{_esc(e["pitch"])}</span></li>'
+                    for e in fiche.get("automatisations", []))
+    outils = "".join(f'<li class="rv"><b>{_esc(e["titre"])}</b><span>{_esc(e["pitch"])}</span></li>'
+                     for e in fiche.get("outils", []))
+    fem = a["name"] in ("Emma", "Christine", "Zoé")
+    pron = "Elle" if fem else "Il"
+    others = "".join(
+        f'<a class="ag-other" href="/agents/{o["slug"]}/">'
+        f'<img class="face" src="__{o["slug"].upper()}128__" width="52" height="52" alt="" />'
+        f'<span class="nm">{_esc(o["name"])}</span><span class="rl">{_esc(o["role"])}</span></a>'
+        for o in agents if o["slug"] != a["slug"])
+    return f'''<section class="wrap ag-hero">
+    <p class="ag-back"><a href="/agents/">&larr; Toute l'équipe</a></p>
+    <div class="ag-head">
+      <span class="tb-ava"><img class="face" src="__{k}512__" width="112" height="112" alt="Portrait {de}{name}" /><i class="tb-dot" aria-hidden="true"></i></span>
+      <div>
+        <h1 class="ag-name">{name}</h1>
+        <p class="ag-role">{_esc(a["role"])} · dans ton équipe dès le premier jour</p>
+      </div>
+    </div>
+    <div class="ag-grid tblock">
+      <div>
+        <ul class="tb-caps ag-caps">{caps}</ul>
+        <div class="crsl-actions">
+          <button type="button" class="btn" data-waitlist="solo">Essayer 7 jours</button>
+          <button type="button" class="btn ghost tb-talk" data-waitlist="solo">Discuter avec {name}</button>
+        </div>
+        <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+      </div>
+      {_conv_panel(a)}
+    </div>
+  </section>
+
+  <section class="wrap ag-sec">
+    <span class="tag">Ses automatisations</span>
+    <h2 class="title">{pron} y pense pour toi, sans qu'on lui demande</h2>
+    <ul class="ag-list">{autos}</ul>
+  </section>
+
+  <section class="wrap ag-sec">
+    <span class="tag">Ses outils</span>
+    <h2 class="title">Et à la demande, {name} sait faire</h2>
+    <ul class="ag-list">{outils}</ul>
+  </section>
+
+  <section class="wrap ag-sec">
+    <span class="tag">Le reste de l'équipe</span>
+    <h2 class="title">{name} ne travaille jamais seul{"e" if fem else ""}</h2>
+    <div class="ag-others">{others}</div>
+    <div style="text-align:center; margin-top: 40px;">
+      <button type="button" class="btn" data-waitlist="solo">Recruter toute l'équipe — Essayer 7 jours</button>
+      <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+    </div>
+  </section>'''
+
+
+def agents_index_main(agents):
+    cards = "".join(
+        f'''<a class="ag-card" href="/agents/{a["slug"]}/">
+      <span class="tb-ava"><img class="face" src="__{a["slug"].upper()}512__" width="84" height="84" alt="" /><i class="tb-dot" aria-hidden="true"></i></span>
+      <span class="nm">{_esc(a["name"])}</span>
+      <span class="rl">{_esc(a["role"])}</span>
+      <span class="go">Voir sa fiche <span class="arr" aria-hidden="true">→</span></span>
+    </a>''' for a in agents)
+    return f'''<section class="wrap ag-hero">
+    <span class="tag">L'équipe</span>
+    <h1 class="title" style="margin-top: 10px;">Six agents, six métiers.<br />Une seule équipe.</h1>
+    <p class="sub">Chacun porte un vrai métier de l'agence — clique pour voir sa fiche de poste complète : ce qu'il fait tout seul, et ce qu'il sait faire à la demande.</p>
+    <div class="ag-cards">{cards}</div>
+    <div style="text-align:center; margin-top: 44px;">
+      <button type="button" class="btn" data-waitlist="solo">Recruter l'équipe — Essayer 7 jours</button>
+      <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+    </div>
+  </section>'''
 
 # ── FAQ (task 9) : accordéons générés depuis data/faq.json — plus aucune Q/R en
 # dur dans le template. Mécanique existante conservée (bouton aria-expanded +
@@ -196,6 +294,25 @@ write_page(
          "WhatsApp, DocuSign, Stripe, Canva… Ton équipe IA se branche sur tes outils en deux clics.",
     path="/integrations/",
 )
+
+# ── Pages agents (onglet Agents — demande Julien 16/07) : /agents/ + 6 fiches. ──
+_agents = json.loads((ROOT / "data" / "agents.json").read_text())
+write_page(
+    "agents/index.html", render("agent-body.html", {"AGENT_MAIN": agents_index_main(_agents)}),
+    title="L'équipe — six agents IA formés à l'immobilier | Revaly",
+    desc="Max coordonne, Emma gère l'admin, Christine le juridique, Zoé les réseaux, "
+         "Raphaël les photos, Lucas les estimations. Six fiches de poste complètes.",
+    path="/agents/",
+)
+for _a in _agents:
+    _pitch = (_a.get("fiche", {}).get("automatisations") or [{}])[0].get("pitch", "")
+    write_page(
+        f"agents/{_a['slug']}/index.html",
+        render("agent-body.html", {"AGENT_MAIN": agent_main(_a, _agents)}),
+        title=f"{_a['name']} — {_a['role']} IA pour agents immobiliers | Revaly",
+        desc=(_pitch[:150] + "…") if len(_pitch) > 150 else (_pitch or f"{_a['name']}, {_a['role']} de ton équipe IA."),
+        path=f"/agents/{_a['slug']}/",
+    )
 
 # ── Assets statiques servis à côté des pages (URL absolues : OG image, vidéo hero). ──
 for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
