@@ -28,6 +28,11 @@ spend-guard, Stripe) est tracé en mémoire projet, hors périmètre ici.
 6. Aucun chiffre global inventé : uniquement les chiffres dogfood vérifiés
    (250+ contacts, 900+ messages, 2 898 syncs Modelo/30 j) — jamais les compteurs
    pollués par la donnée de démo (mandats/clients globaux).
+7. **On vend le résultat du résultat : mandats et commissions, jamais les heures.**
+   Le temps gagné est une preuve de soutien, pas une promesse de tête. Corollaire :
+   les résultats business s'écrivent en MÉCANISME + ARITHMÉTIQUE (« un mandat =
+   8 000-12 000 € ; l'équipe = 97 €/mois »), jamais en promesse de résultat
+   (« tu gagneras X mandats ») — honnête et légalement sûr.
 
 ## 2. Architecture (multi-page, généré)
 
@@ -64,7 +69,7 @@ dist/
 | 2 | L'équipe (6 cartes) | « Concrètement, ils font quoi ? » |
 | 3 | Autonomes, pas incontrôlés | « L'IA va écrire n'importe quoi à MES clients » |
 | 4 | Formés à ton métier | « Encore un outil IA générique » |
-| 5 | Le gain, chiffré | « C'est du vent » |
+| 5 | Ce que ça rapporte | « Concrètement, qu'est-ce que j'y gagne, moi ? » |
 | 6 | Tarifs | « Combien ? Je risque quoi ? » |
 | 7 | FAQ | tout le reste |
 | 8 | CTA final | « Je verrai plus tard » |
@@ -146,11 +151,28 @@ quand tu valides. » (Réutiliser la mécanique d'animation de l'actuel #modelo 
 - Les ventes réelles (DVF), les dossiers, les mandats, le droit immo français.
 - Une ligne largeur : « Et pour tout le reste : 3 200+ outils connectés → » /integrations.
 
-### 3.5 Le gain, chiffré
-Fusion « D'où viennent les 10 heures » + « Pas une démo » :
-le calcul (≈3 h annonces/posts + ≈3 h relances/emails + ≈2 h dossiers + ≈2 h agenda)
-PUIS la bande de vrais chiffres prod. Emplacement réservé témoignages bêta + note
-fondateur (contenus à venir, ne bloquent pas le build).
+### 3.5 Ce que ça rapporte (reframe business — décision Julien 16/07 : les 10 h ne sont PAS le levier)
+La section vend des mandats et des commissions sauvées, pas des heures.
+Trois leviers, chacun relié aux agents qui le produisent :
+
+1. **Tu gagnes le rendez-vous vendeur.** Rapport de marché à ta marque (Lucas),
+   photos pro (Raphaël) : tu arrives mieux armé que l'agence d'en face.
+   Reprend l'idée forte de l'actuel #marketing : « Le vendeur confie son bien
+   à l'agence qu'il voit » (Zoé).
+2. **Aucune commission ne meurt par oubli.** Relances qui n'oublient jamais,
+   réponse en minutes même à 21 h (Emma + autonomie 24/24). Formulation
+   aversion à la perte : « un lead non relancé, c'est une commission chez
+   le concurrent ».
+3. **L'arithmétique** (le moment signé) :
+   « Un mandat en plus = 8 000 à 12 000 € de commission.
+   Ton équipe = 97 €/mois.
+   Un seul mandat gagné et elle s'est payée huit ans. »
+   Arithmétique factuelle, jamais promesse de résultat.
+
+Puis la bande de preuve : vrais chiffres prod (250+ contacts, 900+ messages,
+2 898 syncs/30 j) + ligne de soutien « et accessoirement : ~10 h de paperasse
+en moins par semaine » (le calcul détaillé des 10 h migre en FAQ).
+Emplacement réservé témoignages bêta + note fondateur (ne bloquent pas le build).
 
 ### 3.6 Tarifs
 Titre conservé : « Une équipe entière, au prix d'une demi-journée d'assistante. »
@@ -191,7 +213,8 @@ annoncé noir sur blanc dans le micro-texte.
 4. Est-ce que l'IA écrit à mes clients sans moi ? (Non — rien ne part sans toi.)
 5. Ça marche avec quels outils ? (Modelo/Netty natif + 3 200 connecteurs → /integrations)
 6. Où sont mes données ? (UE, RGPD — cohérent avec les mentions légales de l'app)
-7. D'où viennent les 10 heures ? (renvoi calcul section 5)
+7. « ~10 h de paperasse en moins », d'où ça sort ? (le calcul détaillé :
+   ≈3 h annonces/posts + ≈3 h relances/emails + ≈2 h dossiers + ≈2 h agenda)
 8. Quelle différence avec un assistant IA généraliste ? (formés au métier : ventes
    réelles, mandats, dossiers, droit immo FR)
 
@@ -239,7 +262,7 @@ concurrencent dans la même section — la sobriété autour du moment fait le p
 | 2. Équipe | **Les conversations se jouent en vrai** : indicateur de frappe → la réponse de l'agent se construit → chiffres qui claquent | réutilise la mécanique #modelo existante (IO + typing dots + stagger), un déclenchement par carte au scroll, portraits + pastille « en ligne » |
 | 3. Rien ne part sans toi | **Storyboard 3 temps** : brouillon → notif WhatsApp → « ok envoie » tapé → coche envoyée | scroll-triggered, coche stroke-dasharray (mécanique existante), UNE seule séquence, grande |
 | 4. Formés à ton métier | **La fiche Modelo qui se remplit toute seule** (l'animation « CRM vivant » actuelle, déjà excellente, déplacée ici) | conservée telle quelle |
-| 5. Le gain | **Le calcul qui s'empile** : 4 barres (annonces 3 h / relances 3 h / dossiers 2 h / agenda 2 h) qui se remplissent → total 10 h, puis bande de vrais chiffres en tabular figures | compteurs existants + barres CSS transform |
+| 5. Ce que ça rapporte | **L'arithmétique du mandat** : « 10 000 € » se compte en grand (Fraunces), « 97 € » minuscule à côté, la ligne « payée pour huit ans » se dessine | compteurs existants, tabular figures, UNE mise en scène du contraste d'échelle |
 | 6. Tarifs | **Le toggle Mensuel/Annuel** qui fait glisser les prix + spotlight curseur sur les cartes (existant) | prix en tabular-nums, aucun saut de layout |
 | 7. FAQ | sobre volontairement : accordéons nets, pas d'effet | — |
 | 8. CTA final | les 6 visages en cascade « l'équipe se présente » (stagger existant) | — |
