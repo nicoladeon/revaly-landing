@@ -17,11 +17,13 @@ CALENDLY_URL = "https://calendly.com/contact-chiclick/30min"
 # `deno run -A scripts/stripe-setup.ts sk_… <supabase-url>` (le script imprime
 # les 4 URLs). Tant qu'ils sont vides, les CTA retombent proprement sur la liste
 # d'attente (fallback JS) → déployer avant de les remplir ne casse RIEN.
+# ⚠️ Liens MODE TEST (sk_test posée dans Supabase, 17/07) — à remplacer par les
+# liens live après activation du compte Stripe (rejouer stripe-setup.ts sk_live_).
 PAYMENT_LINKS = {
-    "solo/monthly": "",
-    "solo/yearly": "",
-    "agence/monthly": "",
-    "agence/yearly": "",
+    "solo/monthly": "https://buy.stripe.com/test_14A9AS2ViaC671jcUuc7u00",
+    "solo/yearly": "https://buy.stripe.com/test_aFacN4eE039EclD9Iic7u01",
+    "agence/monthly": "https://buy.stripe.com/test_00w28qbrObGadpHg6Gc7u02",
+    "agence/yearly": "https://buy.stripe.com/test_cNibJ02VibGadpHf2Cc7u03",
 }
 
 repl = {"__CALENDLY__": CALENDLY_URL}
