@@ -110,7 +110,8 @@ Copy de départ (à ajuster au build après inventaire des tools réels dans le 
   parties cette nuit, le DPE du pavillon des Sapins est arrivé. Et c'est
   l'anniversaire de Mme Lefèvre — ton message est prêt. »
   Capacités : brief quotidien 7 h · vocaux WhatsApp (« déplace mon rdv de 14 h ») ·
-  **prospection DPE : les biens F/G de ton secteur repérés avant l'agence d'en face** ·
+  **prospection DPE : chaque nouveau DPE déposé dans ton code postal = un bien qui
+  prépare peut-être sa vente, signalé avant qu'il arrive sur le marché** ·
   anniversaires clients & achats
 - **Emma — assistante admin**
   « Emma, où en sont mes relances ? »
@@ -154,10 +155,12 @@ Deux preuves reines (mises en avant par Julien 16/07) + la largeur :
 - **Modelo/Netty natif : ils écrivent les contacts et les fiches acquéreurs à ta
   place.** L'animation « CRM vivant » actuelle montre exactement ça — conservée ici,
   avec une copy explicite sur la corvée supprimée (« la saisie, c'est fini »).
-- **La prospection DPE** : « Un bien classé F ou G apparaît dans ton secteur ?
-  C'est un propriétaire qui devra vendre ou rénover — et tu le sais avant
-  l'agence d'en face. » L'alerte DPE se vend comme machine à trouver des biens,
-  pas comme notification.
+- **La prospection DPE** (correctif Julien : TOUS les nouveaux DPE du code postal
+  choisi, pas seulement F/G) : « Un DPE vient d'être déposé dans ton secteur ?
+  C'est souvent un bien qui prépare sa mise en vente — tu le sais avant qu'il
+  arrive sur le marché. » Et la couche loi Climat en bonus : classé F ou G =
+  un propriétaire qui devra vendre ou rénover. L'alerte DPE se vend comme
+  machine à trouver des biens, pas comme notification.
 - Les ventes réelles (DVF), les dossiers, les mandats, le droit immo français.
 - Une ligne largeur : « Et pour tout le reste : 3 200+ outils connectés → » /integrations.
 
