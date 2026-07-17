@@ -12,7 +12,20 @@ def uri(path, mime):
 # URL Calendly « Réserver une démo » — À REMPLACER par Julien quand le Calendly existe.
 CALENDLY_URL = "https://calendly.com/contact-chiclick/30min"
 
+# Payment Links Stripe (essai 7 j, carte) — vente directe : les CTA « Essayer
+# 7 jours » y redirigent selon plan + périodicité. À REMPLIR par Julien après
+# `deno run -A scripts/stripe-setup.ts sk_… <supabase-url>` (le script imprime
+# les 4 URLs). Tant qu'ils sont vides, les CTA retombent proprement sur la liste
+# d'attente (fallback JS) → déployer avant de les remplir ne casse RIEN.
+PAYMENT_LINKS = {
+    "solo/monthly": "",
+    "solo/yearly": "",
+    "agence/monthly": "",
+    "agence/yearly": "",
+}
+
 repl = {"__CALENDLY__": CALENDLY_URL}
+repl["__PAYMENT_LINKS_JSON__"] = json.dumps(PAYMENT_LINKS, ensure_ascii=False)
 for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:
     repl[f"__{k.upper()}128__"] = uri(f"assets/portraits/{k}@128.webp", "image/webp")
     repl[f"__{k.upper()}512__"] = uri(f"assets/portraits/{k}@512.webp", "image/webp")
@@ -239,7 +252,7 @@ def jsonld_blocks(faq):
         + "</script>" for b in blocks)
 
 def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
-               og_title: str = None, og_desc: str = None):
+               og_title: str = None, og_desc: str = None, noindex: bool = False):
     # og_title/og_desc par défaut = title/desc (comportement générique pour les pages
     # futures). La home fournit les siens explicitement : ses og:title/og:description
     # actuels diffèrent du <title>/meta description → nécessaire pour l'iso-rendu task 1.
@@ -250,10 +263,14 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
     })
     for token, value in repl.items():
         shell = shell.replace(token, value)
+    # Pages de tunnel (ex. /bienvenue) : noindex + hors sitemap.
+    if noindex:
+        shell = shell.replace("</head>", '<meta name="robots" content="noindex,nofollow" />\n</head>', 1)
     out = ROOT / "dist" / rel
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(shell)
-    PAGES.append(path)
+    if not noindex:
+        PAGES.append(path)
 
 (ROOT / "dist").mkdir(exist_ok=True)
 
@@ -336,6 +353,28 @@ write_page(
     desc="Modelo et Netty en natif, et 3 200+ outils via connecteurs : Gmail, Google Agenda, "
          "WhatsApp, DocuSign, Stripe, Canva… Ton équipe IA se branche sur tes outils en deux clics.",
     path="/integrations/",
+)
+
+# ── Page /bienvenue : atterrissage après paiement (Stripe Payment Link). Le
+#    webhook stripe-webhook provisionne le compte + workspace et envoie un lien
+#    magique — cette page dit « c'est bon, va voir tes emails ». noindex (page
+#    de tunnel, pas de SEO). ──
+bienvenue_body = '''  <section class="wrap" style="min-height: 62vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 40px; padding-bottom: 60px;">
+    <span class="tag">Paiement confirmé</span>
+    <h1 class="title" style="margin-top: 14px; max-width: 16ch;">Bienvenue. Ton équipe se prépare.</h1>
+    <p class="sub" style="max-width: 52ch; margin-top: 14px;">On vient de t'envoyer un <b>lien de connexion par email</b>. Clique dessus pour ouvrir ton espace Revaly et rencontrer Max &amp; toute l'équipe. Ton essai de 7 jours démarre maintenant — 0 € aujourd'hui, rappel avant la fin, annulation en deux clics.</p>
+    <div class="crsl-actions" style="justify-content: center; margin-top: 30px;">
+      <a class="btn" href="https://app.revaly.io/login">Ouvrir Revaly</a>
+      <a class="btn ghost" href="/">Retour à l'accueil</a>
+    </div>
+    <p class="cta-hint" style="margin-top: 22px; max-width: 46ch;">Tu ne vois pas l'email ? Vérifie tes spams, ou réclame un nouveau lien depuis la page de connexion. Un souci ? <a href="mailto:support@revaly.io" style="color: inherit; text-decoration: underline;">support@revaly.io</a>.</p>
+  </section>'''
+write_page(
+    "bienvenue/index.html", bienvenue_body,
+    title="Bienvenue — ton équipe Revaly t'attend",
+    desc="Paiement confirmé. On t'a envoyé un lien de connexion par email pour ouvrir ton espace Revaly.",
+    path="/bienvenue/",
+    noindex=True,
 )
 
 # ── Pages agents (onglet Agents — demande Julien 16/07) : /agents/ + 6 fiches. ──
