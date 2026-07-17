@@ -43,15 +43,15 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
 
 (ROOT / "dist").mkdir(exist_ok=True)
 
-# ── Home (le body sera redécoupé en partials nav/sections/footer en task 3) ──
+# ── Home ──
 body_home = (ROOT / "templates" / "home-body.html").read_text()
 write_page(
     "index.html", body_home,
     title="Revaly — L'équipe IA des agents immobiliers",
-    desc="Agent immobilier : recrute ton équipe d'agents IA — annonces, posts, relances, dossiers, mandats — branchée sur Modelo. Rien ne part sans toi. Dès 199 €/mois.",
+    desc="Agent immobilier : recrute ton équipe d'agents IA — annonces, posts, relances, dossiers, mandats — branchée sur Modelo. Rien ne part sans toi. Essai 7 jours.",
     path="/",
-    og_title="Agent immobilier, recrute ton équipe. Regagne 10 heures par semaine.",
-    og_desc="Six agents IA formés au métier de conseiller immobilier : posts, relances, dossiers, mandats. Branchés sur Modelo, Gmail et WhatsApp. Rien ne part sans toi.",
+    og_title="Agent immobilier, recrute ton équipe.",
+    og_desc="Six agents IA autonomes, formés au métier de conseiller immobilier : posts, relances, dossiers, mandats. Branchés sur Modelo, Gmail et WhatsApp. Rien ne part sans toi.",
 )
 
 # ── Assets statiques servis à côté des pages (URL absolues : OG image, vidéo hero). ──

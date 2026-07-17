@@ -172,6 +172,7 @@
   }
   .hero-cta { margin-top: 28px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
   .hero-cta .hint { font-size: 13px; color: var(--subtle); }
+  .cta-hint { font-size: 13px; color: var(--subtle); text-align: center; margin: 10px 0 0; }
 
   .h-in { opacity: 0; transform: translateY(14px); animation: hin .65s cubic-bezier(.32,.72,0,1) forwards; }
   .h-in.d1 { animation-delay: .08s; } .h-in.d2 { animation-delay: .18s; }
@@ -273,57 +274,6 @@
   }
   p.sub { font-size: 17px; line-height: 1.65; color: var(--muted); margin: 14px 0 0; max-width: 620px; }
 
-  /* ── LA JOURNÉE — timeline métier ── */
-  .day { position: relative; margin-top: 46px; }
-  .day::before {
-    content: ""; position: absolute; left: 74px; top: 8px; bottom: 8px; width: 2px;
-    background: linear-gradient(to bottom, var(--iris) 0%, var(--line-strong) 30%, var(--line-strong) 70%, var(--iris) 100%);
-    border-radius: 2px; opacity: .5;
-  }
-  .step { display: flex; gap: 26px; padding: 22px 0; position: relative; }
-  .step .when {
-    width: 58px; flex: none; text-align: right;
-    font-size: 14px; font-weight: 600; color: var(--ink);
-    font-variant-numeric: tabular-nums; padding-top: 4px;
-  }
-  .step .dot {
-    position: absolute; left: 68.5px; top: 30px; width: 13px; height: 13px; border-radius: 50%;
-    background: var(--iris); box-shadow: 0 0 0 4px var(--bg);
-  }
-  .step .what { flex: 1; min-width: 0; padding-left: 26px; }
-  .step .what > p.lead { margin: 0 0 12px; font-size: 16.5px; color: var(--ink); font-weight: 500; }
-  .step .what > p.lead .who-face { vertical-align: -5px; margin-right: 6px; }
-
-  /* mocks app dans la timeline */
-  .app-card {
-    background: var(--raised); border-radius: 14px; border: 0.5px solid var(--line);
-    box-shadow: var(--shadow-md); padding: 16px; max-width: 560px;
-  }
-  .app-card .hd { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .app-card .hd .nm { margin: 0; font-size: 14px; font-weight: 600; }
-  .app-card .hd .st { margin: 0; font-size: 12px; color: var(--subtle); }
-  .app-card p.body { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink); }
-  .app-card .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .app-card .actions .a1 {
-    padding: 8px 16px; border-radius: 9px; background: var(--iris-deep); color: #fff;
-    font-size: 13.5px; font-weight: 500;
-  }
-  .app-card .actions .a2 {
-    padding: 8px 16px; border-radius: 9px; background: var(--bg-soft); color: var(--muted);
-    font-size: 13.5px; font-weight: 500; border: 0.5px solid var(--line);
-  }
-  .post-thumb { display: flex; gap: 12px; margin-top: 12px; }
-  .post-thumb img { width: 110px; height: 82px; object-fit: cover; border-radius: 9px; flex: none; }
-  .post-thumb p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
-
-  .estim { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
-  .estim .big {
-    font-family: var(--font-display); font-size: 30px; color: var(--iris);
-    font-variant-numeric: tabular-nums; line-height: 1;
-  }
-  .estim .det { font-size: 13px; color: var(--muted); line-height: 1.5; }
-
-  .bubbles { display: grid; gap: 8px; max-width: 480px; }
   .bubble {
     padding: 11px 15px; border-radius: 16px; font-size: 14.5px; line-height: 1.5;
     width: fit-content; max-width: 92%;
@@ -336,9 +286,6 @@
   .bubble.them .face { margin-top: 2px; }
   .bubble .channel { display: block; font-size: 11px; opacity: .65; margin-top: 4px; }
 
-  .brief-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
-  .brief-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--ink); }
-  .brief-list li > span { min-width: 0; }
   .member { position: relative; }
   .member .presence {
     position: absolute; top: 48px; right: 8px; width: 13px; height: 13px; border-radius: 50%;
@@ -372,8 +319,7 @@
   .tcard .talk .arr { transition: transform .18s; }
   .tcard .talk:hover .arr { transform: translateX(3px); }
 
-  /* ── Pendant que tu dors (nuit) ── */
-  .night-log { display: grid; gap: 10px; margin-top: 6px; }
+  /* ── Storyboard « rien ne part sans toi » (vocabulaire réutilisé task 5) ── */
   .night-row {
     display: flex; align-items: flex-start; gap: 13px;
     background: rgba(242, 243, 247, 0.05); border: 0.5px solid rgba(242, 243, 247, 0.1);
@@ -383,21 +329,6 @@
   .night-row .face { flex: none; margin-top: 1px; }
   .night-row p { margin: 0; font-size: 14px; line-height: 1.55; color: rgba(242,243,247,.88); }
   .night-row p b { color: #fff; font-weight: 600; }
-  .night-close {
-    display: flex; align-items: center; gap: 10px; margin-top: 16px;
-    font-size: 14.5px; color: rgba(242,243,247,.75);
-  }
-  .night-close b { color: #fff; font-weight: 600; }
-
-  /* ── Bloc « 10 heures » ── */
-  .hours-grid { display: grid; gap: 14px; margin-top: 34px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
-  .hour-tile {
-    background: var(--raised); border: 0.5px solid var(--line); border-radius: 16px;
-    box-shadow: var(--shadow-sm); padding: 22px 20px; text-align: center;
-  }
-  .hour-tile .h { margin: 0; font-family: var(--font-display); font-weight: 420; font-size: 34px; color: var(--iris); font-variant-numeric: tabular-nums; line-height: 1; }
-  .hour-tile .l { margin: 10px 0 0; font-size: 15px; font-weight: 600; color: var(--ink); }
-  .hour-tile .d { margin: 5px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
 
   /* ── Bande preuve (dogfood) ── */
   .proof-grid { display: grid; gap: 14px; margin-top: 34px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
@@ -437,8 +368,6 @@
     padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 500;
     background: var(--iris-soft); color: var(--iris);
   }
-  .brief-list .n { font-variant-numeric: tabular-nums; font-weight: 600; }
-  .brief-list li .face { flex: none; }
 
   /* ── Cartes équipe (portraits 512) ── */
   .team-cards { display: grid; gap: 16px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
@@ -459,31 +388,10 @@
     font-size: 13px; line-height: 1.55; color: var(--ink); font-style: italic;
   }
 
-  /* ── « Rien ne part sans toi » (panneau sombre) ── */
-  .dark-panel {
-    border-radius: 22px; overflow: hidden;
-    background: radial-gradient(120% 140% at 12% 0%, var(--night-2) 0%, var(--night-1) 55%, var(--night-3) 100%);
-    box-shadow: var(--shadow-xl); color: var(--on-night);
-    padding: clamp(30px, 5vw, 56px);
-    display: grid; gap: 42px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: center;
-  }
-  .dark-panel .tag { color: #A5B4FC; }
-  .dark-panel .tag::before { background: #A5B4FC; }
-  .dark-panel h2.title { color: var(--on-night); }
-  .dark-panel p.sub { color: var(--on-night-muted); }
+  /* ── Checklist (base réutilisée par .plan .checklist en #tarif) ── */
   .checklist { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 12px; }
   .checklist li { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; color: rgba(242,243,247,.86); }
   .checklist svg { width: 17px; height: 17px; color: #A5B4FC; flex: none; margin-top: 3px; }
-  .fb-mock {
-    background: var(--raised); color: var(--ink); border-radius: 16px;
-    box-shadow: var(--shadow-md); padding: 16px; max-width: 380px; width: 100%; justify-self: center;
-  }
-  .fb-mock .hd { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-  .fb-mock .hd .nm { margin: 0; font-size: 14px; font-weight: 600; }
-  .fb-mock .hd .st { margin: 0; font-size: 12px; color: var(--subtle); }
-  .fb-mock img.ph { width: 100%; height: 170px; object-fit: cover; border-radius: 10px; }
-  .fb-mock p.txt { margin: 12px 0 0; font-size: 14px; line-height: 1.5; }
-  .fb-mock .meta { margin: 12px 0 0; padding-top: 10px; border-top: 0.5px solid var(--line); font-size: 12.5px; color: var(--subtle); font-variant-numeric: tabular-nums; display: flex; gap: 14px; }
 
   /* ── Tarif : 3 offres ── */
   .plans { display: grid; gap: 16px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
@@ -616,17 +524,8 @@
   .cap-list li span b { font-weight: 600; }
   .cap-list li span i { display: block; font-style: normal; font-size: 13.5px; color: var(--muted); margin-top: 1px; }
 
-  /* ── Automatisations : rangées à interrupteur (comme dans l'app) ── */
-  .autos { margin-top: 38px; display: grid; gap: 10px; max-width: 720px; }
-  .auto-row {
-    display: flex; align-items: center; gap: 16px;
-    background: var(--raised); border: 0.5px solid var(--line); border-radius: 14px;
-    box-shadow: var(--shadow-sm); padding: 16px 18px;
-  }
-  .auto-row .face { flex: none; }
-  .auto-row .tx { flex: 1; min-width: 0; }
-  .auto-row .tx b { display: block; font-size: 15px; font-weight: 600; }
-  .auto-row .tx span { font-size: 13.5px; color: var(--muted); }
+  /* ── Interrupteur (0 usage aujourd'hui — réutilisé tel quel par le toggle
+       Mensuel/Annuel des tarifs, task 8, cf design-notes-v2.md §4.5) ── */
   .switch {
     flex: none; width: 42px; height: 25px; border-radius: 999px; position: relative;
     background: var(--iris); box-shadow: inset 0 1px 2px rgba(0,0,0,.14);
@@ -641,77 +540,15 @@
   }
   .switch[aria-checked="false"] { background: var(--line-strong); }
   .switch[aria-checked="false"]::after { transform: none; }
-  .auto-row:has(.switch[aria-checked="false"]) .tx { opacity: .45; }
-  .auto-row:has(.switch[aria-checked="false"]) .face { filter: grayscale(1); opacity: .5; }
 
-  /* ── Téléphone ── */
-  .phone-zone { display: grid; gap: 40px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: center; }
-  .phone-zone { display: grid; gap: 40px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: center; }
-  .iphone {
-    width: min(300px, 86vw); margin: 0 auto; position: relative;
-    border-radius: 54px; background: #0B0D12; padding: 11px;
-    box-shadow: var(--shadow-xl), inset 0 0 0 2px #2A2F3C, inset 0 0 0 6px #000;
-  }
-  .iphone::before {
-    content: ""; position: absolute; left: -2.5px; top: 118px; width: 3px; height: 62px;
-    border-radius: 2px 0 0 2px; background: #23283420; background: #232834;
-  }
-  .iphone::after {
-    content: ""; position: absolute; right: -2.5px; top: 150px; width: 3px; height: 88px;
-    border-radius: 0 2px 2px 0; background: #232834;
-  }
-  .i-screen {
-    border-radius: 44px; background: var(--bg); overflow: hidden; position: relative;
-    display: flex; flex-direction: column; min-height: 560px;
-  }
-  .i-island {
-    position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
-    width: 96px; height: 27px; border-radius: 18px; background: #000; z-index: 5;
-  }
-  .i-status {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 13px 26px 6px; font-size: 13px; font-weight: 600; color: var(--ink);
-    font-variant-numeric: tabular-nums;
-  }
-  .i-status svg { display: inline-block; vertical-align: middle; }
-  .i-chat-head {
-    display: flex; align-items: center; gap: 9px; padding: 8px 14px 10px;
-    background: var(--raised); border-bottom: 0.5px solid var(--line);
-  }
-  .i-chat-head .back { color: var(--iris); flex: none; }
-  .i-chat-head .nm { margin: 0; font-size: 13.5px; font-weight: 600; }
-  .i-chat-head .st { margin: 0; font-size: 11px; color: var(--success); }
-  .i-chat-head .acts { margin-left: auto; display: flex; gap: 14px; color: var(--iris); }
-  .i-thread { flex: 1; padding: 14px 12px 18px; display: flex; flex-direction: column; gap: 9px; }
-  .i-thread .bubble { font-size: 13px; padding: 9px 12px; }
-  .i-homebar {
-    width: 118px; height: 5px; border-radius: 3px; background: var(--ink);
-    opacity: .8; margin: 4px auto 8px; flex: none;
-  }
-
-  /* Conversation animée en boucle (14 s) — reduced-motion : tout visible. */
-  .msg { opacity: 0; transform: translateY(10px); }
-  .m1 { animation: mIn 14s cubic-bezier(.32,.72,0,1) infinite; animation-delay: 0s; }
-  .m2 { animation: mTyping 14s linear infinite; }
-  .m3 { animation: mIn2 14s cubic-bezier(.32,.72,0,1) infinite; }
-  .m4 { animation: mIn3 14s cubic-bezier(.32,.72,0,1) infinite; }
-  .m5 { animation: mIn4 14s cubic-bezier(.32,.72,0,1) infinite; }
-  @keyframes mIn  { 0%,2% { opacity:0; transform:translateY(10px); } 5%,96% { opacity:1; transform:none; } 99%,100% { opacity:0; } }
-  @keyframes mTyping { 0%,7% { opacity:0; } 9%,19% { opacity:1; } 21%,100% { opacity:0; } }
-  @keyframes mIn2 { 0%,20% { opacity:0; transform:translateY(10px); } 23%,96% { opacity:1; transform:none; } 99%,100% { opacity:0; } }
-  @keyframes mIn3 { 0%,34% { opacity:0; transform:translateY(10px); } 37%,96% { opacity:1; transform:none; } 99%,100% { opacity:0; } }
-  @keyframes mIn4 { 0%,52% { opacity:0; transform:translateY(10px); } 55%,96% { opacity:1; transform:none; } 99%,100% { opacity:0; } }
-  .m4 .yes { animation: yesPulse 14s ease infinite; }
-  @keyframes yesPulse { 0%,46% { transform:none; } 48% { transform:scale(.93); } 50%,100% { transform:none; } }
   .typing { display: inline-flex; gap: 4px; padding: 11px 14px; border-radius: 16px; border-bottom-left-radius: 5px;
     background: var(--raised); border: 0.5px solid var(--line); width: fit-content; }
   .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--subtle); animation: tb 1.2s ease-in-out infinite; }
   .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
   @keyframes tb { 0%,60%,100% { transform:none; opacity:.5; } 30% { transform:translateY(-4px); opacity:1; } }
-  @media (prefers-reduced-motion: reduce) {
-    .msg { animation: none !important; opacity: 1 !important; transform: none !important; }
-    .m2 { display: none; }
-  }
+
+  /* ── Storyboard « rien ne part sans toi » (0 usage aujourd'hui — réutilisé
+       tel quel task 5, cf design-notes-v2.md §4.3) ── */
   .confirm-card {
     background: var(--raised); border: 0.5px solid var(--line); border-radius: 12px;
     box-shadow: var(--shadow-sm); padding: 12px; font-size: 12.5px;
@@ -725,11 +562,6 @@
   .confirm-card .no {
     flex: 1; text-align: center; padding: 8px 0; border-radius: 8px;
     background: var(--bg-soft); color: var(--muted); border: 0.5px solid var(--line);
-  }
-  .channel-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
-  .channel-chips span {
-    padding: 6px 13px; border-radius: 999px; font-size: 13px; font-weight: 500;
-    background: var(--iris-soft); color: var(--iris);
   }
 
   /* ── Connecteurs ── */
@@ -752,7 +584,9 @@
     display: flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 16px;
     border: 1.5px dashed var(--line-strong); border-radius: 14px;
     font-size: 14px; font-weight: 550; color: var(--muted); text-align: center;
+    text-decoration: none; transition: border-color .18s, color .18s;
   }
+  .conn-more:hover { border-color: var(--iris); color: var(--ink); }
   .conn-more b { color: var(--iris); font-weight: 700; }
 
   /* ── CTA collant mobile ── */
@@ -774,8 +608,6 @@
     .hero-bien .scrim {
       background: linear-gradient(to top, rgba(10,18,28,.96) 0%, rgba(13,24,38,.72) 55%, rgba(15,30,48,.38) 80%, rgba(18,34,54,.5) 100%);
     }
-    .post-thumb { flex-direction: column; }
-    .post-thumb img { width: 100%; height: 130px; }
   }
 
   /* ── Marquee connecteurs (pattern 21st porté vanilla) ── */
@@ -796,19 +628,6 @@
     .conn-marquee { mask-image: none; -webkit-mask-image: none; }
   }
 
-  /* ── Timeline qui se dessine au scroll ── */
-  .day::after {
-    content: ""; position: absolute; left: 74px; top: 8px; bottom: 8px; width: 2px;
-    background: var(--iris); border-radius: 2px; transform-origin: top;
-    transform: scaleY(var(--day-p, 0));
-  }
-  .step .dot { background: var(--line-strong); box-shadow: 0 0 0 4px var(--bg); transition: background .35s, box-shadow .35s; }
-  .step.lit .dot { background: var(--iris); box-shadow: 0 0 0 4px var(--bg), 0 0 14px var(--iris-glow); }
-  @media (prefers-reduced-motion: reduce) {
-    .day::after { transform: scaleY(1); }
-    .step .dot { background: var(--iris); }
-  }
-
   /* ── Le team-strip « rejoint l'équipe » ── */
   html.js .team-strip .member { opacity: 0; transform: translateY(14px) scale(.92); transition: opacity .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1); }
   html.js .team-strip .member .presence { transform: scale(0); transition: transform .3s cubic-bezier(.34,1.56,.64,1) .35s; }
@@ -821,16 +640,6 @@
   @media (prefers-reduced-motion: reduce) {
     html.js .team-strip .member, html.js .team-strip .member .presence { opacity: 1; transform: none; transition: none; }
   }
-
-  /* ── Glow lent du panneau marketing ── */
-  .dark-panel { position: relative; }
-  .dark-panel::before {
-    content: ""; position: absolute; inset: -30%; pointer-events: none;
-    background: radial-gradient(32% 26% at 30% 30%, rgba(99,102,241,.16), transparent 70%);
-    animation: drift 14s ease-in-out infinite alternate;
-  }
-  @keyframes drift { to { transform: translate(24%, 18%); } }
-  @media (prefers-reduced-motion: reduce) { .dark-panel::before { animation: none; } }
 
   /* ── Aurora hero (ambiance premium, très lente) ── */
   .hero { position: relative; }
