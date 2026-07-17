@@ -28,11 +28,14 @@ spend-guard, Stripe) est tracé en mémoire projet, hors périmètre ici.
 6. Aucun chiffre global inventé : uniquement les chiffres dogfood vérifiés
    (250+ contacts, 900+ messages, 2 898 syncs Modelo/30 j) — jamais les compteurs
    pollués par la donnée de démo (mandats/clients globaux).
-7. **On vend le résultat du résultat : mandats et commissions, jamais les heures.**
-   Le temps gagné est une preuve de soutien, pas une promesse de tête. Corollaire :
-   les résultats business s'écrivent en MÉCANISME + ARITHMÉTIQUE (« un mandat =
-   8 000-12 000 € ; l'équipe = 97 €/mois »), jamais en promesse de résultat
-   (« tu gagneras X mandats ») — honnête et légalement sûr.
+7. **Le levier économique = la pile de valeur, pas la promesse de résultat**
+   (décision Julien 16/07, v3). On ne promet NI des heures NI des mandats gagnés
+   (causalité ingarantissable). On démontre un fait vérifiable : une équipe
+   formée au métier qui coûterait 2 000 €+/mois en humains, pour 97 €.
+   Chaque ligne de la pile décrit ce que le poste FAIT (trouver des biens,
+   automatiser le marketing, analyser le juridique des mandats, photos/vidéos),
+   jamais ce qu'il rapporte. Le temps gagné et les bénéfices business restent
+   des mécanismes de copy secondaires, pas des promesses de tête.
 
 ## 2. Architecture (multi-page, généré)
 
@@ -69,7 +72,7 @@ dist/
 | 2 | L'équipe (6 cartes) | « Concrètement, ils font quoi ? » |
 | 3 | Autonomes, pas incontrôlés | « L'IA va écrire n'importe quoi à MES clients » |
 | 4 | Formés à ton métier | « Encore un outil IA générique » |
-| 5 | Ce que ça rapporte | « Concrètement, qu'est-ce que j'y gagne, moi ? » |
+| 5 | Le prix d'une vraie équipe | « 97 €, ça vaut vraiment quelque chose ? » |
 | 6 | Tarifs | « Combien ? Je risque quoi ? » |
 | 7 | FAQ | tout le reste |
 | 8 | CTA final | « Je verrai plus tard » |
@@ -151,28 +154,35 @@ quand tu valides. » (Réutiliser la mécanique d'animation de l'actuel #modelo 
 - Les ventes réelles (DVF), les dossiers, les mandats, le droit immo français.
 - Une ligne largeur : « Et pour tout le reste : 3 200+ outils connectés → » /integrations.
 
-### 3.5 Ce que ça rapporte (reframe business — décision Julien 16/07 : les 10 h ne sont PAS le levier)
-La section vend des mandats et des commissions sauvées, pas des heures.
-Trois leviers, chacun relié aux agents qui le produisent :
+### 3.5 « Recruter cette équipe, en vrai, ça coûte combien ? » (v3 — décision Julien 16/07)
+Le levier = la **pile de valeur** : le fait vérifiable qu'une équipe formée au
+métier coûterait 2 000 €+/mois en humains. Boucle avec le H1 (« recrute ton
+équipe » → combien coûte une équipe ?) et re-boucle avec l'autonomie en chute.
 
-1. **Tu gagnes le rendez-vous vendeur.** Rapport de marché à ta marque (Lucas),
-   photos pro (Raphaël) : tu arrives mieux armé que l'agence d'en face.
-   Reprend l'idée forte de l'actuel #marketing : « Le vendeur confie son bien
-   à l'agence qu'il voit » (Zoé).
-2. **Aucune commission ne meurt par oubli.** Relances qui n'oublient jamais,
-   réponse en minutes même à 21 h (Emma + autonomie 24/24). Formulation
-   aversion à la perte : « un lead non relancé, c'est une commission chez
-   le concurrent ».
-3. **L'arithmétique** (le moment signé) :
-   « Un mandat en plus = 8 000 à 12 000 € de commission.
-   Ton équipe = 97 €/mois.
-   Un seul mandat gagné et elle s'est payée huit ans. »
-   Arithmétique factuelle, jamais promesse de résultat.
+Tableau qui s'empile (moment signé) — chaque ligne dit ce que le poste FAIT :
+
+| Le poste | Au tarif du marché | Dans ton équipe |
+|---|---|---|
+| Assistante — relances, emails, agenda | ~1 200 €/mois à mi-temps | **Emma** |
+| Community manager — posts, visuels à ta charte | ~400 €/mois en freelance | **Zoé** |
+| Retouche photo, home staging, vidéos de biens | ~150 €/bien | **Raphaël** |
+| Analyste marché — estimations, rapports | ~300 €/rapport | **Lucas** |
+| Suivi juridique des mandats, dossiers complets | facturé à l'acte | **Christine** |
+| Un coordinateur qui repère les opportunités du secteur et orchestre tout | introuvable | **Max** |
+
+Compteur qui s'empile → « **plus de 2 000 €/mois** » barré → chute :
+« **Ton équipe : 97 €/mois. Formée au métier, jamais malade, disponible 24 h/24.** »
+(Tarifs marché à vérifier/sourcer une fois au build — ordres de grandeur
+conservateurs, défendables ; ne jamais gonfler.)
 
 Puis la bande de preuve : vrais chiffres prod (250+ contacts, 900+ messages,
 2 898 syncs/30 j) + ligne de soutien « et accessoirement : ~10 h de paperasse
-en moins par semaine » (le calcul détaillé des 10 h migre en FAQ).
+en moins par semaine » (calcul détaillé en FAQ).
 Emplacement réservé témoignages bêta + note fondateur (ne bloquent pas le build).
+Les mécanismes business (gagner le rdv vendeur, « le vendeur confie son bien à
+l'agence qu'il voit », « un lead non relancé = une commission chez le
+concurrent ») vivent dans la copy des lignes du tableau et des cartes agents —
+en mécanisme, jamais en promesse chiffrée de résultat.
 
 ### 3.6 Tarifs
 Titre conservé : « Une équipe entière, au prix d'une demi-journée d'assistante. »
@@ -262,7 +272,7 @@ concurrencent dans la même section — la sobriété autour du moment fait le p
 | 2. Équipe | **Les conversations se jouent en vrai** : indicateur de frappe → la réponse de l'agent se construit → chiffres qui claquent | réutilise la mécanique #modelo existante (IO + typing dots + stagger), un déclenchement par carte au scroll, portraits + pastille « en ligne » |
 | 3. Rien ne part sans toi | **Storyboard 3 temps** : brouillon → notif WhatsApp → « ok envoie » tapé → coche envoyée | scroll-triggered, coche stroke-dasharray (mécanique existante), UNE seule séquence, grande |
 | 4. Formés à ton métier | **La fiche Modelo qui se remplit toute seule** (l'animation « CRM vivant » actuelle, déjà excellente, déplacée ici) | conservée telle quelle |
-| 5. Ce que ça rapporte | **L'arithmétique du mandat** : « 10 000 € » se compte en grand (Fraunces), « 97 € » minuscule à côté, la ligne « payée pour huit ans » se dessine | compteurs existants, tabular figures, UNE mise en scène du contraste d'échelle |
+| 5. Le prix d'une vraie équipe | **La pile qui s'empile** : les lignes de postes apparaissent une à une, le compteur grimpe vers « 2 000 €+ » (Fraunces, grand), se barre, et « 97 € » tombe en chute | stagger existant + compteur, tabular figures, contraste d'échelle typographique |
 | 6. Tarifs | **Le toggle Mensuel/Annuel** qui fait glisser les prix + spotlight curseur sur les cartes (existant) | prix en tabular-nums, aucun saut de layout |
 | 7. FAQ | sobre volontairement : accordéons nets, pas d'effet | — |
 | 8. CTA final | les 6 visages en cascade « l'équipe se présente » (stagger existant) | — |
