@@ -22,8 +22,11 @@ spend-guard, Stripe) est tracé en mémoire projet, hors périmètre ici.
 1. Chaque réponse d'agent IA contient **un chiffre, un lieu ou une heure**. Pas d'abstrait.
 2. Jamais « limité à » → toujours « **inclus :** X photos + Y vidéos / mois ».
 3. Jamais de nom de fournisseur ou de modèle IA (règle existante de l'app).
-4. Sous **chaque** CTA, le micro-texte de désamorçage :
-   « 0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics ».
+4. Sous **chaque CTA de conversion dans le flux de la page** (hero, tarifs ×3,
+   CTA final, modal), le micro-texte de désamorçage : « 0 € aujourd'hui · rappel
+   avant la fin de l'essai · annulation en 2 clics ». Exceptions arbitrées
+   16/07 : bouton de nav et barre sticky mobile (chrome compact, pas de place —
+   le hero/tarif visibles au même moment portent le message).
 5. Voix des agents : première personne (« J'ai relancé… »), tutoiement conservé.
 6. Aucun chiffre global inventé : uniquement les chiffres dogfood vérifiés
    (250+ contacts, 900+ messages, 2 898 syncs Modelo/30 j) — jamais les compteurs
