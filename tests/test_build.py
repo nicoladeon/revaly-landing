@@ -42,6 +42,10 @@ for a in agents:
 must("<strong>" in idx, "réponses : chiffres en <strong>")
 must("{{" not in idx, "aucun token {{...}} orphelin dans index.html")
 
+# ── Section #controle (Task 5) : storyboard d'approbation ──
+must('id="controle"' in idx, "section #controle présente")
+must("Rien ne part sans toi" in idx, "titre « Rien ne part sans toi »")
+
 # ── data/faq.json (Task 2) : 8 Q/R, alimente aussi le schema.org FAQPage ──
 faq_path = ROOT / "data" / "faq.json"
 must(faq_path.exists(), "data/faq.json existe")

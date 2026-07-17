@@ -165,6 +165,54 @@
     </div>
   </section>
 
+  <!-- ═══════════════ RIEN NE PART SANS TOI (storyboard approbation) ═══════════════ -->
+  <section class="wrap" id="controle">
+    <div class="rv" style="text-align: center;">
+      <span class="tag" style="justify-content: center;">Sous ton contrôle</span>
+      <h2 class="title">Rien ne part sans toi.</h2>
+      <p class="sub" style="margin-left: auto; margin-right: auto;">Ils travaillent 24 h/24. Ils publient et envoient uniquement quand tu valides.</p>
+    </div>
+    <div class="ap-flow rv">
+      <div class="ap-step ap-s1">
+        <p class="ap-label">1 · Emma rédige</p>
+        <div class="ap-card">
+          <div class="ap-mail-head">
+            <img class="face" src="__EMMA128__" width="30" height="30" alt="" />
+            <span class="who"><b>Emma</b><span>Assistante</span></span>
+            <span class="ap-pill">Brouillon</span>
+          </div>
+          <p class="ap-mail-line"><span class="k">À</span><span>M. Moreau — acquéreur</span></p>
+          <p class="ap-mail-line"><span class="k">Objet</span><b>Confirmation visite — samedi 11 h</b></p>
+          <p class="ap-mail-prev">Bonjour M. Moreau, je vous confirme la visite de la villa des Cèdres ce samedi à 11 h. D'ici là, je reste à votre disposition…</p>
+        </div>
+      </div>
+      <span class="ap-arrow ap-a1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg></span>
+      <div class="ap-step ap-s2">
+        <p class="ap-label">2 · Elle te demande</p>
+        <div class="ap-card">
+          <div class="ap-notif-head">
+            <span class="ap-wa" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" /></svg></span>
+            <b>WhatsApp</b>
+            <time datetime="11:41">11 h 41</time>
+          </div>
+          <p class="ap-notif-msg"><b>Emma</b>Brouillon prêt — j'envoie ?</p>
+        </div>
+      </div>
+      <span class="ap-arrow ap-a2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg></span>
+      <div class="ap-step ap-s3">
+        <p class="ap-label">3 · Tu valides</p>
+        <div class="ap-card">
+          <div class="ap-input">
+            <span class="ap-type"><span>ok envoie</span></span>
+            <span class="ap-send" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg></span>
+          </div>
+          <p class="ap-sent" style="margin: 0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Envoyé · 11 h 42</p>
+        </div>
+      </div>
+    </div>
+    <p class="proof-note rv">Verrouillé dans le produit : email en brouillon dans ta boîte, post en attente de relecture, action sensible confirmée — toujours.</p>
+  </section>
+
   <!-- ═══════════════ PREUVE (dogfood réel) ═══════════════ -->
   <section class="wrap" id="preuve">
     <div class="rv" style="text-align:center;">
@@ -566,6 +614,19 @@
       entries.forEach((e) => { if (e.isIntersecting) { cr.classList.add('play'); io.disconnect(); } });
     }, { threshold: 0.55 }).observe(cr);
   }
+
+  // ── « Rien ne part sans toi » : le storyboard d'approbation se joue à l'arrivée
+  //    (mécanique #modelo : armed/play, IO ~0.5, déclenchement unique) ──
+  (() => {
+    const ap = document.querySelector('.ap-flow');
+    if (!ap || REDUCED) return;
+    ap.classList.add('armed');
+    // ~0.5, borné pour rester atteignable quand la pile mobile dépasse le viewport
+    const th = Math.min(0.5, (window.innerHeight * 0.6) / Math.max(1, ap.offsetHeight));
+    new IntersectionObserver((entries, io) => {
+      entries.forEach((e) => { if (e.isIntersecting) { ap.classList.add('play'); io.disconnect(); } });
+    }, { threshold: th }).observe(ap);
+  })();
 
   // ── Équipe : chaque bloc joue sa conversation à l'arrivée à l'écran
   //    (réutilise la mécanique #modelo : armed/play, IO 0.55, trigger once) ──
