@@ -10,7 +10,7 @@ def uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode((ROOT / path).read_bytes()).decode()
 
 # URL Calendly « Réserver une démo » — À REMPLACER par Julien quand le Calendly existe.
-CALENDLY_URL = "https://calendly.com/revaly-io/demo"
+CALENDLY_URL = "https://calendly.com/contact-chiclick/30min"
 
 repl = {"__CALENDLY__": CALENDLY_URL}
 for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:

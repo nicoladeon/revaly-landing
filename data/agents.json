@@ -15,13 +15,18 @@
       "automatisations": [
         {
           "titre": "Brief du matin — 7 h",
-          "pitch": "Rendez-vous du jour, emails importants, anniversaires et nouveaux DPE du secteur : ton point de la journée tombe chaque matin à 7 h, sans que tu le demandes.",
+          "pitch": "Rendez-vous du jour, emails importants, échéances : ton point de la journée tombe chaque matin à 7 h, sans que tu le demandes.",
           "source": "cron-morning-briefing"
         },
         {
           "titre": "Bilan du soir — 19 h",
           "pitch": "Ce qui a été fait, ce qui reste en attente : le récap tombe chaque soir à 19 h, il y pense pour toi.",
           "source": "cron-evening-recap"
+        },
+        {
+          "titre": "Anniversaires clients & achats",
+          "pitch": "Anniversaire d'un client ou date anniversaire d'un achat : le message d'attention est prêt le matin même — la relation entretenue sans y penser.",
+          "source": "cron-anniversaries"
         }
       ],
       "outils": [
@@ -37,13 +42,23 @@
         },
         {
           "titre": "Suivi des tâches",
-          "pitch": "Il crée les tâches et relance ce qui traîne, pour que rien ne tombe entre deux dossiers.",
+          "pitch": "Il crée les tâches, les assigne et relance ce qui traîne, pour que rien ne tombe entre deux dossiers.",
           "source": "create-task"
         },
         {
-          "titre": "Vue d'ensemble du secteur",
-          "pitch": "La liste des biens en cours et les contacts liés à chaque mandat, en un coup d'œil.",
-          "source": "list-biens, get-mandat-contacts"
+          "titre": "Analyse de dossier de vente",
+          "pitch": "Il lit un dossier complet et te dit ce qui manque, pièce par pièce.",
+          "source": "analyze-sale-file"
+        },
+        {
+          "titre": "Recherche dans tes documents",
+          "pitch": "Le compromis de mars, le DPE du pavillon : il retrouve n'importe quel document, y compris dans ton Drive.",
+          "source": "search-documents, drive"
+        },
+        {
+          "titre": "Ton portefeuille en une question",
+          "pitch": "« Où en est la villa des Cèdres ? » — biens, contacts du mandat, historique : la réponse en quelques secondes.",
+          "source": "list-biens, query-dossier, get-mandat-contacts"
         }
       ]
     }
@@ -65,34 +80,29 @@
         {
           "titre": "Relances prospects inactifs (sur option)",
           "pitch": "Tu actives, tu choisis le délai et le canal — ensuite les relances partent automatiquement, sans que tu aies à y repenser à chaque prospect.",
-          "source": "cron-relances"
+          "source": "auto-relances, cron-relances"
         },
         {
           "titre": "Suivi après visite",
-          "pitch": "Après chaque visite, elle relance au délai et sur le canal que tu as choisis — elle y pense pour toi.",
-          "source": "cron-visite-followup"
+          "pitch": "Après chaque visite, elle relance au délai et sur le canal que tu as choisis — et les rappels de rendez-vous partent tout seuls.",
+          "source": "visite-followup, cron-visit-reminders"
         },
         {
-          "titre": "Alerte mandat qui stagne",
-          "pitch": "Un bien sans mouvement depuis 60 jours (seuil réglable) ? Elle te prévient avant que le vendeur s'impatiente.",
-          "source": "cron-price-stagnation"
-        },
-        {
-          "titre": "Anniversaires clients",
-          "pitch": "Elle repère les anniversaires à venir et te les rappelle — comme celui de Mme Lefèvre.",
-          "source": "cron-anniversaries"
+          "titre": "Offre acceptée → félicitations prêtes",
+          "pitch": "Une offre passe « acceptée » dans Modelo ? Elle te prépare le message de félicitations au client et te prévient — le moment que tes clients retiennent.",
+          "source": "cron-modelo-offers"
         }
       ],
       "outils": [
         {
           "titre": "Brouillons de réponse",
-          "pitch": "Un brouillon prêt pour chaque email qui compte : tu relis, tu ajustes si besoin, tu envoies.",
-          "source": "draft-email"
+          "pitch": "Un brouillon prêt pour chaque email qui compte : tu relis, tu ajustes si besoin, tu envoies — depuis ta boîte.",
+          "source": "read-inbox, draft-email"
         },
         {
           "titre": "Fiches Modelo à jour",
           "pitch": "Elle écrit les fiches contact et les fiches recherche acquéreur dans Modelo — le rapprochement avec les biens, c'est Modelo qui s'en charge.",
-          "source": "create-modelo-contact, update-modelo-contact, create-modelo-search"
+          "source": "create-modelo-contact, create-modelo-search"
         },
         {
           "titre": "Compte-rendu de visite",
@@ -100,9 +110,19 @@
           "source": "write-visite-report"
         },
         {
+          "titre": "Agenda complet",
+          "pitch": "Créer, déplacer, confirmer un rendez-vous — et la confirmation de visite part au client sur le bon canal.",
+          "source": "create-calendar-event, send-visit-confirmation"
+        },
+        {
           "titre": "Suivi de financement",
           "pitch": "De la simulation à l'offre de prêt, elle suit où en est le financement de chaque acquéreur.",
           "source": "track-loan"
+        },
+        {
+          "titre": "Dossier locataire scoré en 30 s",
+          "pitch": "Revenus, garanties, pièces manquantes : tu sais en 30 secondes si le dossier tient.",
+          "source": "analyze-tenant"
         }
       ]
     }
@@ -122,36 +142,51 @@
     "fiche": {
       "automatisations": [
         {
-          "titre": "Échéances de mandat sous contrôle",
-          "pitch": "Fin de mandat, délai de rétractation, conditions suspensives : elle surveille chaque échéance et te prévient avant qu'elle n'expire — comme un délai de rétractation qui tombe mardi.",
+          "titre": "Veille juridique — chaque semaine",
+          "pitch": "Ce qui a changé dans le droit immo cette semaine, résumé et appliqué à ton activité — sans ouvrir un seul texte.",
+          "source": "cron-weekly-legal-digest"
+        },
+        {
+          "titre": "Mandat qui expire sous 30 jours",
+          "pitch": "Elle te prévient un mois avant l'échéance d'un mandat actif — le renouvellement se prépare, il ne se subit pas.",
           "source": "cron-mandat-expiration"
         },
         {
-          "titre": "Veille juridique immo",
-          "pitch": "Chaque semaine, le point sur ce qui change en droit immobilier, sans que tu ailles le chercher.",
-          "source": "cron-weekly-legal-digest"
+          "titre": "Elle apprend de tes corrections",
+          "pitch": "Tu corriges une formulation ou un point de process une fois — elle le retient et l'applique aux dossiers suivants.",
+          "source": "cron-agent-learning"
         }
       ],
       "outils": [
         {
-          "titre": "Dossier de vente passé au crible",
-          "pitch": "Compromis, diagnostics, pièces obligatoires : elle relit le dossier pièce par pièce et te dit ce qui manque.",
+          "titre": "Dossier de vente analysé",
+          "pitch": "Compromis, diagnostics, pièces : elle passe le dossier au crible et te dit exactement ce qui manque.",
           "source": "analyze-sale-file"
         },
         {
-          "titre": "Lecture de tes documents juridiques",
-          "pitch": "Compromis, actes, avenants : elle les lit et en sort les points d'attention.",
+          "titre": "Documents juridiques décryptés",
+          "pitch": "Un règlement de copropriété, un PV d'AG, un acte : elle lit, résume et pointe ce qui doit t'alerter.",
           "source": "analyze-legal-docs, analyze-document"
         },
         {
           "titre": "Conformité vérifiée",
-          "pitch": "Elle vérifie que le dossier respecte les obligations légales avant que ça bloque une signature.",
+          "pitch": "Annonces, mentions obligatoires, process : elle vérifie que tu es en règle avant que quelqu'un d'autre le vérifie pour toi.",
           "source": "check-compliance"
         },
         {
-          "titre": "Diagnostics à jour",
-          "pitch": "DPE, amiante, plomb : elle vérifie que tous les diagnostics obligatoires sont présents et à jour.",
+          "titre": "Diagnostics au complet",
+          "pitch": "DPE, amiante, plomb, assainissement… elle contrôle ce qui est présent, valide, et ce qui manque pour vendre.",
           "source": "check-diagnostics"
+        },
+        {
+          "titre": "Échéancier du portefeuille",
+          "pitch": "Fins de mandat, délais de rétractation en cours, conditions suspensives à lever, actes programmés — lecture instantanée.",
+          "source": "mandate-deadlines"
+        },
+        {
+          "titre": "Recherche dans les textes",
+          "pitch": "Une question de droit immo précise ? Elle cherche dans les sources et répond avec la référence.",
+          "source": "search-legal-docs"
         }
       ]
     }
@@ -171,41 +206,51 @@
     "fiche": {
       "automatisations": [
         {
-          "titre": "Post proposé à chaque nouveau mandat",
-          "pitch": "Un nouveau mandat entre en portefeuille ? Un post est déjà proposé, prêt à valider.",
+          "titre": "Nouveau mandat → post proposé",
+          "pitch": "Tu rentres un mandat, elle te propose le post — visuel à ta charte compris. Tu valides, il part.",
           "source": "cron-mandat-social-posts"
         },
         {
-          "titre": "Calendrier éditorial tenu",
-          "pitch": "Les posts programmés partent à l'heure prévue, sans que tu aies à cliquer publier.",
+          "titre": "Publication au bon créneau",
+          "pitch": "Tes posts programmés partent à l'heure prévue, même si tu es en visite.",
           "source": "cron-publish-scheduled"
         },
         {
-          "titre": "Stats sociales chaque semaine",
-          "pitch": "Le récap de ce qui a marché sur Instagram et Facebook arrive chaque lundi.",
+          "titre": "Stats sociales — chaque semaine",
+          "pitch": "Portée, réactions, meilleurs posts : ton point réseaux tombe chaque semaine, tu sais ce qui marche.",
           "source": "cron-social-stats"
         }
       ],
       "outils": [
         {
-          "titre": "Visuels générés à ta charte",
-          "pitch": "Un visuel à ta charte graphique pour chaque annonce, prêt en quelques secondes.",
-          "source": "generate-image"
+          "titre": "Posts Instagram & Facebook",
+          "pitch": "Texte + visuel généré à ta charte (logo, couleurs) — prêts à relire, publiés quand tu valides.",
+          "source": "generate-image, publish-social"
         },
         {
           "titre": "Calendrier éditorial",
-          "pitch": "Elle organise le calendrier de publication pour la semaine, tu ajustes si besoin.",
+          "pitch": "Un plan de publication qui tient la semaine : mandats, avis clients, marché local — fini la page blanche.",
           "source": "editorial-calendar"
         },
         {
-          "titre": "Charte de marque appliquée",
-          "pitch": "Logo, couleurs, ton : une fois réglés, chaque visuel les respecte automatiquement.",
+          "titre": "Programmation",
+          "pitch": "Tu valides aujourd'hui, ça part demain 18 h — chaque contenu à son créneau.",
+          "source": "schedule-content"
+        },
+        {
+          "titre": "Ta charte, ta marque",
+          "pitch": "Logo, couleurs, ton : elle tient ton kit de marque et l'applique à chaque visuel.",
           "source": "set-brand-asset, save-marketing-profile"
         },
         {
-          "titre": "Retouche fine dans Canva",
-          "pitch": "Besoin d'un dernier ajustement ? Le visuel s'ouvre directement dans Canva.",
+          "titre": "Reprise dans Canva",
+          "pitch": "Un visuel à peaufiner toi-même ? Elle te l'ouvre dans Canva, prêt à éditer.",
           "source": "open-in-canva"
+        },
+        {
+          "titre": "Veille locale",
+          "pitch": "Elle cherche sur le web ce qui se dit de ton marché pour nourrir tes contenus.",
+          "source": "web-search-immo"
         }
       ]
     }
@@ -223,37 +268,53 @@
       "Filigrane et visuels à ta marque"
     ],
     "fiche": {
-      "automatisations": [],
+      "automatisations": [
+        {
+          "titre": "Lot Drive : tu déposes, il retouche",
+          "pitch": "Tu poses les photos du bien dans un dossier Drive — il retouche tout le lot (lumière, verticales, ciel) et te le rend prêt à publier.",
+          "source": "improve-drive-photos"
+        },
+        {
+          "titre": "Filigrane à ta marque",
+          "pitch": "Ton logo posé proprement sur chaque photo exportée — tes visuels signés, systématiquement.",
+          "source": "apply-watermark"
+        },
+        {
+          "titre": "Vidéo livrée pendant que tu bosses",
+          "pitch": "Tu demandes la vidéo du bien, il la génère et te la livre quand elle est prête — pas besoin d'attendre devant.",
+          "source": "generate-video, poll-video"
+        }
+      ],
       "outils": [
         {
-          "titre": "Retouche pro en lot",
-          "pitch": "Ciel dégagé, verticales redressées, lumière studio : un lot entier de photos retouché en une fois.",
+          "titre": "Retouche pro",
+          "pitch": "Lumière, verticales redressées, ciel dégagé : la photo de couverture qui fait cliquer.",
           "source": "enhance-photo, retouche-photo"
         },
         {
           "titre": "Home staging virtuel",
-          "pitch": "Un salon vide ? Il est meublé virtuellement, en quelques secondes.",
+          "pitch": "Le salon vide devient un salon meublé — l'acquéreur se projette, toi tu vends.",
           "source": "home-staging"
         },
         {
+          "titre": "Détourage & HD",
+          "pitch": "Fond retiré, netteté remontée : des visuels propres même à partir d'une photo moyenne.",
+          "source": "remove-background, clarity-upscale"
+        },
+        {
           "titre": "Vidéo du bien",
-          "pitch": "Une vidéo du bien générée à partir d'une seule photo, prête à poster.",
+          "pitch": "À partir d'une photo, une vidéo courte du bien pour tes annonces et tes réseaux.",
           "source": "generate-video"
         },
         {
-          "titre": "Filigrane et visuels à ta marque",
-          "pitch": "Ton logo posé en filigrane, tes couleurs respectées sur chaque visuel.",
-          "source": "apply-watermark, brand-kit"
+          "titre": "Visuels marketing brandés",
+          "pitch": "Post « Vendu », « Nouveau mandat », portes ouvertes : le visuel à ta charte en une demande.",
+          "source": "create-visual, brand-kit"
         },
         {
-          "titre": "Détourage et mise en valeur",
-          "pitch": "Fond détouré, image nette même agrandie : le visuel est prêt pour l'annonce ou les réseaux.",
-          "source": "remove-background, clarity-upscale, create-visual"
-        },
-        {
-          "titre": "Directement depuis ton Drive",
-          "pitch": "Dépose tes photos dans ton Drive, il te les retourne retouchées au même endroit.",
-          "source": "Drive"
+          "titre": "Export rangé dans ton Drive",
+          "pitch": "Les photos retouchées reviennent dans ton Drive, nommées et rangées par bien.",
+          "source": "export-photos-drive"
         }
       ]
     }
@@ -273,36 +334,51 @@
     "fiche": {
       "automatisations": [
         {
-          "titre": "Radar DPE",
-          "pitch": "Un nouveau diagnostic tombe dans ton secteur (rayon réglable autour de l'agence) : tu le sais avant tout le monde, alerte envoyée sur Telegram.",
+          "titre": "Radar DPE — tous les jours",
+          "pitch": "Chaque nouveau diagnostic déposé autour de ton agence (rayon réglable) arrive sur ton Telegram — souvent le premier signe d'une mise en vente.",
           "source": "cron-dpe-alerts"
         },
         {
-          "titre": "Point marché chaque semaine",
-          "pitch": "Le marché de ta zone résumé chaque semaine, sans avoir à compiler les chiffres toi-même.",
+          "titre": "Point marché — chaque semaine",
+          "pitch": "Prix, volumes, tendance de ton secteur : ton digest marché hebdomadaire, prêt à ressortir en rendez-vous.",
           "source": "cron-weekly-market"
+        },
+        {
+          "titre": "Mandat immobile 60 jours → alerte",
+          "pitch": "Un bien sans mouvement depuis 60 jours (seuil réglable) ? Il te prévient — le bon moment pour reparler prix avant que le vendeur s'impatiente.",
+          "source": "cron-price-stagnation"
         }
       ],
       "outils": [
         {
           "titre": "Estimation sur ventes réelles",
-          "pitch": "Une estimation basée sur les ventes notariées comparables du quartier, pas une moyenne au doigt mouillé.",
+          "pitch": "Fourchette calculée sur les ventes notariées comparables (base DVF) — pas une moyenne de portails.",
           "source": "estimation-dvf, query-dvf"
         },
         {
           "titre": "Rapport de marché à ta marque",
-          "pitch": "PDF brandé, graphiques inclus, prêt pour le rendez-vous vendeur.",
+          "pitch": "PDF brandé (logo, couleurs) : prix médians, volumes, graphiques — l'arme du rendez-vous vendeur.",
           "source": "generate-market-report"
         },
         {
-          "titre": "Recherche DPE par commune",
-          "pitch": "Tu demandes une commune, il sort les diagnostics récents — souvent le signe d'une mise en vente à venir.",
-          "source": "search-dpe, dpe-recents"
+          "titre": "PDF d'estimation",
+          "pitch": "L'estimation mise en page, prête à laisser au propriétaire après le rendez-vous.",
+          "source": "generate-estimation-pdf"
         },
         {
-          "titre": "Estimation formalisée en PDF",
-          "pitch": "L'estimation devient un document propre à remettre au client.",
-          "source": "generate-estimation-pdf"
+          "titre": "Contre-expertise",
+          "pitch": "Une estimation te semble haute ? Il la relit, la confronte aux ventes réelles et argumente.",
+          "source": "review-estimation"
+        },
+        {
+          "titre": "DPE d'une commune",
+          "pitch": "Tous les diagnostics récents d'une commune, du plus frais au plus ancien, avec adresses — ta tournée de pige prête.",
+          "source": "dpe-recents, search-dpe"
+        },
+        {
+          "titre": "Veille marché web",
+          "pitch": "Ce qui se publie sur ton marché local, cherché et résumé à la demande.",
+          "source": "web-search-immo"
         }
       ]
     }
