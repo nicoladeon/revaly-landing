@@ -156,49 +156,7 @@
       <h2 class="title">Ton équipe, au complet sous tes yeux</h2>
       <p class="sub">Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues — pas de prompts, pas de réglages.</p>
     </div>
-    <div class="team-cards">
-      <article class="tcard rv">
-        <div class="top"><img class="face" src="__MAX512__" alt="Portrait de Max" /><div><p class="nm">Max</p><p class="rl">Directeur d'agence</p></div><span class="status"><i></i>Disponible</span></div>
-        <p class="pitch">Ton point d'entrée. Il écoute, comprend le dossier et mobilise le bon expert. Garde la mémoire de tous tes biens.</p>
-        <div class="skills"><span>Coordination</span><span>Mémoire dossiers</span><span>Priorisation</span><span>Recherche Modelo</span><span>Vocal transcrit</span></div>
-        <p class="quote">« Dis-moi ce que tu veux, je mobilise le bon expert. »</p>
-        <button type="button" class="talk" data-waitlist="solo">Discuter avec Max <span class="arr" aria-hidden="true">→</span></button>
-      </article>
-      <article class="tcard rv">
-        <div class="top"><img class="face" src="__EMMA512__" alt="Portrait d'Emma" /><div><p class="nm">Emma</p><p class="rl">Assistante de direction</p></div><span class="status"><i></i>Tout à jour</span></div>
-        <p class="pitch">Écrit tes emails, gère ton agenda, envoie les relances. Connectée à Gmail et Google Calendar — tout part en brouillon, jamais dans ton dos.</p>
-        <div class="skills"><span>Emails</span><span>Agenda</span><span>Relances</span><span>Comptes rendus</span><span>Import Excel</span></div>
-        <p class="quote">« Tes trois relances du jour sont en brouillon, tu n'as qu'à relire. »</p>
-        <button type="button" class="talk" data-waitlist="solo">Discuter avec Emma <span class="arr" aria-hidden="true">→</span></button>
-      </article>
-      <article class="tcard rv">
-        <div class="top"><img class="face" src="__CHRISTINE512__" alt="Portrait de Christine" /><div><p class="nm">Christine</p><p class="rl">Conseillère juridique</p></div><span class="status"><i></i>À jour</span></div>
-        <p class="pitch">Relit tes mandats, signale les clauses risquées, suit les diagnostics obligatoires. Jamais une signature à l'aveugle.</p>
-        <div class="skills"><span>Mandat Hoguet</span><span>Diagnostics</span><span>Conformité</span><span>Alertes expiration</span></div>
-        <p class="quote">« Ton mandat du 12 rue X expire dans 18 jours — on le renouvelle ? »</p>
-        <button type="button" class="talk" data-waitlist="solo">Discuter avec Christine <span class="arr" aria-hidden="true">→</span></button>
-      </article>
-      <article class="tcard rv">
-        <div class="top"><img class="face" src="__ZOE512__" alt="Portrait de Zoé" /><div><p class="nm">Zoé</p><p class="rl">Community manager</p></div><span class="status"><i></i>Prête à publier</span></div>
-        <p class="pitch">Rédige tes annonces multi-portails, publie sur Facebook, Instagram et LinkedIn, optimise les visuels. Ta voix, mise en ligne.</p>
-        <div class="skills"><span>Annonces</span><span>Réseaux</span><span>Calendrier éditorial</span><span>Stats des posts</span></div>
-        <p class="quote">« Le post du nouveau mandat est prêt — veux-tu le relire ? »</p>
-        <button type="button" class="talk" data-waitlist="solo">Discuter avec Zoé <span class="arr" aria-hidden="true">→</span></button>
-      </article>
-      <article class="tcard rv">
-        <div class="top"><img class="face" src="__RAPHAEL512__" alt="Portrait de Raphaël" /><div><p class="nm">Raphaël</p><p class="rl">Photographe immobilier</p></div><span class="status"><i></i>Disponible</span></div>
-        <p class="pitch">Retouche les photos de tes biens, corrige la lumière, redresse les verticales, décline les visuels pour portails et réseaux. Chaque bien sous son meilleur jour.</p>
-        <div class="skills"><span>Retouche photo</span><span>Visuels de posts</span><span>Ta charte</span></div>
-        <p class="quote">« Les photos du salon sont prêtes — j'ai corrigé la lumière. »</p>
-        <button type="button" class="talk" data-waitlist="solo">Discuter avec Raphaël <span class="arr" aria-hidden="true">→</span></button>
-      </article>
-      <article class="tcard offline rv">
-        <div class="top"><img class="face" src="__LUCAS512__" alt="Portrait de Lucas" style="width:62px;height:62px;border-radius:50%;" /><div><p class="nm">Lucas</p><p class="rl">Analyste de marché</p></div><span class="status"><i></i>Disponible</span></div>
-        <p class="pitch">Estimera tes biens à partir des ventes réelles (base DVF), analysera les quartiers, suivra les tendances. Un rapport prêt à présenter au vendeur.</p>
-        <div class="skills"><span>Estimation DVF</span><span>Analyse quartier</span><span>Rapport PDF</span></div>
-        <p class="quote">Inclus dans ton abonnement dès son arrivée — le prix ne bouge pas.</p>
-      </article>
-    </div>
+    {{TEAM_BLOCKS}}
     <p class="rv" style="text-align: center; font-size: 14px; color: var(--subtle); margin: 26px 0 0;">Plus de <b style="color: var(--iris);"><span class="cnt" data-to="50">50</span> compétences immobilières</b> déjà au travail — et il s'en ajoute chaque semaine.</p>
 
     <div class="rv" style="max-width: 660px; margin: 64px auto 0; padding: 30px 34px; background: var(--raised); border: 0.5px solid var(--line); border-left: 3px solid var(--iris); border-radius: 14px; box-shadow: var(--shadow-sm);">
@@ -609,9 +567,26 @@
     }, { threshold: 0.55 }).observe(cr);
   }
 
+  // ── Équipe : chaque bloc joue sa conversation à l'arrivée à l'écran
+  //    (réutilise la mécanique #modelo : armed/play, IO 0.55, trigger once) ──
+  (() => {
+    const blocks = document.querySelectorAll('.tblock');
+    if (!blocks.length || REDUCED) return;
+    blocks.forEach((b) => b.classList.add('armed'));
+    const tio = new IntersectionObserver((entries) => {
+      entries.filter((e) => e.isIntersecting).forEach((e, i) => {
+        tio.unobserve(e.target);
+        const blk = e.target.closest('.tblock');
+        // stagger 90 ms si deux conversations arrivent dans le même batch IO
+        setTimeout(() => blk.classList.add('play'), i * 90);
+      });
+    }, { threshold: 0.55 });
+    blocks.forEach((b) => tio.observe(b.querySelector('.tc-panel')));
+  })();
+
   // ── Spotlight : le halo suit le curseur sur les cartes ──
   if (window.matchMedia('(hover: hover)').matches) {
-    document.querySelectorAll('.tcard, .plan').forEach((c) => {
+    document.querySelectorAll('.plan').forEach((c) => {
       c.addEventListener('mousemove', (e) => {
         const r = c.getBoundingClientRect();
         c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');

@@ -299,26 +299,6 @@
     background: var(--bg-soft); border: 0.5px solid var(--line);
     font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--subtle);
   }
-  .tcard.offline img.face { filter: grayscale(1); opacity: .55; }
-  .tcard.offline { background: color-mix(in srgb, var(--raised) 60%, var(--bg)); }
-  .tcard.offline .nm, .tcard.offline .pitch { color: var(--muted); }
-  .tcard .skills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-  .tcard .status {
-    display: inline-flex; align-items: center; gap: 7px; margin-left: auto;
-    padding: 4px 11px; border-radius: 999px; flex: none;
-    background: var(--bg-soft); border: 0.5px solid var(--line);
-    font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap;
-  }
-  .tcard .status i { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex: none; }
-  .tcard .status.off i { background: var(--subtle); }
-  .tcard .talk {
-    display: inline-flex; align-items: center; gap: 7px; margin-top: 16px;
-    font-size: 13.5px; font-weight: 600; color: var(--iris); text-decoration: none;
-    background: none; border: none; cursor: pointer; padding: 0; font-family: var(--font-sans);
-  }
-  .tcard .talk .arr { transition: transform .18s; }
-  .tcard .talk:hover .arr { transform: translateX(3px); }
-
   /* ── Storyboard « rien ne part sans toi » (vocabulaire réutilisé task 5) ── */
   .night-row {
     display: flex; align-items: flex-start; gap: 13px;
@@ -364,28 +344,102 @@
     html.js .cmd-result.armed .result-card li { opacity: 1; transform: none; }
     .cmd-result.play .cr-typing { animation: none; }
   }
-  .tcard .skills span {
-    padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 500;
-    background: var(--iris-soft); color: var(--iris);
+  /* ── Équipe : 6 blocs complets, alternés — la conversation se joue au scroll
+       (mécanique #modelo réutilisée, classes préfixées tc-/tb-, cf task 4) ── */
+  .tblock {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+    grid-template-areas: "head chat" "detail chat";
+    column-gap: clamp(36px, 6vw, 72px); align-items: start; align-content: start;
+    margin-top: clamp(64px, 9vw, 92px);
+  }
+  .tblock.tb-alt { grid-template-columns: minmax(0, 440px) minmax(0, 1fr); grid-template-areas: "chat head" "chat detail"; }
+  .tb-head { grid-area: head; display: flex; align-items: center; gap: 18px; }
+  .tb-ava { position: relative; flex: none; }
+  .tb-ava img { width: 84px; height: 84px; box-shadow: inset 0 0 0 1px var(--line-strong), var(--shadow-sm); }
+  .tb-dot {
+    position: absolute; right: 3px; bottom: 4px; width: 15px; height: 15px; border-radius: 50%;
+    background: var(--success); box-shadow: 0 0 0 3px var(--bg);
+  }
+  .tb-name { margin: 0; font-family: var(--font-display); font-weight: 420; font-size: clamp(25px, 2.7vw, 30px); line-height: 1.1; letter-spacing: -0.01em; }
+  .tb-role { margin: 6px 0 0; font-size: 12px; font-weight: 650; text-transform: uppercase; letter-spacing: .1em; color: var(--iris); }
+  .tb-detail { grid-area: detail; margin-top: 24px; }
+  .tb-caps { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+  .tb-caps li { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; line-height: 1.55; color: var(--ink); }
+  .tb-caps svg { width: 17px; height: 17px; color: var(--iris); flex: none; margin-top: 3.5px; }
+  .tb-autos {
+    margin-top: 24px; padding: 18px 20px;
+    background: var(--bg-soft); border: 0.5px solid var(--line); border-radius: 14px;
+  }
+  .tb-autos-t { margin: 0 0 12px; font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+  .tb-autos ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+  .tb-autos li b { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+  .tb-autos li span { display: block; font-size: 13px; line-height: 1.5; color: var(--muted); margin-top: 1px; }
+  .tb-talk { margin-top: 24px; }
+
+  .tc-panel {
+    grid-area: chat; align-self: center; justify-self: stretch; width: 100%;
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px;
+    box-shadow: var(--shadow-md); overflow: hidden;
+  }
+  .tc-head { display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-bottom: 0.5px solid var(--line); }
+  .tc-head img { width: 30px; height: 30px; }
+  .tc-who { font-size: 14px; font-weight: 600; }
+  .tc-live { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .tc-live i { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+  .tc-thread { padding: 18px 18px 20px; display: grid; gap: 12px; }
+  .tc-panel .bubble.them, .tc-panel .typing { background: color-mix(in srgb, var(--ink) 6%, var(--raised)); box-shadow: none; }
+  .tc-slot { position: relative; }
+  .tc-typing { position: absolute; top: 0; left: 0; opacity: 0; }
+  .tc-a strong {
+    display: inline-block; font-weight: 600; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    background: var(--iris-soft); border-radius: 5px; padding: 0 3px; margin: 0 -1px;
   }
 
-  /* ── Cartes équipe (portraits 512) ── */
-  .team-cards { display: grid; gap: 16px; margin-top: 38px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-  .tcard {
-    background: var(--raised); border-radius: 18px; border: 0.5px solid var(--line);
-    box-shadow: var(--shadow-sm); padding: 26px 24px; text-align: left;
-    transition: transform .2s cubic-bezier(.32,.72,0,1), border-color .2s, box-shadow .2s;
+  @media (max-width: 880px) {
+    .tblock, .tblock.tb-alt {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "head" "chat" "detail";
+    }
+    .tc-panel { margin-top: 22px; }
+    .tb-ava img { width: 72px; height: 72px; }
   }
-  .tcard:hover { transform: translateY(-3px); border-color: var(--iris); box-shadow: var(--shadow-md); }
-  .tcard .top { display: flex; align-items: center; gap: 14px; }
-  .tcard img { width: 62px; height: 62px; box-shadow: inset 0 0 0 1px var(--line-strong); }
-  .tcard .nm { font-family: var(--font-display); font-size: 21px; margin: 0; }
-  .tcard .rl { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .09em; color: var(--iris); margin: 3px 0 0; }
-  .tcard p.pitch { font-size: 14px; line-height: 1.65; color: var(--muted); margin: 14px 0 0; }
-  .tcard .quote {
-    margin: 14px 0 0; padding: 10px 14px; border-radius: 10px;
-    background: var(--bg-soft); border: 0.5px solid var(--line);
-    font-size: 13px; line-height: 1.55; color: var(--ink); font-style: italic;
+
+  /* La séquence jouée : armed = état initial, play = timeline (cf design-notes §4.2).
+     Le portrait/nom (.tb-head) reste sur le reveal .rv générique — toujours visible
+     en approche, pour ne jamais laisser un « trou » entre deux blocs au scroll. */
+  html.js .tblock.armed .tc-panel,
+  html.js .tblock.armed .tb-autos, html.js .tblock.armed .tb-talk { opacity: 0; transform: translateY(14px); }
+  html.js .tblock.armed .tb-dot { transform: scale(0); }
+  html.js .tblock.armed .tc-q { opacity: 0; transform: translateY(12px); }
+  html.js .tblock.armed .tc-a { opacity: 0; transform: translateY(14px); }
+  html.js .tblock.armed .tb-caps li { opacity: 0; transform: translateX(-8px); }
+  .tblock.play .tc-panel { animation: tcIn .5s cubic-bezier(.32,.72,0,1) forwards; }
+  .tblock.play .tb-dot { animation: tcPop .3s cubic-bezier(.34,1.56,.64,1) .4s forwards; }
+  .tblock.play .tc-q { animation: tcIn .45s cubic-bezier(.32,.72,0,1) .35s forwards; }
+  .tblock.play .tc-typing { animation: tcTyping .9s linear .78s forwards; }
+  .tblock.play .tc-a { animation: tcIn .42s cubic-bezier(.32,.72,0,1) 1.55s forwards; }
+  .tblock.play .tc-a strong { animation: tcPunch .45s cubic-bezier(.34,1.3,.5,1) 2s; }
+  .tblock.play .tb-caps li { animation: tcRow .35s ease-out forwards; }
+  .tblock.play .tb-caps li:nth-child(1) { animation-delay: 1.8s; }
+  .tblock.play .tb-caps li:nth-child(2) { animation-delay: 1.84s; }
+  .tblock.play .tb-caps li:nth-child(3) { animation-delay: 1.88s; }
+  .tblock.play .tb-caps li:nth-child(4) { animation-delay: 1.92s; }
+  .tblock.play .tb-caps li:nth-child(5) { animation-delay: 1.96s; }
+  .tblock.play .tb-autos { animation: tcIn .45s cubic-bezier(.32,.72,0,1) 2.05s forwards; }
+  .tblock.play .tb-talk { animation: tcIn .4s cubic-bezier(.32,.72,0,1) 2.2s forwards; }
+  @keyframes tcIn { to { opacity: 1; transform: none; } }
+  @keyframes tcPop { to { transform: scale(1); } }
+  @keyframes tcTyping { 0% { opacity: 0; } 12% { opacity: 1; } 86% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes tcRow { to { opacity: 1; transform: none; } }
+  @keyframes tcPunch { 0% { transform: none; } 35% { transform: scale(1.13); } 100% { transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .tblock.armed .tc-panel,
+    html.js .tblock.armed .tb-autos, html.js .tblock.armed .tb-talk,
+    html.js .tblock.armed .tc-q, html.js .tblock.armed .tc-a,
+    html.js .tblock.armed .tb-caps li { opacity: 1; transform: none; }
+    html.js .tblock.armed .tb-dot { transform: none; }
+    .tblock.play .tc-typing, .tblock .tc-typing { animation: none; }
   }
 
   /* ── Checklist (base réutilisée par .plan .checklist en #tarif) ── */
@@ -657,15 +711,15 @@
   }
   @media (prefers-reduced-motion: reduce) { .hero::before { animation: none; } }
 
-  /* ── Spotlight au survol (cartes équipe + tarifs) ── */
-  .tcard, .plan { position: relative; }
-  .tcard::before, .plan::before {
+  /* ── Spotlight au survol (cartes tarifs) ── */
+  .plan { position: relative; }
+  .plan::before {
     content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; border-radius: inherit;
     background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--iris) 9%, transparent), transparent 65%);
     transition: opacity .25s;
   }
-  .tcard:hover::before, .plan:hover::before { opacity: 1; }
-  @media (hover: none) { .tcard::before, .plan::before { display: none; } }
+  .plan:hover::before { opacity: 1; }
+  @media (hover: none) { .plan::before { display: none; } }
 
   /* ── Vidéo hero (rendu Remotion) : desktop uniquement, la carte statique sert
        de repli mobile + reduced-motion + no-JS ── */

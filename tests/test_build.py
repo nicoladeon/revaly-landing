@@ -1,5 +1,5 @@
 # tests/test_build.py — exécuter avec: python3 tests/test_build.py
-import json, pathlib, re, subprocess, sys
+import html, json, pathlib, re, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 subprocess.run([sys.executable, str(ROOT / "build.py")], check=True)
 dist = ROOT / "dist"
@@ -29,6 +29,18 @@ for a in agents:
     for e in entries:
         must(bool(e.get("source")), f"{a['slug']} : entrée fiche '{e.get('titre')}' a un champ source")
         must(bool(e.get("titre")) and bool(e.get("pitch")), f"{a['slug']} : entrée fiche complète (titre+pitch)")
+
+# ── Section #equipe (Task 4) : 6 blocs complets générés dans dist/index.html ──
+for a in agents:
+    must(f'id="agent-{a["slug"]}"' in idx, f"bloc #{a['slug']} généré dans index.html")
+    must(f'Discuter avec {a["name"]}' in idx, f"{a['slug']} : nom + bouton « Discuter avec » présents")
+    must(html.escape(a["question"], quote=False) in idx, f"{a['slug']} : question verbatim")
+    fiche = a.get("fiche", {})
+    entries = fiche.get("automatisations", []) + fiche.get("outils", [])
+    shown = sum(1 for e in entries if html.escape(e["pitch"], quote=False) in idx)
+    must(shown >= 4, f"{a['slug']} : au moins 4 pitchs d'automatisations dans index.html (trouvés: {shown})")
+must("<strong>" in idx, "réponses : chiffres en <strong>")
+must("{{" not in idx, "aucun token {{...}} orphelin dans index.html")
 
 # ── data/faq.json (Task 2) : 8 Q/R, alimente aussi le schema.org FAQPage ──
 faq_path = ROOT / "data" / "faq.json"

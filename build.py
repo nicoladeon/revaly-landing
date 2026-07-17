@@ -3,7 +3,7 @@
 pour chaque page (home pour l'instant) via write_page(), copie les assets statiques,
 écrit robots.txt + sitemap.xml réels.
 Usage : python3 build.py  (puis : wrangler pages deploy dist --project-name revaly)"""
-import base64, pathlib, shutil
+import base64, html, json, pathlib, re, shutil
 ROOT = pathlib.Path(__file__).parent
 
 def uri(path, mime):
@@ -23,6 +23,61 @@ def render(tpl: str, ctx: dict) -> str:
     return html
 
 PAGES = []  # rempli par chaque write_page → sitemap
+
+# ── Section Équipe : 6 blocs complets générés depuis data/agents.json (task 4) ──
+# Aucun contenu agent en dur dans le template : tout vient du JSON (verbatim,
+# vérifié prod — annexe A du spec). Seule transformation : les chiffres de la
+# réponse sont enveloppés de <strong> (« chiffres qui claquent », spec §6).
+_CHECK = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+          'stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>')
+_NBSP = "   "
+_STRONG_RE = re.compile(rf"(J\+\d+|\d+(?:[ {_NBSP}]\d{{3}})*(?:[ {_NBSP}]?€)?(?:[ {_NBSP}]?h\b)?)")
+
+def _esc(s):  # texte (jamais d'attribut avec guillemets doubles dans les données)
+    return html.escape(s, quote=False)
+
+def team_blocks():
+    agents = json.loads((ROOT / "data" / "agents.json").read_text())
+    blocks = []
+    for i, a in enumerate(agents):
+        k, name = a["slug"].upper(), _esc(a["name"])
+        de = "d'" if a["name"][0].lower() in "aeéiou" else "de "
+        reponse = _STRONG_RE.sub(r"<strong>\1</strong>", _esc(a["reponse"]))
+        caps = "".join(f"<li>{_CHECK}<span>{_esc(c)}</span></li>" for c in a["capacites"])
+        fiche = a.get("fiche", {})
+        # Les plus vendeuses d'abord : les vraies automatisations (crons), puis les outils.
+        entries = (fiche.get("automatisations", []) + fiche.get("outils", []))[:5]
+        autos = "".join(f"<li><b>{_esc(e['titre'])}</b><span>{_esc(e['pitch'])}</span></li>"
+                        for e in entries)
+        alt = " tb-alt" if i % 2 else ""
+        blocks.append(f'''<article class="tblock{alt}" id="agent-{a["slug"]}">
+        <header class="tb-head rv">
+          <span class="tb-ava"><img class="face" src="__{k}512__" width="84" height="84" alt="Portrait {de}{name}" /><i class="tb-dot" aria-hidden="true"></i></span>
+          <div>
+            <h3 class="tb-name">{name}</h3>
+            <p class="tb-role">{_esc(a["role"])}</p>
+          </div>
+        </header>
+        <div class="tc-panel">
+          <div class="tc-head"><img class="face" src="__{k}128__" width="30" height="30" alt="" /><span class="tc-who">{name}</span><span class="tc-live"><i></i>en ligne</span></div>
+          <div class="tc-thread">
+            <div class="bubble me tc-q">{_esc(a["question"])}</div>
+            <div class="tc-slot">
+              <div class="tc-typing typing" aria-hidden="true"><i></i><i></i><i></i></div>
+              <div class="bubble them tc-a"><span>{reponse}</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tb-detail">
+          <ul class="tb-caps">{caps}</ul>
+          <div class="tb-autos">
+            <p class="tb-autos-t">Ses automatisations</p>
+            <ul>{autos}</ul>
+          </div>
+          <button type="button" class="btn ghost small tb-talk" data-waitlist="solo">Discuter avec {name} <span class="arr" aria-hidden="true">→</span></button>
+        </div>
+      </article>''')
+    return "\n      ".join(blocks)
 
 def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
                og_title: str = None, og_desc: str = None):
@@ -44,7 +99,7 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
 (ROOT / "dist").mkdir(exist_ok=True)
 
 # ── Home ──
-body_home = (ROOT / "templates" / "home-body.html").read_text()
+body_home = render("home-body.html", {"TEAM_BLOCKS": team_blocks()})
 write_page(
     "index.html", body_home,
     title="Revaly — L'équipe IA des agents immobiliers",
