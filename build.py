@@ -79,6 +79,56 @@ def team_blocks():
       </article>''')
     return "\n      ".join(blocks)
 
+# ── FAQ (task 9) : accordéons générés depuis data/faq.json — plus aucune Q/R en
+# dur dans le template. Mécanique existante conservée (bouton aria-expanded +
+# chevron rotatif + .faq-body en grid-rows, cibles 56px) ; la 1re est ouverte.
+_CHEV = ('<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" '
+         'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
+         'stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>')
+
+def faq_items(faq):
+    items = []
+    for i, f in enumerate(faq):
+        is_open = "true" if i == 0 else "false"
+        items.append(
+            f'<div class="faq-item" data-open="{is_open}">'
+            f'<button type="button" aria-expanded="{is_open}" aria-controls="faq-{i}">'
+            f'<span>{_esc(f["question"])}</span>{_CHEV}</button>'
+            f'<div class="faq-body" id="faq-{i}"><div><p>{_esc(f["reponse"])}</p></div></div>'
+            f"</div>")
+    return "".join(items)
+
+# ── JSON-LD (task 9) : FAQPage (entrées schema:true, texte brut sans balises),
+# Organization, Product + 2 Offers. Un <script> par bloc, JSON sérialisé par
+# json.dumps (guillemets échappés) ; « </ » cassé en « <\/ » par sûreté <script>.
+def jsonld_blocks(faq):
+    blocks = [
+        {"@context": "https://schema.org", "@type": "FAQPage",
+         "mainEntity": [{"@type": "Question", "name": f["question"],
+                         "acceptedAnswer": {"@type": "Answer", "text": f["reponse"]}}
+                        for f in faq if f.get("schema") is True]},
+        {"@context": "https://schema.org", "@type": "Organization",
+         "name": "Revaly", "url": "https://revaly.io",
+         "logo": "https://revaly.io/logo.png"},
+        {"@context": "https://schema.org", "@type": "Product",
+         "name": "Revaly",
+         "description": "L'équipe d'agents IA des agents immobiliers français : "
+                        "annonces, posts, relances, dossiers, mandats — branchée sur "
+                        "Modelo. Rien ne part sans toi.",
+         "image": "https://revaly.io/og.jpg",
+         "brand": {"@type": "Brand", "name": "Revaly"},
+         "offers": [
+             {"@type": "Offer", "name": "Solo", "price": "97",
+              "priceCurrency": "EUR", "url": "https://revaly.io/#tarif"},
+             {"@type": "Offer", "name": "Agence", "price": "229",
+              "priceCurrency": "EUR", "url": "https://revaly.io/#tarif"},
+         ]},
+    ]
+    return "\n".join(
+        '<script type="application/ld+json">'
+        + json.dumps(b, ensure_ascii=False).replace("</", "<\\/")
+        + "</script>" for b in blocks)
+
 def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
                og_title: str = None, og_desc: str = None):
     # og_title/og_desc par défaut = title/desc (comportement générique pour les pages
@@ -99,7 +149,12 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
 (ROOT / "dist").mkdir(exist_ok=True)
 
 # ── Home ──
-body_home = render("home-body.html", {"TEAM_BLOCKS": team_blocks()})
+faq = json.loads((ROOT / "data" / "faq.json").read_text())
+body_home = render("home-body.html", {
+    "TEAM_BLOCKS": team_blocks(),
+    "FAQ_ITEMS": faq_items(faq),
+    "JSONLD": jsonld_blocks(faq),
+})
 write_page(
     "index.html", body_home,
     title="Revaly — L'équipe IA des agents immobiliers",
@@ -110,7 +165,7 @@ write_page(
 )
 
 # ── Assets statiques servis à côté des pages (URL absolues : OG image, vidéo hero). ──
-for static in ["og.jpg", "hero.mp4", "hero-poster.jpg"]:
+for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
     src = ROOT / "assets" / static
     if src.exists():
         shutil.copy(src, ROOT / "dist" / static)

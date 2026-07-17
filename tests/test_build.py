@@ -91,4 +91,47 @@ for item in faq:
     must(bool(item.get("question")) and bool(item.get("reponse")), "faq : question+reponse non vides")
     must(item.get("schema") is True, f"faq '{item.get('question')}' : schema=true")
 
+# ── Section #faq (Task 9) : accordéons générés par build.py depuis faq.json ──
+for item in faq:
+    must(html.escape(item["question"], quote=False) in idx,
+         f"FAQ générée : question « {item['question'][:40]}… » dans index.html")
+    must(html.escape(item["reponse"], quote=False) in idx,
+         f"FAQ générée : réponse de « {item['question'][:40]}… » dans index.html")
+must(idx.count('class="faq-item"') == len(faq), f"exactement {len(faq)} accordéons .faq-item")
+must("Qu'est-ce que j'y gagne, concrètement" not in idx, "anciennes Q/R en dur supprimées du template")
+must('aria-expanded="true"' in idx and 'aria-controls="faq-0"' in idx,
+     "accordéons accessibles : aria-expanded + aria-controls, 1re question ouverte")
+
+# ── JSON-LD (Task 9) : 3 blocs extraits de dist/index.html, JSON valide ──
+blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', idx, re.S)
+must(len(blocks) == 3, f"3 blocs <script type=application/ld+json> (trouvés: {len(blocks)})")
+must("FAQPage" in idx, "« FAQPage » présent dans index.html")
+parsed = [json.loads(b.replace("<\\/", "</")) for b in blocks]  # json.loads → crash si invalide
+must({p["@type"] for p in parsed} == {"FAQPage", "Organization", "Product"},
+     "types JSON-LD : FAQPage + Organization + Product")
+faqpage = next(p for p in parsed if p["@type"] == "FAQPage")
+must(len(faqpage["mainEntity"]) == sum(1 for f in faq if f.get("schema") is True),
+     "FAQPage.mainEntity : toutes les entrées schema:true de faq.json")
+for q, src in zip(faqpage["mainEntity"], faq):
+    must(q["@type"] == "Question" and q["acceptedAnswer"]["@type"] == "Answer", "Question/Answer typés")
+    must(q["name"] == src["question"] and q["acceptedAnswer"]["text"] == src["reponse"],
+         f"FAQPage : texte verbatim de faq.json (« {src['question'][:40]}… »)")
+    must("<" not in q["name"] + q["acceptedAnswer"]["text"], "FAQPage : texte SANS balises")
+org = next(p for p in parsed if p["@type"] == "Organization")
+must(org["name"] == "Revaly" and org["url"] == "https://revaly.io" and org.get("logo"),
+     "Organization : name/url/logo")
+must((dist / "logo.png").exists(), "logo.png copié dans dist (cible de Organization.logo)")
+product = next(p for p in parsed if p["@type"] == "Product")
+must(product["name"] == "Revaly", "Product : name Revaly")
+offers = product["offers"]
+must([(o["name"], o["price"]) for o in offers] == [("Solo", "97"), ("Agence", "229")],
+     "Offers : Solo 97 + Agence 229")
+for o in offers:
+    must(o["@type"] == "Offer" and o["priceCurrency"] == "EUR"
+         and o["url"] == "https://revaly.io/#tarif", "Offer : EUR + url #tarif")
+
+# ── CTA final (Task 9) : titre exact + 6 visages + micro-texte ──
+must("Ton équipe peut commencer ce soir" in text, "titre CTA final « Ton équipe peut commencer ce soir. »")
+must("Ils peuvent commencer" not in idx, "ancien titre CTA final supprimé")
+
 print("OK")

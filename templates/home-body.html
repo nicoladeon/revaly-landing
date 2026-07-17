@@ -394,8 +394,9 @@
         <p class="sub">Et si tu préfères en parler, écris-nous — un humain répond.</p>
         <a class="btn ghost" href="mailto:support@revaly.io" style="margin-top: 20px;">Écrire à l'équipe</a>
       </div>
-      <div class="rv" id="faq-list"></div>
+      <div class="rv" id="faq-list">{{FAQ_ITEMS}}</div>
     </div>
+    <noscript><style>.faq-body { grid-template-rows: 1fr; } .faq-item .chev { display: none; }</style></noscript>
   </section>
 
   <!-- ═══════════════ CTA FINAL ═══════════════ -->
@@ -409,7 +410,7 @@
         <img class="face" src="__RAPHAEL128__" width="52" height="52" alt="" />
         <img class="face" src="__LUCAS128__" width="52" height="52" alt="" />
       </span>
-      <h2 class="title" style="font-size: clamp(30px, 4.6vw, 46px);">Ils peuvent commencer <span style="color: var(--iris);">ce soir</span>.</h2>
+      <h2 class="title" style="font-size: clamp(30px, 4.6vw, 46px);">Ton équipe peut commencer <span style="color: var(--iris);">ce soir</span>.</h2>
       <p class="sub" style="margin-left: auto; margin-right: auto; text-align: center;">
         Chaque semaine sans équipe, ce sont des relances oubliées et des mandats qui
         expirent en silence. Demain matin, ça peut être : post prêt, relances
@@ -563,44 +564,15 @@
     sticky.classList.toggle('show', past && !nearEnd && !onTarif);
   }, { passive: true });
 
-  const FAQ = [
-    ["Qu'est-ce que j'y gagne, concrètement ?",
-     "Une dizaine d'heures par semaine : les annonces et les posts (≈3 h), les relances et les emails (≈3 h), les dossiers et la conformité (≈2 h), l'agenda et les comptes rendus (≈2 h). Un mandat rentré = photos retouchées, post prêt, visites proposées, dossier vérifié — sans y penser. Si au bout d'un mois tu ne vois pas la différence, tu arrêtes : c'est sans engagement."],
-    ["Ça marche avec mon logiciel métier ?",
-     "Oui. Revaly se branche sur Modelo / Netty : tes biens, photos, contacts et mandats sont synchronisés dans les deux sens. Un mandat rentré dans ton CRM, et ton équipe est déjà au courant."],
-    ["Les agents peuvent-ils écrire à mes clients sans moi ?",
-     "Non, jamais. Chaque email part en brouillon dans TA boîte, chaque post attend ta relecture, chaque action sensible exige ta confirmation. C'est verrouillé dans le produit."],
-    ["Concrètement, Zoé publie comment ?",
-     "Tu connectes ta page Facebook et ton compte Instagram en deux clics. Dès qu'un bien entre dans Modelo, Zoé prépare le post avec les photos du mandat et te prévient. Tu relis, tu publies ou tu programmes. Elle suit ensuite les j'aime, commentaires et demandes."],
-    ["Je peux vraiment leur parler sur WhatsApp ?",
-     "Oui, comme à un collègue — même en vocal : « Max, déplace mon rendez-vous à demain », « relance le vendeur d'Aix ». Il exécute, te le confirme, et te propose la suite. Chaque conseiller a SA propre équipe — tes dossiers ne croisent jamais ceux d'un autre."],
-    ["Où vont mes données ?",
-     "Elles restent les tiennes : hébergement européen, cloisonnement strict par agence et par conseiller, aucune revente. Les agents n'accèdent qu'à ce que tu connectes, et tu peux tout déconnecter."],
-    ["Combien de temps pour démarrer ?",
-     "Moins de 10 minutes : compte, connexion Modelo, connexion Gmail. Pas d'installation, pas de formation obligatoire — tu parles à Max et c'est parti."],
-    ["Et si je ne suis pas sur Modelo ?",
-     "Écris-nous : selon ton logiciel, on te dit franchement si Revaly peut déjà t'aider ou pas encore."],
-    ["Je peux changer d'avis ?",
-     "Oui, sans engagement : tu arrêtes quand tu veux et tu repars avec tes données."],
-  ];
-
-  const CHEV = '<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
-  const faqList = document.getElementById('faq-list');
-  FAQ.forEach(([q, a], i) => {
-    const item = document.createElement('div');
-    item.className = 'faq-item';
-    item.dataset.open = i === 0 ? 'true' : 'false';
-    item.innerHTML =
-      '<button type="button" aria-expanded="' + (i === 0) + '" aria-controls="faq-' + i + '">' +
-        '<span>' + q + '</span>' + CHEV +
-      '</button>' +
-      '<div class="faq-body" id="faq-' + i + '"><div><p>' + a + '</p></div></div>';
-    item.querySelector('button').addEventListener('click', () => {
+  // ── FAQ : accordéons rendus par build.py depuis data/faq.json — ici on ne fait
+  // que brancher l'ouverture/fermeture (chevron + transition = CSS existant) ──
+  document.querySelectorAll('.faq-item > button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
       const isOpen = item.dataset.open === 'true';
       item.dataset.open = String(!isOpen);
-      item.querySelector('button').setAttribute('aria-expanded', String(!isOpen));
+      btn.setAttribute('aria-expanded', String(!isOpen));
     });
-    faqList.appendChild(item);
   });
 
   const io = new IntersectionObserver((entries) => {
@@ -795,3 +767,6 @@
 
 <!-- Cloudflare Web Analytics — sans cookie, RGPD-compatible, aucun consentement requis -->
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "54e677d024f949b18171f6d2ff6b905c"}'></script>
+
+<!-- JSON-LD généré par build.py : FAQPage (faq.json schema:true) + Organization + Product/Offers -->
+{{JSONLD}}
