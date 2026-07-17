@@ -134,4 +134,46 @@ for o in offers:
 must("Ton équipe peut commencer ce soir" in text, "titre CTA final « Ton équipe peut commencer ce soir. »")
 must("Ils peuvent commencer" not in idx, "ancien titre CTA final supprimé")
 
+# ── Page /integrations (Task 11) : catalogue searchable ──
+IT_CATS = ["CRM", "Email", "Agenda", "Réseaux sociaux", "Stockage", "Compta & facturation",
+           "Signature", "Téléphonie & visio", "Marketing", "Autre"]
+integ_path = dist / "integrations" / "index.html"
+must(integ_path.exists(), "dist/integrations/index.html existe")
+integ = integ_path.read_text()
+apps = json.loads((ROOT / "data" / "integrations.json").read_text())
+must(len(apps) >= 100, f"integrations.json : ~100 connecteurs (trouvés: {len(apps)})")
+for a in apps:
+    must(bool(a.get("name")) and bool(a.get("desc")), "integrations.json : name+desc non vides")
+    must(a.get("cat") in IT_CATS, f"integrations.json : cat valide pour {a.get('name')}")
+must(sum(1 for a in apps if a["name"].lower() == "gmail") == 1,
+     "exactement 1 app « Gmail » (recherche 'gmail' → 1 tuile)")
+for req in ["Gmail", "Google Calendar", "Google Drive", "Google Sheets", "Instagram",
+            "Facebook Pages", "LinkedIn", "WhatsApp Business", "Telegram", "Slack", "Notion",
+            "Airtable", "Dropbox", "DocuSign", "Stripe", "Mailchimp", "Brevo", "Calendly",
+            "Zoom", "Typeform", "HubSpot"]:
+    must(any(a["name"] == req for a in apps), f"incontournable présent : {req}")
+n_tiles = integ.count('class="it-tile"')
+must(n_tiles >= 80, f"/integrations/ : ≥80 tuiles (trouvées: {n_tiles})")
+must(n_tiles == len(apps), "toutes les entrées du JSON rendues en tuiles")
+must("<title>Intégrations — 3 200+ outils connectés | Revaly</title>" in integ, "title /integrations/")
+must('rel="canonical" href="https://revaly.io/integrations/"' in integ, "canonical /integrations/")
+must("3 200" in integ, "« 3 200 » présent sur /integrations/")
+must("Branché sur les outils" in integ, "header « Branché sur les outils qui font ton quotidien »")
+must("Modelo" in integ and "Netty" in integ, "encadré natifs : Modelo/Netty présents")
+must(integ.find("Intégration native") < integ.find('id="catalogue"'),
+     "encadré natifs AVANT la grille")
+must('id="it-q"' in integ and 'data-name="Gmail"' in integ, "recherche + tuiles data-name")
+must('data-cat="Compta &amp; facturation"' in integ, "data-cat échappé (& → &amp;)")
+must("Aucun résultat" in integ and "demande-nous" in integ, "état vide « Aucun résultat … demande-nous »")
+must('href="/#equipe"' in integ and 'href="/#tarif"' in integ and 'href="/#faq"' in integ,
+     "nav/footer : ancres absolues vers la home (/#equipe, /#tarif, /#faq)")
+must("cloudflareinsights.com/beacon" in integ, "beacon analytics présent sur /integrations/")
+must("cloudflareinsights.com/beacon" in idx, "beacon analytics présent sur la home")
+must("0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics" in integ,
+     "micro-texte habituel sous le CTA essai de /integrations/")
+must("{{" not in integ, "aucun token {{...}} orphelin dans integrations/index.html")
+must("https://revaly.io/integrations/" in (dist / "sitemap.xml").read_text(),
+     "sitemap.xml contient /integrations/")
+must('href="/integrations/"' in idx, "nav de la home pointe vers /integrations/")
+
 print("OK")

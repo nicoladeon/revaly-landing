@@ -12,7 +12,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Revaly" />
 <meta property="og:locale" content="fr_FR" />
-<meta property="og:url" content="https://revaly.io/" />
+<meta property="og:url" content="{{CANONICAL}}" />
 <meta property="og:title" content="{{OG_TITLE}}" />
 <meta property="og:description" content="{{OG_DESC}}" />
 <meta property="og:image" content="https://revaly.io/og.jpg" />
@@ -22,17 +22,17 @@
 <meta name="twitter:title" content="{{OG_TITLE}}" />
 <meta name="twitter:description" content="Six agents IA formés au métier de conseiller immobilier. Branchés sur Modelo, Gmail et WhatsApp. Rien ne part sans toi." />
 <meta name="twitter:image" content="https://revaly.io/og.jpg" />
-<link rel="preload" as="font" type="font/woff2" href="fonts/fraunces-var.woff2" crossorigin />
-<link rel="preload" as="font" type="font/woff2" href="fonts/geist-var.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/fraunces-var.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/geist-var.woff2" crossorigin />
 <style>
   @font-face {
     font-family: Fraunces;
-    src: url("fonts/fraunces-var.woff2") format("woff2");
+    src: url("/fonts/fraunces-var.woff2") format("woff2");
     font-weight: 300 700; font-style: normal; font-display: swap;
   }
   @font-face {
     font-family: Geist;
-    src: url("fonts/geist-var.woff2") format("woff2");
+    src: url("/fonts/geist-var.woff2") format("woff2");
     font-weight: 100 900; font-style: normal; font-display: swap;
   }
   /* ── Tokens (DA Revaly : iris unique + porcelaine froide, light par défaut) ── */
@@ -993,5 +993,7 @@
 </head>
 <body>
 {{BODY}}
+<!-- Cloudflare Web Analytics — sans cookie, RGPD-compatible, sur TOUTES les pages -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "54e677d024f949b18171f6d2ff6b905c"}'></script>
 </body>
 </html>

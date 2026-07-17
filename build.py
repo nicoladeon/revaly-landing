@@ -164,6 +164,39 @@ write_page(
     og_desc="Six agents IA autonomes, formés au métier de conseiller immobilier : posts, relances, dossiers, mandats. Branchés sur Modelo, Gmail et WhatsApp. Rien ne part sans toi.",
 )
 
+# ── Page /integrations (task 11) : catalogue searchable depuis data/integrations.json.
+# Les tuiles portent data-name/data-cat (filtre JS vanilla côté client) ; les valeurs
+# vont dans des attributs → html.escape avec quote=True (« Compta & facturation »).
+IT_CATS = ["CRM", "Email", "Agenda", "Réseaux sociaux", "Stockage", "Compta & facturation",
+           "Signature", "Téléphonie & visio", "Marketing", "Autre"]
+
+def _attr(s):
+    return html.escape(s, quote=True)
+
+def integrations_ctx():
+    apps = json.loads((ROOT / "data" / "integrations.json").read_text())
+    bad = [a["name"] for a in apps if a["cat"] not in IT_CATS]
+    if bad:
+        raise SystemExit(f"integrations.json : catégorie inconnue pour {bad}")
+    tiles = "\n      ".join(
+        f'<article class="it-tile" data-name="{_attr(a["name"])}" data-cat="{_attr(a["cat"])}">'
+        f'<span class="it-mono" aria-hidden="true">{_esc(a["name"][0].upper())}</span>'
+        f'<div><h3>{_esc(a["name"])}</h3><p class="it-cat">{_esc(a["cat"])}</p>'
+        f'<p class="it-desc">{_esc(a["desc"])}</p></div></article>'
+        for a in apps)
+    pills = "".join(
+        f'<button type="button" class="it-pill" data-cat="{_attr(c)}" aria-pressed="false">{_esc(c)}</button>'
+        for c in IT_CATS if any(a["cat"] == c for a in apps))
+    return {"TILES": tiles, "PILLS": pills, "COUNT": str(len(apps))}
+
+write_page(
+    "integrations/index.html", render("integrations-body.html", integrations_ctx()),
+    title="Intégrations — 3 200+ outils connectés | Revaly",
+    desc="Modelo et Netty en natif, et 3 200+ outils via connecteurs : Gmail, Google Agenda, "
+         "WhatsApp, DocuSign, Stripe, Canva… Ton équipe IA se branche sur tes outils en deux clics.",
+    path="/integrations/",
+)
+
 # ── Assets statiques servis à côté des pages (URL absolues : OG image, vidéo hero). ──
 for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
     src = ROOT / "assets" / static
@@ -180,11 +213,13 @@ urls = "".join(f"<url><loc>https://revaly.io{p}</loc></url>" for p in PAGES)
 (ROOT / "dist" / "sitemap.xml").write_text(
     '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls + "</urlset>")
 
-# ── Contrôle final : tokens base64 non résolus + fautes de frappe __HUGO*__ + {{...}} orphelins. ──
-idx_html = (ROOT / "dist" / "index.html").read_text()
-leftover = [t for t in repl if t in idx_html]
-unknown = [t for t in ("__HUGO128__", "__HUGO512__") if t in idx_html]
-orphan_tpl = "{{" in idx_html
-print("build ok →", ROOT / "dist/index.html", f"({len(idx_html)//1024} KB)",
-      "| tokens restants:", (leftover + unknown) or "aucun",
-      "| tokens {{}} non résolus:", orphan_tpl)
+# ── Contrôle final : tokens base64 non résolus + fautes de frappe __HUGO*__ + {{...}} orphelins,
+# sur TOUTES les pages générées (home + /integrations/). ──
+for rel in ["index.html", "integrations/index.html"]:
+    page_html = (ROOT / "dist" / rel).read_text()
+    leftover = [t for t in repl if t in page_html]
+    unknown = [t for t in ("__HUGO128__", "__HUGO512__") if t in page_html]
+    orphan_tpl = "{{" in page_html
+    print("build ok →", ROOT / "dist" / rel, f"({len(page_html)//1024} KB)",
+          "| tokens restants:", (leftover + unknown) or "aucun",
+          "| tokens {{}} non résolus:", orphan_tpl)

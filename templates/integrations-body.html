@@ -1,0 +1,389 @@
+<style>
+  /* ── Page /integrations — styles propres à la page (le socle DA vit dans _shell) ── */
+  .it-hero { padding-bottom: 0; }
+  .it-band {
+    margin: 42px auto 0; max-width: 620px; text-align: left;
+    display: flex; align-items: center; gap: 22px; padding: 20px 26px;
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .it-band-n {
+    margin: 0; font-family: var(--font-display); font-weight: 420; line-height: 1;
+    font-size: clamp(36px, 5vw, 46px); color: var(--iris);
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .it-band-t { margin: 0; font-size: 14px; line-height: 1.55; color: var(--muted); }
+  .it-band-t b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 520px) { .it-band { flex-direction: column; align-items: flex-start; gap: 10px; text-align: left; } }
+
+  /* Encadré natifs — AVANT la grille : la profondeur d'abord, le catalogue ensuite */
+  .it-native {
+    position: relative; overflow: hidden;
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(26px, 4.5vw, 52px); align-items: start;
+    background: var(--raised); border: 0.5px solid var(--line);
+    border-radius: 20px; box-shadow: var(--shadow-md);
+    padding: clamp(24px, 4vw, 40px);
+  }
+  .it-native::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 3px; background: var(--iris); }
+  .it-badge {
+    display: inline-flex; align-items: center; gap: 7px; margin: 0;
+    padding: 5px 12px; border-radius: 999px;
+    background: var(--iris-soft); color: var(--iris);
+    font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: .1em;
+  }
+  .it-badge i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .it-native .metier-h3 { margin-top: 14px; }
+  .it-native-logos { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .it-native-side { border-left: 0.5px solid var(--line); padding-left: clamp(26px, 4.5vw, 52px); }
+  .it-native-side .conn { box-shadow: none; }
+  .it-native-chips { display: grid; gap: 10px; margin-top: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .it-native-note { margin: 14px 0 0; font-size: 13px; line-height: 1.55; color: var(--subtle); }
+  @media (max-width: 880px) {
+    .it-native { grid-template-columns: minmax(0, 1fr); }
+    .it-native-side { border-left: none; padding-left: 0; border-top: 0.5px solid var(--line); padding-top: 24px; }
+  }
+  @media (max-width: 440px) { .it-native-chips { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Recherche + filtres — la recherche filtre en direct : c'est LA démo de la page */
+  .it-tools { margin-top: 34px; display: grid; gap: 14px; }
+  html:not(.js) .it-tools, html:not(.js) .it-count-line { display: none; }
+  .it-search { position: relative; display: block; max-width: 480px; }
+  .it-search svg {
+    position: absolute; left: 17px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; color: var(--subtle); pointer-events: none;
+  }
+  .it-search input {
+    width: 100%; min-height: 52px; padding: 12px 18px 12px 47px;
+    border-radius: 13px; border: 1px solid var(--line-strong);
+    background: var(--raised); color: var(--ink); box-shadow: var(--shadow-sm);
+    font-family: var(--font-sans); font-size: 15.5px;
+  }
+  .it-search input::placeholder { color: var(--subtle); }
+  .it-search input:focus { outline: 2px solid var(--iris); outline-offset: 1px; border-color: transparent; }
+  .it-search input::-webkit-search-decoration, .it-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+  .it-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .it-pill {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 8px 17px;
+    border-radius: 999px; border: 0.5px solid var(--line-strong); cursor: pointer;
+    background: var(--raised); color: var(--muted); white-space: nowrap;
+    font-family: var(--font-sans); font-size: 13.5px; font-weight: 550;
+    transition: background .18s, color .18s, border-color .18s;
+  }
+  .it-pill:hover { color: var(--ink); border-color: var(--iris); }
+  .it-pill[aria-pressed="true"] { background: var(--iris-deep); border-color: transparent; color: #fff; }
+  @media (max-width: 760px) {
+    /* pills scrollables horizontalement dans leur conteneur — jamais de scroll de page */
+    .it-pills { flex-wrap: nowrap; overflow-x: auto; margin: 0 -24px; padding: 2px 24px 10px; scrollbar-width: none; }
+    .it-pills::-webkit-scrollbar { display: none; }
+  }
+  .it-count-line { margin: 24px 0 0; font-size: 13.5px; color: var(--subtle); font-variant-numeric: tabular-nums; }
+  .it-count-line b { color: var(--muted); font-weight: 600; }
+
+  /* La grille de tuiles */
+  .it-grid { display: grid; gap: 12px; margin-top: 14px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+  .it-tile {
+    display: flex; gap: 13px; align-items: flex-start; padding: 16px 17px;
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s cubic-bezier(.32,.72,0,1), border-color .18s;
+  }
+  .it-tile:hover { transform: translateY(-2px); border-color: var(--iris); }
+  .it-tile[hidden] { display: none; }
+  .it-mono {
+    width: 34px; height: 34px; flex: none; display: grid; place-items: center;
+    border-radius: 9px; background: var(--iris-soft); color: var(--iris);
+    font-size: 14px; font-weight: 700; letter-spacing: -0.02em;
+  }
+  .it-tile h3 { margin: 0; font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.35; }
+  .it-cat { margin: 2px 0 0; font-size: 10.5px; font-weight: 650; text-transform: uppercase; letter-spacing: .08em; color: var(--subtle); }
+  .it-desc { margin: 7px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+  /* État vide */
+  .it-empty { margin-top: 26px; padding: 38px 24px; border: 1.5px dashed var(--line-strong); border-radius: 16px; text-align: center; }
+  .it-empty p { margin: 0 auto; max-width: 460px; font-size: 15px; line-height: 1.6; color: var(--muted); }
+  .it-empty b { color: var(--ink); font-weight: 600; }
+  .it-empty a { color: var(--iris); font-weight: 600; }
+</style>
+
+<!-- ═══════════════ NAV (partagée — ancres absolues vers la home) ═══════════════ -->
+<div class="nav-shell">
+  <nav class="nav wrap" aria-label="Navigation principale">
+    <a class="logo" href="/">Revaly<b>.</b></a>
+    <div class="nav-links">
+      <a href="/#equipe">Équipe</a>
+      <a href="/integrations/" aria-current="page" style="color: var(--ink);">Intégrations</a>
+      <a href="/#tarif">Tarifs</a>
+      <a href="/#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a class="link-quiet" href="https://app.revaly.io/login">Connexion</a>
+      <button type="button" class="btn small" data-waitlist="solo">Essayer 7 jours</button>
+    </div>
+  </nav>
+</div>
+
+<main id="top">
+  <!-- ═══════════════ HEADER + BANDEAU 3 200+ ═══════════════ -->
+  <div class="wrap hero it-hero">
+    <p class="kicker h-in">Intégrations</p>
+    <h1 class="h-in d1">Branché sur les outils<br />qui font ton quotidien.</h1>
+    <p class="sub h-in d2">
+      Ton équipe travaille dans tes outils, pas à côté : elle lit, écrit et publie
+      là où ton agence vit déjà. Connexions officielles, par conseiller,
+      révocables quand tu veux.
+    </p>
+    <div class="it-band h-in d3">
+      <p class="it-band-n"><span class="cnt" data-to="3200">3 200</span>+</p>
+      <p class="it-band-t"><b>outils connectés via connecteurs</b> — et si le tien manque à la liste ci-dessous, il y a toutes les chances qu'il se branche aussi.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ NATIFS : LA PROFONDEUR D'ABORD ═══════════════ -->
+  <section class="wrap" id="natifs">
+    <div class="it-native rv">
+      <div>
+        <p class="it-badge"><i aria-hidden="true"></i>Intégration native</p>
+        <h2 class="metier-h3">Modelo et Netty : en profondeur, pas un simple connecteur.</h2>
+        <p class="metier-p">Ton CRM immo est branché au cœur du produit : <b>fiches contacts, mandats,
+        recherches acquéreurs, comptes rendus</b> — ton équipe y lit et y écrit en temps réel,
+        dans les deux sens, sans ressaisie. C'est là que vivent tes dossiers, alors on ne s'est
+        pas contenté d'un tuyau générique.</p>
+        <div class="it-native-logos" aria-hidden="true">
+          <span class="conn"><span class="ci"><span class="ci-txt" style="background:var(--iris-deep); color:#fff;">M</span></span><span>Modelo</span></span>
+          <span class="conn"><span class="ci"><span class="ci-txt" style="background:#0F9D8A; color:#fff;">N</span></span><span>Netty</span></span>
+        </div>
+      </div>
+      <div class="it-native-side">
+        <p class="it-badge"><i aria-hidden="true"></i>Natifs aussi</p>
+        <div class="it-native-chips">
+          <span class="conn"><span class="ci"><svg width="26" height="26" aria-hidden="true" fill="#EA4335" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></span><span>Gmail</span></span>
+          <span class="conn"><span class="ci"><svg width="26" height="26" aria-hidden="true" fill="#4285F4" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google Agenda</title><path d="M18.316 5.684H24v12.632h-5.684V5.684zM5.684 24h12.632v-5.684H5.684V24zM18.316 5.684V0H1.895A1.894 1.894 0 0 0 0 1.895v16.421h5.684V5.684h12.632zm-7.207 6.25v-.065c.272-.144.5-.349.687-.617s.279-.595.279-.982c0-.379-.099-.72-.3-1.025a2.05 2.05 0 0 0-.832-.714 2.703 2.703 0 0 0-1.197-.257c-.6 0-1.094.156-1.481.467-.386.311-.65.671-.793 1.078l1.085.452c.086-.249.224-.461.413-.633.189-.172.445-.257.767-.257.33 0 .602.088.816.264a.86.86 0 0 1 .322.703c0 .33-.12.589-.36.778-.24.19-.535.284-.886.284h-.567v1.085h.633c.407 0 .748.109 1.02.327.272.218.407.499.407.843 0 .336-.129.614-.387.832s-.565.327-.924.327c-.351 0-.651-.103-.897-.311-.248-.208-.422-.502-.521-.881l-1.096.452c.178.616.505 1.082.977 1.401.472.319.984.478 1.538.477a2.84 2.84 0 0 0 1.293-.291c.382-.193.684-.458.902-.794.218-.336.327-.72.327-1.149 0-.429-.115-.797-.344-1.105a2.067 2.067 0 0 0-.881-.689zm2.093-1.931l.602.913L15 10.045v5.744h1.187V8.446h-.827l-2.158 1.557zM22.105 0h-3.289v5.184H24V1.895A1.894 1.894 0 0 0 22.105 0zm-3.289 23.5l4.684-4.684h-4.684V23.5zM0 22.105C0 23.152.848 24 1.895 24h3.289v-5.184H0v3.289z"/></svg></span><span>Google Agenda</span></span>
+          <span class="conn"><span class="ci"><svg width="26" height="26" aria-hidden="true" fill="#25D366" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>WhatsApp</title><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></span><span>WhatsApp</span></span>
+          <span class="conn"><span class="ci"><svg width="26" height="26" aria-hidden="true" fill="#26A5E4" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Telegram</title><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span><span>Telegram</span></span>
+        </div>
+        <p class="it-native-note">Boîte mail, agenda, WhatsApp et Telegram sont branchés d'origine :
+        c'est par là que ton équipe te parle et te demande les validations. Zéro configuration.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ LE CATALOGUE SEARCHABLE ═══════════════ -->
+  <section class="wrap" id="catalogue">
+    <div class="rv">
+      <span class="tag">Le catalogue</span>
+      <h2 class="title">Et tout le reste se branche en deux clics.</h2>
+      <p class="sub">Une sélection de {{COUNT}} outils du quotidien d'un conseiller immobilier — cherche le tien, ou filtre par usage.</p>
+    </div>
+    <div class="it-tools rv">
+      <label class="it-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg>
+        <input id="it-q" type="search" placeholder="Cherche un outil — Gmail, DocuSign, Canva…" autocomplete="off" aria-label="Rechercher un outil" />
+      </label>
+      <div class="it-pills" role="group" aria-label="Filtrer par catégorie">
+        <button type="button" class="it-pill" data-cat="" aria-pressed="true">Tous</button>
+        {{PILLS}}
+      </div>
+    </div>
+    <p class="it-count-line" aria-live="polite"><b id="it-count">{{COUNT}} outils</b> affichés — sur 3 200+ connecteurs au total.</p>
+    <div class="it-grid" id="it-grid">
+      {{TILES}}
+    </div>
+    <div class="it-empty" id="it-empty" hidden>
+      <p><b>Aucun résultat ici</b> — et il y a 3 200+ connecteurs :
+      <a href="mailto:support@revaly.io?subject=Mon%20outil%20est-il%20connectable%20%3F">demande-nous</a>,
+      on te répond sous 24 h, en général c'est oui.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CTA ESSAI ═══════════════ -->
+  <section class="wrap">
+    <div class="final rv">
+      <h2 class="title" style="font-size: clamp(30px, 4.6vw, 46px);">Tes outils sont prêts.<br /><span style="color: var(--iris);">Ton équipe aussi.</span></h2>
+      <p class="sub" style="margin-left: auto; margin-right: auto; text-align: center;">
+        Branche Modelo, ta boîte mail et tes réseaux en quelques minutes —
+        et demain matin : post prêt, relances rédigées, dossier complet.
+      </p>
+      <button type="button" class="btn" data-waitlist="solo" style="margin-top: 28px;">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
+      <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+    </div>
+  </section>
+</main>
+
+<!-- ═══════════════ FOOTER (partagé — ancres absolues) ═══════════════ -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <p class="logo" style="margin: 0;">Revaly<b>.</b></p>
+        <p class="about">L'équipe d'agents IA des agents immobiliers français.</p>
+      </div>
+      <nav aria-label="Produit">
+        <h4>Produit</h4>
+        <a href="/#equipe">Équipe</a>
+        <a href="/integrations/">Intégrations</a>
+        <a href="/#tarif">Tarifs</a>
+        <a href="/#faq">FAQ</a>
+      </nav>
+      <nav aria-label="Légal">
+        <h4>Légal</h4>
+        <a href="https://app.revaly.io/cgu">Conditions d'utilisation</a>
+        <a href="https://app.revaly.io/confidentialite">Confidentialité</a>
+        <a href="https://app.revaly.io/mentions-legales">Mentions légales</a>
+      </nav>
+      <nav aria-label="Compte">
+        <h4>Compte</h4>
+        <a href="https://app.revaly.io/login">Connexion</a>
+        <a href="mailto:support@revaly.io">support@revaly.io</a>
+      </nav>
+    </div>
+    <p class="copyright">© 2026 Revaly — fait avec sérieux pour les agents immobiliers.</p>
+  </div>
+</footer>
+
+<!-- ═══════════════ MODAL LISTE D'ATTENTE (identique home) ═══════════════ -->
+<div class="wl-overlay" id="wl" role="dialog" aria-modal="true" aria-labelledby="wl-title">
+  <div class="wl-modal">
+    <button type="button" class="wl-close" aria-label="Fermer" id="wl-x">✕</button>
+    <div id="wl-form-zone">
+      <h3 id="wl-title">Réserve ton essai — on t'ouvre l'accès sous 24 h</h3>
+      <p class="wl-sub">Prénom, email, c'est tout : un humain t'ouvre l'accès et t'accompagne pour brancher tes outils.</p>
+      <form class="wl-form" id="wl-form">
+        <label>Prénom
+          <input type="text" name="first_name" autocomplete="given-name" required maxlength="60" />
+        </label>
+        <label>Email
+          <input type="email" name="email" autocomplete="email" required maxlength="120" />
+        </label>
+        <label>Offre
+          <select name="plan" id="wl-plan">
+            <option value="solo">Solo — 97 €/mois, essai 7 jours</option>
+            <option value="agence">Agence — 229 €/mois, essai 7 jours</option>
+            <option value="reseau">Réseaux — sur mesure</option>
+          </select>
+        </label>
+        <label class="wl-hp" aria-hidden="true">Site web
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+        <button type="submit" class="btn" style="width: 100%; justify-content: center; margin-top: 6px;" id="wl-submit">Réserver mon essai</button>
+        <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+        <p class="wl-error" id="wl-error">La réservation automatique n'a pas fonctionné ici — <a id="wl-mailto" href="mailto:support@revaly.io">clique pour nous écrire</a>, on t'ouvre l'accès à la main.</p>
+      </form>
+    </div>
+    <div class="wl-success" id="wl-success" style="display: none;">
+      <div class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h3>C'est réservé.</h3>
+      <p class="wl-sub">On t'écrit sous 24 h pour t'ouvrir l'accès — ton équipe t'attendra.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.documentElement.classList.add('js');
+
+  // ── Liste d'attente (identique home) ──
+  const WL_ENDPOINT = 'https://dzqcffmkrttzruwjqvwi.supabase.co/functions/v1/waitlist';
+  const wl = document.getElementById('wl');
+  let wlLastFocus = null;
+  function wlOpen(plan) {
+    wlLastFocus = document.activeElement;
+    document.getElementById('wl-plan').value = plan || 'solo';
+    document.getElementById('wl-form-zone').style.display = '';
+    document.getElementById('wl-success').style.display = 'none';
+    document.getElementById('wl-error').style.display = 'none';
+    wl.classList.add('open');
+    setTimeout(() => wl.querySelector('input[name="first_name"]').focus(), 60);
+  }
+  function wlClose() {
+    wl.classList.remove('open');
+    if (wlLastFocus) wlLastFocus.focus();
+  }
+  document.querySelectorAll('[data-waitlist]').forEach((b) =>
+    b.addEventListener('click', () => wlOpen(b.dataset.waitlist)));
+  document.getElementById('wl-x').addEventListener('click', wlClose);
+  wl.addEventListener('click', (e) => { if (e.target === wl) wlClose(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && wl.classList.contains('open')) wlClose(); });
+
+  document.getElementById('wl-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    if (f.website.value) return; // honeypot
+    const payload = {
+      first_name: f.first_name.value.trim(),
+      email: f.email.value.trim(),
+      plan: f.plan.value,
+      source: 'landing-integrations',
+    };
+    const btn = document.getElementById('wl-submit');
+    btn.disabled = true; btn.textContent = 'Un instant…';
+    try {
+      const r = await fetch(WL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) throw new Error(String(r.status));
+      document.getElementById('wl-form-zone').style.display = 'none';
+      document.getElementById('wl-success').style.display = '';
+    } catch (_err) {
+      const m = document.getElementById('wl-mailto');
+      m.href = 'mailto:support@revaly.io?subject=' + encodeURIComponent('Essai Revaly — ' + payload.plan)
+        + '&body=' + encodeURIComponent('Prénom : ' + payload.first_name + '\nEmail : ' + payload.email + '\nOffre : ' + payload.plan);
+      document.getElementById('wl-error').style.display = 'block';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Réserver mon essai';
+    }
+  });
+
+  // ── Reveal au scroll (mécanique .rv de la home) ──
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '-60px' });
+  document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+  setTimeout(() => document.querySelectorAll('.rv:not(.in)').forEach((el) => el.classList.add('in')), 3000);
+
+  // ── Compteur du bandeau 3 200+ ──
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+  function animNum(el, from, to, dur) {
+    if (REDUCED) { el.textContent = to.toLocaleString('fr-FR'); return; }
+    const t0 = performance.now();
+    (function tick(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      el.textContent = Math.round(from + (to - from) * easeOut(p)).toLocaleString('fr-FR');
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+  const cio = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      cio.unobserve(e.target);
+      animNum(e.target, 0, Number(e.target.dataset.to), 900);
+    });
+  }, { threshold: 0.35 });
+  document.querySelectorAll('.cnt').forEach((el) => cio.observe(el));
+
+  // ── Le filtre en direct : LA démo de la page (data-name/data-cat, insensible accents/casse) ──
+  const norm = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const tiles = Array.from(document.querySelectorAll('.it-tile'));
+  const q = document.getElementById('it-q');
+  const pills = Array.from(document.querySelectorAll('.it-pill'));
+  let cat = '';
+  function applyFilter() {
+    const needle = norm(q.value.trim());
+    let shown = 0;
+    tiles.forEach((t) => {
+      const ok = (!cat || t.dataset.cat === cat) && (!needle || norm(t.dataset.name).includes(needle));
+      t.hidden = !ok;
+      if (ok) shown++;
+    });
+    document.getElementById('it-count').textContent = shown + (shown > 1 ? ' outils' : ' outil');
+    document.getElementById('it-empty').hidden = shown !== 0;
+  }
+  q.addEventListener('input', applyFilter);
+  pills.forEach((p) => p.addEventListener('click', () => {
+    cat = p.dataset.cat;
+    pills.forEach((x) => x.setAttribute('aria-pressed', String(x === p)));
+    applyFilter();
+  }));
+</script>
