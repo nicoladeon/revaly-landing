@@ -134,13 +134,18 @@
     "question": "Christine, le dossier Perrin ?",
     "reponse": "Compromis complet sauf l'assainissement — je te l'ai mis en tâche. Délai de rétractation : J+7, il expire mardi. Et deux mandats arrivent à échéance ce mois-ci, renouvellements à préparer.",
     "capacites": [
-      "Dossier de vente analysé pièce par pièce",
-      "Échéances sous contrôle (fins de mandat, rétractation, conditions suspensives, actes)",
-      "Conformité et diagnostics vérifiés",
-      "Veille juridique immo chaque semaine"
+      "Bon de visite prêt à imprimer avant chaque visite",
+      "Dossier de mandat constitué et vérifié pièce par pièce",
+      "Compromis, bail, annonce : vérifiés avant de t'engager",
+      "Échéances sous contrôle (fins de mandat, rétractation, conditions suspensives, actes)"
     ],
     "fiche": {
       "automatisations": [
+        {
+          "titre": "Bon de visite automatique — chaque visite du jour",
+          "pitch": "Une visite apparaît dans ton agenda ? Le bon arrive tout prêt en PDF — visiteur, bien, n° de mandat — il ne reste qu'à l'imprimer et le faire signer.",
+          "source": "cron-visit-forms"
+        },
         {
           "titre": "Veille juridique — chaque semaine",
           "pitch": "Ce qui a changé dans le droit immo cette semaine, résumé et appliqué à ton activité — sans ouvrir un seul texte.",
@@ -159,24 +164,34 @@
       ],
       "outils": [
         {
-          "titre": "Dossier de vente analysé",
-          "pitch": "Compromis, diagnostics, pièces : elle passe le dossier au crible et te dit exactement ce qui manque.",
-          "source": "analyze-sale-file"
+          "titre": "Bon de visite à la demande",
+          "pitch": "« Prépare le bon de visite de 14h » : elle retrouve la visite dans ton agenda, croise le visiteur avec ton CRM, relie le bien — PDF prêt à signer.",
+          "source": "create-visit-form"
         },
         {
-          "titre": "Documents juridiques décryptés",
-          "pitch": "Un règlement de copropriété, un PV d'AG, un acte : elle lit, résume et pointe ce qui doit t'alerter.",
-          "source": "analyze-legal-docs, analyze-document"
+          "titre": "Mandat de vente : le dossier créé et vérifié",
+          "pitch": "Checklist des pièces adaptée au bien et au vendeur, manquantes signalées, chaque document analysé — avant la rédaction comme avant le compromis.",
+          "source": "verify-mandat"
         },
         {
-          "titre": "Conformité vérifiée",
-          "pitch": "Annonces, mentions obligatoires, process : elle vérifie que tu es en règle avant que quelqu'un d'autre le vérifie pour toi.",
+          "titre": "Ton dernier mandat vérifié depuis Modelo",
+          "pitch": "Elle va chercher ton dernier mandat signé dans ton CRM : durée, exclusivité, honoraires, échéances — recommandations et points d'attention à la clé.",
+          "source": "check-modelo-mandate"
+        },
+        {
+          "titre": "Compromis vérifié avant signature",
+          "pitch": "Conditions suspensives, délais, clause pénale, annexes : elle relit le compromis avant ton rendez-vous chez le notaire.",
+          "source": "analyze-document"
+        },
+        {
+          "titre": "Bail passé au crible",
+          "pitch": "Mentions légales, clauses obligatoires ou interdites, annexes : elle vérifie le bail et te dit ce qui coince.",
+          "source": "analyze-document"
+        },
+        {
+          "titre": "Annonce conforme avant publication",
+          "pitch": "Prix, honoraires, surface, DPE : elle vérifie que ton annonce est en règle avant que quelqu'un d'autre le vérifie pour toi.",
           "source": "check-compliance"
-        },
-        {
-          "titre": "Diagnostics au complet",
-          "pitch": "DPE, amiante, plomb, assainissement… elle contrôle ce qui est présent, valide, et ce qui manque pour vendre.",
-          "source": "check-diagnostics"
         },
         {
           "titre": "Échéancier du portefeuille",
@@ -185,7 +200,7 @@
         },
         {
           "titre": "Recherche dans les textes",
-          "pitch": "Une question de droit immo précise ? Elle cherche dans les sources et répond avec la référence.",
+          "pitch": "Une question de droit immo précise ? Elle cherche dans les sources officielles et répond avec la référence.",
           "source": "search-legal-docs"
         }
       ]
