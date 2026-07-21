@@ -10,7 +10,7 @@
     </div>
     <div class="nav-cta">
       <a class="link-quiet" href="https://app.revaly.io/login">Connexion</a>
-      <button type="button" class="btn small" data-waitlist="solo">Essayer 7 jours</button>
+      <button type="button" class="btn small" data-goto-tarif>Essayer 7 jours</button>
     </div>
   </nav>
 </div>
@@ -22,7 +22,7 @@
     <h1 class="h-in d1"><span class="h1-kick">Agent immobilier,</span><span class="h1-big">recrute ton <em>équipe</em>.</span></h1>
     <p class="sub h-in d2">Six assistants IA autonomes, formés à ton métier, dans tes outils 24 h/24.</p>
     <div class="hero-cta h-in d3">
-      <button type="button" class="btn" data-waitlist="solo">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
+      <button type="button" class="btn" data-goto-tarif>Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
       <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener">Réserver une démo</a>
       <span class="hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</span>
     </div>
@@ -405,7 +405,7 @@
         expirent en silence. Demain matin, ça peut être : post prêt, relances
         rédigées, dossier complet.
       </p>
-      <button type="button" class="btn" data-waitlist="solo" style="margin-top: 28px;">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
+      <button type="button" class="btn" data-goto-tarif style="margin-top: 28px;">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
     </div>
   </section>
@@ -443,7 +443,7 @@
 </footer>
 
 <div class="sticky-cta">
-  <button type="button" class="btn" data-waitlist="solo">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
+  <button type="button" class="btn" data-goto-tarif>Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
   <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" style="margin-left: 10px;">Réserver une démo</a>
 </div>
 
@@ -521,6 +521,16 @@
   }
   document.querySelectorAll('[data-waitlist]').forEach((b) =>
     b.addEventListener('click', () => startCheckout(b.dataset.waitlist)));
+  // CTA génériques (header/hero/CTA final/sticky) : depuis la vente directe,
+  // « Essayer » codé en dur sur solo envoyait au checkout SOLO sans choix
+  // (retour Julien 21/07). Ils amènent désormais à la section tarifs, où le
+  // choix Solo/Agence + Mensuel/Annuel existe ; seules les CARTES déclenchent
+  // le checkout.
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-goto-tarif]').forEach((b) =>
+    b.addEventListener('click', () => {
+      document.getElementById('tarif').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    }));
   document.getElementById('wl-x').addEventListener('click', wlClose);
   wl.addEventListener('click', (e) => { if (e.target === wl) wlClose(); });
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && wl.classList.contains('open')) wlClose(); });

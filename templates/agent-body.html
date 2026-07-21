@@ -10,7 +10,7 @@
     </div>
     <div class="nav-cta">
       <a class="link-quiet" href="https://app.revaly.io/login">Connexion</a>
-      <button type="button" class="btn small" data-waitlist="solo">Essayer 7 jours</button>
+      <button type="button" class="btn small" data-goto-tarif>Essayer 7 jours</button>
     </div>
   </nav>
 </div>
@@ -121,6 +121,9 @@
   }
   document.querySelectorAll('[data-waitlist]').forEach((b) =>
     b.addEventListener('click', () => startCheckout(b.dataset.waitlist)));
+  // CTA génériques → tarifs de la home (choix Solo/Agence là-bas).
+  document.querySelectorAll('[data-goto-tarif]').forEach((b) =>
+    b.addEventListener('click', () => { window.location.href = '/#tarif'; }));
   document.getElementById('wl-x').addEventListener('click', wlClose);
   wl.addEventListener('click', (e) => { if (e.target === wl) wlClose(); });
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && wl.classList.contains('open')) wlClose(); });
