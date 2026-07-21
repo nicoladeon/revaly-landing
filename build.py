@@ -361,15 +361,28 @@ write_page(
 #    webhook stripe-webhook provisionne le compte + workspace et envoie un lien
 #    magique — cette page dit « c'est bon, va voir tes emails ». noindex (page
 #    de tunnel, pas de SEO). ──
-bienvenue_body = '''  <section class="wrap" style="min-height: 62vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 40px; padding-bottom: 60px;">
-    <span class="tag">Paiement confirmé</span>
-    <h1 class="title" style="margin-top: 14px; max-width: 16ch;">Bienvenue. Ton équipe se prépare.</h1>
-    <p class="sub" style="max-width: 52ch; margin-top: 14px;">On vient de t'envoyer un <b>lien de connexion par email</b>. Clique dessus pour ouvrir ton espace Revaly et rencontrer Max &amp; toute l'équipe. Ton essai de 7 jours démarre maintenant — 0 € aujourd'hui, rappel avant la fin, annulation en deux clics.</p>
-    <div class="crsl-actions" style="justify-content: center; margin-top: 30px;">
-      <a class="btn" href="https://app.revaly.io/login">Ouvrir Revaly</a>
-      <a class="btn ghost" href="/">Retour à l'accueil</a>
+bienvenue_body = '''  <section class="wrap" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px 20px 64px; gap: 0;">
+    <a class="logo" href="/" style="font-size: 24px; margin-bottom: 34px;">Revaly<b>.</b></a>
+
+    <div style="width: 100%; max-width: 520px; background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: 0 1px 2px rgba(23,26,33,0.04), 0 12px 40px rgba(23,26,33,0.06); padding: 40px 32px 34px;">
+      <span aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background: rgba(18,183,106,0.12); color: var(--success); margin-bottom: 18px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <p style="font-size: 12px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--success); margin: 0 0 8px;">Paiement confirmé</p>
+      <h1 style="font-size: clamp(28px, 5vw, 38px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; color: var(--ink); margin: 0;">Bienvenue dans ton équipe.</h1>
+
+      <div style="margin-top: 26px; padding: 20px; border-radius: 14px; background: var(--iris-soft); border: 0.5px solid var(--line);">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; font-weight: 600; color: var(--ink);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--iris)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          Ouvre ta boîte mail
+        </div>
+        <p style="font-size: 14.5px; line-height: 1.5; color: var(--muted); margin: 8px 0 0;">On vient de t'envoyer ton <b style="color: var(--ink);">lien de connexion</b>. Clique dessus pour ouvrir ton espace et rencontrer Max &amp; toute l'équipe.</p>
+      </div>
+
+      <p style="font-size: 13px; color: var(--subtle); margin: 20px 0 0;">Essai 7 jours &middot; 0 &euro; aujourd'hui &middot; annulation en deux clics</p>
     </div>
-    <p class="cta-hint" style="margin-top: 22px; max-width: 46ch;">Tu ne vois pas l'email ? Vérifie tes spams, ou réclame un nouveau lien depuis la page de connexion. Un souci ? <a href="mailto:support@revaly.io" style="color: inherit; text-decoration: underline;">support@revaly.io</a>.</p>
+
+    <p class="cta-hint" style="margin-top: 22px; max-width: 42ch; font-size: 13px; color: var(--subtle);">Déjà cliqué le lien ? <a href="https://app.revaly.io/login" style="color: var(--iris); text-decoration: none; font-weight: 500;">Ouvrir Revaly</a>. Pas d'email ? Vérifie tes spams ou écris à <a href="mailto:support@revaly.io" style="color: inherit; text-decoration: underline;">support@revaly.io</a>.</p>
   </section>'''
 write_page(
     "bienvenue/index.html", bienvenue_body,
