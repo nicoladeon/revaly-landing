@@ -101,7 +101,7 @@ def team_blocks():
           <ul class="tb-caps">{caps}</ul>
           <div class="crsl-actions">
             <a class="btn small" href="/agents/{a["slug"]}/">Voir tout ce que {name} sait faire <span class="arr" aria-hidden="true">→</span></a>
-            <button type="button" class="btn ghost small tb-talk" data-waitlist="solo">Discuter avec {name}</button>
+            <button type="button" class="btn ghost small tb-talk" data-goto-tarif>Discuter avec {name}</button>
           </div>
         </div>
       </article>
@@ -144,8 +144,8 @@ def agent_main(a, agents):
       <div>
         <ul class="tb-caps ag-caps">{caps}</ul>
         <div class="crsl-actions">
-          <button type="button" class="btn" data-waitlist="solo">Essayer 7 jours</button>
-          <button type="button" class="btn ghost tb-talk" data-waitlist="solo">Discuter avec {name}</button>
+          <button type="button" class="btn" data-goto-tarif>Essayer 7 jours</button>
+          <button type="button" class="btn ghost tb-talk" data-goto-tarif>Discuter avec {name}</button>
         </div>
         <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
       </div>
@@ -176,7 +176,7 @@ def agent_main(a, agents):
       <p class="ag-recall-t">{name} et toute l'équipe — les six agents — dès <b>97 €/mois</b>.</p>
       <p class="ag-recall-s">Formée à ton métier, disponible 24 h/24, dans tes outils.</p>
       <div class="crsl-actions" style="justify-content: center;">
-        <button type="button" class="btn" data-waitlist="solo">Essayer 7 jours</button>
+        <button type="button" class="btn" data-goto-tarif>Essayer 7 jours</button>
         <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener">Réserver une démo</a>
       </div>
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
@@ -198,7 +198,7 @@ def agents_index_main(agents):
     <p class="sub">Chacun porte un vrai métier de l'agence — clique pour voir sa fiche de poste complète : ce qu'il fait tout seul, et ce qu'il sait faire à la demande.</p>
     <div class="ag-cards">{cards}</div>
     <div style="text-align:center; margin-top: 44px;">
-      <button type="button" class="btn" data-waitlist="solo">Recruter l'équipe — Essayer 7 jours</button>
+      <button type="button" class="btn" data-goto-tarif>Recruter l'équipe — Essayer 7 jours</button>
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
     </div>
   </section>'''
