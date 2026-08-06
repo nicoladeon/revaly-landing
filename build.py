@@ -420,8 +420,34 @@ for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
     shutil.copy(f, ROOT / "dist" / "fonts" / f.name)
 
+# ── 404.html : sa seule présence désactive le fallback SPA de CF Pages (qui
+# répondait 200/index.html sur N'IMPORTE quel chemin → chaque scanner gonflait
+# l'audience de centaines de « pages vues »). Un vrai 404 coupe l'amplificateur. ──
+write_page(
+    "404.html",
+    '''  <section class="wrap" style="min-height: 70vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; padding: 48px 20px 64px;">
+    <p style="font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);">Erreur 404</p>
+    <h1 style="margin: 12px 0 8px;">Cette page n'existe pas</h1>
+    <p style="color: var(--muted); max-width: 34rem;">L'adresse est peut-être erronée, ou la page a été déplacée.</p>
+    <p style="margin-top: 24px;"><a class="btn btn-primary" href="/">Retour à l'accueil</a></p>
+  </section>''',
+    title="Page introuvable — Revaly",
+    desc="Cette page n'existe pas.",
+    path="/404",
+    noindex=True,
+)
+
 # ── robots.txt + sitemap.xml réels (plus de fallback CF Pages en HTML) ──
+# Les crawlers IA/scrapers sont éconduits (poids mort : ~30k hits/mois de datacenters,
+# décision Julien 05/08). Googlebot/Bingbot restent bienvenus (indexation à venir).
+# NE PAS bloquer facebookexternalhit/Twitterbot : ce sont les aperçus de liens (OG).
+_AI_BOTS = ["GPTBot", "ChatGPT-User", "OAI-SearchBot", "CCBot", "ClaudeBot", "Claude-Web",
+            "anthropic-ai", "Google-Extended", "Applebot-Extended", "Bytespider",
+            "Amazonbot", "PerplexityBot", "meta-externalagent", "FacebookBot",
+            "Diffbot", "omgili", "ImagesiftBot", "Timpibot"]
 (ROOT / "dist" / "robots.txt").write_text(
+    "".join(f"User-agent: {b}\n" for b in _AI_BOTS) + "Disallow: /\n\n"
     "User-agent: *\nAllow: /\n\nSitemap: https://revaly.io/sitemap.xml\n")
 urls = "".join(f"<url><loc>https://revaly.io{p}</loc></url>" for p in PAGES)
 (ROOT / "dist" / "sitemap.xml").write_text(
