@@ -173,7 +173,7 @@ def agent_main(a, agents):
 
   <section class="wrap">
     <div class="ag-recall rv">
-      <p class="ag-recall-t">{name} et toute l'équipe — les six agents — dès <b>97 €/mois</b>.</p>
+      <p class="ag-recall-t">{name} et toute l'équipe — les six agents — dès <b>129 € HT/mois</b>.</p>
       <p class="ag-recall-s">Formée à ton métier, disponible 24 h/24, dans tes outils.</p>
       <div class="crsl-actions" style="justify-content: center;">
         <button type="button" class="btn" data-goto-tarif>Essayer 7 jours</button>
@@ -242,10 +242,15 @@ def jsonld_blocks(faq):
          "image": "https://revaly.io/og.jpg",
          "brand": {"@type": "Brand", "name": "Revaly"},
          "offers": [
-             {"@type": "Offer", "name": "Solo", "price": "97",
-              "priceCurrency": "EUR", "url": "https://revaly.io/#tarif"},
-             {"@type": "Offer", "name": "Agence", "price": "229",
-              "priceCurrency": "EUR", "url": "https://revaly.io/#tarif"},
+             # Offre v3 (07/10/2026) : prix HT, TVA en sus.
+             {"@type": "Offer", "name": "Solo", "price": "129",
+              "priceCurrency": "EUR", "url": "https://revaly.io/#tarif",
+              "priceSpecification": {"@type": "UnitPriceSpecification", "price": "129",
+                                     "priceCurrency": "EUR", "valueAddedTaxIncluded": False}},
+             {"@type": "Offer", "name": "Agence", "price": "249",
+              "priceCurrency": "EUR", "url": "https://revaly.io/#tarif",
+              "priceSpecification": {"@type": "UnitPriceSpecification", "price": "249",
+                                     "priceCurrency": "EUR", "valueAddedTaxIncluded": False}},
          ]},
     ]
     return "\n".join(
@@ -286,10 +291,10 @@ body_home = render("home-body.html", {
 write_page(
     "index.html", body_home,
     title="Revaly — L'équipe IA des agents immobiliers",
-    desc="Agent immobilier : recrute ton équipe d'agents IA — annonces, posts, relances, dossiers, mandats — branchée sur Modelo. Rien ne part sans toi. Essai 7 jours, dès 97 €/mois.",
+    desc="Agent immobilier : recrute ton équipe d'agents IA — annonces, posts, relances, dossiers, mandats — branchée sur Modelo. Rien ne part sans toi. Essai 7 jours, dès 129 € HT/mois.",
     path="/",
     og_title="Agent immobilier, recrute ton équipe.",
-    og_desc="Six assistants IA autonomes, formés au métier de conseiller immobilier : annonces, relances, dossiers, mandats, photos. Dans tes outils, 24 h/24. Rien ne part sans toi. Dès 97 €/mois.",
+    og_desc="Six assistants IA autonomes, formés au métier de conseiller immobilier : annonces, relances, dossiers, mandats, photos. Dans tes outils, 24 h/24. Rien ne part sans toi. Dès 129 € HT/mois.",
 )
 
 # ── Page /integrations (task 11) : catalogue searchable depuis data/integrations.json.
