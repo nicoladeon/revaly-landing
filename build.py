@@ -17,13 +17,14 @@ CALENDLY_URL = "https://calendly.com/contact-chiclick/30min"
 # `deno run -A scripts/stripe-setup.ts sk_… <supabase-url>` (le script imprime
 # les 4 URLs). Tant qu'ils sont vides, les CTA retombent proprement sur la liste
 # d'attente (fallback JS) → déployer avant de les remplir ne casse RIEN.
-# ✅ Liens MODE LIVE (21/07) — compte Stripe activé, setup live rejoué (produits
-# + prix HT + Payment Links essai 7 j + webhook + portail, idempotent).
+# ✅ Liens MODE LIVE — offre v3 (08/10/2026) : Solo 129 / 1 393,20 € HT, Agence
+# 249 / 2 689,20 € HT (3 conseillers inclus), essai 7 j, metadata offer=v3.
+# Les liens v2 (97 / 229 €) sont désactivés après la mise en ligne.
 PAYMENT_LINKS = {
-    "solo/monthly": "https://buy.stripe.com/14A9AS2ViaC671jcUuc7u00",
-    "solo/yearly": "https://buy.stripe.com/aFacN4eE039EclD9Iic7u01",
-    "agence/monthly": "https://buy.stripe.com/00w28qbrObGadpHg6Gc7u02",
-    "agence/yearly": "https://buy.stripe.com/cNibJ02VibGadpHf2Cc7u03",
+    "solo/monthly": "https://buy.stripe.com/dRmeVc2Vi39EgBT07Ic7u04",
+    "solo/yearly": "https://buy.stripe.com/6oUeVc67ucKebhz5s2c7u05",
+    "agence/monthly": "https://buy.stripe.com/fZu8wO0NaaC65Xf5s2c7u06",
+    "agence/yearly": "https://buy.stripe.com/4gMeVceE039EgBT7Aac7u07",
 }
 
 repl = {"__CALENDLY__": CALENDLY_URL}
