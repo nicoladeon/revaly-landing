@@ -68,21 +68,27 @@ must(idx.find('id="controle"') < idx.find('id="modelo"') < idx.find('id="preuve"
 # ── Section #preuve (Task 7) : pile de valeur + bande de preuve fusionnée ──
 must("ça coûte combien" in idx, "titre « Recruter cette équipe, en vrai, ça coûte combien ? »")
 text = re.sub(r"<[^>]+>", "", idx)  # copy contiguë hors balises (spans typographiques)
-must("97 €/mois" in text, "chute « Ton équipe : 97 €/mois »")
+must("129 € HT/mois" in text, "chute « Ton équipe : 129 € HT/mois »")
 must("plus de 2 000 €" in text, "total « plus de 2 000 €/mois » (état final statique)")
 # bande de preuve supprimée (retour Julien 16/07)
 must(idx.count('class="vs-row"') == 6, "pile de valeur : 6 lignes de postes")
 must("Tarifs marché sourcés" in idx, "sources des tarifs marché en commentaire HTML")
 
-# ── Section #tarif (Task 8) : pricing 97/229, toggle annuel, garanties, modal ──
+# ── Section #tarif : offre v3 (07/10/2026) 129/249 HT, conseiller ajouté 79, annuel −10 % ──
 text = text.replace("&nbsp;", " ").replace(" ", " ")  # espaces insécables → espaces
-must("97 €" in text, "tarif Solo : 97 €")
-must("229 €" in text, "tarif Agence : 229 €")
-must("970 €" in text, "tarif Solo annuel : 970 €")
-must("2 290 €" in text, "tarif Agence annuel : 2 290 €")
-must("2 mois offerts" in text, "badge toggle : 2 mois offerts")
+must("129 €" in text, "tarif Solo : 129 €")
+must("249 €" in text, "tarif Agence : 249 €")
+must("1 393,20 €" in text, "tarif Solo annuel : 1 393,20 €")
+must("2 689,20 €" in text, "tarif Agence annuel : 2 689,20 €")
+must("−10 %" in text, "badge toggle : −10 %")
+must("3 conseillers inclus" in text, "Agence : 3 conseillers inclus")
+must("79 € HT/mois" in text and "853,20 € HT/an" in text, "conseiller ajouté : 79 € HT/mois · 853,20 € HT/an")
+must("TVA en sus" in text, "mention HT : TVA en sus")
+for old in ("97 €", "229 €", "970 €", "2 290 €", "46 €", "2 mois offerts", "Jusqu'à 5 conseillers"):
+    must(old not in text, f"ancien tarif absent du texte : {old}")
+must("Réseaux sociaux" not in text or "15 €" not in text, "option Réseaux sociaux 15 € NON vendue (reportée)")
 must("Réserve ton essai" in idx, "modal re-titrée « Réserve ton essai »")
-must("≈ 81 €" in text and "≈ 191 €" in text, "équivalents mensuels annualisés ≈ 81 / ≈ 191")
+must("116,10 €" in text and "224,10 €" in text, "équivalents mensuels de l'annuel : 116,10 / 224,10 € HT")
 must("Une assistante à mi-temps, c'est ~1 200 €/mois." in text, "ancrage assistante ~1 200 €/mois")
 must("mailto:support@revaly.io" in idx, "Réseaux → mailto support@revaly.io")
 must("199" not in text, "ancien prix 199 absent du texte")
@@ -134,8 +140,10 @@ must((dist / "logo.png").exists(), "logo.png copié dans dist (cible de Organiza
 product = next(p for p in parsed if p["@type"] == "Product")
 must(product["name"] == "Revaly", "Product : name Revaly")
 offers = product["offers"]
-must([(o["name"], o["price"]) for o in offers] == [("Solo", "97"), ("Agence", "229")],
-     "Offers : Solo 97 + Agence 229")
+must([(o["name"], o["price"]) for o in offers] == [("Solo", "129"), ("Agence", "249")],
+     "Offers : Solo 129 + Agence 249 (HT)")
+for o in offers:
+    must(o["priceSpecification"]["valueAddedTaxIncluded"] is False, "Offer : prix HT (valueAddedTaxIncluded false)")
 for o in offers:
     must(o["@type"] == "Offer" and o["priceCurrency"] == "EUR"
          and o["url"] == "https://revaly.io/#tarif", "Offer : EUR + url #tarif")
