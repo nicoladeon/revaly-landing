@@ -290,18 +290,26 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
 # ── Home ──
 faq = json.loads((ROOT / "data" / "faq.json").read_text())
 # ── Bandes de logos (outils et réseaux) : données dans data/outils.json et data/reseaux.json ──
+_HAUTEUR_LOGO = {"century21.svg": 16, "orpi.svg": 30, "laforet.svg": 22, "iad.svg": 28, "modelo.svg": 28}
+
 def _bande_item(i, copie):
     src = "/" + i["logo"]
-    nom = "" if copie else _esc(i["nom"])
-    img = f'<img src="{_esc(src)}" alt="{nom}" loading="lazy" height="24">'
-    glyphe = i["logo"] and not i["logo"].endswith("modelo.svg") and "/reseaux/" not in i["logo"]
+    fichier = i["logo"].rsplit("/", 1)[-1]
+    glyphe = fichier not in _HAUTEUR_LOGO
+    # alt vide si le nom est déjà écrit à côté (glyphe) ou dans la copie masquée ; sinon alt = nom
+    nom = "" if (copie or glyphe) else _esc(i["nom"])
+    h = _HAUTEUR_LOGO.get(fichier, 24)
+    vb = re.search(r'viewBox="[\d.\-]+ [\d.\-]+ ([\d.]+) ([\d.]+)"', (ROOT / i["logo"]).read_text())
+    w = round(h * float(vb.group(1)) / float(vb.group(2)))  # largeur fixe au ratio : boucle sans saut même si l'image ne charge pas
+    img = f'<img src="{_esc(src)}" alt="{nom}" loading="lazy" width="{w}" height="{h}">'
     txt = f'<span class="bande-nom">{_esc(i["nom"])}</span>' if glyphe else ""
-    return f'<li{"" if glyphe else " class=\"large\""}>{img}{txt}</li>'
+    cls = "" if glyphe else ' class="large"'
+    return f'<li{cls}>{img}{txt}</li>'
 
 def _bande(id_, titre, items, mention=""):
     liste = lambda copie: "".join(_bande_item(i, copie) for i in items)
     return (f'<section class="wrap bande" id="{id_}" aria-label="{_esc(titre)}"><p class="bande-titre">{_esc(titre)}</p>'
-            f'<div class="bande-defile" tabindex="0"><ul>{liste(False)}</ul><ul aria-hidden="true">{liste(True)}</ul></div>'
+            f'<div class="bande-defile" tabindex="0" role="region" aria-label="{_esc(titre)}"><ul>{liste(False)}</ul><ul aria-hidden="true">{liste(True)}</ul></div>'
             + (f'<p class="bande-mention">{_esc(mention)}</p>' if mention else "") + "</section>")
 
 def bande_outils(outils):

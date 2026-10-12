@@ -1,6 +1,6 @@
 # Sources et licences des logos
 
-Relevé le 2026-10-12.
+Relevé le 2026-10-12 (date de téléchargement de chaque fichier ci-dessous, Century 21 compris : 2026-10-12).
 
 | Fichier | Origine | Licence |
 |---|---|---|
@@ -14,7 +14,7 @@ Les marques citées appartiennent à leurs propriétaires. Les glyphes CC0 repr�
 
 Aucun kit presse public n'a été trouvé (orpi.com/presse, laforet.com/presse, iadfrance.fr/presse : 404 ; Wikimedia Commons : seul un JPEG Laforêt, trop pauvre). Les logos viennent des sites officiels des marques, repris tels quels (pas redessinés). Marques déposées de leurs propriétaires : usage de désignation uniquement (citer des agents de ces réseaux), sans suggérer de partenariat.
 
-| Fichier | Origine | Remarque |
+| Fichier | Origine | Remarque (téléchargé le 2026-10-12) |
 |---|---|---|
 | reseaux/orpi.svg | SVG en ligne de l'en-tête de https://www.orpi.com/ (aria-label « Orpi ») | attributs class/style retirés, fill noir ajouté (grisé par CSS) |
 | reseaux/laforet.svg | https://www.laforet.com/images/logo-laforet.svg | inchangé |

@@ -1061,16 +1061,14 @@
     justify-content: space-around; list-style: none; margin: 0; padding: 0; animation: defile 38s linear infinite; }
   .bande-defile:hover ul, .bande-defile:focus-within ul { animation-play-state: paused; }
   .bande-defile li { display: flex; align-items: center; gap: 9px; flex-shrink: 0; height: 28px; white-space: nowrap; }
-  .bande-defile img { height: 24px; width: auto; display: block; filter: grayscale(1); opacity: .62; }
-  .bande-defile li.large img { height: 28px; }
+  .bande-defile img { display: block; flex-shrink: 0; filter: grayscale(1); opacity: .62; }
+  .bande-defile:focus-visible { outline: 2px solid var(--iris); outline-offset: 4px; border-radius: 8px; }
   .bande-defile .bande-nom { font-size: 15px; font-weight: 500; color: var(--muted); }
   .bande-mention { margin: 14px 0 0; font-size: 12px; color: var(--subtle); }
   .bande-portails { margin-top: 10px; margin-bottom: 0; text-align: center; font-size: 15px; color: var(--muted); }
   /* logos à une teinte : aplatis dans le même gris ; Laforêt (deux tons) reste en niveaux de gris */
   #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0); opacity: .5; }
-  #bande-reseaux img[src$="century21.svg"] { height: 16px; }
-  #bande-reseaux img[src$="orpi.svg"] { height: 30px; }
-  #bande-reseaux img[src$="laforet.svg"] { height: 22px; opacity: .55; }
+  #bande-reseaux img[src$="laforet.svg"] { opacity: .55; }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .bande-defile img { filter: grayscale(1) invert(1); opacity: .6; }
     :root:not([data-theme="light"]) #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0) invert(1); opacity: .5; }
