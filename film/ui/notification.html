@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="ui.css">
+<style>
+  body { margin: 0; background: #0E1016; font-family: var(--font-sans); }
+  .page { padding: 40px; display: flex; flex-direction: column; gap: 24px; }
+  .notif { width: 520px; display: grid; grid-template-columns: 48px 1fr; column-gap: 14px; align-items: center;
+    padding: 14px 18px; border-radius: 20px; color: #fff; background: rgb(36, 38, 48); box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset; }
+  .notif img { width: 48px; height: 48px; border-radius: 11px; }
+  .l1 { display: flex; justify-content: space-between; gap: 10px; font-size: 18px; white-space: nowrap; }
+  .l1 b { font-weight: 600; } .l1 .h { font-size: 12px; color: rgba(255,255,255,.55); }
+  .l2 { font-size: 17px; color: rgba(255,255,255,.86); margin-top: 2px; }
+  .notif.clair { color: var(--color-fg); background: #fff; box-shadow: var(--shadow-xl); }
+  .notif.clair .h { color: var(--color-fg-subtle); } .notif.clair .l2 { color: var(--color-fg-muted); }
+</style>
+<title>Notification de l'appli</title></head><body>
+<!-- La notification réelle de l'appli : frontend/public/sw.js (icône
+     /icons/icon-192.png, titre, corps) ; titre « Emma · Rappel de visite à
+     valider » et corps « Camille Durand · ven. 16 oct. 17h15 » tels que les
+     écrit agent-worker/handler.ts (format de _shared/job-subject.ts).
+     Sombre sur le noir (ouverture A), claire sur la porcelaine (ouverture B). -->
+<div class="ui page">
+  <div class="notif"><img src="../assets/icon-192.png" alt=""><div><div class="l1"><span><b>Emma</b> · Rappel de visite à valider</span><span class="h">maintenant</span></div><div class="l2">Camille Durand · ven. 16 oct. 17h15</div></div></div>
+  <div class="notif clair"><img src="../assets/icon-192.png" alt=""><div><div class="l1"><span><b>Emma</b> · Rappel de visite à valider</span><span class="h">maintenant</span></div><div class="l2">Camille Durand · ven. 16 oct. 17h15</div></div></div>
+</div></body></html>

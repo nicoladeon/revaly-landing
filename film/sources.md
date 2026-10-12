@@ -65,5 +65,5 @@ Choix d'ensemble : les plans 1, 2 et 6 viennent du même tournage (même agent, 
 
 ## Usage dans le film (Task 12, 12/10/2026)
 - Étalonnage commun et passage à 30 i/s : `film/grade.sh` → `film/graded/<n>.mp4` (non versionné). Plan 5 recadré de 12 % à gauche (le carton sort du champ), sans dépasser 15 s.
-- Moments utilisés (secondes du plan d'origine) : plan 1 de 0,5 à 4,1 ; plan 2 de 1,6 à 6,0 ; plan 3 de 0,0 à 8,0 ; plan 4 de 0,0 à 6,0 ; plan 5 de 1,8 à 9,8 ; plan 6 de 0,8 à 9,9. Au-delà des moments conseillés (plans 3, 4, 5, 6), les passages ont été relus à raison d'une image par seconde après étalonnage et recadrage : ni logo, ni écran lisible, ni enfant vus.
+- Seuls les moments conseillés ci-dessus sont utilisés ; une scène plus longue que son moment est ralentie (`film/grade.sh`) : plan 1 de 1,0 à 4,75 (ouverture A, vitesse normale) ou de 1,0 à 4,45 (ouverture B, ralenti 0,75) ; plan 2 de 1,5 à 5,9 (A) ou de 1,5 à 6,0 (B, ralenti 0,6) ; plan 3 de 0,0 à 5,0 (ralenti 0,625) ; plan 4 de 0,0 à 5,0 (ralenti 0,83) ; plan 5 de 2,0 à 7,0 (ralenti 0,625) ; plan 6 de 1,0 à 6,0 (ralenti 0,77).
 - `film/assets/post-vendu.jpg` (photo du post « Vendu » de Zoé) : image extraite du plan 6 (même licence Pexels), recadrée et étalonnée comme le film.

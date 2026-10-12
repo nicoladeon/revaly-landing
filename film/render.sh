@@ -1,9 +1,10 @@
 #!/bin/bash
 # Capture image par image de film/film.html puis encodage x264 (chaîne du film
 # KW estim du 19/08, ~/kwestim-video/film/render.sh).
-# Usage : bash film/render.sh TOTAL [sortie.mp4]
-#   bash film/render.sh 300    → film/maquette-10s.mp4   (0:00-0:10)
-#   bash film/render.sh 1350   → film/revaly-45s-muet.mp4
+# Usage : [VARIANTE=A|B] bash film/render.sh TOTAL [sortie.mp4]
+#   bash film/render.sh 300              → film/maquette-10s-A.mp4  (0:00-0:10, ouverture A)
+#   VARIANTE=B bash film/render.sh 300   → film/maquette-10s-B.mp4  (ouverture B)
+#   bash film/render.sh 1350             → film/revaly-45s-muet.mp4 (film.html#A)
 # Prérequis : film/graded/ rempli par film/grade.sh.
 # Le navigateur est un serveur gstack browse sans fenêtre, propre au film
 # (état dans film/.gstack/) : le serveur avec fenêtre du dépôt ne rend pas les
@@ -13,22 +14,29 @@ F="$(cd "$(dirname "$0")" && pwd)"
 export BROWSE_STATE_FILE="$F/.gstack/browse.json"
 OUT="$F/frames"
 FPS=30
-TOTAL="${1:?usage : render.sh TOTAL [sortie.mp4]}"
+TOTAL="${1:?usage : [VARIANTE=A|B] render.sh TOTAL [sortie.mp4]}"
+VARIANTE="${VARIANTE:-A}"
 CHUNK=100
 if [ -n "$2" ]; then MP4="$2"
-elif [ "$TOTAL" -le 300 ]; then MP4="$F/maquette-10s.mp4"
-else MP4="$F/revaly-45s-muet.mp4"; fi
+elif [ "$TOTAL" -le 300 ]; then MP4="$F/maquette-10s-$VARIANTE.mp4"
+elif [ "$VARIANTE" = "A" ]; then MP4="$F/revaly-45s-muet.mp4"
+else MP4="$F/revaly-45s-muet-$VARIANTE.mp4"; fi
 
-for n in 1 2 3 4 5 6; do [ -s "$F/graded/$n.mp4" ] || { echo "film/graded/$n.mp4 absent : lancer film/grade.sh"; exit 1; }; done
+for n in 1 2 1b 2b 3 4 5 6; do [ -s "$F/graded/$n.mp4" ] || { echo "film/graded/$n.mp4 absent : lancer film/grade.sh"; exit 1; }; done
 
 rm -rf "$OUT"; mkdir -p "$OUT"
 "$B" viewport 1920x1080 >/dev/null 2>&1
-"$B" goto "file://$F/film.html" >/dev/null 2>&1
+"$B" goto "file://$F/film.html#$VARIANTE" >/dev/null 2>&1
+"$B" reload >/dev/null 2>&1   # le changement d'ancre seul ne recharge pas la page
 for i in $(seq 1 30); do
   [ "$("$B" js 'window.__ready === true' 2>/dev/null | tr -d '\r')" = "true" ] && break
+  err=$("$B" js 'window.__erreur || ""' 2>/dev/null | tr -d '\r')
+  [ -n "$err" ] && { echo "ÉCHEC chargement : $err"; exit 1; }
   sleep 1
 done
-echo "prêt: $("$B" js 'window.__ready' 2>/dev/null | tr -d '\r')"
+pret=$("$B" js 'window.__ready === true' 2>/dev/null | tr -d '\r')
+echo "prêt ($VARIANTE): $pret"
+[ "$pret" = "true" ] || { echo "ÉCHEC : film.html pas prêt"; exit 1; }
 
 emit() {  # $1=début $2=fin
   python3 -c "
