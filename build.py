@@ -365,7 +365,14 @@ def calculateur_statique():
             + (f'<p class="calc-plafond">Au-delà de {plafond} h par semaine, on arrête de compter.</p>' if r["heures"] >= plafond else "")
             +             f'<ul class="calc-detail" aria-label="Détail par tâche, en minutes par semaine">{lis}</ul>')
 
+# Carte fondateur : photo si assets/fondateur.jpg existe (fournie par Julien), sinon monogramme.
+def fondateur_visuel():
+    if (ROOT / "assets" / "fondateur.jpg").exists():
+        return f'<img class="fondateur-photo" src="{uri("assets/fondateur.jpg", "image/jpeg")}" width="72" height="72" alt="Julien, fondateur de Revaly" />'
+    return '<span class="fondateur-mono" aria-hidden="true">J</span>'
+
 body_home = render("home-body.html", {
+    "FONDATEUR_VISUEL": fondateur_visuel(),
     "CALCUL_STATIQUE": calculateur_statique(),
     "CALCUL_DEFAUT_M": str(CALCUL_DEFAUT[0]), "CALCUL_DEFAUT_V": str(CALCUL_DEFAUT[1]),
     "TEAM_BLOCKS": team_blocks(),

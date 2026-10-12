@@ -98,11 +98,11 @@ must("limité" not in text.lower(), "jamais le mot « limité »")
 must(text.count("0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics") >= 3,
      "micro-texte de désamorçage sous les CTA tarifs + modal")
 
-# ── data/faq.json (Task 2) : 8 Q/R, alimente aussi le schema.org FAQPage ──
+# ── data/faq.json (Task 2, task 10) : 10 Q/R, alimente aussi le schema.org FAQPage ──
 faq_path = ROOT / "data" / "faq.json"
 must(faq_path.exists(), "data/faq.json existe")
 faq = json.loads(faq_path.read_text())
-must(len(faq) == 8, "faq.json : 8 questions")
+must(len(faq) == 10, "faq.json : 10 questions")
 for item in faq:
     must(bool(item.get("question")) and bool(item.get("reponse")), "faq : question+reponse non vides")
     must(item.get("schema") is True, f"faq '{item.get('question')}' : schema=true")
@@ -362,3 +362,32 @@ _js = subprocess.run(["node", "--input-type=module", "-e",
     check=True, capture_output=True, text=True).stdout
 for (m, v), jsr in zip(_cas, json.loads(_js)):
     must(_build.heures_rendues(m, v, _cfg) == jsr, f"formule Python == JS pour ({m},{v})")
+
+# ── Task 10 : confiance, fondateur, FAQ des objections, démo intégrée ──
+_t10 = html.unescape(idx).replace("\u00a0", " ")
+must("Créé par un agent immobilier, pour les agents immobiliers" in _t10, "bloc fondateur")
+must("89 % de réussite sur 53 situations réelles" in _t10 and "mesure interne, octobre 2026" in _t10, "chiffre qualité sourcé")
+must("89&nbsp;% de réussite" in idx or "89 % de réussite" in idx, "espace insécable avant % (chiffre qualité)")
+must(idx.find('id="controle"') < idx.find('id="tarif"') < idx.find('id="faq"'), "ordre confiance → tarif → FAQ")
+_conf = idx.split('id="controle"', 1)[1].split("</section>", 1)[0]
+must("Créé par un agent immobilier" in html.unescape(_conf) and "Modelo reste ton CRM" in html.unescape(_conf), "fondateur et CRM dans Confiance")
+must('class="fondateur ' in _conf and ("<img" in _conf.split('class="fondateur ', 1)[1] or 'class="fondateur-mono"' in _conf), "carte fondateur : photo ou monogramme")
+faqq = [q["question"] for q in json.loads((ROOT / "data" / "faq.json").read_text())]
+for k in ["CRM", "se trompe", "données", "technique", "annule"]:
+    must(any(k.lower() in q.lower() for q in faqq), f"FAQ couvre : {k}")
+must("~10 h" not in idx and "10 h de paperasse" not in idx, "ancien chiffre de 10 h retiré")
+must(any("15 h par semaine" in q for q in faqq), "FAQ : jusqu'à 15 h par semaine")
+_jl = " ".join(re.findall(r'<script type="application/ld\+json">(.*?)</script>', idx, re.S))
+must("se trompe" in _jl and "10 h" not in _jl, "JSON-LD FAQ synchronisé")
+must('class="calendly-inline-widget"' in idx, "démo intégrée en bas")
+must("calendly.event_scheduled" in idx and "rvTrack('demo_reservee')" in idx, "démo réservée mesurée")
+must('e.origin==="https://calendly.com"' in idx, "origine Calendly vérifiée")
+must("https://assets.calendly.com/assets/external/widget.js" in idx and idx.count("assets.calendly.com") == 1, "widget.js d'une seule origine")
+must(not re.search(r'<script[^>]+src="https://assets\.calendly\.com', idx), "widget.js non chargé au chargement de la page")
+must("IntersectionObserver" in idx.split("widget.js", 1)[0][-1500:] or "IntersectionObserver" in idx.split("widget.js", 1)[1][:1500], "widget.js chargé à l'approche")
+_fin = idx.split('id="demo"', 1)[1] if 'id="demo"' in idx else ""
+must('data-track="essai"' in _fin and 'data-track="demo"' in _fin, "appel final : deux boutons mesurés")
+must('href="https://calendly.com/contact-chiclick/30min"' in _fin, "repli sans JS : lien vers Calendly")
+for old in ("97 €", "229 €"):
+    must(old not in _t10, f"ancien prix {old} absent")
+print("OK v3 task 10")

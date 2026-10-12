@@ -20,8 +20,18 @@
     "schema": true
   },
   {
-    "question": "Ça marche avec quels outils ?",
-    "reponse": "Modelo et Netty sont branchés nativement : les agents écrivent directement dans ton CRM, sans export ni copier-coller. Autour, plus de 3 200 outils sont connectables — email, agenda, réseaux sociaux, comptabilité, signature électronique, et bien d'autres. Le catalogue complet, avec recherche par nom ou par catégorie, est sur la page /integrations. Si l'outil que tu utilises déjà n'y est pas encore listé, dis-le-nous : on regarde comment le brancher.",
+    "question": "Et si l'IA se trompe ?",
+    "reponse": "Rien ne part sans toi : chaque message, post ou document arrive en carte « À valider ». Tu corriges en une phrase ou tu refuses, avant tout envoi. On mesure aussi la qualité sur 53 situations réelles avant chaque mise à jour.",
+    "schema": true
+  },
+  {
+    "question": "Je ne suis pas technique, c'est compliqué à installer ?",
+    "reponse": "Quelques minutes : tu branches Modelo, ton agenda et ta boîte mail en quelques clics, puis tu parles à Max comme à un assistant, par écrit ou en vocal, sur Telegram, WhatsApp ou dans l'application. Si tu bloques, on le fait avec toi en démo.",
+    "schema": true
+  },
+  {
+    "question": "J'ai déjà un CRM : je dois en changer ?",
+    "reponse": "Non. Modelo reste ton CRM : l'équipe lit tes biens, tes contacts et tes rendez-vous, et y range ce qu'elle prépare. Ton agenda et ta boîte mail restent les tiens. Rien à migrer.",
     "schema": true
   },
   {
@@ -30,8 +40,8 @@
     "schema": true
   },
   {
-    "question": "« ~10 h de paperasse en moins », d'où ça sort ?",
-    "reponse": "C'est une estimation construite poste par poste, pas un chiffre en l'air. Environ 3 heures par semaine sur les annonces et les posts réseaux sociaux (rédaction, visuels, publication), environ 3 heures sur les relances et les emails, environ 2 heures sur les dossiers (compromis, diagnostics, conformité), et environ 2 heures sur l'agenda et les confirmations de visite. Additionnées, ces tâches représentent environ 10 heures de paperasse par semaine pour un conseiller actif — c'est ce que l'équipe reprend à sa charge. Le temps réellement gagné dépend évidemment de ton volume d'activité.",
+    "question": "Jusqu'à 15 h par semaine, d'où ça sort ?",
+    "reponse": "Du calcul tâche par tâche affiché plus haut : confirmations et rappels de visite, comptes rendus vendeurs, relances de pièces, annonces, posts, avis de valeur, factures. Mets tes propres chiffres dans le calculateur : c'est ton résultat qui compte.",
     "schema": true
   },
   {

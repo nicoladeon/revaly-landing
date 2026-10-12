@@ -208,6 +208,21 @@
       </div>
     </div>
     <p class="proof-note rv">Verrouillé dans le produit : email en brouillon dans ta boîte, post en attente de relecture, action sensible confirmée — toujours.</p>
+
+    <ul class="confiance rv">
+      <li><b>Tu valides tout.</b><span>Chaque message, post ou document arrive en carte « À valider » avant l'envoi.</span></li>
+      <li><b>Modelo reste ton CRM.</b><span>L'équipe y lit et y range, rien à migrer. Ton agenda et ta boîte mail restent les tiens.</span></li>
+      <li><b>Qualité mesurée.</b><span>89&nbsp;% de réussite sur 53 situations réelles <em>(mesure interne, octobre 2026)</em></span></li>
+      <li><b>Tes données restent à toi.</b><span>Elles ne servent qu'à ton équipe, jamais à d'autres.</span></li>
+    </ul>
+
+    <div class="fondateur rv">
+      {{FONDATEUR_VISUEL}}
+      <div class="fondateur-txt">
+        <h3>Créé par un agent immobilier, pour les agents immobiliers</h3>
+        <p><b>Julien</b> · Agent immobilier</p>
+      </div>
+    </div>
   </section>
 
   <!-- ═══════════════ FORMÉS À TON MÉTIER (CRM vivant + radar DPE) ═══════════════ -->
@@ -413,8 +428,8 @@
     <noscript><style>.faq-body { grid-template-rows: 1fr; } .faq-item .chev { display: none; }</style></noscript>
   </section>
 
-  <!-- ═══════════════ CTA FINAL ═══════════════ -->
-  <section class="wrap">
+  <!-- ═══════════════ CTA FINAL + DÉMO INTÉGRÉE ═══════════════ -->
+  <section class="wrap" id="demo">
     <div class="final rv">
       <span class="faces" aria-hidden="true">
         <img class="face" src="__MAX128__" width="52" height="52" alt="" />
@@ -430,9 +445,29 @@
         expirent en silence. Demain matin, ça peut être : post prêt, relances
         rédigées, dossier complet.
       </p>
-      <button type="button" class="btn" data-goto-tarif style="margin-top: 28px;" data-track="essai">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
+      <div class="final-cta">
+        <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
+        <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
+      </div>
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+      <div class="demo-cal">
+        <p class="demo-titre">Ou choisis directement un créneau de démo (30 min, en visio).</p>
+        <div class="calendly-inline-widget" data-url="__CALENDLY__" style="min-width:320px;height:700px"></div>
+      </div>
     </div>
+    <script>
+    (function(){
+      var cal=document.querySelector(".calendly-inline-widget"); if(!cal) return;
+      addEventListener("message",function(e){if(e.origin==="https://calendly.com"&&e.data&&e.data.event==="calendly.event_scheduled")rvTrack('demo_reservee')});
+      var done=false;
+      function charge(){ if(done) return; done=true;
+        var s=document.createElement("script"); s.src="https://assets.calendly.com/assets/external/widget.js"; s.async=true; document.head.appendChild(s); }
+      if("IntersectionObserver" in window){
+        var io=new IntersectionObserver(function(en){ if(en.some(function(x){return x.isIntersecting})){ io.disconnect(); charge(); } },{rootMargin:"600px 0px"});
+        io.observe(cal);
+      } else { addEventListener("load",charge); }
+    })();
+    </script>
   </section>
 </main>
 
