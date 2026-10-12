@@ -304,3 +304,11 @@ print("OK v3 ce que voient tes clients")
 # ── Bloc « Tu peux aussi leur parler » (Task 8) ──
 must('id="parler"' in idx and "Max, relance le notaire pour jeudi" in idx, "bloc conversation")
 print("OK v3 tu peux aussi leur parler")
+
+# ── Ronde de correction 1 (blocs 5, 6, 8) ──
+must('id="connecteurs"' not in idx and "#connecteurs" not in idx, "section #connecteurs retirée de l'accueil")
+must("Visite à 17 h 15, dans 2 h." in idx and "saisie dans Modelo" in idx, "textes des tuiles 1 et 4 précisés")
+must("html.js .conv.armed .msg:not(.on)" in idx, "bulles masquées seulement si le bloc est armé (repli sans observateur)")
+must('role="group"' in idx.split('id="parler"', 1)[1].split("</section>", 1)[0], "conversation : role=group")
+must(idx.count("revealOnce('#clients-voient')") == 1 and "revealOnce('.cv-carte')" not in idx, "un seul déclencheur pour #clients-voient")
+print("OK v3 correction 1")
