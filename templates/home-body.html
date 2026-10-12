@@ -23,21 +23,37 @@
   .hp-pill i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--iris); box-shadow: 0 0 0 3px var(--iris-soft); }
   .hp-hero h1 {
     margin: 16px auto 0; max-width: 980px;
-    font-size: clamp(39px, 5.6vw, 70px); font-weight: 500; line-height: 1.02; letter-spacing: -0.045em;
+    font-size: clamp(39px, 5.4vw, 68px); font-weight: 500; line-height: 1.02; letter-spacing: -0.045em;
   }
   .hp-hero h1 .iris { color: var(--iris); }
   .hp-lede { margin: 16px auto 0; max-width: 730px; font-size: clamp(16.5px, 1.5vw, 19px); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
-  .hp-cta { margin-top: 24px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-  .hp-cta .btn { min-height: 52px; padding: 13px 26px; font-size: 16.5px; justify-content: center; }
-  .hp-rassure { margin: 14px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
-  .hp-rassure .nw { white-space: nowrap; }
+  /* Un seul bouton principal ; la démo reste à portée, en lien (elle ne concurrence pas l'essai) */
+  .hp-cta { margin-top: 24px; display: flex; justify-content: center; align-items: center; gap: 8px 26px; flex-wrap: wrap; }
+  .hp-cta .btn { min-height: 54px; padding: 14px 36px; font-size: 17px; justify-content: center; }
+  .hp-demo {
+    display: inline-flex; align-items: center; min-height: 48px; font-size: 16px; font-weight: 500; color: var(--ink);
+    text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 5px;
+  }
+  .hp-demo:hover { text-decoration-color: var(--ink); }
+  .hp-micro { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+  .hp-fond { margin: 8px 0 0; min-height: 1.6em; font-size: 14px; }
+  .hp-fond a { color: var(--iris-ink); font-weight: 500; text-underline-offset: 4px; }
+  .hp-rassure { list-style: none; margin: 14px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .hp-rassure li {
+    display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px 6px 10px; border-radius: 999px;
+    background: var(--raised); border: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--ink);
+  }
+  .hp-rassure svg { width: 15px; height: 15px; flex: none; color: var(--iris-ink); }
   @media (max-width: 520px) {
-    .hp-cta { flex-wrap: nowrap; }
-    .hp-cta .btn { flex: 1 1 0; min-width: 0; padding: 12px 8px; font-size: 15.5px; }
+    .hp-cta { flex-wrap: nowrap; gap: 16px; }
+    .hp-cta .btn { flex: 1 1 auto; padding: 14px 16px; font-size: 16.5px; }
+    .hp-demo { flex: none; font-size: 15px; }
+    .hp-rassure { gap: 4px 14px; margin-top: 14px; }
+    .hp-rassure li { padding: 0; background: none; border: 0; font-size: 13px; color: var(--muted); }
   }
 
   /* Le tableau « En ce moment chez toi » : six personnages, une pastille d'état chacun */
-  .board-zone { position: relative; margin: clamp(30px, 3.4vw, 40px) auto 0; }
+  .board-zone { position: relative; margin: clamp(26px, 2.6vw, 32px) auto 0; }
   .board-zone::before {
     content: ""; position: absolute; z-index: -1; left: 8%; right: 8%; top: 12%; bottom: -6%;
     border-radius: 50%; pointer-events: none; filter: blur(48px);
@@ -63,6 +79,11 @@
   .board-pause[aria-pressed="true"] .ico-play { display: block; }
   html:not(.js) .board-pause { display: none; }
   .bd-grille { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; }
+  .board-pied {
+    display: flex; align-items: center; justify-content: center; gap: 8px; margin: 16px 4px 0; padding-top: 14px;
+    border-top: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--ink); text-align: center;
+  }
+  .board-pied svg { width: 16px; height: 16px; flex: none; color: var(--iris-ink); }
   @media (min-width: 641px) and (max-width: 999px) { .board-zone { max-width: 680px; } }
   .bd { min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
   .bd-photo {
@@ -530,9 +551,15 @@
       <p class="hp-lede">{{HERO_SOUS_TITRE}}</p>
       <div class="hp-cta">
         <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
-        <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
+        <a class="hp-demo" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
       </div>
-      <p class="hp-rassure"><span class="nw">Branché sur Modelo ·</span> <span class="nw">Sans engagement ·</span> <span class="nw">Rien ne part sans toi</span></p>
+      <p class="hp-micro">0 € aujourd'hui · Annulable en 2 clics</p>
+      {{FONDATEURS_HERO}}
+      <ul class="hp-rassure" aria-label="Garanties">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22v-5" /><path d="M15 8V2" /><path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z" /><path d="M9 8V2" /></svg>Branché sur Modelo</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></svg>Sans engagement</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></svg>Rien ne part sans toi</li>
+      </ul>
     </div>
 
     <div class="wrap hp-wide">
@@ -546,6 +573,7 @@
             </button>
           </div>
           <ul class="bd-grille" aria-labelledby="board-titre">{{HERO_EQUIPE}}</ul>
+          <p class="board-pied"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m16 9-5.5 5.5L8 12" /></svg>Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides.</p>
         </div>
       </div>
       <button type="button" id="voir-film" class="film-btn" data-track="film" aria-haspopup="dialog">
@@ -1231,6 +1259,8 @@
     }, { threshold: th }).observe(ap);
   })();
 </script>
+
+{{FONDATEURS_JS}}
 
 <!-- JSON-LD généré par build.py : FAQPage (faq.json schema:true) + Organization + Product/Offers -->
 {{JSONLD}}

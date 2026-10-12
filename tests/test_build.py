@@ -248,7 +248,8 @@ print("OK v3 données et texte")
 # ── Task 3 : haut de page v3 ──
 _txt = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 must("Ton équipe travaille. Toi, tu es avec tes clients." not in _txt and "Ton équipe travaille" not in idx, "ancien titre absent")
-must("Branché sur Modelo · Sans engagement · Rien ne part sans toi" in _txt, "réassurance")
+_ras = idx.split('class="hp-rassure"', 1)[1].split("</ul>", 1)[0]
+must(all(x in _ras for x in ("Branché sur Modelo", "Sans engagement", "Rien ne part sans toi")), "réassurance : Branché sur Modelo, Sans engagement, Rien ne part sans toi")
 must('id="voir-film"' in idx and 'id="film-dialog"' in idx, "lecteur du film")
 must('data-track="film"' in idx and "Voir le film (45 s)" in idx, "« Voir le film (45 s) » mesuré")
 must("assistants IA" not in idx and "Autonome, 24 h/24" not in idx, "ancienne promesse retirée")
@@ -404,6 +405,10 @@ must(idx.count("<h1") == 1, "un seul H1")
 must("6 agents IA spécialistes de l'immobilier" in _hero_txt, "sur-titre")
 must("Visites confirmées, vendeurs informés, mandats suivis, posts prêts. Pendant que tu es sur le terrain, ton équipe avance. Toi, tu valides d'un geste." in _hero_txt, "sous-titre exact")
 must('data-track="essai"' in _hero and 'data-track="demo"' in _hero and ">Essayer 7 jours<" in _hero and ">Réserver une démo<" in _hero, "deux boutons du haut mesurés")
+must(re.search(r'<a class="hp-demo"[^>]*data-track="demo">Réserver une démo</a>', _hero), "la démo en lien secondaire, l'essai seul bouton principal")
+must("0 € aujourd'hui · Annulable en 2 clics" in _hero_txt, "ligne de risque sous le bouton principal")
+must("Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides." in _hero_txt, "mode supervisé visible dans le tableau")
+must(idx.count('rel="preload" as="image"') == 6, "les six visages du haut préchargés")
 must("En ce moment chez toi :" in _hero_txt, "ligne « En ce moment chez toi : »")
 must(_hero.find('id="board"') < _hero.find('id="voir-film"'), "« Voir le film » sous la rangée")
 _ea = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
@@ -478,3 +483,17 @@ must([f.name for f in (dist / "fonts").iterdir()] == ["geist-var.woff2"], "une s
 must(not re.search(r'(?<!data-)poster="film/poster.jpg"', idx) and 'data-poster="film/poster.jpg"' in idx, "image du film demandée seulement à l'ouverture")
 must(re.findall(r"<h([1-6])", idx.split("<footer", 1)[1])[:1] == ["2"], "pied de page : titres de niveau 2 (pas de saut h2 → h4)")
 print("OK nettoyage")
+
+# ── Offre fondateurs : absente tant que le lien et l'API ne sont pas posés ; sinon compteur réel, 2 s max ──
+must(_build.FONDATEURS_LINK == "" and _build.FONDATEURS_API == "", "offre fondateurs livrée éteinte")
+must("data-fondateurs" not in idx and "Offre fondateurs" not in idx and "99 €" not in idx and "offre-fondateurs" not in idx, "aucune trace de l'offre fondateurs quand elle est éteinte")
+_f = _build.fondateurs_blocs("https://buy.stripe.com/test_fondateurs", "https://api.revaly.io/fondateurs")
+must(_f["FONDATEURS_HERO"].count("data-fondateurs hidden") == 1 and _f["FONDATEURS_TARIF"].count("data-fondateurs hidden") == 1, "blocs masqués tant que le compteur n'a pas répondu")
+must("Solo à 99 € HT/mois à vie pour les 100 premiers" in _f["FONDATEURS_HERO"] and "99 € HT/mois à vie pour les 100 premiers" in _f["FONDATEURS_TARIF"], "texte de l'offre")
+must('href="https://buy.stripe.com/test_fondateurs"' in _f["FONDATEURS_TARIF"] and 'data-track="fondateurs"' in _f["FONDATEURS_TARIF"], "lien de l'offre mesuré")
+_js = _f["FONDATEURS_JS"]
+must("setTimeout(() => ctl.abort(), 2000)" in _js and "d.ouvert === true" in _js and "Number.isInteger(d.places_restantes)" in _js
+     and "d.places_restantes > 0" in _js and ".catch(() => {})" in _js, "compteur réel : 2 s max, ouvert, nombre entier > 0, sinon rien")
+must(not re.search(r"\b\d{2,3}\b", re.sub(r"2000|99|100", "", _js)), "aucun nombre de places écrit en dur")
+must(".hp-fond { margin: 8px 0 0; min-height: 1.6em;" in idx, "place réservée dans le haut (aucun décalage à l'affichage du compteur)")
+print("OK offre fondateurs")

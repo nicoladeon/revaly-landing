@@ -31,6 +31,14 @@ PAYMENT_LINKS = {
     "agence/yearly": "https://buy.stripe.com/4gMeVceE039EgBT7Aac7u07",
 }
 
+# Offre fondateurs (décision Julien 12/10) : Solo à 99 € HT/mois à vie pour les 100 premiers, compteur RÉEL.
+# Vides = l'offre n'existe pas sur la page (aucun balisage, aucun script). À POSER quand le backend est en ligne :
+# FONDATEURS_LINK = Payment Link Stripe de l'offre ; FONDATEURS_API = point d'accès public qui renvoie
+# {"places_restantes": N, "ouvert": true|false} (CORS ouvert à revaly.io). Lu à l'affichage, 2 s maximum ;
+# appel en échec, fermé ou 0 place : rien ne s'affiche et l'offre normale reste.
+FONDATEURS_LINK = ""
+FONDATEURS_API = ""
+
 repl = {"__CALENDLY__": CALENDLY_URL}
 repl["__META_PIXEL_ID__"] = META_PIXEL_ID
 repl["__CALCUL_JSON__"] = json.dumps(json.loads((ROOT / "data" / "calculateur.json").read_text()), ensure_ascii=False).replace("</", "<\\/")
@@ -275,14 +283,14 @@ def jsonld_blocks(faq):
         + "</script>" for b in blocks)
 
 def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
-               og_title: str = None, og_desc: str = None, noindex: bool = False):
+               og_title: str = None, og_desc: str = None, noindex: bool = False, head: str = ""):
     # og_title/og_desc par défaut = title/desc (comportement générique pour les pages
     # futures). La home fournit les siens explicitement : ses og:title/og:description
     # actuels diffèrent du <title>/meta description → nécessaire pour l'iso-rendu task 1.
     shell = render("_shell.html", {
         "TITLE": title, "DESCRIPTION": desc,
         "CANONICAL": f"https://revaly.io{path}",
-        "OG_TITLE": og_title or title, "OG_DESC": og_desc or desc, "BODY": body,
+        "OG_TITLE": og_title or title, "OG_DESC": og_desc or desc, "BODY": body, "HEAD_EXTRA": head,
     })
     for token, value in repl.items():
         shell = shell.replace(token, value)
@@ -377,6 +385,29 @@ def calculateur_statique():
             + (f'<p class="calc-plafond">Au-delà de {plafond} h par semaine, on arrête de compter.</p>' if r["heures"] >= plafond else "")
             +             f'<ul class="calc-detail" aria-label="Détail par tâche, en minutes par semaine">{lis}</ul>')
 
+def fondateurs_blocs(link, api):
+    """Offre fondateurs : rien tant que le lien ou l'API manquent. Sinon, des emplacements à hauteur réservée
+    (aucun décalage), masqués, révélés seulement si l'API répond « ouvert » avec un nombre de places > 0."""
+    if not (link and api):
+        return {"FONDATEURS_HERO": "", "FONDATEURS_TARIF": "", "FONDATEURS_JS": ""}
+    if not (link.startswith("https://") and api.startswith("https://")):
+        raise SystemExit("FONDATEURS_LINK et FONDATEURS_API doivent être des URL https://")
+    lien = html.escape(link, quote=True)
+    hero = ('<p class="hp-fond"><a href="#offre-fondateurs" data-fondateurs hidden data-track="fondateurs">'
+            'Offre fondateurs : Solo à 99 € HT/mois à vie pour les 100 premiers · <b data-fond-n></b></a></p>')
+    tarif = ('<div class="fond-carte" id="offre-fondateurs"><div data-fondateurs hidden>'
+             '<p class="fond-titre">Offre fondateurs</p>'
+             '<p class="fond-prix">99 € HT/mois à vie pour les 100 premiers — <b data-fond-n></b></p>'
+             f'<a class="btn" href="{lien}" data-track="fondateurs">Profiter de l\'offre fondateurs</a></div></div>')
+    js = ('<script>(() => { const api = ' + json.dumps(api) + '; const blocs = document.querySelectorAll("[data-fondateurs]");'
+          ' const ctl = new AbortController(); const delai = setTimeout(() => ctl.abort(), 2000);'
+          ' fetch(api, { signal: ctl.signal, cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).then((d) => {'
+          ' const n = d && d.ouvert === true && Number.isInteger(d.places_restantes) && d.places_restantes > 0 ? d.places_restantes : 0;'
+          ' if (!n) return;'
+          ' document.querySelectorAll("[data-fond-n]").forEach((el) => { el.textContent = n === 1 ? "il reste 1 place" : "il reste " + n + " places"; });'
+          ' blocs.forEach((el) => { el.hidden = false; }); }).catch(() => {}).finally(() => clearTimeout(delai)); })();</script>')
+    return {"FONDATEURS_HERO": hero, "FONDATEURS_TARIF": tarif, "FONDATEURS_JS": js}
+
 # Carte fondateur : photo si assets/fondateur.jpg existe (fournie par Julien), sinon monogramme.
 def fondateur_visuel():
     if (ROOT / "assets" / "fondateur.jpg").exists():
@@ -387,6 +418,7 @@ HERO_SOUS_TITRE = ("Visites confirmées, vendeurs informés, mandats suivis, pos
                    "sur le terrain, ton équipe avance. Toi, tu valides d'un geste.")
 body_home = render("home-body.html", {
     "HERO_SOUS_TITRE": HERO_SOUS_TITRE,
+    **fondateurs_blocs(FONDATEURS_LINK, FONDATEURS_API),
     "FONDATEUR_VISUEL": fondateur_visuel(),
     "CALCUL_STATIQUE": calculateur_statique(),
     "CALCUL_DEFAUT_M": str(CALCUL_DEFAUT[0]), "CALCUL_DEFAUT_V": str(CALCUL_DEFAUT[1]),
@@ -405,6 +437,9 @@ write_page(
     path="/",
     og_title="Une équipe d'agents IA qui travaille vraiment pour toi.",
     og_desc=HERO_SOUS_TITRE,
+    # Les six visages du haut de page sont demandés tout de suite (affichage rapide sur mobile)
+    head="".join(f'<link rel="preload" as="image" type="image/webp" href="/assets/equipe/boucles/{k}@256.webp" fetchpriority="high" />'
+                 for k in ["max", "emma", "lucas", "christine", "zoe", "raphael"]),
 )
 
 # ── Page /integrations (task 11) : catalogue searchable depuis data/integrations.json.
