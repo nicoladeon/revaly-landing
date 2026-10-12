@@ -45,9 +45,12 @@ révélation finale « ce que voient tes clients ».
 | 0:34–0:40 | Révélation : l'acquéreur reçoit sa confirmation, le vendeur son point, le notaire sa facture | Le côté droit se replie : une seule personne serre la main de son client |
 | 0:40–0:45 | « Ton équipe travaille. Toi, tu es avec tes clients. » « Jusqu'à 15 h par semaine rendues. Plus rien d'oublié. » | Logo + « Essayer 7 jours » · « Réserver une démo » |
 
-- **Moitié gauche** : **vraies images filmées par Julien** (décision : option A). Liste de
-  tournage en annexe A. En attendant, images provisoires (photos fixes floutées) pour ne
-  pas bloquer le montage.
+- **Moitié gauche** : **vidéos de banque d'images** (décision de Julien du 12/10 : il ne
+  filme pas). Licence commerciale obligatoire et conservée (Pexels / Pixabay en licence
+  libre, ou achat Adobe Stock / Storyblocks si un plan manque), cadrées sur les situations
+  (mains, clés, café, porte qui s'ouvre, repas) pour que chaque agent s'y projette ; même
+  étalonnage chaud sur tous les plans pour l'unité. Liste des plans recherchés en annexe A ;
+  la source et la licence de chaque plan sont notées dans `film/sources.md`.
 - **Moitié droite** : le **vrai produit** (cartes « À valider », fil de Max, page
   Routines, Telegram) recréé fidèlement en HTML à partir des composants réels de l'app,
   et les **six personnages 3D validés le 09/10** (sources `revaly-brand`, contrat
@@ -125,13 +128,13 @@ produit ; traduction ; la vitrine reste masquée en Polynésie française (commi
 
 ## 8. Risques
 
-- Les images de Julien tardent → images provisoires, film publiable sans elles mais
-  moins fort.
+- Plans de banque d'images trop génériques ou d'acteurs différents → cadrage sur les
+  situations plutôt que les visages, étalonnage commun ; un plan payant si besoin.
 - Un chiffre contesté → chaque chiffre a sa source écrite (§2).
 - Poids de la page → film en vidéo compressée (H.264/VP9), poster d'abord, chargement
   différé.
 
-## Annexe A — liste de tournage pour Julien (téléphone, à l'horizontale, 4 à 5 s chacun)
+## Annexe A — plans recherchés en banque d'images (horizontal, 4 à 5 s chacun)
 
 1. Toi qui ouvres la porte d'une maison et fais entrer un couple (de dos ou de trois quarts).
 2. Toi qui montres une pièce lumineuse, geste de la main.
@@ -140,5 +143,5 @@ produit ; traduction ; la vitrine reste masquée en Polynésie française (commi
 5. Un repas en famille le soir, lumière chaude (sans visage d'enfant identifiable).
 6. Une remise de clés ou une poignée de main devant une maison.
 
-Conseils : lumière naturelle, téléphone stable, aucun écran de téléphone lisible avec des
-données réelles, accord écrit des personnes filmées.
+Critères : lumière naturelle, décors crédibles en France, aucun logo ou écran lisible,
+licence commerciale vérifiée et archivée pour chaque plan.
