@@ -452,16 +452,26 @@
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
       <div class="demo-cal">
         <p class="demo-titre">Ou choisis directement un créneau de démo (30 min, en visio).</p>
-        <div class="calendly-inline-widget" data-url="__CALENDLY__" style="min-width:320px;height:700px"></div>
+        <div class="calendly-inline-widget" data-url="__CALENDLY__?primary_color=6366f1&amp;hide_gdpr_banner=1" style="min-width:320px;height:700px">
+          <p class="demo-repli"><a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Ouvrir le calendrier des démos</a></p>
+        </div>
       </div>
     </div>
     <script>
     (function(){
       var cal=document.querySelector(".calendly-inline-widget"); if(!cal) return;
+      var box=cal.parentNode;
       addEventListener("message",function(e){if(e.origin==="https://calendly.com"&&e.data&&e.data.event==="calendly.event_scheduled")rvTrack('demo_reservee')});
       var done=false;
+      function repli(){ box.classList.add("repli"); }
       function charge(){ if(done) return; done=true;
-        var s=document.createElement("script"); s.src="https://assets.calendly.com/assets/external/widget.js"; s.async=true; document.head.appendChild(s); }
+        var dark=document.documentElement.getAttribute("data-theme")==="dark"||(document.documentElement.getAttribute("data-theme")!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);
+        if(dark) cal.setAttribute("data-url",cal.getAttribute("data-url")+"&background_color=141822&text_color=f2f3f7");
+        var s=document.createElement("script"); s.src="https://assets.calendly.com/assets/external/widget.js"; s.async=true;
+        s.onerror=repli; document.head.appendChild(s);
+        var n=0, iv=setInterval(function(){ n++;
+          if(cal.querySelector("iframe")){ clearInterval(iv); box.classList.add("ok"); }
+          else if(n>=16){ clearInterval(iv); repli(); } },500); }
       if("IntersectionObserver" in window){
         var io=new IntersectionObserver(function(en){ if(en.some(function(x){return x.isIntersecting})){ io.disconnect(); charge(); } },{rootMargin:"600px 0px"});
         io.observe(cal);

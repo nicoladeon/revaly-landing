@@ -1186,11 +1186,15 @@
   :root[data-theme="dark"] .fondateur-mono { color: var(--iris); }
   @media (max-width: 480px) { .fondateur { padding: 16px; gap: 14px; } .fondateur-mono, .fondateur-photo { width: 56px; height: 56px; font-size: 26px; } }
   .final-cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 28px; }
-  .demo-cal { margin: 40px auto 0; max-width: 820px; width: 100%; min-width: 0; text-align: center; }
+  .demo-cal { display: none; margin: 40px auto 0; max-width: 820px; width: 100%; min-width: 0; text-align: center; }
   .demo-titre { font-size: 15px; color: var(--muted); margin: 0 0 14px; }
   .demo-cal .calendly-inline-widget { border-radius: 18px; overflow: hidden; border: 0.5px solid var(--line); background: var(--raised); max-width: 100%; }
   .demo-cal iframe { max-width: 100%; }
   #demo { overflow-x: clip; }
+  html.js .demo-cal { display: block; }
+  .demo-repli { margin: 0; padding: 24px 16px; text-align: center; }
+  .demo-cal.ok .demo-repli { display: none; }
+  .demo-cal.repli .calendly-inline-widget { height: auto !important; min-height: 0; border: 0; background: none; }
 </style>
 
 <!-- Mesure d'audience sans cookie — Plausible (filtre bots, vrais navigateurs).

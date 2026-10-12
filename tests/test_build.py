@@ -390,4 +390,9 @@ must('data-track="essai"' in _fin and 'data-track="demo"' in _fin, "appel final 
 must('href="https://calendly.com/contact-chiclick/30min"' in _fin, "repli sans JS : lien vers Calendly")
 for old in ("97 €", "229 €"):
     must(old not in _t10, f"ancien prix {old} absent")
+_box = idx.split('class="calendly-inline-widget"', 1)[1].split("</div>", 1)[0]
+must('class="demo-repli"' in _box and 'href="https://calendly.com/contact-chiclick/30min"' in _box and 'data-track="demo"' in _box, "boîte Calendly : lien de repli dedans")
+must("primary_color=6366f1" in idx and "hide_gdpr_banner=1" in idx, "paramètres Calendly (couleur, bandeau)")
+must(re.search(r"\.demo-cal \{ display: none", idx) and "html.js .demo-cal { display: block; }" in idx, "boîte et phrase visibles seulement avec JS")
+must("s.onerror=repli" in idx and "n>=16" in idx, "repli si widget.js échoue ou iframe absente sous 8 s")
 print("OK v3 task 10")
