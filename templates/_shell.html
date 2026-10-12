@@ -1112,12 +1112,19 @@
   }
   /* ── Tu peux aussi leur parler : la conversation se joue message par message (600 ms) ── */
   /* ── Calculateur de temps rendu ── */
-  .calc { display: grid; gap: 32px; grid-template-columns: 1fr; align-items: start; }
-  @media (min-width: 900px) { .calc { grid-template-columns: 1fr minmax(0, 480px); gap: 56px; } }
-  .calc-carte { background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-md); padding: 26px; display: none; }
-  .calc-actif .calc-carte { display: block; }
+  .calc { display: grid; gap: 36px; grid-template-columns: 1fr; }
+  .calc-carte, .calc-statique { background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-md); padding: 26px; }
+  .calc-carte { display: none; gap: 28px; grid-template-columns: 1fr; }
+  .calc-actif .calc-carte { display: grid; }
   .calc-actif .calc-statique { display: none; }
-  .calc-statique { margin: 22px 0 0; font-size: 17px; line-height: 1.6; color: var(--ink); font-weight: 500; }
+  @media (min-width: 900px) {
+    .calc-carte { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 48px; padding: 36px; align-items: start; }
+    .calc-carte .calc-champs { grid-template-columns: 1fr; gap: 18px; }
+    .calc-carte .calc-resultat { margin-top: 0; padding-top: 0; border-top: 0; }
+  }
+  @media (max-width: 760px) { #calculateur { padding-bottom: calc(var(--rv-sticky-h, 122px) + 32px); } }
+  .calc-statique .calc-resultat { margin-top: 0; padding-top: 0; border-top: 0; }
+  .calc-plafond { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
   .calc-champs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   @media (max-width: 340px) { .calc-champs { grid-template-columns: 1fr; } }
   .calc-champ { display: flex; flex-direction: column; justify-content: flex-end; }

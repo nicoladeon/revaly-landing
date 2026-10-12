@@ -344,19 +344,21 @@ calc = idx.split('id="calculateur"', 1)[1].split("</section>", 1)[0]
 for t in ["Mandats signés par mois", "Visites par mois", 'aria-live="polite"', 'inputmode="numeric"',
           "Calcul indicatif à partir de durées moyennes par tâche."]:
     must(t.lower() in html.unescape(calc).lower(), f"calculateur : {t}")
-must("15 h" not in html.unescape(calc), "aucun chiffre plafond hors détail dans le bloc statique")
-must("calc-statique" in calc and "{{" not in calc and "undefined" not in calc and "NaN" not in calc, "repli sans JavaScript rendu")
+_cfg = json.loads((ROOT / "data" / "calculateur.json").read_text())
+stat = calc.split('class="calc-statique"', 1)[1].split('class="calc-carte"', 1)[0]
+must("{{" not in calc and "undefined" not in calc and "NaN" not in calc, "repli sans JavaScript rendu")
+must(all(html.escape(t["libelle"], quote=False) in stat for t in _cfg["taches"]) and stat.count("<li>") == len(_cfg["taches"]),
+     "bloc statique : les 8 tâches avec leur détail")
+must("jusqu'à 15 h" not in html.unescape(calc.split('class="calc-statique"', 1)[0]).lower(), "intro sans chiffre plafond seul")
+must(f"Au-delà de {_cfg['plafond_heures_semaine']} h par semaine, on arrête de compter." in html.unescape(calc), "phrase de plafond (page)")
+must("Total arrondi à la demi-heure." in calc, "note d'arrondi")
 # La formule Python (phrase sans JS) et la formule JS donnent le même résultat.
 sys.path.insert(0, str(ROOT))
-_src = (ROOT / "build.py").read_text()
-_ns = {}
-_start = _src.index("def _arrondi"); _end = _src.index("def _h_fr")
-exec("import math\n" + _src[_start:_end], _ns)
-_cfg = json.loads((ROOT / "data" / "calculateur.json").read_text())
+import build as _build  # relance la construction (idempotente, sans réseau) ; évite d'extraire du texte
 _cas = [(8, 40), (0, 0), (1, 1), (3, 17), (25, 120), (60, 300), (200, 400), (10000, 10000), (-5, 12), (7, 0)]
 _js = subprocess.run(["node", "--input-type=module", "-e",
     f"import {{heuresRendues}} from '{ROOT}/assets/calcul.js';import cfg from '{ROOT}/data/calculateur.json' with {{type:'json'}};"
     f"console.log(JSON.stringify({json.dumps(_cas)}.map(([m,v])=>heuresRendues(m,v,cfg))))"],
     check=True, capture_output=True, text=True).stdout
 for (m, v), jsr in zip(_cas, json.loads(_js)):
-    must(_ns["heures_rendues"](m, v, _cfg) == jsr, f"formule Python == JS pour ({m},{v})")
+    must(_build.heures_rendues(m, v, _cfg) == jsr, f"formule Python == JS pour ({m},{v})")

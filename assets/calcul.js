@@ -20,7 +20,7 @@ function brancher() {
   if (!cfgEl || !racine) return;
   const cfg = JSON.parse(cfgEl.textContent);
   const champM = racine.querySelector("#calc-mandats"), champV = racine.querySelector("#calc-visites");
-  const sortie = racine.querySelector("#calc-resultat"), liste = racine.querySelector("#calc-detail");
+  const sortie = racine.querySelector("#calc-resultat"), notePlafond = racine.querySelector("#calc-plafond"), liste = racine.querySelector("#calc-detail");
   // Valeur saisie → entier borné ; vide, texte ou négatif → 0 (champ vidé, jamais de NaN affiché).
   const lire = (champ, max) => {
     const n = Math.floor(Number(String(champ.value).replace(",", ".")));
@@ -33,6 +33,7 @@ function brancher() {
     if (e && e.target === champV && Number(champV.value) > MAX_VISITES) champV.value = MAX_VISITES;
     const r = heuresRendues(m, v, cfg);
     const plafond = r.heures >= cfg.plafond_heures_semaine;
+    notePlafond.hidden = !plafond;
     sortie.innerHTML = "";
     const b = document.createElement("b");
     b.textContent = plafond ? `${cfg.plafond_heures_semaine} h ou plus` : `${fr(r.heures)} h`;

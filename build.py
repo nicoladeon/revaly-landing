@@ -355,9 +355,15 @@ def _h_fr(h):
     return (str(int(h)) if h == int(h) else str(h)).replace(".", ",")
 
 def calculateur_statique():
+    """Repli sans JavaScript : l'exemple par défaut, avec le détail par tâche (jamais un chiffre sans son détail)."""
     r = heures_rendues(*CALCUL_DEFAUT, CALCUL_CFG)
-    return (f'Pour {CALCUL_DEFAUT[0]} mandats et {CALCUL_DEFAUT[1]} visites par mois, '
-            f'c\'est environ {_h_fr(r["heures"])} h par semaine rendues.')
+    plafond = CALCUL_CFG["plafond_heures_semaine"]
+    total = f"{plafond} h ou plus" if r["heures"] >= plafond else f'{_h_fr(r["heures"])} h'
+    lis = "".join(f'<li><span>{_esc(d["libelle"])}</span><span>{d["minutes"]} min</span></li>' for d in r["detail"])
+    return (f'<p class="calc-resultat">Pour {CALCUL_DEFAUT[0]} mandats et {CALCUL_DEFAUT[1]} visites par mois : '
+            f'≈ <b>{total}</b> par semaine rendues.</p>'
+            + (f'<p class="calc-plafond">Au-delà de {plafond} h par semaine, on arrête de compter.</p>' if r["heures"] >= plafond else "")
+            +             f'<ul class="calc-detail" aria-label="Détail par tâche, en minutes par semaine">{lis}</ul>')
 
 body_home = render("home-body.html", {
     "CALCUL_STATIQUE": calculateur_statique(),
