@@ -17,71 +17,38 @@
 
 <main id="top">
   <!-- ═══════════════ HERO ═══════════════ -->
-  <div class="wrap hero">
-    <p class="kicker h-in"><span id="geo-kicker">Ton équipe d'assistants IA</span><span class="kicker-extra"> · formée à l'immobilier</span></p>
-    <h1 class="h-in d1"><span class="h1-kick">Agent immobilier,</span><span class="h1-big">recrute ton <em>équipe</em>.</span></h1>
-    <p class="sub h-in d2">Six assistants IA, formés à ton métier, dans tes outils 24 h/24.</p>
+  <section id="hero" class="wrap hero">
+    <p class="kicker h-in"><span id="geo-kicker">Ton équipe d'agents IA</span><span class="kicker-extra"> · formée à l'immobilier</span></p>
+    <h1 class="h-in d1"><span class="h1-big">Ton équipe travaille.</span> <span class="h1-big h1-second">Toi, tu es avec <em>tes clients</em>.</span></h1>
+    <p class="sub h-in d2">Six agents IA de l'immobilier préparent tes visites, tes mandats, tes relances et tes posts, jour et nuit. Tu valides d'un geste.</p>
     <div class="hero-cta h-in d3">
       <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
       <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
-      <span class="hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</span>
+      <span class="hint">Branché sur Modelo · Sans engagement · Rien ne part sans toi</span>
     </div>
 
-    <!-- Le deck du matin — c'est l'écran d'accueil réel de l'app -->
-    <div class="deck-zone h-in d4">
-      <div class="nightbar" aria-hidden="true">
-        <span class="time">07:00 → 07:00</span>
-        <span class="track"><span class="spark"></span></span>
-        <span>une journée avec ton équipe — elle ne s'arrête jamais</span>
+    <div class="film-zone h-in d4">
+      <div class="film-frame">
+        <video id="film-boucle" autoplay muted loop playsinline preload="metadata" poster="film/poster.jpg" aria-hidden="true" tabindex="-1">
+          <source src="film/boucle.mp4" type="video/mp4" />
+        </video>
+        <img class="film-still" src="film/poster.jpg" alt="" width="2400" height="1000" />
       </div>
-      <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="hero-poster.jpg" aria-hidden="true">
-        <source src="hero.mp4" type="video/mp4" />
+      <button type="button" id="voir-film" class="film-btn" data-track="film" aria-haspopup="dialog">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>
+        Voir le film (45 s)
+      </button>
+    </div>
+
+    <dialog id="film-dialog" class="film-dialog" aria-label="Le film Revaly, 45 secondes">
+      <button type="button" class="film-close" id="film-close" aria-label="Fermer le film">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <video id="film-lecteur" controls playsinline preload="none" poster="film/poster.jpg">
+        <source src="film/revaly-45s.mp4" type="video/mp4" />
       </video>
-      <div class="hero-bien" aria-hidden="true">
-        <img class="photo" src="__VILLA_HERO__" alt="" />
-        <span class="scrim"></span>
-        <span class="flag"><i></i>à traiter en priorité</span>
-        <div class="inner">
-          <p class="eyebrow">Le bien qui bouge ce matin</p>
-          <h2>Villa des Cèdres<br />Aix-en-Provence</h2>
-          <div class="row">
-            <span class="prix">875 000 <span>€</span></span>
-            <span class="meta">Villa · 210 m² · 6 pièces · piscine · mandat exclusif</span>
-          </div>
-          <div class="agent-chips">
-            <span class="achip"><img class="face" src="__EMMA128__" width="24" height="24" alt="" /> Emma : <b>3 relances prêtes</b></span>
-            <span class="achip"><img class="face" src="__CHRISTINE128__" width="24" height="24" alt="" /> Christine : <b>DPE manquant</b></span>
-            <span class="achip"><img class="face" src="__ZOE128__" width="24" height="24" alt="" /> Zoé : <b>post prêt</b></span>
-          </div>
-        </div>
-      </div>
-      <div class="ticker24" aria-hidden="true">
-        <div class="t24-row"><span class="t24-time">09:12</span><img class="face" src="__EMMA128__" width="24" height="24" alt="" /><span><b>Emma</b> — brouillon de réponse prêt pour M. Moreau</span></div>
-        <div class="t24-row"><span class="t24-time">14:20</span><img class="face" src="__MAX128__" width="24" height="24" alt="" /><span><b>Max</b> — vocal traité : rdv déplacé, client prévenu après ta validation</span></div>
-        <div class="t24-row"><span class="t24-time">18:00</span><img class="face" src="__ZOE128__" width="24" height="24" alt="" /><span><b>Zoé</b> — post de l'exclusivité publié, visuel à ta charte</span></div>
-        <div class="t24-row"><span class="t24-time">01:40</span><img class="face" src="__RAPHAEL128__" width="24" height="24" alt="" /><span><b>Raphaël</b> — 18 photos retouchées, home staging du salon</span></div>
-      </div>
-      <div class="worked" aria-hidden="true">
-        <span class="faces">
-          <img class="face" src="__EMMA128__" width="38" height="38" alt="" />
-          <img class="face" src="__CHRISTINE128__" width="38" height="38" alt="" />
-          <img class="face" src="__ZOE128__" width="38" height="38" alt="" />
-        </span>
-        <p><b>Emma, Christine et Zoé</b> ont travaillé pour toi. <span class="n">3</span> actions à trancher.</p>
-      </div>
-
-      <!-- L'équipe, tout de suite -->
-      <div class="team-strip">
-        <div class="member"><img class="face" src="__MAX128__" width="64" height="64" alt="Max" /><span class="presence" aria-hidden="true"></span><p class="nm">Max</p><p class="rl">Directeur d'agence</p></div>
-        <div class="member"><img class="face" src="__EMMA128__" width="64" height="64" alt="Emma" /><span class="presence" aria-hidden="true"></span><p class="nm">Emma</p><p class="rl">Assistante</p></div>
-        <div class="member"><img class="face" src="__CHRISTINE128__" width="64" height="64" alt="Christine" /><span class="presence" aria-hidden="true"></span><p class="nm">Christine</p><p class="rl">Juridique</p></div>
-        <div class="member"><img class="face" src="__ZOE128__" width="64" height="64" alt="Zoé" /><span class="presence" aria-hidden="true"></span><p class="nm">Zoé</p><p class="rl">Community manager</p></div>
-        <div class="member"><img class="face" src="__RAPHAEL128__" width="64" height="64" alt="Raphaël" /><span class="presence" aria-hidden="true"></span><p class="nm">Raphaël</p><p class="rl">Photographe</p></div>
-        <div class="member"><img class="face" src="__LUCAS128__" width="64" height="64" alt="Lucas" /><span class="presence" aria-hidden="true"></span><p class="nm">Lucas</p><p class="rl">Analyste de marché</p></div>
-      </div>
-      <p style="text-align:center; font-size:13.5px; color:var(--subtle); margin:18px 0 0;">Six agents en ligne, formés à ton métier — chaque nouvelle recrue est incluse, sans supplément.</p>
-    </div>
-  </div>
+    </dialog>
+  </section>
 
   <!-- ═══════════════ CONNECTEURS ═══════════════ -->
   <section class="wrap" id="connecteurs">
@@ -603,7 +570,7 @@
       const ville = city.trim().slice(0, 30);
       if (ville.length < 2 || !/^[\p{L} '’-]+$/u.test(ville)) return;
       const k = document.getElementById('geo-kicker');
-      if (k) k.textContent = "Ton équipe d'assistants IA à " + ville;
+      if (k) k.textContent = "Ton équipe d'agents IA à " + ville;
       document.querySelectorAll('.geo-city').forEach((el) => { el.textContent = ville; });
     })
     .catch(() => {});
@@ -619,10 +586,11 @@
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── Le team-strip « rejoint l'équipe » (cascade au chargement) ──
-  setTimeout(() => document.querySelector('.team-strip').classList.add('joined'), REDUCED ? 0 : 700);
+  setTimeout(() => { const ts = document.querySelector('.team-strip'); if (ts) ts.classList.add('joined'); }, REDUCED ? 0 : 700);
 
   // ── Vidéo hero : joue quand elle est à l'écran, se met en pause hors champ ──
-  const hv = document.querySelector('.hero-video');
+  const hv = document.getElementById('film-boucle');
+  if (hv && REDUCED) hv.pause();
   if (hv && !REDUCED) {
     const tryPlay = () => { if (getComputedStyle(hv).display !== 'none' && hv.paused) hv.play().catch(() => {}); };
     new IntersectionObserver((entries) => {
@@ -631,6 +599,18 @@
     window.addEventListener('load', tryPlay, { once: true });
     document.addEventListener('click', tryPlay, { once: true, passive: true });
   }
+
+  // ── Film : <dialog> natif (Échap ferme), pause à la fermeture, focus rendu au bouton ──
+  (() => {
+    const dlg = document.getElementById('film-dialog');
+    const btn = document.getElementById('voir-film');
+    const vid = document.getElementById('film-lecteur');
+    if (!dlg || !btn || !vid || typeof dlg.showModal !== 'function') return;
+    btn.addEventListener('click', () => { dlg.showModal(); vid.play().catch(() => {}); });
+    document.getElementById('film-close').addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('close', () => { vid.pause(); btn.focus(); });
+  })();
 
   // ── Connecteurs : grille → marquee 2 rangées (pattern 21st, vanilla) ──
   (() => {

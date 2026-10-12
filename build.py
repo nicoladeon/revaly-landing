@@ -296,11 +296,11 @@ body_home = render("home-body.html", {
 })
 write_page(
     "index.html", body_home,
-    title="Revaly — L'équipe IA des agents immobiliers",
-    desc="Agent immobilier : recrute ton équipe d'agents IA — annonces, posts, relances, dossiers, mandats — branchée sur Modelo. Rien ne part sans toi. Essai 7 jours, dès 129 € HT/mois.",
+    title="Revaly — Ton équipe travaille, toi tu es avec tes clients",
+    desc="Six agents IA de l'immobilier préparent tes visites, tes mandats, tes relances et tes posts, jour et nuit. Branché sur Modelo. Tu valides d'un geste. Essai 7 jours, dès 129 € HT/mois.",
     path="/",
-    og_title="Agent immobilier, recrute ton équipe.",
-    og_desc="Six assistants IA, formés au métier de conseiller immobilier : annonces, relances, dossiers, mandats, photos. Dans tes outils, 24 h/24. Rien ne part sans toi. Dès 129 € HT/mois.",
+    og_title="Ton équipe travaille. Toi, tu es avec tes clients.",
+    og_desc="Six agents IA de l'immobilier préparent tes visites, tes mandats, tes relances et tes posts, jour et nuit. Tu valides d'un geste. Rien ne part sans toi. Dès 129 € HT/mois.",
 )
 
 # ── Page /integrations (task 11) : catalogue searchable depuis data/integrations.json.
@@ -428,6 +428,10 @@ for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
     src = ROOT / "assets" / static
     if src.exists():
         shutil.copy(src, ROOT / "dist" / static)
+(ROOT / "dist" / "film").mkdir(exist_ok=True)
+for f in (ROOT / "assets" / "film").glob("*"):
+    if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
+        shutil.copy(f, ROOT / "dist" / "film" / f.name)
 (ROOT / "dist" / "fonts").mkdir(exist_ok=True)
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
     shutil.copy(f, ROOT / "dist" / "fonts" / f.name)

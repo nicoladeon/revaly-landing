@@ -253,3 +253,14 @@ must(idx.count('data-track="essai"') >= 2 and idx.count('data-track="demo"') >= 
 bienv = (dist / "bienvenue" / "index.html").read_text()
 must("rvTrack('essai_demarre')" in bienv, "essai démarré mesuré au retour de Stripe")
 print("OK v3 données et texte")
+# ── Task 3 : haut de page v3 ──
+must("Ton équipe travaille. Toi, tu es avec tes clients." in re.sub(r"<[^>]+>", "", idx), "titre v3")
+must("Branché sur Modelo · Sans engagement · Rien ne part sans toi" in idx, "réassurance")
+must('id="film-boucle"' in idx and "muted" in idx and "playsinline" in idx, "boucle muette")
+must('id="voir-film"' in idx and 'id="film-dialog"' in idx, "lecteur du film")
+must('data-track="film"' in idx, "lecture du film mesurée")
+must("Six agents IA de l'immobilier préparent tes visites, tes mandats, tes relances et tes posts, jour et nuit. Tu valides d'un geste." in idx, "sous-titre v3")
+must("assistants IA" not in idx and "Autonome, 24 h/24" not in idx, "ancienne promesse retirée")
+for f in ["poster.jpg", "boucle.mp4", "revaly-45s.mp4"]:
+    must((dist / "film" / f).is_file(), f"dist/film/{f} copié")
+print("OK v3 haut de page")

@@ -1018,6 +1018,48 @@
     .ticker24 { display: none; }
   }
 
+  /* ── Film du haut de page (v3) : cadre aux dimensions réservées, zéro décalage ── */
+  .hero h1 { max-width: 1040px; }
+  .hero h1 .h1-big { font-size: clamp(40px, 6.4vw, 78px); }
+  .hero h1 .h1-second { margin-top: 2px; }
+  .hero .sub, .hero-cta .hint { text-wrap: balance; }
+  .film-zone { margin-top: 48px; position: relative; text-align: center; }
+  .film-frame {
+    position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden;
+    border-radius: 22px; box-shadow: var(--shadow-xl); background: var(--night-1);
+  }
+  @media (min-width: 761px) { .film-frame { aspect-ratio: 12 / 5; } }
+  .film-frame video, .film-frame .film-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .film-frame .film-still { display: none; }
+  .film-btn {
+    display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 10px 22px; margin-top: 18px;
+    border: 0.5px solid var(--line-strong); border-radius: 999px; cursor: pointer;
+    font: 600 15px/1 var(--font-sans); color: var(--ink); background: var(--raised); box-shadow: var(--shadow-sm);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .film-btn svg { color: var(--iris); flex: none; }
+  .film-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .film-btn:active { transform: scale(.98); }
+  .film-btn:focus-visible { outline: 2px solid var(--iris); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    #film-boucle { display: none; }
+    .film-frame .film-still { display: block; }
+  }
+  .film-dialog {
+    width: min(92vw, 1100px); max-width: none; max-height: 92vh; padding: 0; margin: auto;
+    border: 0; border-radius: 18px; overflow: hidden; background: var(--night-3); color: #fff;
+    box-shadow: var(--shadow-xl);
+  }
+  .film-dialog::backdrop { background: rgba(9, 11, 15, .72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .film-dialog video { display: block; width: 100%; max-height: 92vh; background: #000; }
+  .film-close {
+    position: absolute; top: 10px; right: 10px; z-index: 2; width: 44px; height: 44px;
+    display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer;
+    color: #fff; background: rgba(18, 21, 28, .7);
+  }
+  .film-close:hover { background: rgba(18, 21, 28, .9); }
+  .film-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
   /* ── Carrousel équipe façon Limova (onglets têtes + slides scroll-snap) ── */
   .crsl-tabs {
     display: flex; gap: 8px; justify-content: flex-start; overflow-x: auto;
