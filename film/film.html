@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Revaly · film 45 s</title>
+<!-- Film de la page de vente v3 (12/10/2026), 1920×1080, 30 i/s, 45 s.
+     Rendu image par image : window.__seek(t) pose l'état exact à t secondes,
+     window.__frame(t) attend en plus que les vidéos soient positionnées ;
+     window.__ready passe à true quand polices et vidéos sont chargées.
+     Gauche : plans de banque d'images étalonnés (film/graded, voir grade.sh).
+     Droite : composants de l'appli recopiés (film/ui), personnages v6. -->
+<link rel="stylesheet" href="ui/tokens.css">
+<link rel="stylesheet" href="ui/ui.css">
+<style>
+  html, body { margin: 0; background: #000; }
+  body { width: 1920px; height: 1080px; overflow: hidden; }
+  #stage {
+    width: 1920px; height: 1080px; position: relative; overflow: hidden;
+    background: var(--ink-950); font-family: var(--font-sans);
+    font-feature-settings: var(--font-feature-default); -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Gauche : la vraie vie ---------- */
+  #gauche { position: absolute; left: 0; top: 0; width: 960px; height: 1080px; overflow: hidden; z-index: 1; background: var(--ink-950); }
+  .rush { position: absolute; inset: 0; overflow: hidden; visibility: hidden; }
+  .rush video { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  /* Fin du film : flou et voile porcelaine sous l'écran de fin */
+  #voile { position: absolute; inset: 0; background: var(--color-bg); opacity: 0; z-index: 3; }
+
+  /* ---------- Droite : l'équipe au même instant ---------- */
+  #droite {
+    position: absolute; left: 960px; top: 0; width: 960px; height: 1080px; overflow: hidden; z-index: 2;
+    background: var(--gradient-ambient), var(--color-bg);
+    clip-path: inset(0 100% 0 0);
+  }
+  #droite .ui { position: absolute; }
+  #pendant {
+    left: 88px; top: 66px; margin: 0; transform-origin: 0 0;
+    font-size: 68px; font-weight: 500; letter-spacing: -0.025em; line-height: 1.15; color: var(--color-fg);
+    white-space: nowrap;
+  }
+  #horloge {
+    top: 66px; display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px;
+    border-radius: var(--radius-full); background: var(--color-bg-raised); box-shadow: var(--shadow-sm);
+    font-size: 24px; font-weight: 500; color: var(--color-fg); white-space: nowrap;
+  }
+  #horloge .i { font-size: 22px; color: var(--color-fg-muted); }
+
+  .agent { left: 88px; top: 136px; display: flex; align-items: center; gap: 28px; }
+  .agent .ra { --ra-s: 116px; --ra-cutout: var(--color-bg); }
+  .agent .ra-badge { width: 36px; height: 36px; border-width: 4px; transform: scale(0); }
+  .agent-txt { display: flex; flex-direction: column; gap: 2px; }
+  .agent-txt b { font-size: 44px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+  .agent-txt .role { font-size: 25px; color: var(--color-fg-muted); }
+  .status { display: grid; margin-top: 8px; font-size: 25px; font-weight: 500; }
+  .status > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 12px; opacity: 0; white-space: nowrap; }
+  .status .brand { color: var(--color-fg-brand); }
+  .status .ok { color: var(--color-success-text); }
+  .status .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--brand-500); }
+  .status .i { font-size: 26px; stroke-width: 2.25; }
+
+  .z { zoom: 1.95; }
+  .artefact { left: 88px; top: 296px; }
+
+  /* Porte-voix : le tap du conseiller */
+  #doigt {
+    position: absolute; z-index: 30; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%;
+    background: rgba(12, 15, 22, 0.18); box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 10px 24px rgba(16, 22, 38, 0.18);
+    opacity: 0;
+  }
+  #onde {
+    position: absolute; z-index: 29; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.45); opacity: 0;
+  }
+
+  /* ---------- Ouverture : la notification dans le noir ---------- */
+  #ouverture { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+  #halo {
+    position: absolute; left: 960px; top: 470px; width: 2800px; height: 1900px; margin: -950px 0 0 -1400px;
+    background: radial-gradient(closest-side, rgba(99, 102, 241, 0.17), rgba(99, 102, 241, 0.105) 22%, rgba(99, 102, 241, 0.055) 45%,
+      rgba(99, 102, 241, 0.022) 68%, rgba(99, 102, 241, 0.006) 86%, rgba(99, 102, 241, 0) 100%);
+    opacity: 0;
+  }
+  #notif { position: absolute; left: 550px; top: 384px; width: 820px; height: 172px; transform-origin: 50% 50%; }
+  #notif > div { position: absolute; inset: 0; border-radius: 36px; }
+  .notif-noir { background: rgb(36, 38, 48); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset, 0 30px 80px rgba(0, 0, 0, 0.55); }
+  .notif-sombre {
+    display: grid; grid-template-columns: 104px 1fr; column-gap: 26px; align-items: center; padding: 0 34px;
+    color: #fff;
+  }
+  .notif-sombre .ra { --ra-s: 104px; --ra-cutout: rgb(36, 38, 48); }
+  .notif-app { position: absolute; right: -6px; bottom: -6px; width: 40px; height: 40px; border-radius: 11px; border: 3px solid rgb(36, 38, 48); }
+  .notif-l1 { display: flex; align-items: baseline; justify-content: space-between; }
+  .notif-l1 b { font-size: 38px; font-weight: 600; letter-spacing: -0.01em; }
+  .notif-l1 span { font-size: 24px; color: rgba(255, 255, 255, 0.55); }
+  .notif-l2 { font-size: 36px; color: rgba(255, 255, 255, 0.9); margin-top: 2px; letter-spacing: -0.005em; }
+  .notif-fond { opacity: 0; background: var(--color-bg-raised); box-shadow: 0 18px 44px rgba(16, 22, 38, 0.12), 0 4px 10px rgba(16, 22, 38, 0.05), 0 0 0 1px rgba(16, 22, 38, 0.05); }
+  .notif-claire { opacity: 0; display: grid; place-items: center; }
+  .notif-claire .ui { position: static; zoom: 3.1; }
+  .rail-item {
+    width: 264px; display: grid; grid-template-columns: 32px 1fr auto; column-gap: 10px; align-items: center;
+    padding: 8px 14px 8px 12px;
+  }
+  .rail-ico { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--color-action-subtle); color: var(--color-fg-brand); }
+  .rail-ico .i { font-size: 16px; }
+  .rail-item b { display: block; font-size: 14px; font-weight: 500; line-height: 1.3; }
+  .rail-item span.s { display: block; font-size: 12px; color: var(--color-fg-muted); line-height: 1.35; white-space: nowrap; }
+
+  /* ---------- Lucas : avis de valeur ---------- */
+  .chart { display: block; width: 100%; height: auto; }
+  .prix { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .prix b { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
+
+  /* ---------- Révélation : ce que voient tes clients ---------- */
+  #clients-titre { left: 88px; top: 140px; margin: 0; font-size: 56px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
+  .recu {
+    left: 88px; width: 784px; display: grid; grid-template-columns: 64px 1fr; column-gap: 20px; align-items: start;
+    padding: 22px 26px; border-radius: 24px; background: var(--color-bg-raised); box-shadow: var(--shadow-lg);
+  }
+  .recu-ico { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; background: var(--color-bg-subtle); color: var(--color-fg-muted); }
+  .recu-ico .i { font-size: 30px; }
+  .recu-l1 { display: flex; justify-content: space-between; align-items: baseline; font-size: 26px; }
+  .recu-l1 b { font-weight: 600; }
+  .recu-l1 span { font-size: 22px; color: var(--color-fg-muted); }
+  .recu-l2 { font-size: 25px; line-height: 1.4; color: var(--color-fg); margin-top: 4px; }
+  .recu-l3 { font-size: 21px; color: var(--color-fg-muted); margin-top: 6px; }
+
+  /* ---------- Fin ---------- */
+  #fin { position: absolute; inset: 0; z-index: 6; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-bottom: 90px; }
+  #fin > * { opacity: 0; }
+  .fin-equipe { display: flex; margin-bottom: 40px; }
+  .fin-equipe .ra { --ra-s: 76px; margin-left: -12px; box-shadow: 0 0 0 4px var(--color-bg); border-radius: 50%; }
+  .fin-equipe .ra:first-child { margin-left: 0; }
+  #fin h1 { margin: 0; font-size: 84px; font-weight: 600; letter-spacing: -0.035em; line-height: 1.04; color: var(--color-fg); }
+  #fin .fin-ligne { margin: 30px 0 0; font-size: 36px; color: var(--color-fg-muted); letter-spacing: -0.01em; }
+  .fin-btns { display: flex; gap: 18px; margin-top: 48px; }
+  .fin-btns span { display: inline-flex; align-items: center; height: 76px; padding: 0 38px; border-radius: 16px; font-size: 30px; font-weight: 500; }
+  .fin-btns .p { background: var(--color-action); color: #fff; box-shadow: 0 12px 30px rgba(79, 70, 229, 0.28); }
+  .fin-btns .g { background: var(--color-bg-raised); color: var(--color-fg); box-shadow: var(--shadow-md); }
+  .fin-logo { position: absolute; left: 0; right: 0; top: 66px; font-size: 40px; font-weight: 500; letter-spacing: -0.025em; color: var(--color-fg); }
+  .fin-logo i { font-style: normal; color: var(--brand-500); }
+  .fin-note { position: absolute; left: 0; right: 0; bottom: 104px; font-size: 21px; color: var(--color-fg-subtle); }
+
+  /* Les mots du vocal, dits à gauche (le bot ne les réécrit pas dans Telegram). */
+  #parole {
+    position: absolute; z-index: 4; left: 72px; top: 118px; width: 820px; margin: 0; opacity: 0;
+    font-size: 46px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.2; color: #fff;
+    text-shadow: 0 2px 22px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.35);
+  }
+  #parole-voile { position: absolute; z-index: 4; left: 0; top: 0; width: 960px; height: 420px; opacity: 0;
+    background: linear-gradient(180deg, rgba(9, 11, 15, 0.55), rgba(9, 11, 15, 0.25) 55%, transparent); }
+  .parole-mic { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 24px; font-weight: 500; color: rgba(255, 255, 255, 0.86); letter-spacing: 0; }
+  .parole-mic .i { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Sous-titres incrustés ---------- */
+  #st {
+    position: absolute; z-index: 10; left: 50%; bottom: 96px; transform: translateX(-50%);
+    margin: 0; max-width: 1640px; padding: 14px 32px 16px; border-radius: 20px;
+    background: rgba(244, 245, 248, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(16, 22, 38, 0.14), 0 0 0 1px rgba(12, 15, 22, 0.06);
+    font-size: 40px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.25; color: var(--color-fg);
+    white-space: nowrap; opacity: 0;
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Icônes Lucide (lucide-react 0.344, licence ISC), tracés recopiés tels quels. -->
+  <symbol id="i-check-check" viewBox="0 0 24 24"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chevron-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+  <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+  <symbol id="i-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+  <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+  <symbol id="i-file-chart" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 18v-2"/><path d="M12 18v-4"/><path d="M16 18v-6"/></symbol>
+  <symbol id="i-list-checks" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m2 9 3-3 3 3"/><path d="M13 18H7a2 2 0 0 1-2-2V6"/><path d="m22 15-3 3-3-3"/><path d="M11 6h6a2 2 0 0 1 2 2v10"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+  <symbol id="i-calendar-check" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+</svg>
+
+<div id="stage" style="width:1920px;height:1080px;position:relative;overflow:hidden">
+
+  <section id="gauche">
+    <div class="rush" id="w1"><video id="rush1" src="graded/1.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w2"><video id="rush2" src="graded/2.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w3"><video id="rush3" src="graded/3.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w4"><video id="rush4" src="graded/4.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w5"><video id="rush5" src="graded/5.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w6"><video id="rush6" src="graded/6.mp4" muted preload="auto" playsinline></video></div>
+    <div id="voile"></div>
+  </section>
+
+  <section id="droite">
+    <p class="ui" id="pendant">Pendant ce temps…</p>
+    <span class="ui" id="horloge"><svg class="i"><use href="#i-clock"/></svg><span class="tnum" id="horloge-t">Vendredi 15 h 15</span></span>
+
+    <!-- ===== 0:04-0:12 · Emma : rappel de la visite suivante (ui/carte-a-valider.html) ===== -->
+    <div class="ui agent" id="ag-emma1">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="4" data-a="12.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Emma</b><span class="role">Assistante de direction</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Prépare le rappel de 17 h 15</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Rappel prêt, à valider</span><span class="ok s3"><svg class="i"><use href="#i-check"/></svg>Envoyé à Camille sur WhatsApp</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-rappel"><div class="z">
+      <div class="sheet">
+        <div class="sheet-head"><svg class="i"><use href="#i-check-check"/></svg><span>À valider</span><span class="count tnum"><span id="c4">4</span><span id="c3">3</span></span><span class="grow"></span><svg class="i"><use href="#i-chevron-up"/></svg></div>
+        <ul style="margin:0;padding:0;list-style:none"><li class="card" id="carte-rappel">
+          <div class="card-top">
+            <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/emma.webp" alt=""></span><span class="ra-badge" id="carte-badge"><svg><use href="#i-check"/></svg></span></span>
+            <p class="card-title">Rappel de visite · <span class="moment">ven. 16 oct. 17h15</span></p>
+            <span class="pill pill-warn"><svg class="i"><use href="#i-check-check"/></svg>expire dans 2 h</span>
+            <p class="card-to">À Camille Durand · WhatsApp</p>
+          </div>
+          <div class="paper">Bonjour Camille, je vous rappelle notre visite aujourd'hui à 17h15 au 12 rue des Lilas. À tout à l'heure ! — Denis Moreau, Agence du Parc</div>
+          <div class="actions">
+            <div class="btns" id="btns"><span class="btn btn-tint" id="valider">Valider</span><span class="btn btn-quiet">Refuser</span></div>
+            <span class="wait" id="validation"><svg class="i" id="spin"><use href="#i-loader"/></svg>Validation…</span>
+            <span class="done" id="valide">✓ Validé</span>
+          </div>
+          <div class="card-foot"><span><svg class="i"><use href="#i-chevron-right"/></svg>Détails</span><span class="end">Voir dans le fil<svg class="i"><use href="#i-arrow-up-right"/></svg></span></div>
+        </li></ul>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:12-0:16 · Lucas : avis de valeur ===== -->
+    <div class="ui agent" id="ag-lucas">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/lucas.mp4" muted preload="auto" playsinline data-de="11.6" data-a="16.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Lucas</b><span class="role">Analyste de marché</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Analyse les ventes du quartier</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Avis de valeur prêt</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-lucas"><div class="z">
+      <div class="card" style="width:400px">
+        <div class="card-top">
+          <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/lucas.webp" alt=""></span></span>
+          <p class="card-title">Avis de valeur · 12 rue Garibaldi</p>
+          <span class="pill pill-quiet"><svg class="i"><use href="#i-file-chart"/></svg>PDF</span>
+          <p class="card-to">Pour M. et Mme Garnier · prix au m² du quartier, ventes DVF</p>
+        </div>
+        <svg class="chart" viewBox="0 0 376 132" aria-hidden="true">
+          <g stroke="rgba(12,15,22,0.08)" stroke-width="1"><line x1="0" y1="18" x2="376" y2="18"/><line x1="0" y1="58" x2="376" y2="58"/><line x1="0" y1="98" x2="376" y2="98"/></g>
+          <g font-size="10" fill="#687080" font-family="Geist Variable"><text x="0" y="128">2019</text><text x="104" y="128">2021</text><text x="208" y="128">2023</text><text x="340" y="128">2026</text></g>
+          <path id="courbe" d="M6 96 L58 90 L110 74 L162 66 L214 70 L266 56 L318 44 L370 34" fill="none" stroke="#4F46E5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+          <g fill="#FFFFFF" stroke="#4F46E5" stroke-width="2"><circle class="pt" cx="6" cy="96" r="3.5"/><circle class="pt" cx="58" cy="90" r="3.5"/><circle class="pt" cx="110" cy="74" r="3.5"/><circle class="pt" cx="162" cy="66" r="3.5"/><circle class="pt" cx="214" cy="70" r="3.5"/><circle class="pt" cx="266" cy="56" r="3.5"/><circle class="pt" cx="318" cy="44" r="3.5"/><circle class="pt" cx="370" cy="34" r="4.5"/></g>
+        </svg>
+        <div class="prix"><span class="t-caption">Prix recommandé</span><b class="tnum" id="prix">332 000 €</b></div>
+        <p class="t-caption" style="margin:-6px 0 0">Fourchette 318 000 – 346 000 € · 14 ventes comparables à moins de 500 m</p>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:16-0:20 · Christine : pièces du compromis ===== -->
+    <div class="ui agent" id="ag-christine">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/christine.mp4" muted preload="auto" playsinline data-de="15.6" data-a="20.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Christine</b><span class="role">Conseillère juridique</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Vérifie les pièces du compromis</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Relance prête, à valider</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-christine"><div class="z" style="zoom:1.62;width:440px;display:flex;flex-direction:column;gap:8px">
+      <div class="steps">
+        <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>Pièces du compromis · 5 sur 7</div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Titre de propriété</span><span class="s">reçu</span></div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Diagnostics (DPE, amiante, électricité)</span><span class="s">reçus</span></div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Dernière taxe foncière</span><span class="s">reçue</span></div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Pièces d'identité des vendeurs</span><span class="s">reçues</span></div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Règlement de copropriété</span><span class="s">reçu</span></div>
+        <div class="step manque"><span class="slot"><span class="todo"></span></span><span>Procès-verbaux des 3 dernières AG</span><span class="s" style="color:var(--color-warning-text)">manquent</span></div>
+        <div class="step manque"><span class="slot"><span class="todo"></span></span><span>Carnet d'entretien de l'immeuble</span><span class="s" style="color:var(--color-warning-text)">manque</span></div>
+      </div>
+      <div class="card" id="carte-relance">
+        <div class="card-top">
+          <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/christine.webp" alt=""></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+          <p class="card-title">Relance des pièces du compromis</p>
+          <span class="pill pill-quiet"><svg class="i"><use href="#i-mail"/></svg>e-mail</span>
+          <p class="card-to">À M. et Mme Garnier · E-mail</p>
+        </div>
+        <div class="btns"><span class="btn btn-tint">Valider</span><span class="btn btn-quiet">Refuser</span></div>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:20-0:26 · le vocal : Max transmet, Emma prépare (ui/bulle-vocale.html) ===== -->
+    <div class="ui agent" id="ag-max">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/max.mp4" muted preload="auto" playsinline data-de="19.6" data-a="23.2"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Max</b><span class="role">Directeur d'agence</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Écoute ton vocal</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Confie la relance à Emma</span></span>
+      </div>
+    </div>
+    <div class="ui agent" id="ag-emma2">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="22.4" data-a="26.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Emma</b><span class="role">Assistante de direction</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Écrit au notaire</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Mail prêt, à valider</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-vocal" style="top:300px"><div class="z" style="zoom:1.62">
+      <div class="tg">
+        <div class="tg-head"><img src="../assets/logo.png" alt=""><div><b>Revaly</b><span>ton équipe</span></div></div>
+        <div class="tg-body">
+          <div class="tg-out" id="tg-vocal">
+            <div class="tg-voice"><span class="tg-play"><svg><use href="#i-play"/></svg></span>
+              <div><div class="tg-wave" id="onde-vocale"></div><div class="tg-dur tnum">0:04</div></div></div>
+          </div>
+          <div class="tg-in" id="tg-max"><div class="tg-who">Max</div>C'est noté. Emma prépare le mail pour Maître Lefèvre.<span class="tg-time tnum">17:55</span></div>
+          <div class="tg-in" id="tg-emma"><div class="tg-who">Emma</div>Mail à valider : relance de Maître Lefèvre pour la signature de jeudi.<span class="tg-time tnum">17:56</span>
+            <div class="tg-btns"><span>✅ Valider</span><span>❌ Refuser</span></div></div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:26-0:30 · Zoé : le post « Vendu » ===== -->
+    <div class="ui agent" id="ag-zoe">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/zoe.mp4" muted preload="auto" playsinline data-de="25.6" data-a="30.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Zoé</b><span class="role">Community manager</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Prépare le post « Vendu »</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Post prêt, à valider</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-zoe"><div class="z" style="zoom:1.8">
+      <div class="card" style="width:432px">
+        <div class="card-top">
+          <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/zoe.webp" alt=""></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+          <p class="card-title">Publication · Instagram et Facebook</p>
+          <span class="pill pill-quiet"><svg class="i"><use href="#i-image"/></svg>1 photo</span>
+        </div>
+        <div style="position:relative;border-radius:8px;overflow:hidden;height:132px;background:#ddd">
+          <img src="assets/post-vendu.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+          <span style="position:absolute;left:10px;top:10px;padding:3px 10px;border-radius:6px;background:#fff;font-size:12px;font-weight:600;letter-spacing:.06em">VENDU</span>
+        </div>
+        <div class="paper">Vendu en 12 jours. Merci à M. et Mme Garnier pour leur confiance : cette maison du 12 rue Garibaldi a trouvé ses nouveaux propriétaires.</div>
+        <div class="btns"><span class="btn btn-tint">Valider</span><span class="btn btn-quiet">Refuser</span></div>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:30-0:34 · Emma : la routine du vendredi 17 h (ui/routines.html) ===== -->
+    <div class="ui agent" id="ag-emma3">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="29.6" data-a="34.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Emma</b><span class="role">Assistante de direction</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Routine du vendredi 17 h</span><span class="ok s2"><svg class="i"><use href="#i-check"/></svg>Point vendeurs prêt (6 vendeurs)</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-routine"><div class="z" style="zoom:1.66;width:458px;display:flex;flex-direction:column;gap:8px">
+      <div class="routine">
+        <span class="ra" style="--ra-s:32px"><span class="ra-stack"><img src="assets/agents/emma.webp" alt=""></span></span>
+        <div><div class="routine-title">Point vendeurs du vendredi <span class="tag tag-line">Système · sans IA</span></div></div>
+        <p class="routine-line"><b>Le vendredi à 17 h</b> → <b>Emma</b> prépare pour chaque vendeur le compte rendu des visites de la semaine → sur Telegram</p>
+      </div>
+      <div class="steps">
+        <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>6 comptes rendus préparés</div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. et Mme Garnier · 12 rue Garibaldi</span><span class="s">3 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Bernard · T3 avenue Jean-Jaurès</span><span class="s">2 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Roche · maison de Caluire</span><span class="s">4 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Faure · studio rue Duguesclin</span><span class="s">1 visite</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Lambert · loft quai Perrache</span><span class="s">2 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Petit · T2 place Bellecour</span><span class="s">3 visites</span></div>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:34-0:38 · ce que voient tes clients ===== -->
+    <p class="ui" id="clients-titre">Ce que voient tes clients</p>
+    <div class="ui recu" id="recu1" style="top:260px">
+      <span class="recu-ico"><svg class="i"><use href="#i-message"/></svg></span>
+      <div><div class="recu-l1"><b>Camille Durand · acquéreuse</b><span>WhatsApp</span></div>
+        <div class="recu-l2">« Je vous confirme notre visite de samedi à 10h00, 12 rue des Lilas. À samedi ! »</div></div>
+    </div>
+    <div class="ui recu" id="recu2" style="top:470px">
+      <span class="recu-ico"><svg class="i"><use href="#i-mail"/></svg></span>
+      <div><div class="recu-l1"><b>M. Garnier · vendeur</b><span>E-mail</span></div>
+        <div class="recu-l2">« Votre point de la semaine : 3 visites, dont un couple qui souhaite revenir avec un artisan. »</div></div>
+    </div>
+    <div class="ui recu" id="recu3" style="top:680px">
+      <span class="recu-ico"><svg class="i"><use href="#i-file-text"/></svg></span>
+      <div><div class="recu-l1"><b>Maître Lefèvre · notaire</b><span>E-mail</span></div>
+        <div class="recu-l2">« Facture d'honoraires, 12 rue Garibaldi, en pièce jointe. »</div></div>
+    </div>
+  </section>
+
+  <div id="ouverture">
+    <div id="halo"></div>
+    <div id="notif">
+      <div class="notif-noir"></div>
+      <div class="notif-fond"></div>
+      <div class="notif-sombre">
+        <span class="ra"><span class="ra-stack"><video class="boucle" src="assets/agents/max.mp4" muted preload="auto" playsinline data-de="0" data-a="3.2"></video></span><img class="notif-app" src="../assets/logo.png" alt=""></span>
+        <div><div class="notif-l1"><b>Max</b><span>maintenant</span></div><div class="notif-l2">4 choses prêtes à valider</div></div>
+      </div>
+      <div class="notif-claire"><div class="ui"><div class="rail-item">
+        <span class="rail-ico"><svg class="i"><use href="#i-check-check"/></svg></span>
+        <div><b>À valider</b><span class="s">4 envois attendent ton accord</span></div>
+        <span class="count tnum"><span>4</span></span>
+      </div></div></div>
+    </div>
+  </div>
+
+  <div id="fin" class="ui" style="position:absolute">
+    <div class="fin-logo">Revaly<i>.</i></div>
+    <div class="fin-equipe">
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/max.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/emma.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/lucas.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/christine.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/zoe.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/raphael.webp" alt=""></span></span>
+    </div>
+    <h1>Ton équipe travaille.<br>Toi, tu es avec tes clients.</h1>
+    <p class="fin-ligne">Jusqu'à 15 h par semaine rendues. Plus rien d'oublié.</p>
+    <div class="fin-btns"><span class="p">Essayer 7 jours</span><span class="g">Réserver une démo</span></div>
+    <p class="fin-note">Jusqu'à 15 h : le détail du calcul, tâche par tâche, est sur revaly.io</p>
+  </div>
+
+  <div id="parole-voile"></div>
+  <p id="parole"><span class="parole-mic"><svg class="i"><use href="#i-mic"/></svg>vocal · 0:04</span>« Max, relance le notaire pour jeudi »</p>
+  <div id="doigt"></div><div id="onde"></div>
+  <p id="st" class="sous-titre"></p>
+</div>
+
+<script>
+// [id, début, fin, décalage] en secondes de film. Chaque fichier étalonné
+// commence au moment conseillé du plan (grade.sh) : currentTime = t − début + décalage.
+const RUSHES = [["rush1", 4, 7.6, 0], ["rush2", 7.6, 12, 0.05], ["rush3", 12, 20, 0], ["rush4", 20, 26, 0], ["rush5", 26, 34, 0], ["rush6", 34, 45, 0]];
+// Sous-titres incrustés : un par plan du storyboard (spec §3). Le premier attend
+// que la notification ait rejoint l'équipe (2,4 s) : avant, elle se lit seule.
+const ST = [
+  [2.4, 4, "Max : 4 choses prêtes à valider"],
+  [4, 12, "Pendant ta visite, Emma confirme la suivante."],
+  [12, 20, "Au café, Lucas chiffre le bien. Christine relance les pièces."],
+  [20, 26, "Un vocal entre deux portes : Max transmet, Emma écrit."],
+  [26, 34, "Le soir, tout est prêt : le post de Zoé, le point vendeurs."],
+  [34, 40, "Tes clients, eux, voient un service impeccable."],
+];
+// L'heure affichée à droite, « au même instant » que la scène de gauche.
+const HORLOGE = [[0, "Vendredi 15 h 15"], [12, "Vendredi 16 h 40"], [20, "Vendredi 17 h 55"], [26, "Vendredi 20 h 30"]];
+
+const EASE = "cubic-bezier(.2,.7,.2,1)";
+const OUT = "cubic-bezier(.22,1,.36,1)";
+const INOUT = "cubic-bezier(.65,0,.35,1)";
+const SPRING = "cubic-bezier(.34,1.3,.64,1)";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const el = (x) => (typeof x === "string" ? $(x) : x);
+
+function anim(e, frames, debut, duree, easing = EASE) {
+  return el(e).animate(frames, { delay: debut * 1000, duration: duree * 1000, fill: "both", easing });
+}
+// Une seule animation par propriété et par élément (deux animations sur la même
+// propriété se battent, fill:'both' oblige) : chaque piste porte toutes ses clés,
+// en temps absolu. Clé = [t, valeur, courbe du segment qui suit].
+function piste(e, prop, cles, courbe = EASE) {
+  const t0 = cles[0][0], t1 = cles[cles.length - 1][0], d = Math.max(t1 - t0, 0.001);
+  const frames = cles.map(([t, v, c]) => ({ offset: Math.min(1, Math.max(0, (t - t0) / d)), [prop]: v, easing: c || courbe }));
+  return el(e).animate(frames, { delay: t0 * 1000, duration: d * 1000, fill: "both" });
+}
+// Entrée (montée + fondu) puis sortie, sur deux pistes (opacité, transformation).
+function vie(e, tIn, tOut, { dy = 28, dIn = 0.5, dyOut = -20, dOut = 0.35, x = 0 } = {}) {
+  const tr = (y) => `translate(${x}px, ${y}px)`;
+  const o = [[tIn, 0], [tIn + dIn, 1]], t = [[tIn, tr(dy)], [tIn + dIn, tr(0), OUT]];
+  if (tOut != null) { o.push([tOut, 1], [tOut + dOut, 0]); t.push([tOut, tr(0), INOUT], [tOut + dOut, tr(dyOut)]); }
+  piste(e, "opacity", o, OUT); piste(e, "transform", t, OUT);
+}
+// Bascule nette d'une couche à l'autre (états d'un bouton, d'un statut).
+function couche(e, tIn, tOut, d = 0.2) {
+  const k = [[0, 0]];
+  if (tIn > 0) k.push([tIn, 0]);
+  k.push([tIn + d, 1]);
+  if (tOut != null) k.push([tOut, 1], [tOut + d, 0]);
+  piste(e, "opacity", k, "linear");
+}
+
+// ---------- Bloc d'un agent : portrait animé, anneau au travail, statuts ----------
+function agent(id, tIn, tOut, { travail, pret, fini, statuts }) {
+  const b = el(id);
+  vie(b, tIn, tOut, { dy: 24 });
+  const ring = $(".ra-ring", b), badge = $(".ra-badge", b);
+  if (travail) {
+    piste(ring, "opacity", [[travail[0], 0], [travail[0] + 0.2, 1], [travail[1], 1], [travail[1] + 0.25, 0]], "linear");
+    const tours = Math.round((travail[1] - travail[0]) / 1.3);
+    piste(ring, "transform", [[travail[0], "rotate(0deg)", "linear"], [travail[1] + 0.25, `rotate(${tours * 360}deg)`]]);
+  }
+  const k = [[0, "scale(0)"]];
+  if (pret != null) k.push([pret, "scale(0)", SPRING], [pret + 0.26, "scale(1)"]);
+  if (k.length > 1) piste(badge, "transform", k);
+  if (fini != null) piste(badge, "backgroundColor", [[fini, "rgb(79, 70, 229)"], [fini + 0.2, "rgb(18, 183, 106)"]], "linear");
+  statuts.forEach(([sel, a, z]) => couche($(sel, b), a, z, 0.22));
+  $$(".status .dot", b).forEach((d) => {
+    const ks = []; for (let t = tIn; t <= (tOut ?? 45); t += 0.8) ks.push([t, "scale(1)", "ease-in-out"], [t + 0.4, "scale(0.7)", "ease-in-out"]);
+    piste(d, "transform", ks);
+  });
+}
+
+// ---------- Plans de gauche : recadrage mobile dans la demi-largeur ----------
+// [t, centre, échelle, ancrage vertical] : la vidéo 1920×1080 glisse derrière la
+// fenêtre de 960 px pour garder les visages au centre (centre = abscisse du sujet,
+// de 0 à 1 dans l'image ; ancrage 0 = garder le haut, 0,5 = centré) et se
+// rapproche doucement. Plein cadre : centre 0,5, échelle 1, fenêtre de 1920 px.
+function cadre(id, cles, fenetre = 960) {
+  piste("#" + id, "transform", cles.map(([t, c, s, ay = 0.5, w = fenetre]) => {
+    const x = Math.min(0, Math.max(w - 1920 * s, w / 2 - c * 1920 * s));
+    return [t, `translate(${x}px, ${-(1080 * s - 1080) * ay}px) scale(${s})`, INOUT];
+  }));
+}
+
+function construire() {
+  // Mesures prises sur la mise en page au repos, avant toute animation.
+  const v = $("#valider").getBoundingClientRect(), x = v.left + v.width / 2, y = v.top + v.height / 2;
+  const pd = $("#pendant"), hz = $("#horloge");
+  hz.style.left = 88 + pd.offsetWidth * 0.382 + 22 + "px";
+  hz.style.top = 66 + (pd.offsetHeight * 0.382 - hz.offsetHeight) / 2 + "px";
+
+  // ===================== 0:00-0:04 · ouverture =====================
+  piste("#halo", "opacity", [[0.3, 0], [1.1, 1], [2.2, 1], [2.9, 0]], "ease-in-out");
+  piste("#notif", "opacity", [[0.35, 0], [0.85, 1], [4.3, 1], [4.75, 0]], OUT);
+  piste("#notif", "filter", [[0.35, "blur(12px)"], [0.85, "blur(0px)"]], OUT);
+  // Elle descend en douceur, puis rejoint la colonne de droite et devient la
+  // ligne « À valider » de l'appli.
+  piste("#notif", "transform", [
+    [0.35, "translate(0px, -34px) scale(0.96)", OUT], [0.95, "translate(0px, 0px) scale(1)", "linear"],
+    [2.2, "translate(0px, 0px) scale(1.01)", INOUT], [2.85, "translate(361px, 104px) scale(0.66)", "linear"],
+    [4.3, "translate(361px, 104px) scale(0.66)", INOUT], [4.75, "translate(361px, 64px) scale(0.66)"]]);
+  // Le texte sombre part, la carte change de matière, le texte clair arrive :
+  // jamais deux textes l'un sur l'autre.
+  piste(".notif-sombre", "opacity", [[2.2, 1], [2.32, 0]], "linear");
+  piste(".notif-fond", "opacity", [[2.3, 0], [2.45, 1]], "ease-in-out");
+  piste(".notif-claire", "opacity", [[2.46, 0], [2.64, 1]], "linear");
+  // L'écran se coupe en deux : la porcelaine s'ouvre depuis le milieu.
+  piste("#droite", "clipPath", [[2.2, "inset(0px 100% 0px 0px)", "cubic-bezier(.7,0,.2,1)"], [2.75, "inset(0px 0% 0px 0px)"]]);
+  // « Pendant ce temps… » en grand, puis il se range en titre de colonne.
+  piste("#pendant", "transform", [[2.7, "translate(0px, 352px) scale(1)", OUT], [3.15, "translate(0px, 328px) scale(1)", "linear"],
+    [4.3, "translate(0px, 324px) scale(1)", "cubic-bezier(.7,0,.2,1)"], [4.85, "translate(0px, 0px) scale(0.382)"]]);
+  piste("#pendant", "color", [[4.3, "rgb(12, 15, 22)"], [4.85, "rgb(88, 97, 112)"]], "linear");
+  vie("#horloge", 4.75, 34.0, { dy: 0, x: 0, dIn: 0.35, dyOut: 0 });
+  piste("#pendant", "opacity", [[2.7, 0], [3.15, 1], [34.0, 1], [34.35, 0]], OUT);
+
+  // ===================== 0:04-0:12 · la visite / Emma =====================
+  cadre("rush1", [[4.0, 0.47, 1.0, 0], [5.6, 0.46, 1.02, 0], [6.6, 0.42, 1.035, 0], [7.6, 0.41, 1.05, 0]]);
+  cadre("rush2", [[7.6, 0.78, 1.03, 0.3], [8.7, 0.69, 1.035, 0.3], [9.9, 0.61, 1.04, 0.3], [11.1, 0.61, 1.045, 0.3], [12.0, 0.57, 1.05, 0.3]]);
+  piste("#w1", "opacity", [[4.0, 0], [4.22, 1]], "linear");
+  agent("#ag-emma1", 4.55, 11.75, {
+    travail: [4.7, 5.5], pret: 5.55, fini: 8.35,
+    statuts: [[".s1", 4.6, 5.48], [".s2", 5.55, 8.3], [".s3", 8.4, null]],
+  });
+  // La carte arrive dans « À valider » quand Emma a fini de la préparer.
+  vie("#art-rappel", 5.35, 11.75, { dy: 48, dIn: 0.55 });
+  // Le tap du conseiller sur « Valider », puis « Validation… » et « ✓ Validé ».
+  const doigt = (dx, dy, s) => `translate(${x + dx}px, ${y + dy}px) scale(${s})`;
+  piste("#doigt", "opacity", [[7.0, 0], [7.25, 1], [8.0, 1], [8.3, 0]], "linear");
+  piste("#doigt", "transform", [[7.0, doigt(150, 190, 1), OUT], [7.6, doigt(0, 0, 1), "ease-in"], [7.72, doigt(0, 0, 0.82), "ease-out"],
+    [7.9, doigt(0, 0, 1), OUT], [8.3, doigt(40, 50, 1)]]);
+  piste("#onde", "opacity", [[7.72, 0], [7.75, 1], [8.25, 0]], "ease-out");
+  piste("#onde", "transform", [[7.72, `translate(${x}px, ${y}px) scale(0.8)`, OUT], [8.25, `translate(${x}px, ${y}px) scale(2.1)`]]);
+  piste("#valider", "backgroundColor", [[7.7, "rgb(238, 242, 255)"], [7.74, "rgb(199, 210, 254)"], [7.95, "rgb(199, 210, 254)"]], "linear");
+  couche("#btns", 0, 7.92, 0.12);
+  couche("#validation", 7.98, 8.28, 0.1);
+  piste("#spin", "transform", [[7.98, "rotate(0deg)", "linear"], [8.4, "rotate(330deg)"]]);
+  piste("#valide", "opacity", [[8.32, 0], [8.44, 1]], "linear");
+  piste("#valide", "transform", [[8.32, "scale(0.88)", SPRING], [8.6, "scale(1)"]]);
+  piste("#carte-badge", "backgroundColor", [[8.35, "rgb(79, 70, 229)"], [8.55, "rgb(18, 183, 106)"]], "linear");
+  piste("#c4", "transform", [[8.5, "translateY(0px)", INOUT], [8.8, "translateY(-22px)"]]);
+  piste("#c3", "transform", [[8.5, "translateY(22px)", INOUT], [8.8, "translateY(0px)"]]);
+
+  // ===================== 0:12-0:20 · le café / Lucas puis Christine =====================
+  cadre("rush3", [[12.0, 0.55, 1.0], [16.0, 0.56, 1.03], [20.0, 0.57, 1.06]]);
+  agent("#ag-lucas", 12.05, 15.75, { travail: [12.25, 14.15], pret: 14.2, statuts: [[".s1", 12.1, 14.1], [".s2", 14.2, null]] });
+  vie("#art-lucas", 12.4, 15.75, { dy: 40, dIn: 0.55 });
+  piste("#courbe", "strokeDashoffset", [[12.9, 100, "cubic-bezier(.45,0,.2,1)"], [14.0, 0]]);
+  $$("#art-lucas .pt").forEach((p, i) => piste(p, "opacity", [[12.95 + i * 0.14, 0], [13.08 + i * 0.14, 1]], "linear"));
+  agent("#ag-christine", 16.05, 19.75, { travail: [16.25, 18.3], pret: 18.35, statuts: [[".s1", 16.1, 18.3], [".s2", 18.35, null]] });
+  vie("#art-christine", 16.35, 19.75, { dy: 40, dIn: 0.55 });
+  $$("#art-christine .step").forEach((s, i) => {
+    piste(s, "opacity", [[16.6 + i * 0.16, 0.0], [16.8 + i * 0.16, 1]], "linear");
+    const ck = $(".ck", s);
+    if (ck) piste(ck, "transform", [[16.9 + i * 0.22, "scale(0)", SPRING], [17.15 + i * 0.22, "scale(1)"]]);
+  });
+  vie("#carte-relance", 18.3, null, { dy: 18, dIn: 0.4 });
+
+  // ===================== 0:20-0:26 · le vocal / Max puis Emma =====================
+  cadre("rush4", [[20.0, 0.43, 1.02], [26.0, 0.52, 1.05]]);
+  agent("#ag-max", 20.05, 22.55, { travail: [20.3, 21.9], pret: 21.95, statuts: [[".s1", 20.1, 21.9], [".s2", 21.95, null]] });
+  agent("#ag-emma2", 22.75, 25.75, { travail: [22.9, 24.3], pret: 24.35, statuts: [[".s1", 22.8, 24.3], [".s2", 24.35, null]] });
+  vie("#art-vocal", 20.2, 25.75, { dy: 40, dIn: 0.55 });
+  vie("#tg-vocal", 20.45, null, { dy: 16, dIn: 0.35 });
+  $$("#onde-vocale i").forEach((b, i, all) => piste(b, "backgroundColor",
+    [[20.8 + (i / all.length) * 1.2, "rgb(166, 214, 150)"], [20.86 + (i / all.length) * 1.2, "rgb(94, 176, 68)"]], "linear"));
+  vie("#parole", 20.6, 23.4, { dy: 14, dIn: 0.4 });
+  piste("#parole-voile", "opacity", [[20.45, 0], [20.9, 1], [23.4, 1], [23.9, 0]], "ease-in-out");
+  vie("#tg-max", 21.95, null, { dy: 16, dIn: 0.35 });
+  vie("#tg-emma", 24.35, null, { dy: 16, dIn: 0.35 });
+
+  // ===================== 0:26-0:34 · le soir / Zoé puis Emma =====================
+  cadre("rush5", [[26.0, 0.43, 1.0], [34.0, 0.45, 1.05]]);
+  agent("#ag-zoe", 26.05, 29.75, { travail: [26.25, 27.9], pret: 27.95, statuts: [[".s1", 26.1, 27.9], [".s2", 27.95, null]] });
+  vie("#art-zoe", 26.35, 29.75, { dy: 40, dIn: 0.55 });
+  agent("#ag-emma3", 30.05, 33.75, { travail: [30.25, 32.3], pret: 32.35, fini: 32.35, statuts: [[".s1", 30.1, 32.3], [".s2", 32.35, null]] });
+  vie("#art-routine", 30.35, 33.75, { dy: 40, dIn: 0.55 });
+  $$("#art-routine .step.v").forEach((s, i) => piste(s, "opacity", [[30.9 + i * 0.22, 0], [31.05 + i * 0.22, 1]], "linear"));
+
+  // ===================== 0:34-0:40 · ce que voient tes clients, puis la main serrée =====================
+  vie("#clients-titre", 34.1, null, { dy: 20, dIn: 0.45 });
+  vie("#recu1", 34.45, null, { dy: 30 });
+  vie("#recu2", 35.15, null, { dy: 30 });
+  vie("#recu3", 35.85, null, { dy: 30 });
+  // Le côté droit se replie : il ne reste qu'une personne et son client.
+  piste("#droite", "transform", [[37.3, "translateX(0px)", "cubic-bezier(.7,0,.25,1)"], [38.0, "translateX(960px)"]]);
+  piste("#gauche", "width", [[37.3, "960px", "cubic-bezier(.7,0,.25,1)"], [38.0, "1920px"]]);
+  cadre("rush6", [[34.0, 0.56, 1.0], [37.3, 0.56, 1.02], [38.0, 0.5, 1.0, 0.5, 1920], [45.0, 0.5, 1.0, 0.5, 1920]]);
+
+  // ===================== 0:40-0:45 · la promesse =====================
+  piste("#voile", "opacity", [[40.0, 0], [40.7, 0.94]], OUT);
+  piste("#rush6", "filter", [[40.0, "blur(0px)"], [40.7, "blur(14px)"]], OUT);
+  vie(".fin-logo", 40.3, null, { dy: 12 });
+  vie(".fin-equipe", 40.45, null, { dy: 16 });
+  vie("#fin h1", 40.6, null, { dy: 26, dIn: 0.6 });
+  vie(".fin-ligne", 41.2, null, { dy: 16 });
+  vie(".fin-btns", 41.6, null, { dy: 16 });
+  vie(".fin-note", 41.9, null, { dy: 8 });
+}
+
+// Barres de l'onde du vocal (hauteurs fixes : même image à chaque rendu).
+(function onde() {
+  const h = [6, 10, 16, 12, 20, 24, 14, 9, 18, 22, 26, 17, 11, 15, 21, 25, 19, 12, 8, 14, 20, 16, 10, 7, 12, 18, 14, 9, 6, 10, 13, 8];
+  $("#onde-vocale").innerHTML = h.map((x) => `<i style="height:${x}px;background:rgb(166,214,150)"></i>`).join("");
+})();
+
+const VIDEOS = $$("video");
+const BOUCLES = $$("video.boucle");
+const MI_IMAGE = 1 / 60; // viser le milieu d'une image à 30 i/s
+let pret = false;
+
+window.__seek = (t) => {
+  if (pret) document.getAnimations().forEach((a) => (a.currentTime = t * 1000));
+  for (const [id, d, f, dec] of RUSHES) {
+    const v = document.getElementById(id), on = t >= d && t < f;
+    v.parentElement.style.visibility = on ? "visible" : "hidden";
+    if (on) {
+      const ct = Math.min(t - d + dec + MI_IMAGE, (v.duration || 99) - 0.02);
+      if (Math.abs(v.currentTime - ct) > 0.001) v.currentTime = ct;
+    }
+  }
+  for (const v of BOUCLES) {
+    const de = +v.dataset.de, a = +v.dataset.a;
+    if (t < de - 0.2 || t > a + 0.2 || !v.duration) continue;
+    const ct = ((t - de) % v.duration) + MI_IMAGE;
+    if (Math.abs(v.currentTime - ct) > 0.001) v.currentTime = ct;
+  }
+  // Sous-titre : fondu court seulement à l'entrée et à la sortie d'une suite.
+  const st = document.getElementById("st"), s = ST.find(([d, f]) => t >= d && t < f);
+  st.textContent = s ? s[2] : "";
+  if (s) {
+    const avant = ST.some(([, f]) => Math.abs(f - s[0]) < 1e-6), apres = ST.some(([d]) => Math.abs(d - s[1]) < 1e-6);
+    const a = Math.min(avant ? 1 : (t - s[0]) / 0.2, apres ? 1 : (s[1] - t) / 0.2, 1);
+    st.style.opacity = Math.max(0, a);
+  } else st.style.opacity = 0;
+  const h = HORLOGE.filter(([d]) => t >= d).pop();
+  document.getElementById("horloge-t").textContent = h[1];
+  // Le prix se calcule sous nos yeux (13,4 → 14,2 s).
+  const p = Math.min(1, Math.max(0, (t - 13.4) / 0.8)), e = 1 - Math.pow(1 - p, 3);
+  document.getElementById("prix").textContent = (Math.round((296000 + e * 36000) / 1000) * 1000).toLocaleString("fr-FR").replace(/ /g, " ") + " €";
+};
+
+// Pour la capture : pose l'état, puis attend que chaque vidéo soit à sa place.
+window.__frame = async (t) => {
+  window.__seek(t);
+  await Promise.all(VIDEOS.filter((v) => v.seeking).map((v) => new Promise((r) => v.addEventListener("seeked", r, { once: true }))));
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  return t;
+};
+
+window.__ready = false;
+Promise.all([
+  document.fonts.ready,
+  ...VIDEOS.map((v) => (v.readyState >= 2 ? 0 : new Promise((r) => { v.addEventListener("loadeddata", r, { once: true }); v.addEventListener("error", r, { once: true }); }))),
+  ...$$("img").map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = r; i.onerror = r; }))),
+]).then(() => {
+  construire();
+  document.getAnimations().forEach((a) => a.pause());
+  pret = true;
+  window.__seek(0);
+  window.__ready = true;
+});
+</script>
+</body>
+</html>

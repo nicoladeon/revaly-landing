@@ -6,3 +6,5 @@ dist/
 video/node_modules/
 film/rushes/
 film/frames/
+film/graded/
+film/maquette-images/

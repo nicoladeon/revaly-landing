@@ -62,3 +62,8 @@ Choix d'ensemble : les plans 1, 2 et 6 viennent du même tournage (même agent, 
 - Plans 1, 2 et 6 : les visages de l'agent et du couple sont visibles (sourire, trois quarts) ; le cadrage de dos demandé n'existe que partiellement. Les plans de secours ne changent pas ce point.
 - Plan 4 : téléphone à la joue, pas devant la bouche (voir le plan).
 - Plan 3 : intérieur de café et non terrasse.
+
+## Usage dans le film (Task 12, 12/10/2026)
+- Étalonnage commun et passage à 30 i/s : `film/grade.sh` → `film/graded/<n>.mp4` (non versionné). Plan 5 recadré de 12 % à gauche (le carton sort du champ), sans dépasser 15 s.
+- Moments utilisés (secondes du plan d'origine) : plan 1 de 0,5 à 4,1 ; plan 2 de 1,6 à 6,0 ; plan 3 de 0,0 à 8,0 ; plan 4 de 0,0 à 6,0 ; plan 5 de 1,8 à 9,8 ; plan 6 de 0,8 à 9,9. Au-delà des moments conseillés (plans 3, 4, 5, 6), les passages ont été relus à raison d'une image par seconde après étalonnage et recadrage : ni logo, ni écran lisible, ni enfant vus.
+- `film/assets/post-vendu.jpg` (photo du post « Vendu » de Zoé) : image extraite du plan 6 (même licence Pexels), recadrée et étalonnée comme le film.
