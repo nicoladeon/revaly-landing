@@ -292,3 +292,7 @@ for f in (ROOT / "assets" / "logos").rglob("*.svg"):
 lic = (ROOT / "assets" / "logos" / "LICENSES.md").read_text()
 for n in ("orpi.svg", "laforet.svg", "iad.svg", "modelo.svg"):
     must(n in lic, f"LICENSES.md cite {n}")
+
+# ── Bloc « Plus rien d'oublié » (Task 5) ──
+must('id="plus-rien-oublie"' in idx and idx.count('class="auto-tuile') == 4, "4 automatismes")
+print("OK v3 plus rien d'oublié")

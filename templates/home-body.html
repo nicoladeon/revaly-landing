@@ -54,6 +54,37 @@
   {{BANDE_OUTILS}}
   {{BANDE_RESEAUX}}
 
+  <!-- ═══════════════ PLUS RIEN D'OUBLIÉ ═══════════════ -->
+  <section class="wrap" id="plus-rien-oublie">
+    <div class="rv">
+      <span class="tag">Les automatismes</span>
+      <h2 class="title">Plus rien d'oublié</h2>
+      <p class="sub">Quatre moments que tout le monde rate quand la semaine file. Ici, c'est préparé à l'avance. Tu relis, tu valides.</p>
+    </div>
+    <div class="auto-grille">
+      <article class="auto-tuile">
+        <h3>Le rappel de visite, 2 h avant</h3>
+        <p>Ton acquéreur reçoit un rappel avec l'adresse et l'heure. Il ne se présente plus à la mauvaise porte.</p>
+        <div class="auto-carte"><span class="auto-badge">À valider</span><b>SMS · Camille</b><span>Visite demain à 17 h 15, rue Garibaldi.</span></div>
+      </article>
+      <article class="auto-tuile">
+        <h3>Le point vendeurs du vendredi</h3>
+        <p>Chaque vendredi, ton vendeur reçoit le bilan de la semaine : visites, retours, offres.</p>
+        <div class="auto-carte"><span class="auto-badge">À valider</span><b>E-mail · Mme Lefèvre</b><span>4 visites, 2 retours positifs, une offre à l'étude.</span></div>
+      </article>
+      <article class="auto-tuile">
+        <h3>La relance des pièces du compromis</h3>
+        <p>Les pièces manquantes sont réclamées aux parties, sans que tu aies à y penser.</p>
+        <div class="auto-carte"><span class="auto-badge">À valider</span><b>Relance · acquéreur</b><span>Il manque 2 pièces pour finaliser le compromis.</span></div>
+      </article>
+      <article class="auto-tuile">
+        <h3>L'échéance du prêt</h3>
+        <p>La date limite d'obtention du prêt est suivie. Tu es prévenu avant qu'elle arrive.</p>
+        <div class="auto-carte"><span class="auto-badge">À valider</span><b>Relance · acquéreur</b><span>Accord de prêt : échéance dans 10 jours.</span></div>
+      </article>
+    </div>
+  </section>
+
   <!-- ═══════════════ CONNECTEURS ═══════════════ -->
   <section class="wrap" id="connecteurs">
     <div class="rv">
@@ -588,6 +619,16 @@
   });
 
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Révélation unique à l'entrée dans l'écran : ajoute .vu (ou appelle fn). Mouvement réduit : tout est déjà visible.
+  const revealOnce = (sel, fn) => {
+    const els = document.querySelectorAll(sel);
+    if (REDUCED || !('IntersectionObserver' in window)) { els.forEach((el) => el.classList.add('vu')); return; }
+    const o = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { o.unobserve(e.target); fn ? fn(e.target) : e.target.classList.add('vu'); } });
+    }, { threshold: 0.25 });
+    els.forEach((el) => o.observe(el));
+  };
+  revealOnce('.auto-tuile');
 
 
   // ── Vidéo hero : joue quand elle est à l'écran, se met en pause hors champ ──

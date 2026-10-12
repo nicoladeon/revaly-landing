@@ -1081,6 +1081,28 @@
     .bande-defile ul { animation: none; flex-wrap: wrap; justify-content: center; row-gap: 20px; }
     .bande-defile ul[aria-hidden="true"] { display: none; }
   }
+  /* ── Plus rien d'oublié : 4 tuiles, mini-carte « À valider » qui se pose une fois à l'entrée dans l'écran ── */
+  .auto-grille { display: grid; gap: 14px; margin-top: 28px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .auto-grille { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1040px) { .auto-grille { grid-template-columns: repeat(4, 1fr); } }
+  .auto-tuile { display: flex; flex-direction: column; background: var(--raised); border: 0.5px solid var(--line);
+    border-radius: 16px; box-shadow: var(--shadow-sm); padding: 22px 20px 20px; }
+  .auto-tuile h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+  .auto-tuile p { margin: 8px 0 18px; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+  .auto-carte { margin-top: auto; display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px;
+    background: var(--iris-soft); border: 0.5px solid var(--iris-glow); font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+  .auto-carte b { color: var(--ink); font-weight: 600; }
+  .auto-carte span:last-child { min-height: 2.9em; }
+  .auto-badge { justify-self: start; padding: 2px 9px; border-radius: 99px; background: var(--iris-deep); color: #fff;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .02em; }
+  html.js .auto-tuile .auto-carte { transition: opacity .3s ease-out, transform .3s ease-out; }
+  html.js .auto-tuile:not(.vu) .auto-carte { opacity: 0; transform: translateY(10px); }
+  html.js .auto-tuile:nth-child(2) .auto-carte { transition-delay: .08s; }
+  html.js .auto-tuile:nth-child(3) .auto-carte { transition-delay: .16s; }
+  html.js .auto-tuile:nth-child(4) .auto-carte { transition-delay: .24s; }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .auto-tuile .auto-carte { opacity: 1 !important; transform: none !important; transition: none; }
+  }
 </style>
 
 <!-- Mesure d'audience sans cookie — Plausible (filtre bots, vrais navigateurs).
