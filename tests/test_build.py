@@ -238,7 +238,16 @@ for page in sorted(dist.rglob("*.html")):
         must(mot.lower() not in visible.lower(), f"mot interdit visible : {mot} ({page.relative_to(dist)})")
 # ── Task 2 : mesure et consentement ──
 must("window.rvTrack" in idx, "rvTrack présent")
-must("fbq('init'" not in idx.split("rv-consent")[0], "pixel Meta jamais initialisé avant le bandeau")
+for page in sorted(dist.rglob("*.html")):
+    h = page.read_text(); nom = str(page.relative_to(dist))
+    must("__META_PIXEL_ID__" not in h, f"identifiant pixel substitué ({nom})")
+    must(h.count("fbq('init'") == 1, f"un seul fbq('init' ({nom})")
+    d = h.index("function loadPixel(){"); f = h.index("var c=null;", d)
+    must(d < h.index("fbq('init'") < f, f"fbq('init' seulement dans loadPixel ({nom})")
+    ap = h[f:].split("loadPixel()")
+    must(len(ap) == 3 and ap[0].rstrip().endswith('if(c==="1")') and ap[1].rstrip().endswith('if(v==="1")'),
+         f"loadPixel() appelé seulement sur consentement stocké ou clic Accepter ({nom})")
+    must('PIXEL=""' in h and "hidden" in h.split('id="rv-consent"')[1].split(">")[0], f"pixel vide (livré) et bandeau hidden ({nom})")
 must('id="rv-consent"' in idx and "Refuser" in idx and "Accepter" in idx, "bandeau de consentement")
 must(idx.count('data-track="essai"') >= 2 and idx.count('data-track="demo"') >= 2, "CTA suivis")
 bienv = (dist / "bienvenue" / "index.html").read_text()

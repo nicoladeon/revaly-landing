@@ -1144,6 +1144,8 @@
   .rv-consent .btn { flex: 1 1 0; justify-content: center; min-height: 44px; padding: 9px 16px; font-size: 14px; }
   .rv-consent .btn:focus-visible { outline: 2px solid var(--iris); outline-offset: 2px; }
   @media (min-width: 761px) { .rv-consent { left: auto; right: 20px; bottom: 20px; } }
+  /* mobile : au-dessus de la barre collante quand elle est affichée */
+  @media (max-width: 760px) { body:has(.sticky-cta.show) .rv-consent { bottom: calc(var(--rv-sticky-h, 88px) + 12px); } }
 </style>
 
 <!-- Mesure d'audience sans cookie — Plausible (filtre bots, vrais navigateurs).
@@ -1171,6 +1173,8 @@
   if(c==="1") loadPixel(); else if(c!=="0" && PIXEL) box.hidden=false;
   box.addEventListener("click",function(e){var v=e.target.getAttribute("data-c"); if(v===null) return;
     try{localStorage.setItem(KEY,v)}catch(_){} box.hidden=true; if(v==="1") loadPixel();});
+  var st=document.querySelector(".sticky-cta");
+  if(st&&window.ResizeObserver) new ResizeObserver(function(){document.documentElement.style.setProperty("--rv-sticky-h",st.offsetHeight+"px")}).observe(st);
   window.rvTrack=function(n){ try{ window.plausible && plausible(n); }catch(_){}
     try{ window.fbq && fbq('trackCustom', n); }catch(_){} };
   document.addEventListener("click",function(e){var t=e.target.closest("[data-track]"); if(t) rvTrack(t.getAttribute("data-track"));});
