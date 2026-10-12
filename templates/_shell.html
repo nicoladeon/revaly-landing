@@ -1120,6 +1120,35 @@
   @media (prefers-reduced-motion: reduce) {
     html.js .cv-carte, html.js .cv-chute { opacity: 1 !important; transform: none !important; transition: none; }
   }
+  /* ── Tu peux aussi leur parler : la conversation se joue message par message (600 ms) ── */
+  .parler-grille { display: grid; gap: 28px; align-items: center; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .parler-grille { grid-template-columns: 1fr minmax(0, 440px); gap: 56px; } }
+  .conv { background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-md); overflow: hidden; width: 100%; max-width: 440px; }
+  .conv-tete { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 0.5px solid var(--line); }
+  .conv-tete img { border-radius: 50%; display: block; background: var(--bg-soft); }
+  .conv-tete b { display: block; font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .conv-tete span { font-size: 12.5px; color: var(--subtle); }
+  .conv-corps { display: flex; flex-direction: column; gap: 10px; padding: 18px; background: var(--bg-soft); }
+  .msg { max-width: 86%; }
+  .msg.moi { align-self: flex-end; background: var(--iris-deep); color: #fff; padding: 12px 14px; border-radius: 18px 18px 5px 18px; }
+  .msg.max { align-self: flex-start; background: var(--raised); border: 0.5px solid var(--line); padding: 11px 15px; border-radius: 18px 18px 18px 5px; box-shadow: var(--shadow-sm); font-size: 15px; line-height: 1.5; }
+  .msg p { margin: 0; }
+  .vocal { display: flex; align-items: center; gap: 12px; }
+  .onde { display: flex; align-items: center; gap: 3px; height: 26px; }
+  .onde i { display: block; width: 3px; border-radius: 2px; background: rgba(255,255,255,.85); }
+  .onde i:nth-child(1) { height: 8px; } .onde i:nth-child(2) { height: 16px; } .onde i:nth-child(3) { height: 24px; } .onde i:nth-child(4) { height: 12px; }
+  .onde i:nth-child(5) { height: 20px; } .onde i:nth-child(6) { height: 26px; } .onde i:nth-child(7) { height: 14px; } .onde i:nth-child(8) { height: 22px; }
+  .onde i:nth-child(9) { height: 10px; } .onde i:nth-child(10) { height: 18px; } .onde i:nth-child(11) { height: 12px; } .onde i:nth-child(12) { height: 6px; }
+  .duree { font-size: 13px; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.85); }
+  .transcrit { margin-top: 8px !important; padding-top: 8px; border-top: 0.5px solid rgba(255,255,255,.28); font-size: 14.5px; line-height: 1.45; font-style: italic; }
+  .conv-carte { display: grid; gap: 4px; font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+  .conv-carte b { color: var(--ink); font-weight: 600; }
+  .conv-carte .auto-badge { margin-bottom: 2px; }
+  html.js .conv .msg { transition: opacity .3s ease-out, transform .3s ease-out; }
+  html.js .conv .msg:not(.on) { opacity: 0; transform: translateY(10px); }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .conv .msg { opacity: 1 !important; transform: none !important; transition: none; }
+  }
 </style>
 
 <!-- Mesure d'audience sans cookie — Plausible (filtre bots, vrais navigateurs).

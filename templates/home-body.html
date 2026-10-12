@@ -140,6 +140,25 @@
     </div>
   </section>
 
+  <!-- ═══════════════ TU PEUX AUSSI LEUR PARLER ═══════════════ -->
+  <section class="wrap" id="parler">
+    <div class="parler-grille">
+      <div class="rv">
+        <span class="tag">Par message</span>
+        <h2 class="title">Tu peux aussi leur parler</h2>
+        <p class="sub">Un vocal depuis ta voiture, une phrase dans ta messagerie. Max comprend, confie la tâche au bon équipier, et te montre ce qu'il prépare avant que quoi que ce soit parte.</p>
+      </div>
+      <div class="conv" aria-label="Exemple de conversation avec Max">
+        <div class="conv-tete"><img src="__MAX128__" width="40" height="40" alt="" /><div><b>Max</b><span>Coordinateur de ton équipe</span></div></div>
+        <div class="conv-corps">
+          <div class="msg moi"><div class="vocal"><span class="onde" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="duree">0:04</span></div><p class="transcrit">Max, relance le notaire pour jeudi</p></div>
+          <div class="msg max"><p>Je le confie à Emma.</p></div>
+          <div class="msg max"><div class="conv-carte"><span class="auto-badge">À valider</span><b>Mail au notaire</b><span>Relance pour l'acte de jeudi.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ RIEN NE PART SANS TOI (storyboard approbation) ═══════════════ -->
   <section class="wrap" id="controle">
     <div class="rv" style="text-align: center;">
@@ -633,6 +652,10 @@
   revealOnce('.auto-tuile');
   revealOnce('.cv-carte');
   revealOnce('.cv-chute');
+  revealOnce('.conv', (el) => {
+    el.classList.add('vu');
+    el.querySelectorAll('.msg').forEach((m, i) => setTimeout(() => m.classList.add('on'), i * 600));
+  });
 
 
   // ── Vidéo hero : joue quand elle est à l'écran, se met en pause hors champ ──

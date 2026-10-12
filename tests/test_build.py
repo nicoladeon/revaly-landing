@@ -300,3 +300,7 @@ print("OK v3 plus rien d'oublié")
 # ── Bloc « Ce que voient tes clients » (Task 6) ──
 must('id="clients-voient"' in idx and all(c["message"] in html.unescape(idx) for c in cv), "messages clients rendus")
 print("OK v3 ce que voient tes clients")
+
+# ── Bloc « Tu peux aussi leur parler » (Task 8) ──
+must('id="parler"' in idx and "Max, relance le notaire pour jeudi" in idx, "bloc conversation")
+print("OK v3 tu peux aussi leur parler")
