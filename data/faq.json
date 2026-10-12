@@ -1,7 +1,12 @@
 [
   {
-    "question": "Pourquoi demander ma carte pour l'essai ?",
-    "reponse": "On te demande une carte parce que l'essai s'enchaîne directement sur l'abonnement si tu ne fais rien — pas d'étape supplémentaire à recréer plus tard. Concrètement : 0 € aujourd'hui, l'essai dure 7 jours et rien n'est débité avant la fin. Si ce n'est pas pour toi, l'annulation se fait en 2 clics, sans justification à donner.",
+    "question": "Est-ce que l'IA écrit à mes clients sans moi ?",
+    "reponse": "Non. Chaque email, chaque post, chaque message sortant est d'abord préparé en brouillon — rien ne part sans ta validation. Le système est verrouillé côté envoi : sans brouillon validé et confirmé de ta part, aucun message ne peut sortir. Pour les automatisations qui touchent tes contacts, comme les relances, c'est toi qui actives l'option, qui règles le délai, le ton et le canal — jamais l'inverse. Tu gardes la main sur tout ce qui part en ton nom.",
+    "schema": true
+  },
+  {
+    "question": "Où sont mes données ?",
+    "reponse": "Tes données sont hébergées dans l'Union européenne, chez des prestataires conformes au RGPD. Elles ne sont ni vendues, ni partagées avec des tiers à des fins commerciales. Tu restes propriétaire de tes contacts, de tes dossiers et de tes contenus : en cas de résiliation, tu peux les récupérer ou en demander la suppression. Le détail complet du traitement des données figure dans les mentions légales et la politique de confidentialité de l'application.",
     "schema": true
   },
   {
@@ -10,13 +15,18 @@
     "schema": true
   },
   {
-    "question": "Je suis indépendant, sans agence : comment je me connecte à Modelo ?",
-    "reponse": "Modelo/Netty demande un accès API pour connecter ton compte, et cet accès s'obtient directement auprès de Modelo. Si tu es indépendant et que tu ne l'as pas encore, on t'accompagne dans la démarche pour l'obtenir — la procédure exacte dépend de ton contrat Modelo/Septeo. En attendant cet accès, tu peux déjà utiliser ton équipe sur tes autres outils (email, agenda, réseaux sociaux) : la connexion Modelo vient se brancher dès qu'elle est prête. Écris-nous et on s'occupe du reste avec toi.",
+    "question": "J'ai déjà un CRM : je dois en changer ?",
+    "reponse": "Non. Modelo reste ton CRM : l'équipe lit tes biens, tes contacts et tes rendez-vous, et y range ce qu'elle prépare. Ton agenda et ta boîte mail restent les tiens. Rien à migrer.",
     "schema": true
   },
   {
-    "question": "Est-ce que l'IA écrit à mes clients sans moi ?",
-    "reponse": "Non. Chaque email, chaque post, chaque message sortant est d'abord préparé en brouillon — rien ne part sans ta validation. Le système est verrouillé côté envoi : sans brouillon validé et confirmé de ta part, aucun message ne peut sortir. Pour les automatisations qui touchent tes contacts, comme les relances, c'est toi qui actives l'option, qui règles le délai, le ton et le canal — jamais l'inverse. Tu gardes la main sur tout ce qui part en ton nom.",
+    "question": "Pourquoi demander ma carte pour l'essai ?",
+    "reponse": "On te demande une carte parce que l'essai s'enchaîne directement sur l'abonnement si tu ne fais rien — pas d'étape supplémentaire à recréer plus tard. Concrètement : 0 € aujourd'hui, l'essai dure 7 jours et rien n'est débité avant la fin. Si ce n'est pas pour toi, l'annulation se fait en 2 clics, sans justification à donner.",
+    "schema": true
+  },
+  {
+    "question": "Je suis indépendant, sans agence : comment je me connecte à Modelo ?",
+    "reponse": "Modelo/Netty demande un accès API pour connecter ton compte, et cet accès s'obtient directement auprès de Modelo. Si tu es indépendant et que tu ne l'as pas encore, on t'accompagne dans la démarche pour l'obtenir — la procédure exacte dépend de ton contrat Modelo/Septeo. En attendant cet accès, tu peux déjà utiliser ton équipe sur tes autres outils (email, agenda, réseaux sociaux) : la connexion Modelo vient se brancher dès qu'elle est prête. Écris-nous et on s'occupe du reste avec toi.",
     "schema": true
   },
   {
@@ -27,16 +37,6 @@
   {
     "question": "Je ne suis pas technique, c'est compliqué à installer ?",
     "reponse": "Quelques minutes : tu branches Modelo, ton agenda et ta boîte mail en quelques clics, puis tu parles à Max comme à un assistant, par écrit ou en vocal, sur Telegram, WhatsApp ou dans l'application. Pendant le lancement, l'installation est offerte : on branche Modelo, ta boîte mail et ton agenda avec toi.",
-    "schema": true
-  },
-  {
-    "question": "J'ai déjà un CRM : je dois en changer ?",
-    "reponse": "Non. Modelo reste ton CRM : l'équipe lit tes biens, tes contacts et tes rendez-vous, et y range ce qu'elle prépare. Ton agenda et ta boîte mail restent les tiens. Rien à migrer.",
-    "schema": true
-  },
-  {
-    "question": "Où sont mes données ?",
-    "reponse": "Tes données sont hébergées dans l'Union européenne, chez des prestataires conformes au RGPD. Elles ne sont ni vendues, ni partagées avec des tiers à des fins commerciales. Tu restes propriétaire de tes contacts, de tes dossiers et de tes contenus : en cas de résiliation, tu peux les récupérer ou en demander la suppression. Le détail complet du traitement des données figure dans les mentions légales et la politique de confidentialité de l'application.",
     "schema": true
   },
   {

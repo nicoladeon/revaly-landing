@@ -298,15 +298,16 @@ print("OK v3 plus rien d'oublié")
 must('id="clients-voient"' in idx and all(c["message"] in html.unescape(idx) for c in cv), "messages clients rendus")
 print("OK v3 ce que voient tes clients")
 
-# ── Bloc « Tu peux aussi leur parler » (Task 8) ──
-must('id="parler"' in idx and "Max, relance le notaire pour jeudi" in idx, "bloc conversation")
+# ── Conversation « Tu peux aussi leur parler » (Task 8), fusionnée le 12/10 au soir dans l'étape 3 de « Comment ça marche » ──
+_com = idx.split('id="comment"', 1)[1].split("</section>", 1)[0]
+must('id="parler"' not in idx and "Max, relance le notaire pour jeudi" in _com and 'class="conv"' in _com, "conversation dans l'étape 3")
 print("OK v3 tu peux aussi leur parler")
 
 # ── Ronde de correction 1 (blocs 5, 6, 8) ──
 must('id="connecteurs"' not in idx and "#connecteurs" not in idx, "section #connecteurs retirée de l'accueil")
 must("Visite à 17 h 15, dans 2 h." in idx and "saisie dans Modelo" in idx, "textes des tuiles 1 et 4 précisés")
 must("html.js .conv.armed .msg:not(.on)" in idx, "bulles masquées seulement si le bloc est armé (repli sans observateur)")
-must('role="group"' in idx.split('id="parler"', 1)[1].split("</section>", 1)[0], "conversation : role=group")
+must('role="group"' in _com.split('class="conv"', 1)[1][:200], "conversation : role=group")
 must(idx.count("revealOnce('#clients-voient')") == 1 and "revealOnce('.cv-carte')" not in idx, "un seul déclencheur pour #clients-voient")
 print("OK v3 correction 1")
 
@@ -371,7 +372,8 @@ must("89&nbsp;%" in idx and "89 %" not in idx, "espace insécable avant % (chiff
 must(idx.find('id="controle"') < idx.find('id="tarif"') < idx.find('id="faq"'), "ordre confiance → tarif → FAQ")
 _conf = idx.split('id="controle"', 1)[1].split("</section>", 1)[0]
 _pf = idx.split('id="preuve-fondateur"', 1)[1].split("</section>", 1)[0]
-must("Créé par un agent immobilier" in html.unescape(_pf) and "Modelo reste ton CRM" in html.unescape(_conf), "fondateur dans la preuve sous le haut de page, CRM dans « Rien ne part sans toi »")
+must("Créé par un agent immobilier" in html.unescape(_pf), "fondateur dans la preuve sous le haut de page")
+must("Rien à migrer : Modelo reste ton CRM." in html.unescape(idx) and any("CRM" in q["question"] for q in faq), "Modelo reste le CRM : étape 1 et FAQ")
 must('class="fondateur"' in _pf and ('class="fondateur-photo"' in _pf or 'class="fondateur-mono"' in _pf), "carte fondateur : photo ou monogramme")
 must("89&nbsp;%" in _pf and "mesure interne, octobre 2026" in _pf, "chiffre qualité en grand, sourcé, à côté du fondateur")
 faqq = [q["question"] for q in json.loads((ROOT / "data" / "faq.json").read_text())]
@@ -386,7 +388,8 @@ must("calendly.event_scheduled" in idx and "rvTrack('demo_reservee')" in idx, "d
 must('e.origin==="https://calendly.com"' in idx, "origine Calendly vérifiée")
 must("https://assets.calendly.com/assets/external/widget.js" in idx and idx.count("assets.calendly.com") == 1, "widget.js d'une seule origine")
 must(not re.search(r'<script[^>]+src="https://assets\.calendly\.com', idx), "widget.js non chargé au chargement de la page")
-must("IntersectionObserver" in idx.split("widget.js", 1)[0][-1500:] or "IntersectionObserver" in idx.split("widget.js", 1)[1][:1500], "widget.js chargé à l'approche")
+must('id="demo-ouvrir"' in idx and 'aria-controls="demo-agenda"' in idx and '<div class="demo-agenda" id="demo-agenda" hidden>' in idx
+     and "if(!o) charge();" in idx, "agenda Calendly (700 px) ouvert à la demande, widget.js demandé à ce moment-là")
 _fin = idx.split('id="demo"', 1)[1] if 'id="demo"' in idx else ""
 must('data-track="essai"' in _fin and 'data-track="demo"' in _fin, "appel final : deux boutons mesurés")
 must('href="https://calendly.com/contact-chiclick/30min"' in _fin, "repli sans JS : lien vers Calendly")
@@ -453,7 +456,7 @@ must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 # Ronde Julien 1 (playbook des références) : preuve juste après le haut, les collègues avant « Rien ne part sans toi »,
 # « Ce que voient tes clients » dans le même bloc que « Plus rien d'oublié ».
 _ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="preuve-fondateur"', 'id="probleme"', 'id="comment"', 'id="bande-outils"',
-          'id="equipe"', 'id="controle"', 'id="plus-rien-oublie"', 'id="clients-voient"', 'id="parler"', 'id="calculateur"',
+          'id="equipe"', 'id="controle"', 'id="plus-rien-oublie"', 'id="clients-voient"', 'id="calculateur"',
           'id="tarif"', 'id="faq"', 'id="demo"']
 _pos = [idx.find(x) for x in _ordre]
 must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
@@ -541,3 +544,12 @@ for _q in json.loads((ROOT / "data" / "faq.json").read_text()):
 _bv = (dist / "bienvenue" / "index.html").read_text()
 must(re.search(r'<a class="btn" href="https://calendly\.com/contact-chiclick/30min"[^>]*data-track="installation"[^>]*>Réserver mon installation</a>', _bv), "/bienvenue/ : réserver mon installation")
 print("OK ronde conversion")
+
+# ── Page plus courte (12/10 au soir) : FAQ à 5 questions visibles, le reste replié ; aucune question perdue ──
+_faqh = idx.split('id="faq-list"', 1)[1].split("</section>", 1)[0]
+must(_faqh.split('<details class="faq-plus">', 1)[0].count('class="faq-item"') == 5 and _faqh.count('class="faq-item"') == len(faq),
+     "FAQ : 5 objections visibles, les autres sous « Voir les autres questions »")
+must([f["question"] for f in faq][:5] == ["Est-ce que l'IA écrit à mes clients sans moi ?", "Où sont mes données ?", "Comment j'annule ?",
+     "J'ai déjà un CRM : je dois en changer ?", "Pourquoi demander ma carte pour l'essai ?"], "FAQ : les objections du playbook d'abord")
+must('<ul class="confiance">' not in idx, "tuiles de confiance retirées (89 % dans la preuve, données et CRM dans la FAQ)")
+print("OK page plus courte")

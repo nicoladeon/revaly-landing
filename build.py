@@ -269,6 +269,10 @@ def faq_items(faq):
             f'<span>{_esc(f["question"])}</span>{_CHEV}</button>'
             f'<div class="faq-body" id="faq-{i}"><div><p>{_esc(f["reponse"])}</p></div></div>'
             f"</div>")
+    # Les 5 premières (objections principales) restent visibles ; les autres sous « Voir les autres questions »
+    if len(items) > 5:
+        return ("".join(items[:5]) + '<details class="faq-plus"><summary>Voir les autres questions</summary>'
+                + "".join(items[5:]) + "</details>")
     return "".join(items)
 
 # ── JSON-LD (task 9) : FAQPage (entrées schema:true, texte brut sans balises),

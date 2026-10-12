@@ -2,7 +2,7 @@
   /* ── Accueil (refonte du 12/10/2026) : styles propres à la page. Le socle (couleurs, Geist,
        boutons, navigation, fenêtre d'essai, pied de page) vit dans _shell.html. ── */
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-  .hp-sec { padding-top: clamp(72px, 10vw, 136px); }
+  .hp-sec { padding-top: clamp(64px, 10vw, 136px); }
   .hp-wide { max-width: 1160px; }
   .hp-centre { text-align: center; }
   .hp-centre p.sub { margin-left: auto; margin-right: auto; }
@@ -244,7 +244,7 @@
   .fond-carte .btn { min-height: 44px; font-size: 15px; }
 
   /* ── 4. Comment ça marche ── */
-  .etapes { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 14px; }
+  .etapes { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 14px; align-items: start; }
   @media (min-width: 900px) { .etapes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
   .etape { display: flex; flex-direction: column; padding: 24px 22px 22px; background: var(--bg); border: 0.5px solid var(--line); border-radius: 22px; }
   .etape-n {
@@ -252,8 +252,8 @@
     background: var(--iris-deep); color: #fff; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums;
   }
   .etape h3 { margin: 18px 0 0; font-size: 19px; font-weight: 550; line-height: 1.3; letter-spacing: -0.015em; }
-  .etape p { margin: 8px 0 0; font-size: 15.5px; line-height: 1.55; color: var(--muted); }
-  .etape-visuel { margin-top: auto; padding-top: 22px; }
+  .etape > p { margin: 8px 0 0; font-size: 15.5px; line-height: 1.55; color: var(--muted); }
+  .etape-visuel { padding-top: 20px; }
   .et-logos { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .et-logos li { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; border-radius: 12px; background: var(--raised); border: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--muted); }
   .et-logos img { display: block; filter: grayscale(1); opacity: .7; }
@@ -270,6 +270,11 @@
   .et-boutons span { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border-radius: 9px; font-size: 13px; font-weight: 600; }
   .et-ok { background: var(--iris-deep); color: #fff; }
   .et-non { background: var(--bg-soft); color: var(--muted); }
+  .et-vocal { margin-top: 6px !important; font-size: 14px !important; color: var(--ink) !important; }
+  .etape .conv { max-width: none; box-shadow: var(--shadow-sm); }
+  .etape .conv-corps { padding: 14px; }
+  .etape .conv-tete { padding: 12px 14px; }
+  .etape .conv-tete span:not(.conv-canal) { display: none; }
   .auto-badge { justify-self: start; padding: 2px 9px; border-radius: 99px; background: #4F46E5; color: #fff; font-size: 11.5px; font-weight: 600; letter-spacing: .02em; }
 
   /* ── 5. L'équipe : six cartes, les visages en grand ── */
@@ -553,6 +558,10 @@
   .faq-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s cubic-bezier(.32,.72,0,1); }
   .faq-item[data-open="true"] .faq-body { grid-template-rows: 1fr; }
   .faq-body > div { overflow: hidden; }
+  .faq-plus { border-bottom: 0.5px solid var(--line); }
+  .faq-plus > summary { list-style: none; cursor: pointer; display: flex; align-items: center; min-height: 56px; padding: 0 4px; font-size: 15px; font-weight: 500; color: var(--iris-ink); }
+  .faq-plus > summary::-webkit-details-marker { display: none; }
+  .faq-plus[open] > summary { display: none; }
   .faq-body p { margin: 0 4px 18px; font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 620px; }
 
   /* ── 13. Appel final + démo intégrée ── */
@@ -568,7 +577,10 @@
     .final-cta { flex-wrap: nowrap; gap: 10px; }
     .final-cta .btn { flex: 1 1 0; min-width: 0; padding: 12px 8px; font-size: 15.5px; }
   }
-  .demo-cal { display: none; margin: 40px auto 0; max-width: 820px; width: 100%; min-width: 0; text-align: center; }
+  .demo-ouvrir { margin: 0 auto; min-height: 48px; padding: 8px 4px; border: 0; background: none; cursor: pointer; font: 500 15px/1.4 var(--font-sans); color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 5px; }
+  .demo-ouvrir:hover { text-decoration-color: var(--ink); }
+  .demo-agenda { margin-top: 16px; }
+  .demo-cal { display: none; margin: 28px auto 0; max-width: 820px; width: 100%; min-width: 0; text-align: center; }
   .demo-titre { font-size: 15px; color: var(--muted); margin: 0 0 14px; }
   .demo-cal .calendly-inline-widget { border-radius: 18px; overflow: hidden; border: 0.5px solid var(--line); background: var(--raised); max-width: 100%; }
   .demo-cal iframe { max-width: 100%; }
@@ -591,6 +603,33 @@
   .sticky-cta.show { transform: none; visibility: visible; transition-delay: 0s; }
   .sticky-cta .btn { justify-content: center; }
   .sticky-cta .btn:first-child { flex: 1 1 auto; }
+  /* Mobile : page plus courte (cible ~9 000 px) — rythme resserré, doublons repliés */
+  @media (max-width: 760px) {
+    #calculateur .cta-relance { display: none; }
+    .foot { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 14px; padding-top: 32px; }
+    .foot > div:first-child { grid-column: 1 / -1; margin-bottom: 8px; }
+    .foot a { padding: 4px 0; min-height: 44px; display: flex; align-items: center; font-size: 13.5px; line-height: 1.3; }
+    footer { margin-top: 56px; }
+    .hp-sec { padding-top: 52px; }
+    .hp-band { margin-top: 52px; padding: 48px 0; }
+    #tarif .garanties { display: none; }
+    .pf-detail, .cv-chute { display: none; }
+    #faq .faq-grid > div:first-child .btn { display: none; }
+    .faq-grid { gap: 20px; }
+    .calc { gap: 20px; }
+    .calc-detail li { padding: 7px 0; font-size: 14px; }
+    .pb-citation { margin-bottom: 36px; }
+    .cta-relance { margin-top: 28px; }
+    .etapes.glisse { align-items: flex-start; }
+    .etape { padding: 20px 18px; }
+    .etape-visuel { margin-top: 0; padding-top: 16px; }
+    .et-logos { gap: 6px; }
+    .et-logos li { height: 34px; padding: 0 10px; font-size: 13px; }
+    /* le détail du calculateur en deux colonnes : chaque tâche et ses minutes restent visibles */
+    .calc-detail { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; }
+    .calc-detail li { flex-direction: column; justify-content: flex-start; gap: 0; padding: 8px 0; border-bottom: 0.5px solid var(--line) !important; font-size: 13.5px; line-height: 1.35; }
+    .calc-detail li span:last-child { font-size: 15px; font-weight: 600; }
+  }
   @media (max-width: 760px) { .sticky-cta { display: flex; } }
 </style>
 
@@ -734,13 +773,20 @@
           <span class="etape-n" aria-hidden="true">3</span>
           <h3>Tu valides d'un geste.</h3>
           <p>Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.</p>
-          <div class="etape-visuel" aria-hidden="true">
-            <div class="et-carte">
-              <span class="auto-badge">À valider</span>
-              <b>Rappel de visite · Emma</b>
-              <span>SMS à Camille : visite à 17 h 15.</span>
-              <span class="et-boutons"><span class="et-ok">Valider</span><span class="et-non">Refuser</span></span>
+          <p class="et-vocal">Un vocal depuis ta voiture suffit : Max confie la tâche au bon équipier.</p>
+          <div class="etape-visuel">
+          <div class="conv" role="group" aria-label="Exemple de conversation avec Max sur Telegram">
+            <div class="conv-tete">
+              <img src="/assets/equipe/boucles/max@256.webp" width="40" height="40" alt="" loading="lazy" />
+              <div><b>Max</b><span>Coordinateur de ton équipe</span></div>
+              <span class="conv-canal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" /></svg>Telegram</span>
             </div>
+            <div class="conv-corps">
+              <div class="msg moi"><div class="vocal"><span class="onde" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="duree">0:04</span></div><p class="transcrit">Max, relance le notaire pour jeudi</p></div>
+              <div class="msg max"><p>Je le confie à Emma.</p></div>
+              <div class="msg max"><div class="conv-carte"><span class="auto-badge">À valider</span><b>Mail au notaire</b><span>Relance pour l'acte de jeudi.</span></div></div>
+            </div>
+          </div>
           </div>
         </li>
       </ol>
@@ -800,11 +846,6 @@
     </div>
     <p class="proof-note">Verrouillé dans le produit : e-mail en brouillon dans ta boîte, post en attente de relecture, action sensible confirmée. Toujours.</p>
 
-    <ul class="confiance">
-      <li><b>Tu valides tout.</b><span>Chaque message, post ou document arrive en carte « À valider » avant l'envoi.</span></li>
-      <li><b>Modelo reste ton CRM.</b><span>L'équipe y lit et y range, rien à migrer. Ton agenda et ta boîte mail restent les tiens.</span></li>
-      <li><b>Tes données restent à toi.</b><span>Elles ne servent qu'à ton équipe, jamais à d'autres.</span></li>
-    </ul>
 
     <div class="cta-relance"><button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button><p>0 € aujourd'hui · Annulable en 2 clics</p></div>
   </section>
@@ -838,29 +879,7 @@
     {{CLIENTS_VOIENT}}
   </section>
 
-  <!-- ═══════════════ 8. TU PEUX AUSSI LEUR PARLER ═══════════════ -->
-  <section class="wrap hp-sec" id="parler">
-    <div class="parler-grille">
-      <div>
-        <h2 class="title">Tu peux aussi leur parler</h2>
-        <p class="sub">Un vocal depuis ta voiture, une phrase dans ta messagerie. Max comprend, confie la tâche au bon équipier, et te montre ce qu'il prépare avant que quoi que ce soit parte.</p>
-      </div>
-      <div class="conv" role="group" aria-label="Exemple de conversation avec Max sur Telegram">
-        <div class="conv-tete">
-          <img src="/assets/equipe/boucles/max@256.webp" width="40" height="40" alt="" loading="lazy" />
-          <div><b>Max</b><span>Coordinateur de ton équipe</span></div>
-          <span class="conv-canal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" /></svg>Telegram</span>
-        </div>
-        <div class="conv-corps">
-          <div class="msg moi"><div class="vocal"><span class="onde" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="duree">0:04</span></div><p class="transcrit">Max, relance le notaire pour jeudi</p></div>
-          <div class="msg max"><p>Je le confie à Emma.</p></div>
-          <div class="msg max"><div class="conv-carte"><span class="auto-badge">À valider</span><b>Mail au notaire</b><span>Relance pour l'acte de jeudi.</span></div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════ 9. CALCULATEUR : TEMPS RENDU ═══════════════ -->
+  <!-- ═══════════════ 8. CALCULATEUR : TEMPS RENDU ═══════════════ -->
   <section class="wrap hp-sec" id="calculateur">
     <div class="calc">
       <div class="calc-intro">
@@ -899,7 +918,7 @@
     <script type="module" src="/assets/calcul.js"></script>
   </section>
 
-  <!-- ═══════════════ 10. PRIX ═══════════════ -->
+  <!-- ═══════════════ 9. PRIX ═══════════════ -->
   <section class="hp-band hp-centre" id="tarif" data-billing="monthly">
     <div class="wrap">
       <h2 class="title">Une équipe entière pour moins qu'une demi-journée d'assistante par mois.</h2>
@@ -987,7 +1006,7 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 11. FAQ ═══════════════ -->
+  <!-- ═══════════════ 10. FAQ ═══════════════ -->
   <section class="wrap hp-sec" id="faq">
     <div class="faq-grid">
       <div>
@@ -1000,7 +1019,7 @@
     <noscript><style>.faq-body { grid-template-rows: 1fr; } .faq-item .chev { display: none; }</style></noscript>
   </section>
 
-  <!-- ═══════════════ 12. APPEL FINAL + DÉMO INTÉGRÉE ═══════════════ -->
+  <!-- ═══════════════ 11. APPEL FINAL + DÉMO INTÉGRÉE ═══════════════ -->
   <section class="wrap hp-sec" id="demo">
     <div class="final">
       <span class="faces" aria-hidden="true">
@@ -1023,9 +1042,11 @@
       </div>
       <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
       <div class="demo-cal">
-        <p class="demo-titre">Ou choisis directement un créneau de démo (30&nbsp;min, en visio).</p>
+        <button type="button" class="demo-ouvrir" id="demo-ouvrir" aria-expanded="false" aria-controls="demo-agenda" data-track="demo">Ou choisis directement un créneau de démo (30&nbsp;min, en visio)</button>
+        <div class="demo-agenda" id="demo-agenda" hidden>
         <div class="calendly-inline-widget" data-url="__CALENDLY__?primary_color=6366f1&amp;hide_gdpr_banner=1" style="min-width:320px;height:700px">
           <p class="demo-repli"><a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Ouvrir le calendrier des démos</a></p>
+        </div>
         </div>
       </div>
     </div>
@@ -1044,10 +1065,10 @@
         var n=0, iv=setInterval(function(){ n++;
           if(cal.querySelector("iframe")){ clearInterval(iv); box.classList.add("ok"); }
           else if(n>=16){ clearInterval(iv); repli(); } },500); }
-      if("IntersectionObserver" in window){
-        var io=new IntersectionObserver(function(en){ if(en.some(function(x){return x.isIntersecting})){ io.disconnect(); charge(); } },{rootMargin:"600px 0px"});
-        io.observe(cal);
-      } else { addEventListener("load",charge); }
+      // L'agenda ne se charge qu'à la demande : le bouton l'ouvre, widget.js est alors demandé (une seule fois)
+      var ouvrir=document.getElementById("demo-ouvrir"), agenda=document.getElementById("demo-agenda");
+      ouvrir.addEventListener("click",function(){ var o=ouvrir.getAttribute("aria-expanded")==="true";
+        ouvrir.setAttribute("aria-expanded",String(!o)); agenda.hidden=o; if(!o) charge(); });
     })();
     </script>
   </section>
