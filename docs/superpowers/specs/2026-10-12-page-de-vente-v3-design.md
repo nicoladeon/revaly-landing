@@ -74,6 +74,16 @@ révélation finale « ce que voient tes clients ».
 1. **Haut de page** : film en boucle courte sans le son + « Voir le film (45 s) » ;
    titre et sous-titre (§2) ; boutons **Essayer 7 jours** (principal) et **Réserver une
    démo** ; « Branché sur Modelo · Sans engagement · Rien ne part sans toi ».
+1b. **Bande de logos qui défile « Fonctionne avec tes outils »** (demande de Julien du
+   12/10, adaptée) : Modelo, Google Agenda, Gmail, Outlook, WhatsApp, Telegram, Canva ;
+   ligne dessous « Tes contacts SeLoger, Leboncoin et Bien'ici arrivent directement chez
+   Emma ». Uniquement des outils réellement branchés en prod. **Jamais** de logos
+   d'agences (Century 21, Orpi, Laforêt, KW…) présentés comme clients : ce serait une
+   pratique commerciale trompeuse et un usage de marque sans accord.
+   **« Ils nous font confiance »** n'apparaît qu'avec de vrais clients (dès les premières
+   agences en essai), leur logo et leur accord écrit, idéalement avec un témoignage
+   vidéo. D'ici là : **« Créé par un agent immobilier, pour les agents immobiliers »**,
+   avec la photo et le parcours de Julien en une ligne (bloc 7, Confiance).
 2. **« Plus rien d'oublié »** : 4 automatismes en mini-animations (rappel de visite 2 h
    avant, point vendeurs du vendredi, relance des pièces du compromis, échéance du prêt).
 3. **« Ce que voient tes clients »** : trois messages réels côté acquéreur, vendeur,
