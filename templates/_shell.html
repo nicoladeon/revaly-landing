@@ -192,87 +192,8 @@
   .h-in.d3 { animation-delay: .28s; } .h-in.d4 { animation-delay: .42s; }
   @keyframes hin { to { opacity: 1; transform: none; } }
 
-  /* ── Le deck du matin (réplique fidèle de l'app) ── */
-  .deck-zone { margin-top: 52px; text-align: left; }
-  .nightbar { display: flex; align-items: center; gap: 12px; font-size: 12.5px; color: var(--subtle); padding: 0 4px 14px; }
-  .nightbar .time { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
-  .nightbar .track {
-    position: relative; flex: 1; height: 2px; border-radius: 2px;
-    background: linear-gradient(90deg, var(--night-1), var(--night-2) 38%, #A5B4FC 86%, #E0E4FE 100%);
-  }
-  .nightbar .spark {
-    position: absolute; top: 50%; left: 8%; width: 8px; height: 8px; border-radius: 50%;
-    background: #C7CDFB; transform: translate(-50%, -50%);
-    animation: sweep 2.6s cubic-bezier(.32,.72,0,1) .6s forwards;
-  }
-  @keyframes sweep { to { left: 100%; } }
-
-  .hero-bien {
-    position: relative; overflow: hidden; border-radius: 22px; min-height: 380px;
-    display: flex; flex-direction: column; justify-content: flex-end;
-    box-shadow: var(--shadow-xl); color: #fff;
-  }
-  .hero-bien img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .hero-bien .scrim {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(10,18,28,.94) 0%, rgba(13,24,38,.55) 46%, rgba(15,30,48,.15) 72%, rgba(18,34,54,.42) 100%);
-  }
-  .hero-bien .flag {
-    position: absolute; top: 16px; left: 16px; z-index: 2;
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--iris-deep); color: #fff;
-    font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em;
-    padding: 6px 12px; border-radius: 8px;
-  }
-  .hero-bien .flag i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .hero-bien .inner { position: relative; z-index: 2; padding: 26px 28px; }
-  .hero-bien .eyebrow {
-    font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em;
-    color: rgba(255,255,255,.65); margin: 0 0 8px;
-  }
-  .hero-bien h2 {
-    font-family: var(--font-display); font-weight: 420;
-    font-size: clamp(25px, 3.4vw, 33px); line-height: 1.15; letter-spacing: -0.02em; margin: 0;
-  }
-  .hero-bien .row { display: flex; align-items: baseline; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
-  .hero-bien .prix { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; }
-  .hero-bien .prix span { font-size: 16px; opacity: .65; font-weight: 400; }
-  .hero-bien .meta { font-size: 14px; color: rgba(255,255,255,.72); }
-  .agent-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
-  .achip {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 7px 12px 7px 8px; border-radius: 10px;
-    background: rgba(255,255,255,.12); border: 0.5px solid rgba(255,255,255,.2);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    font-size: 13.5px; color: rgba(255,255,255,.94);
-    opacity: 0; transform: translateY(8px);
-    animation: hin .5s cubic-bezier(.32,.72,0,1) forwards;
-  }
-  .achip:nth-child(1) { animation-delay: 1.1s; }
-  .achip:nth-child(2) { animation-delay: 1.35s; }
-  .achip:nth-child(3) { animation-delay: 1.6s; }
-  .achip b { font-weight: 600; color: #fff; }
   .face { border-radius: 50%; flex: none; object-fit: cover; display: inline-block; }
 
-  /* Bandeau « ils ont travaillé » sous le deck — réplique de l'app */
-  .worked {
-    display: flex; align-items: center; gap: 18px; margin-top: 18px; padding: 15px 20px;
-    background: var(--raised); border-radius: 16px; box-shadow: var(--shadow-sm);
-    border: 0.5px solid var(--line); flex-wrap: wrap;
-  }
-  .worked .faces { display: flex; }
-  .worked .faces .face { box-shadow: 0 0 0 2.5px var(--raised); }
-  .worked .faces .face + .face { margin-left: -9px; }
-  .worked p { margin: 0; flex: 1; min-width: 220px; font-size: 14.5px; color: var(--muted); }
-  .worked p b { color: var(--ink); font-weight: 600; }
-  .worked p .n { font-variant-numeric: tabular-nums; }
-
-  /* ── Rangée équipe (visages réels) ── */
-  .team-strip { display: flex; gap: 26px; flex-wrap: wrap; justify-content: center; margin-top: 34px; }
-  .member { text-align: center; width: 86px; }
-  .member img { width: 64px; height: 64px; box-shadow: inset 0 0 0 1px var(--line-strong), var(--shadow-sm); }
-  .member .nm { font-size: 13.5px; font-weight: 600; margin: 8px 0 0; }
-  .member .rl { font-size: 11.5px; color: var(--subtle); margin: 1px 0 0; line-height: 1.35; }
 
   .tag {
     display: inline-flex; align-items: center; gap: 10px;
@@ -299,19 +220,6 @@
   .bubble.them .face { margin-top: 2px; }
   .bubble .channel { display: block; font-size: 11px; opacity: .65; margin-top: 4px; }
 
-  .member { position: relative; }
-  .member .presence {
-    position: absolute; top: 48px; right: 8px; width: 13px; height: 13px; border-radius: 50%;
-    background: var(--success); box-shadow: 0 0 0 2.5px var(--bg);
-  }
-  .member.offline img { filter: grayscale(1); opacity: .5; }
-  .member.offline .presence { background: var(--subtle); }
-  .member.offline .nm { color: var(--muted); }
-  .member.offline .soon-tag {
-    display: inline-block; margin-top: 3px; padding: 2px 8px; border-radius: 999px;
-    background: var(--bg-soft); border: 0.5px solid var(--line);
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--subtle);
-  }
   /* ── #preuve : la pile de valeur (spec §3.5, design-notes §4.4).
        Séquence unique : 6 lignes en stagger 50 ms (400 ms chacune) → compteur RAF
        animNum 0→2 000 (1,5 s, démarré une fois la pile posée) → « plus de
@@ -929,14 +837,6 @@
   .sticky-cta .btn { width: 100%; justify-content: center; }
   @media (max-width: 760px) { .sticky-cta { display: block; } }
 
-  /* ── Fixes mobile ── */
-  @media (max-width: 520px) {
-    .hero-bien .inner { padding-top: 76px; }
-    .hero-bien .scrim {
-      background: linear-gradient(to top, rgba(10,18,28,.96) 0%, rgba(13,24,38,.72) 55%, rgba(15,30,48,.38) 80%, rgba(18,34,54,.5) 100%);
-    }
-  }
-
   /* ── Marquee connecteurs (pattern 21st porté vanilla) ── */
   .conn-marquee { margin-top: 38px; display: grid; gap: 12px; overflow: hidden;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
@@ -953,19 +853,6 @@
     .mq-row .mq-seq { flex-wrap: wrap; }
     .mq-row .mq-seq[aria-hidden="true"] { display: none; }
     .conn-marquee { mask-image: none; -webkit-mask-image: none; }
-  }
-
-  /* ── Le team-strip « rejoint l'équipe » ── */
-  html.js .team-strip .member { opacity: 0; transform: translateY(14px) scale(.92); transition: opacity .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1); }
-  html.js .team-strip .member .presence { transform: scale(0); transition: transform .3s cubic-bezier(.34,1.56,.64,1) .35s; }
-  html.js .team-strip.joined .member { opacity: 1; transform: none; }
-  html.js .team-strip.joined .member .presence { transform: scale(1); }
-  html.js .team-strip .member:nth-child(1) { transition-delay: 0s; }
-  html.js .team-strip .member:nth-child(2) { transition-delay: .12s; }
-  html.js .team-strip .member:nth-child(3) { transition-delay: .24s; }
-  html.js .team-strip .member:nth-child(4) { transition-delay: .36s; }
-  @media (prefers-reduced-motion: reduce) {
-    html.js .team-strip .member, html.js .team-strip .member .presence { opacity: 1; transform: none; transition: none; }
   }
 
   /* ── Aurora hero (ambiance premium, très lente) ── */
@@ -994,42 +881,18 @@
   .plan:hover::before { opacity: 1; }
   @media (hover: none) { .plan::before { display: none; } }
 
-  /* ── Vidéo hero (rendu Remotion) : desktop uniquement, la carte statique sert
-       de repli mobile + reduced-motion + no-JS ── */
-  .hero-video {
-    display: none; width: 100%; aspect-ratio: 1200 / 500; object-fit: cover;
-    border-radius: 22px; box-shadow: var(--shadow-xl); background: var(--night-1);
-  }
-  @media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
-    .hero-video { display: block; }
-    .hero-video + .hero-bien { display: none; }
-  }
-  /* Ticker 24/24 : remplace la vidéo quand elle est masquée (mobile, reduced-motion, no-JS) */
-  .ticker24 { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-  .t24-row {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--raised); border: 1px solid var(--line); border-radius: 12px;
-    padding: 10px 14px; font-size: 13.5px; color: var(--ink); line-height: 1.4;
-    box-shadow: var(--shadow-sm);
-  }
-  .t24-row .t24-time { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--iris); flex: none; }
-  .t24-row .face { border-radius: 50%; flex: none; }
-  @media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
-    .ticker24 { display: none; }
-  }
-
   /* ── Film du haut de page (v3) : cadre aux dimensions réservées, zéro décalage ── */
   .hero h1 { max-width: 1040px; }
   .hero h1 .h1-big { font-size: clamp(40px, 6.4vw, 78px); }
   .hero h1 .h1-second { margin-top: 2px; }
+  .hero-cta .hint .nw { white-space: nowrap; }
   .hero .sub, .hero-cta .hint { text-wrap: balance; }
   .film-zone { margin-top: 48px; position: relative; text-align: center; }
   .film-frame {
-    position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden;
+    position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
     border-radius: 22px; box-shadow: var(--shadow-xl); background: var(--night-1);
   }
-  @media (min-width: 761px) { .film-frame { aspect-ratio: 12 / 5; } }
-  .film-frame video, .film-frame .film-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .film-frame video, .film-frame .film-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .film-frame .film-still { display: none; }
   .film-btn {
     display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 10px 22px; margin-top: 18px;

@@ -24,7 +24,7 @@
     <div class="hero-cta h-in d3">
       <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
       <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
-      <span class="hint">Branché sur Modelo · Sans engagement · Rien ne part sans toi</span>
+      <span class="hint"><span class="nw">Branché sur Modelo ·</span> <span class="nw">Sans engagement ·</span> <span class="nw">Rien ne part sans toi</span></span>
     </div>
 
     <div class="film-zone h-in d4">
@@ -32,6 +32,7 @@
         <video id="film-boucle" autoplay muted loop playsinline preload="metadata" poster="film/poster.jpg" aria-hidden="true" tabindex="-1">
           <source src="film/boucle.mp4" type="video/mp4" />
         </video>
+        <script>if (matchMedia('(prefers-reduced-motion: reduce)').matches) { var v = document.getElementById('film-boucle'); v.preload = 'none'; v.removeAttribute('autoplay'); }</script>
         <img class="film-still" src="film/poster.jpg" alt="" width="2400" height="1000" />
       </div>
       <button type="button" id="voir-film" class="film-btn" data-track="film" aria-haspopup="dialog">
@@ -585,8 +586,6 @@
 
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ── Le team-strip « rejoint l'équipe » (cascade au chargement) ──
-  setTimeout(() => { const ts = document.querySelector('.team-strip'); if (ts) ts.classList.add('joined'); }, REDUCED ? 0 : 700);
 
   // ── Vidéo hero : joue quand elle est à l'écran, se met en pause hors champ ──
   const hv = document.getElementById('film-boucle');

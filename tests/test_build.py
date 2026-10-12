@@ -255,7 +255,7 @@ must("rvTrack('essai_demarre')" in bienv, "essai démarré mesuré au retour de 
 print("OK v3 données et texte")
 # ── Task 3 : haut de page v3 ──
 must("Ton équipe travaille. Toi, tu es avec tes clients." in re.sub(r"<[^>]+>", "", idx), "titre v3")
-must("Branché sur Modelo · Sans engagement · Rien ne part sans toi" in idx, "réassurance")
+must("Branché sur Modelo · Sans engagement · Rien ne part sans toi" in re.sub(r"<[^>]+>", "", idx), "réassurance")
 must('id="film-boucle"' in idx and "muted" in idx and "playsinline" in idx, "boucle muette")
 must('id="voir-film"' in idx and 'id="film-dialog"' in idx, "lecteur du film")
 must('data-track="film"' in idx, "lecture du film mesurée")
