@@ -269,10 +269,6 @@ def faq_items(faq):
             f'<span>{_esc(f["question"])}</span>{_CHEV}</button>'
             f'<div class="faq-body" id="faq-{i}"><div><p>{_esc(f["reponse"])}</p></div></div>'
             f"</div>")
-    # Les 5 premières (objections principales) restent visibles ; les autres sous « Voir les autres questions »
-    if len(items) > 5:
-        return ("".join(items[:5]) + '<details class="faq-plus"><summary>Voir les autres questions</summary>'
-                + "".join(items[5:]) + "</details>")
     return "".join(items)
 
 # ── JSON-LD (task 9) : FAQPage (entrées schema:true, texte brut sans balises),
@@ -339,7 +335,9 @@ for _vieux in (ROOT / "dist").iterdir():
     shutil.rmtree(_vieux) if _vieux.is_dir() else _vieux.unlink()
 
 # ── Home ──
-faq = json.loads((ROOT / "data" / "faq.json").read_text())
+# L'accueil n'affiche (et ne décrit en JSON-LD) que les questions marquées « accueil » ; les autres restent
+# dans data/faq.json pour une future page FAQ.
+faq = [f for f in json.loads((ROOT / "data" / "faq.json").read_text()) if f.get("accueil")]
 # ── Bandes de logos (outils et réseaux) : données dans data/outils.json et data/reseaux.json ──
 _HAUTEUR_LOGO = {"century21.svg": 16, "orpi.svg": 30, "laforet.svg": 22, "iad.svg": 28, "modelo.svg": 28}
 
@@ -356,15 +354,6 @@ def _bande_item(i, copie):
     txt = f'<span class="bande-nom">{_esc(i["nom"])}</span>' if glyphe else ""
     cls = "" if glyphe else ' class="large"'
     return f'<li{cls}>{img}{txt}</li>'
-
-QUI = {"acquereur": "L'acquéreur", "vendeur": "Le vendeur", "notaire": "Le notaire"}
-def clients_voient(items):
-    cartes = "".join(
-        f'<figure class="cv-carte"><figcaption>{QUI[c["qui"]]} · {_esc(c["canal"])}</figcaption>'
-        f'<blockquote>{_esc(c["message"])}</blockquote></figure>' for c in items)
-    return (f'<div class="cv-bloc" id="clients-voient"><h3 class="cv-titre">Ce que voient tes clients&nbsp;: un service impeccable.</h3>'
-            f'<div class="cv-grille glisse" tabindex="0" role="region" aria-label="Trois messages reçus, à faire défiler">{cartes}</div><p class="cv-chute">'
-            f'Derrière, une seule personne… et son équipe.</p></div>')
 
 # ── Calculateur de temps rendu : même formule que assets/calcul.js (portée une fois ici pour
 # la phrase sans JavaScript ; tests/test_build.py compare les deux sur plusieurs entrées). ──
@@ -441,7 +430,6 @@ body_home = render("home-body.html", {
     "OUTILS_ETAPE": outils_etape(json.loads((ROOT / "data" / "outils.json").read_text())),
     "CARTES_HERO": cartes_hero(),
     "EQUIPE_RANGEE": equipe_rangee(),
-    "CLIENTS_VOIENT": clients_voient(json.loads((ROOT / "data" / "clients-voient.json").read_text())),
     "FAQ_ITEMS": faq_items(faq),
     "JSONLD": jsonld_blocks(faq),
 })

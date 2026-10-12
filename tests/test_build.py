@@ -99,7 +99,15 @@ for item in faq:
     must(bool(item.get("question")) and bool(item.get("reponse")), "faq : question+reponse non vides")
     must(item.get("schema") is True, f"faq '{item.get('question')}' : schema=true")
 
-# ── Section #faq (Task 9) : accordéons générés par build.py depuis faq.json ──
+# ── Section #faq (Task 9) : accordéons générés par build.py depuis faq.json ; l'accueil n'affiche que les questions « accueil »
+#    (6, choisies le 12/10 au soir), les autres restent dans les données pour une future page FAQ ──
+faq_tout = faq
+faq = [f for f in faq_tout if f.get("accueil") is True]
+must(len(faq) == 6 and all(f.get("accueil") is False for f in faq_tout if f not in faq), "faq.json : 6 questions marquées « accueil », les autres gardées")
+must([f["question"] for f in faq] == ["J'ai déjà un CRM : je dois en changer ?", "Et si l'IA se trompe ?", "Où sont mes données ?",
+     "Je ne suis pas technique, c'est compliqué à installer ?", "Comment j'annule ?", "Pourquoi demander ma carte pour l'essai ?"], "FAQ de l'accueil : les 6 questions demandées")
+for f in faq_tout:
+    if f not in faq: must(html.escape(f["question"], quote=False) not in idx, f"question hors accueil absente : {f['question'][:30]}")
 for item in faq:
     must(html.escape(item["question"], quote=False) in idx,
          f"FAQ générée : question « {item['question'][:40]}… » dans index.html")
@@ -290,12 +298,13 @@ lic = (ROOT / "assets" / "logos" / "LICENSES.md").read_text()
 for n in ("orpi.svg", "laforet.svg", "iad.svg", "modelo.svg"):
     must(n in lic, f"LICENSES.md cite {n}")
 
-# ── Bloc « Plus rien d'oublié » (Task 5) ──
-must('id="plus-rien-oublie"' in idx and idx.count('class="auto-tuile') == 4, "4 automatismes")
+# ── « Plus rien d'oublié » (Task 5) et « Ce que voient tes clients » (Task 6) : retirés le 12/10 au soir (ils répétaient les
+#    cartes du haut) ; leurs exemples propres (pièces du compromis, échéance du prêt) sont devenus des cartes du haut ──
+must('id="plus-rien-oublie"' not in idx and 'class="auto-tuile' not in idx and 'id="clients-voient"' not in idx, "blocs répétés retirés")
+_hc = html.unescape(idx.split('id="flux"', 1)[1].split("</div>\n", 1)[0])
+must("Relance des pièces du compromis" in _hc and "Échéance du prêt" in _hc and "Bilan de commercialisation" in _hc and "Rappel de visite" in _hc,
+     "les automatismes vivent dans les cartes du haut")
 print("OK v3 plus rien d'oublié")
-
-# ── Bloc « Ce que voient tes clients » (Task 6) ──
-must('id="clients-voient"' in idx and all(c["message"] in html.unescape(idx) for c in cv), "messages clients rendus")
 print("OK v3 ce que voient tes clients")
 
 # ── Conversation « Tu peux aussi leur parler » (Task 8), fusionnée le 12/10 au soir dans l'étape 3 de « Comment ça marche » ──
@@ -305,10 +314,8 @@ print("OK v3 tu peux aussi leur parler")
 
 # ── Ronde de correction 1 (blocs 5, 6, 8) ──
 must('id="connecteurs"' not in idx and "#connecteurs" not in idx, "section #connecteurs retirée de l'accueil")
-must("Visite à 17 h 15, dans 2 h." in idx and "saisie dans Modelo" in idx, "textes des tuiles 1 et 4 précisés")
 must("html.js .conv.armed .msg:not(.on)" in idx, "bulles masquées seulement si le bloc est armé (repli sans observateur)")
 must('role="group"' in _com.split('class="conv"', 1)[1][:200], "conversation : role=group")
-must(idx.count("revealOnce('#clients-voient')") == 1 and "revealOnce('.cv-carte')" not in idx, "un seul déclencheur pour #clients-voient")
 print("OK v3 correction 1")
 
 # ── Ronde de correction 2 : plus de script ni de CSS pour la grille de connecteurs retirée ──
@@ -383,28 +390,28 @@ must("~10 h" not in idx and "10 h de paperasse" not in idx, "ancien chiffre de 1
 must(any("15 h par semaine" in q for q in faqq), "FAQ : jusqu'à 15 h par semaine")
 _jl = " ".join(re.findall(r'<script type="application/ld\+json">(.*?)</script>', idx, re.S))
 must("se trompe" in _jl and "10 h" not in _jl, "JSON-LD FAQ synchronisé")
-must('class="calendly-inline-widget"' in idx, "démo intégrée en bas")
+# Calendly (12/10 au soir) : plus de widget en ligne ; fenêtre Calendly par-dessus la page au clic, sinon nouvel onglet
+must('calendly-inline-widget' not in idx and 'demo-cal' not in idx, "plus d'agenda Calendly dans la page")
 must("calendly.event_scheduled" in idx and "rvTrack('demo_reservee')" in idx, "démo réservée mesurée")
-must('e.origin==="https://calendly.com"' in idx, "origine Calendly vérifiée")
-must("https://assets.calendly.com/assets/external/widget.js" in idx and idx.count("assets.calendly.com") == 1, "widget.js d'une seule origine")
-must(not re.search(r'<script[^>]+src="https://assets\.calendly\.com', idx), "widget.js non chargé au chargement de la page")
-must('id="demo-ouvrir"' in idx and 'aria-controls="demo-agenda"' in idx and '<div class="demo-agenda" id="demo-agenda" hidden>' in idx
-     and "if(!o) charge();" in idx, "agenda Calendly (700 px) ouvert à la demande, widget.js demandé à ce moment-là")
+must("e.origin === 'https://calendly.com'" in idx, "origine Calendly vérifiée")
+must("https://assets.calendly.com/assets/external/widget.js" in idx and "https://assets.calendly.com/assets/external/widget.css" in idx
+     and idx.count("assets.calendly.com") == 2, "widget.js et sa feuille de style, d'une seule origine")
+must(not re.search(r'<script[^>]+src="https://assets\.calendly\.com', idx) and not re.search(r'<link[^>]+assets\.calendly\.com', idx), "rien de Calendly chargé au chargement de la page")
+must("['pointerenter', 'focus', 'touchstart']" in idx and "Calendly.initPopupWidget({ url })" in idx
+     and "if (!(window.Calendly && Calendly.initPopupWidget)) return;" in idx, "popup au clic quand le script est là, sinon le lien s'ouvre (nouvel onglet)")
+for _a in re.findall(r'<a [^>]*data-track="demo"[^>]*>', idx):
+    must('href="https://calendly.com/contact-chiclick/30min"' in _a and 'target="_blank"' in _a and 'rel="noopener"' in _a, "chaque lien démo : Calendly, nouvel onglet en repli")
 _fin = idx.split('id="demo"', 1)[1] if 'id="demo"' in idx else ""
 must('data-track="essai"' in _fin and 'data-track="demo"' in _fin, "appel final : deux boutons mesurés")
 must('href="https://calendly.com/contact-chiclick/30min"' in _fin, "repli sans JS : lien vers Calendly")
 for old in ("97 €", "229 €"):
     must(old not in _t10, f"ancien prix {old} absent")
-_box = idx.split('class="calendly-inline-widget"', 1)[1].split("</div>", 1)[0]
-must('class="demo-repli"' in _box and 'href="https://calendly.com/contact-chiclick/30min"' in _box and 'data-track="demo"' in _box, "boîte Calendly : lien de repli dedans")
-must("primary_color=6366f1" in idx and "hide_gdpr_banner=1" in idx, "paramètres Calendly (couleur, bandeau)")
-must(re.search(r"\.demo-cal \{ display: none", idx) and "html.js .demo-cal { display: block; }" in idx, "boîte et phrase visibles seulement avec JS")
-must("s.onerror=repli" in idx and "n>=16" in idx, "repli si widget.js échoue ou iframe absente sous 8 s")
+must("primary_color=6366f1&hide_gdpr_banner=1" in idx and "background_color=141822&text_color=f2f3f7" in idx, "paramètres Calendly (couleur, bandeau, sombre)")
 print("OK v3 task 10")
 
 # ── Vocabulaire : le rapport du vendredi s'appelle « bilan de commercialisation » ──
 must("point vendeurs" not in idx.lower() and "bilan de la semaine" not in idx.lower() and "point de la semaine" not in idx.lower(), "ancien nom du rapport vendeur absent")
-must("bilan de commercialisation du vendredi" in idx, "tuile : bilan de commercialisation")
+must("bilan de commercialisation du vendredi" in idx.lower(), "bilan de commercialisation du vendredi (carte d'Emma)")
 print("OK v3 vocabulaire bilan")
 
 # ── Refonte de l'accueil (tâche 15, 12/10) ──
@@ -456,14 +463,14 @@ must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 # Ronde Julien 1 (playbook des références) : preuve juste après le haut, les collègues avant « Rien ne part sans toi »,
 # « Ce que voient tes clients » dans le même bloc que « Plus rien d'oublié ».
 _ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="preuve-fondateur"', 'id="probleme"', 'id="comment"', 'id="bande-outils"',
-          'id="equipe"', 'id="controle"', 'id="plus-rien-oublie"', 'id="clients-voient"', 'id="calculateur"',
+          'id="equipe"', 'id="controle"', 'id="calculateur"',
           'id="tarif"', 'id="faq"', 'id="demo"']
 _pos = [idx.find(x) for x in _ordre]
 must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
 _t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 must("Pas secrétaire" not in _t, "plus de « Pas secrétaire » (demande de Julien)")
 for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "Ton équipe se branche en dix minutes.",
-              "Six spécialistes. Un seul abonnement.", "Ce que voient tes clients : un service impeccable.",
+              "Six spécialistes. Un seul abonnement.",
               "Combien d'heures te rend ton équipe ?", "Rien ne part sans toi.",
               "Une équipe entière pour moins qu'une demi-journée d'assistante par mois.", "Ton équipe peut commencer ce soir."]:
     must(titre in _t, f"titre : {titre}")
@@ -532,7 +539,7 @@ must(_pb2.find("Le vendeur sans nouvelles depuis dix jours.") < _pb2.find("La re
 _inst = "Installation offerte : on branche Modelo, ta boîte mail et ton agenda avec toi."
 must(_t.count(_inst) >= 2 and idx.find(_inst) > idx.find('id="comment"') and idx.split('id="tarif"', 1)[1].count(_inst) >= 1, "installation offerte sous « Comment ça marche » et dans les prix")
 must("Pas de frais de mise en place." in html.unescape(idx.split('id="tarif"', 1)[1].split("</section>", 1)[0]), "prix : pas de frais de mise en place")
-must(idx.count('class="cta-relance"') == 2, "relances d'essai entre les sections (après la validation, sous le calculateur)")
+must(idx.count('class="cta-relance"') == 2, "relances d'essai entre les sections (après la validation, sous le calculateur ; masquées sur mobile, barre collante)")
 must(idx.count('class="') and all(f'aria-label="{x}' in idx for x in ("Les six agents, à faire défiler", "Les trois étapes", "Les trois offres")), "rangées à faire glisser sur mobile (page plus courte)")
 _ctl = html.unescape(idx.split('id="controle"', 1)[1].split("</section>", 1)[0])
 must("t'attend en brouillon" in _ctl and "24 h" not in _ctl, "« Rien ne part sans toi » : brouillon, sans « 24 h/24 »")
@@ -547,9 +554,8 @@ print("OK ronde conversion")
 
 # ── Page plus courte (12/10 au soir) : FAQ à 5 questions visibles, le reste replié ; aucune question perdue ──
 _faqh = idx.split('id="faq-list"', 1)[1].split("</section>", 1)[0]
-must(_faqh.split('<details class="faq-plus">', 1)[0].count('class="faq-item"') == 5 and _faqh.count('class="faq-item"') == len(faq),
-     "FAQ : 5 objections visibles, les autres sous « Voir les autres questions »")
-must([f["question"] for f in faq][:5] == ["Est-ce que l'IA écrit à mes clients sans moi ?", "Où sont mes données ?", "Comment j'annule ?",
-     "J'ai déjà un CRM : je dois en changer ?", "Pourquoi demander ma carte pour l'essai ?"], "FAQ : les objections du playbook d'abord")
+must(_faqh.count('class="faq-item"') == 6 and "faq-plus" not in idx, "FAQ : 6 questions, rien de replié")
+_fp = next(p for p in parsed if p["@type"] == "FAQPage")
+must([q["name"] for q in _fp["mainEntity"]] == [f["question"] for f in faq], "JSON-LD de l'accueil = les 6 questions affichées")
 must('<ul class="confiance">' not in idx, "tuiles de confiance retirées (89 % dans la preuve, données et CRM dans la FAQ)")
 print("OK page plus courte")

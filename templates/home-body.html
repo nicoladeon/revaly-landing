@@ -298,46 +298,6 @@
   }
   .eq-lien:hover { text-decoration-color: var(--ink); }
 
-  /* ── 6. Plus rien d'oublié : 4 tuiles, mini-carte « À valider » qui se pose une fois à l'entrée dans l'écran ── */
-  .auto-grille { display: grid; gap: 14px; margin-top: 36px; grid-template-columns: 1fr; }
-  @media (min-width: 720px) { .auto-grille { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 1040px) { .auto-grille { grid-template-columns: repeat(4, 1fr); } }
-  .auto-tuile { display: flex; flex-direction: column; background: var(--raised); border: 0.5px solid var(--line);
-    border-radius: 20px; box-shadow: var(--shadow-sm); padding: 22px 20px 20px; }
-  .auto-tuile h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
-  .auto-tuile p { margin: 8px 0 18px; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
-  .auto-carte { margin-top: auto; display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px;
-    background: var(--iris-soft); border: 0.5px solid var(--iris-glow); font-size: 13.5px; line-height: 1.45; color: var(--muted); }
-  .auto-carte b { color: var(--ink); font-weight: 600; }
-  @media (min-width: 720px) { .auto-carte span:last-child { min-height: 2.9em; } }
-  html.js .auto-tuile .auto-carte { transition: opacity .3s ease-out, transform .3s ease-out; }
-  html.js .auto-tuile:not(.vu) .auto-carte { opacity: 0; transform: translateY(10px); }
-  html.js .auto-tuile:nth-child(2) .auto-carte { transition-delay: .08s; }
-  html.js .auto-tuile:nth-child(3) .auto-carte { transition-delay: .16s; }
-  html.js .auto-tuile:nth-child(4) .auto-carte { transition-delay: .24s; }
-  @media (prefers-reduced-motion: reduce) {
-    html.js .auto-tuile .auto-carte { opacity: 1 !important; transform: none !important; transition: none; }
-  }
-
-  /* ── Ce que voient tes clients : la seconde moitié de « Plus rien d'oublié » ── */
-  .cv-bloc { margin-top: clamp(40px, 5vw, 64px); }
-  .cv-titre { margin: 0; font-size: clamp(22px, 2.6vw, 28px); font-weight: 560; line-height: 1.2; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
-  .cv-grille { display: grid; gap: 14px; margin-top: 36px; grid-template-columns: 1fr; }
-  @media (min-width: 860px) { .cv-grille { grid-template-columns: repeat(3, 1fr); } }
-  .cv-carte { margin: 0; display: flex; flex-direction: column; gap: 12px; }
-  .cv-carte figcaption { font-size: 13px; font-weight: 500; color: var(--muted); padding-left: 4px; }
-  .cv-carte blockquote { margin: 0; flex: 1; padding: 16px 18px; background: var(--raised); border: 0.5px solid var(--line);
-    border-radius: 18px 18px 18px 5px; box-shadow: var(--shadow-sm); font-size: 15.5px; line-height: 1.6; color: var(--ink); }
-  .cv-chute { margin: 28px 0 0; font-weight: 500; font-size: clamp(20px, 2.4vw, 24px);
-    line-height: 1.3; letter-spacing: -0.02em; color: var(--ink); max-width: 760px; text-wrap: balance; }
-  html.js .cv-carte, html.js .cv-chute { transition: opacity .4s ease-out, transform .4s ease-out; }
-  html.js #clients-voient:not(.vu) .cv-carte, html.js #clients-voient:not(.vu) .cv-chute { opacity: 0; transform: translateY(12px); }
-  html.js .cv-carte:nth-child(2) { transition-delay: .1s; }
-  html.js .cv-carte:nth-child(3) { transition-delay: .2s; }
-  @media (prefers-reduced-motion: reduce) {
-    html.js .cv-carte, html.js .cv-chute { opacity: 1 !important; transform: none !important; transition: none; }
-  }
-
   /* ── 8. Tu peux aussi leur parler : la conversation Telegram se joue message par message (600 ms) ── */
   .parler-grille { display: grid; gap: 32px; align-items: center; grid-template-columns: 1fr; }
   @media (min-width: 900px) { .parler-grille { grid-template-columns: 1fr minmax(0, 440px); gap: 64px; } }
@@ -558,10 +518,6 @@
   .faq-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s cubic-bezier(.32,.72,0,1); }
   .faq-item[data-open="true"] .faq-body { grid-template-rows: 1fr; }
   .faq-body > div { overflow: hidden; }
-  .faq-plus { border-bottom: 0.5px solid var(--line); }
-  .faq-plus > summary { list-style: none; cursor: pointer; display: flex; align-items: center; min-height: 56px; padding: 0 4px; font-size: 15px; font-weight: 500; color: var(--iris-ink); }
-  .faq-plus > summary::-webkit-details-marker { display: none; }
-  .faq-plus[open] > summary { display: none; }
   .faq-body p { margin: 0 4px 18px; font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 620px; }
 
   /* ── 13. Appel final + démo intégrée ── */
@@ -577,18 +533,6 @@
     .final-cta { flex-wrap: nowrap; gap: 10px; }
     .final-cta .btn { flex: 1 1 0; min-width: 0; padding: 12px 8px; font-size: 15.5px; }
   }
-  .demo-ouvrir { margin: 0 auto; min-height: 48px; padding: 8px 4px; border: 0; background: none; cursor: pointer; font: 500 15px/1.4 var(--font-sans); color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 5px; }
-  .demo-ouvrir:hover { text-decoration-color: var(--ink); }
-  .demo-agenda { margin-top: 16px; }
-  .demo-cal { display: none; margin: 28px auto 0; max-width: 820px; width: 100%; min-width: 0; text-align: center; }
-  .demo-titre { font-size: 15px; color: var(--muted); margin: 0 0 14px; }
-  .demo-cal .calendly-inline-widget { border-radius: 18px; overflow: hidden; border: 0.5px solid var(--line); background: var(--raised); max-width: 100%; }
-  .demo-cal iframe { max-width: 100%; }
-  #demo { overflow-x: clip; }
-  html.js .demo-cal { display: block; }
-  .demo-repli { margin: 0; padding: 24px 16px; text-align: center; }
-  .demo-cal.ok .demo-repli { display: none; }
-  .demo-cal.repli .calendly-inline-widget { height: auto !important; min-height: 0; border: 0; background: none; }
 
   /* ── Barre collante mobile : visible une fois les boutons du haut dépassés ── */
   .sticky-cta {
@@ -605,15 +549,22 @@
   .sticky-cta .btn:first-child { flex: 1 1 auto; }
   /* Mobile : page plus courte (cible ~9 000 px) — rythme resserré, doublons repliés */
   @media (max-width: 760px) {
-    #calculateur .cta-relance { display: none; }
+    .cta-relance { display: none; }
+    .calc-carte .calc-gauche .calc-note { display: none; }
+    #faq .faq-grid > div:first-child p.sub { display: none; }
+    .pb-liste li { padding: 12px 16px; font-size: 16px; gap: 12px; }
+    .pb-ico { width: 34px; height: 34px; border-radius: 10px; }
+    .pb-ico svg { width: 18px; height: 18px; }
+    .foot .about, .copyright { font-size: 12px; }
+    .foot .about { margin-top: 4px; }
     .foot { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 14px; padding-top: 32px; }
     .foot > div:first-child { grid-column: 1 / -1; margin-bottom: 8px; }
     .foot a { padding: 4px 0; min-height: 44px; display: flex; align-items: center; font-size: 13.5px; line-height: 1.3; }
     footer { margin-top: 56px; }
-    .hp-sec { padding-top: 52px; }
-    .hp-band { margin-top: 52px; padding: 48px 0; }
+    .hp-sec { padding-top: 48px; }
+    .hp-band { margin-top: 48px; padding: 44px 0; }
     #tarif .garanties { display: none; }
-    .pf-detail, .cv-chute { display: none; }
+    .pf-detail { display: none; }
     #faq .faq-grid > div:first-child .btn { display: none; }
     .faq-grid { gap: 20px; }
     .calc { gap: 20px; }
@@ -783,8 +734,7 @@
             </div>
             <div class="conv-corps">
               <div class="msg moi"><div class="vocal"><span class="onde" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="duree">0:04</span></div><p class="transcrit">Max, relance le notaire pour jeudi</p></div>
-              <div class="msg max"><p>Je le confie à Emma.</p></div>
-              <div class="msg max"><div class="conv-carte"><span class="auto-badge">À valider</span><b>Mail au notaire</b><span>Relance pour l'acte de jeudi.</span></div></div>
+                  <div class="msg max"><div class="conv-carte"><span class="auto-badge">À valider</span><b>Mail au notaire</b><span>Relance pour l'acte de jeudi.</span></div></div>
             </div>
           </div>
           </div>
@@ -844,47 +794,17 @@
         </div>
       </div>
     </div>
-    <p class="proof-note">Verrouillé dans le produit : e-mail en brouillon dans ta boîte, post en attente de relecture, action sensible confirmée. Toujours.</p>
 
 
     <div class="cta-relance"><button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button><p>0 € aujourd'hui · Annulable en 2 clics</p></div>
   </section>
 
-  <!-- ═══════════════ 7. PLUS RIEN D'OUBLIÉ (+ ce que voient tes clients) ═══════════════ -->
-  <section class="wrap hp-sec" id="plus-rien-oublie">
-    <h2 class="title">Plus rien d'oublié</h2>
-    <p class="sub">Quatre moments que tout le monde rate quand la semaine file. Ici, c'est préparé à l'avance. Tu relis, tu valides.</p>
-    <div class="auto-grille glisse" tabindex="0" role="region" aria-label="Quatre automatismes, à faire défiler">
-      <article class="auto-tuile">
-        <h3>Le bilan de commercialisation du vendredi</h3>
-        <p>Chaque vendredi, ton vendeur reçoit son bilan de commercialisation : visites, retours, offres.</p>
-        <div class="auto-carte"><span class="auto-badge">À valider</span><b>E-mail · Mme Lefèvre</b><span>4 visites, 2 retours positifs, une offre à l'étude.</span></div>
-      </article>
-      <article class="auto-tuile">
-        <h3>Le rappel de visite, 2 h avant</h3>
-        <p>Ton acquéreur reçoit un rappel avec l'adresse et l'heure. Il ne se présente plus à la mauvaise porte.</p>
-        <div class="auto-carte"><span class="auto-badge">À valider</span><b>SMS · Camille</b><span>Visite à 17 h 15, dans 2 h.</span></div>
-      </article>
-      <article class="auto-tuile">
-        <h3>La relance des pièces du compromis</h3>
-        <p>Les pièces manquantes sont réclamées aux parties, sans que tu aies à y penser.</p>
-        <div class="auto-carte"><span class="auto-badge">À valider</span><b>Relance · acquéreur</b><span>Il manque 2 pièces pour finaliser le compromis.</span></div>
-      </article>
-      <article class="auto-tuile">
-        <h3>L'échéance du prêt</h3>
-        <p>La date limite du prêt saisie dans Modelo est suivie : l'acquéreur est relancé avant.</p>
-        <div class="auto-carte"><span class="auto-badge">À valider</span><b>Relance · acquéreur</b><span>Accord de prêt : échéance dans 10 jours.</span></div>
-      </article>
-    </div>
-    {{CLIENTS_VOIENT}}
-  </section>
-
-  <!-- ═══════════════ 8. CALCULATEUR : TEMPS RENDU ═══════════════ -->
+  <!-- ═══════════════ 7. CALCULATEUR : TEMPS RENDU ═══════════════ -->
   <section class="wrap hp-sec" id="calculateur">
     <div class="calc">
       <div class="calc-intro">
         <h2 class="title">Combien d'heures te rend ton équipe ?</h2>
-        <p class="sub">Dis-nous ton rythme du mois. On compte ce que ton équipe prépare à ta place, tâche par tâche. Le détail de chaque tâche s'affiche avec le résultat.</p>
+        <p class="sub">Mets ton rythme du mois : on compte ce que ton équipe prépare à ta place, tâche par tâche.</p>
       </div>
       <div class="calc-statique">
         {{CALCUL_STATIQUE}}
@@ -918,11 +838,11 @@
     <script type="module" src="/assets/calcul.js"></script>
   </section>
 
-  <!-- ═══════════════ 9. PRIX ═══════════════ -->
+  <!-- ═══════════════ 8. PRIX ═══════════════ -->
   <section class="hp-band hp-centre" id="tarif" data-billing="monthly">
     <div class="wrap">
       <h2 class="title">Une équipe entière pour moins qu'une demi-journée d'assistante par mois.</h2>
-      <p class="sub">Une assistante à mi-temps, c'est ~1&nbsp;200&nbsp;€/mois. Ici, les six agents sont inclus dans chaque offre. Essai 7 jours avec carte, sans engagement : tu pars quand tu veux, avec tes données. Pas de frais de mise en place.</p>
+      <p class="sub">Une assistante à mi-temps, c'est ~1&nbsp;200&nbsp;€/mois. Ici, les six agents sont inclus. Essai 7 jours avec carte, sans engagement. Pas de frais de mise en place.</p>
       <p class="installation installation-prix"><span class="installation-tag">Pendant le lancement</span><span class="installation-txt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation offerte : on branche Modelo, ta boîte mail et ton agenda avec toi.</span></span></p>
       <div class="bill-toggle" role="radiogroup" aria-label="Rythme de facturation">
         <label class="bt-opt">
@@ -950,7 +870,6 @@
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, inclus</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 30 photos studio + 4 vidéos par mois</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
           </ul>
           {{FONDATEURS_TARIF}}
           <button type="button" class="btn" data-waitlist="solo" data-track="essai">Essayer 7 jours</button>
@@ -973,7 +892,6 @@
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, pour chaque conseiller</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 100 photos + 16 vidéos par mois, partagées</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
           </ul>
           <button type="button" class="btn" data-waitlist="agence" data-track="essai">Essayer 7 jours</button>
           <p class="plan-hint">
@@ -1006,7 +924,7 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 10. FAQ ═══════════════ -->
+  <!-- ═══════════════ 9. FAQ ═══════════════ -->
   <section class="wrap hp-sec" id="faq">
     <div class="faq-grid">
       <div>
@@ -1019,7 +937,7 @@
     <noscript><style>.faq-body { grid-template-rows: 1fr; } .faq-item .chev { display: none; }</style></noscript>
   </section>
 
-  <!-- ═══════════════ 11. APPEL FINAL + DÉMO INTÉGRÉE ═══════════════ -->
+  <!-- ═══════════════ 10. APPEL FINAL + DÉMO INTÉGRÉE ═══════════════ -->
   <section class="wrap hp-sec" id="demo">
     <div class="final">
       <span class="faces" aria-hidden="true">
@@ -1041,36 +959,7 @@
         <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
       </div>
       <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
-      <div class="demo-cal">
-        <button type="button" class="demo-ouvrir" id="demo-ouvrir" aria-expanded="false" aria-controls="demo-agenda" data-track="demo">Ou choisis directement un créneau de démo (30&nbsp;min, en visio)</button>
-        <div class="demo-agenda" id="demo-agenda" hidden>
-        <div class="calendly-inline-widget" data-url="__CALENDLY__?primary_color=6366f1&amp;hide_gdpr_banner=1" style="min-width:320px;height:700px">
-          <p class="demo-repli"><a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Ouvrir le calendrier des démos</a></p>
-        </div>
-        </div>
-      </div>
     </div>
-    <script>
-    (function(){
-      var cal=document.querySelector(".calendly-inline-widget"); if(!cal) return;
-      var box=cal.parentNode;
-      addEventListener("message",function(e){if(e.origin==="https://calendly.com"&&e.data&&e.data.event==="calendly.event_scheduled")rvTrack('demo_reservee')});
-      var done=false;
-      function repli(){ box.classList.add("repli"); }
-      function charge(){ if(done) return; done=true;
-        var dark=document.documentElement.getAttribute("data-theme")==="dark"||(document.documentElement.getAttribute("data-theme")!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);
-        if(dark) cal.setAttribute("data-url",cal.getAttribute("data-url")+"&background_color=141822&text_color=f2f3f7");
-        var s=document.createElement("script"); s.src="https://assets.calendly.com/assets/external/widget.js"; s.async=true;
-        s.onerror=repli; document.head.appendChild(s);
-        var n=0, iv=setInterval(function(){ n++;
-          if(cal.querySelector("iframe")){ clearInterval(iv); box.classList.add("ok"); }
-          else if(n>=16){ clearInterval(iv); repli(); } },500); }
-      // L'agenda ne se charge qu'à la demande : le bouton l'ouvre, widget.js est alors demandé (une seule fois)
-      var ouvrir=document.getElementById("demo-ouvrir"), agenda=document.getElementById("demo-agenda");
-      ouvrir.addEventListener("click",function(){ var o=ouvrir.getAttribute("aria-expanded")==="true";
-        ouvrir.setAttribute("aria-expanded",String(!o)); agenda.hidden=o; if(!o) charge(); });
-    })();
-    </script>
   </section>
 </main>
 
@@ -1357,13 +1246,43 @@
     }, 4000);
   })();
 
-  revealOnce('.auto-tuile');
-  revealOnce('#clients-voient');
   if (!REDUCED && 'IntersectionObserver' in window) document.querySelectorAll('.conv').forEach((el) => el.classList.add('armed'));
   revealOnce('.conv', (el) => {
     el.classList.add('vu');
     el.querySelectorAll('.msg').forEach((m, i) => setTimeout(() => m.classList.add('on'), i * 600));
   });
+
+  // ── « Réserver une démo » : la fenêtre Calendly s'ouvre par-dessus la page. widget.js et sa feuille de style ne sont
+  //    demandés qu'à l'approche d'un lien démo (survol, focus, toucher) ; au clic, popup si le script est là, sinon le lien
+  //    s'ouvre normalement dans un nouvel onglet (aucun clic perdu, aucun bloqueur de fenêtres). ──
+  (() => {
+    const liens = document.querySelectorAll('a[data-track="demo"][href^="https://calendly.com/"]');
+    let demande = false;
+    const prepare = () => {
+      if (demande) return;
+      demande = true;
+      const css = document.createElement('link');
+      css.rel = 'stylesheet'; css.href = 'https://assets.calendly.com/assets/external/widget.css';
+      document.head.appendChild(css);
+      const s = document.createElement('script');
+      s.src = 'https://assets.calendly.com/assets/external/widget.js'; s.async = true;
+      document.head.appendChild(s);
+    };
+    const sombre = () => document.documentElement.getAttribute('data-theme') === 'dark'
+      || (document.documentElement.getAttribute('data-theme') !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+    liens.forEach((a) => {
+      ['pointerenter', 'focus', 'touchstart'].forEach((ev) => a.addEventListener(ev, prepare, { once: true, passive: true }));
+      a.addEventListener('click', (e) => {
+        if (!(window.Calendly && Calendly.initPopupWidget)) return;
+        e.preventDefault();
+        const url = a.href + '?primary_color=6366f1&hide_gdpr_banner=1' + (sombre() ? '&background_color=141822&text_color=f2f3f7' : '');
+        Calendly.initPopupWidget({ url });
+      });
+    });
+    addEventListener('message', (e) => {
+      if (e.origin === 'https://calendly.com' && e.data && e.data.event === 'calendly.event_scheduled') rvTrack('demo_reservee');
+    });
+  })();
 
   // ── Le film complet, avec le son : vertical sur mobile, 16:9 au bureau. Rien n'est téléchargé avant le clic.
   //    <dialog> natif (Échap ferme), pause à la fermeture, focus rendu au bouton ; la boucle du haut s'arrête pendant ce temps. ──
