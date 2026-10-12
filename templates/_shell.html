@@ -366,11 +366,11 @@
        (mécanique #modelo réutilisée, classes préfixées tc-/tb-, cf task 4) ── */
   .tblock {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
-    grid-template-areas: "head chat" "detail chat";
+    grid-template-areas: "head chat" "pour chat" "detail chat";
     column-gap: clamp(36px, 6vw, 72px); align-items: start; align-content: start;
     margin-top: clamp(64px, 9vw, 92px);
   }
-  .tblock.tb-alt { grid-template-columns: minmax(0, 440px) minmax(0, 1fr); grid-template-areas: "chat head" "chat detail"; }
+  .tblock.tb-alt { grid-template-columns: minmax(0, 440px) minmax(0, 1fr); grid-template-areas: "chat head" "chat pour" "chat detail"; }
   .tb-head { grid-area: head; display: flex; align-items: center; gap: 18px; }
   .tb-ava { position: relative; flex: none; }
   .tb-ava img { width: 84px; height: 84px; box-shadow: inset 0 0 0 1px var(--line-strong), var(--shadow-sm); }
@@ -386,7 +386,7 @@
   .tb-name { margin: 0; font-family: var(--font-display); font-weight: 420; font-size: clamp(25px, 2.7vw, 30px); line-height: 1.1; letter-spacing: -0.01em; }
   .tb-role { margin: 6px 0 0; font-size: 12px; font-weight: 650; text-transform: uppercase; letter-spacing: .1em; color: var(--iris); }
   .tb-detail { grid-area: detail; margin-top: 24px; }
-  .tb-pour { margin: 0 0 16px; font-family: var(--font-display); font-weight: 420; font-size: clamp(19px, 2vw, 22px); line-height: 1.3; letter-spacing: -0.005em; color: var(--ink); text-wrap: balance; }
+  .tb-pour { grid-area: pour; margin: 22px 0 0; font-family: var(--font-display); font-weight: 420; font-size: clamp(19px, 2vw, 22px); line-height: 1.3; letter-spacing: -0.005em; color: var(--ink); text-wrap: balance; }
   .tb-caps { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
   .tb-caps li { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; line-height: 1.55; color: var(--ink); }
   .tb-caps svg { width: 17px; height: 17px; color: var(--iris); flex: none; margin-top: 3.5px; }
@@ -423,7 +423,7 @@
   @media (max-width: 880px) {
     .tblock, .tblock.tb-alt {
       grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: "head" "chat" "detail";
+      grid-template-areas: "head" "pour" "chat" "detail";
     }
     .tc-panel { margin-top: 22px; }
     .tb-ava img { width: 72px; height: 72px; }
@@ -858,6 +858,8 @@
     to { transform: translateX(-50%) translateY(26px) scale(1.06) rotate(3deg); }
   }
   @media (prefers-reduced-motion: reduce) { .hero::before { animation: none; } }
+  /* le halo animé déborde brièvement du viewport : sur mobile la boîte du hero = l'écran, on coupe */
+  @media (max-width: 760px) { .hero { overflow-x: clip; } }
 
   /* ── Spotlight au survol (cartes tarifs) ── */
   .plan { position: relative; }

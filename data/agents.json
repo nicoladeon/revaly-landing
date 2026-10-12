@@ -68,7 +68,7 @@
     "slug": "emma",
     "name": "Emma",
     "role": "assistante admin",
-    "pour_toi": "Elle prépare tes réponses aux emails, tes comptes-rendus et tes relances.",
+    "pour_toi": "Elle prépare tes réponses aux emails, tes relances et tes confirmations de visite.",
     "question": "Emma, quoi de neuf ?",
     "reponse": "Trois emails importants ce matin, brouillons de réponse prêts. La visite de 15 h est confirmée. Et la fiche de Mme Dubois est dans Modelo — budget 280 000 €, 3 chambres : elle recevra les biens correspondants automatiquement.",
     "capacites": [
@@ -343,7 +343,7 @@
     "slug": "lucas",
     "name": "Lucas",
     "role": "estimation & marché",
-    "pour_toi": "Il estime tes biens à partir des ventes réelles.",
+    "pour_toi": "Il estime tes biens sur les ventes réelles et te sort ton rapport de marché.",
     "question": "Lucas, l'appartement rue Verte, il vaut quoi ?",
     "reponse": "Entre 242 000 et 255 000 € — douze ventes notariées comparables dans le quartier. Ton rapport de marché à ta marque est prêt pour le rendez-vous de 16 h. Au passage : quatre DPE tout frais cette semaine sur ta commune.",
     "capacites": [
