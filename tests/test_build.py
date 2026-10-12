@@ -226,7 +226,14 @@ must([c["qui"] for c in cv] == ["acquereur", "vendeur", "notaire"], "clients-voi
 calc = json.loads((ROOT / "data" / "calculateur.json").read_text())
 must(calc["plafond_heures_semaine"] == 15, "calculateur : plafond 15 h")
 must(all(t["minutes"] > 0 for t in calc["taches"]), "calculateur : minutes positives")
-visible = re.sub(r"<script.*?</script>|<style.*?</style>|data:[\w/+.-]+;base64,[A-Za-z0-9+/=]+", "", idx, flags=re.S)
-for mot in INTERDITS:
-    must(mot.lower() not in visible.lower(), f"mot interdit visible : {mot}")
+must([r["nom"] for r in json.loads((ROOT / "data" / "reseaux.json").read_text())] == ["Century 21", "Orpi", "Laforêt", "IAD"], "reseaux : Century 21, Orpi, Laforêt, IAD")
+for nom in ["outils", "reseaux"]:
+    for e in json.loads((ROOT / "data" / f"{nom}.json").read_text()):
+        must(not e["logo"] or (ROOT / e["logo"]).is_file(), f"{nom} : logo existe ({e['logo']})")
+# scripts retirés sauf JSON-LD (lu par les moteurs) ; images inline base64 retirées
+_NOISE = re.compile(r"<script(?![^>]*ld\+json)[^>]*>.*?</script>|<style.*?</style>|data:[\w/+.-]+;base64,[A-Za-z0-9+/=]+", re.S)
+for page in sorted(dist.rglob("*.html")):
+    visible = _NOISE.sub("", page.read_text())
+    for mot in INTERDITS:
+        must(mot.lower() not in visible.lower(), f"mot interdit visible : {mot} ({page.relative_to(dist)})")
 print("OK v3 données et texte")
