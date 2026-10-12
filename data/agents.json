@@ -3,6 +3,7 @@
     "slug": "max",
     "name": "Max",
     "role": "coordinateur",
+    "pour_toi": "Il répartit le travail entre tes agents et te fait le point chaque matin.",
     "question": "Max, ma journée ?",
     "reponse": "Brief de 7 h : deux visites (10 h Bihorel, 15 h rive droite), trois emails importants triés, l'anniversaire de Mme Lefèvre — et deux DPE tout frais dans ton secteur. Je te refais le point ce soir à 19 h.",
     "capacites": [
@@ -67,6 +68,7 @@
     "slug": "emma",
     "name": "Emma",
     "role": "assistante admin",
+    "pour_toi": "Elle prépare tes réponses aux emails, tes comptes-rendus et tes relances.",
     "question": "Emma, quoi de neuf ?",
     "reponse": "Trois emails importants ce matin, brouillons de réponse prêts. La visite de 15 h est confirmée. Et la fiche de Mme Dubois est dans Modelo — budget 280 000 €, 3 chambres : elle recevra les biens correspondants automatiquement.",
     "capacites": [
@@ -131,6 +133,7 @@
     "slug": "christine",
     "name": "Christine",
     "role": "juridique & mandats",
+    "pour_toi": "Elle prépare tes bons de visite et vérifie tes mandats et compromis.",
     "question": "Christine, le dossier Perrin ?",
     "reponse": "Compromis complet sauf l'assainissement — je te l'ai mis en tâche. Délai de rétractation : J+7, il expire mardi. Et deux mandats arrivent à échéance ce mois-ci, renouvellements à préparer.",
     "capacites": [
@@ -210,6 +213,7 @@
     "slug": "zoe",
     "name": "Zoé",
     "role": "community manager",
+    "pour_toi": "Elle prépare tes posts Instagram et Facebook, à ta charte.",
     "question": "Zoé, qu'est-ce qui part cette semaine ?",
     "reponse": "Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
     "capacites": [
@@ -274,6 +278,7 @@
     "slug": "raphael",
     "name": "Raphaël",
     "role": "photographe",
+    "pour_toi": "Il retouche tes photos et en tire des vidéos et des visuels.",
     "question": "Raphaël, les photos du pavillon ?",
     "reponse": "18 photos retouchées : ciel dégagé, verticales redressées, lumière studio. Le salon vide est meublé en home staging virtuel, ton logo est posé en filigrane — et la vidéo du bien est prête.",
     "capacites": [
@@ -338,6 +343,7 @@
     "slug": "lucas",
     "name": "Lucas",
     "role": "estimation & marché",
+    "pour_toi": "Il estime tes biens à partir des ventes réelles.",
     "question": "Lucas, l'appartement rue Verte, il vaut quoi ?",
     "reponse": "Entre 242 000 et 255 000 € — douze ventes notariées comparables dans le quartier. Ton rapport de marché à ta marque est prêt pour le rendez-vous de 16 h. Au passage : quatre DPE tout frais cette semaine sur ta commune.",
     "capacites": [

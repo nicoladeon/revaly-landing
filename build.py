@@ -104,6 +104,7 @@ def team_blocks():
         </header>
         {_conv_panel(a)}
         <div class="tb-detail">
+          <p class="tb-pour">{_esc(a["pour_toi"])}</p>
           <ul class="tb-caps">{caps}</ul>
           <div class="crsl-actions">
             <a class="btn small" href="/agents/{a["slug"]}/">Voir tout ce que {name} sait faire <span class="arr" aria-hidden="true">→</span></a>

@@ -330,3 +330,7 @@ must('width="112" height="112"' in eq, "dimensions posées (pas de décalage)")
 must("matchMedia('(prefers-reduced-motion: reduce)')" in idx and "data-loop" in idx, "boucles lancées par script, jamais en mouvement réduit")
 must(not (ROOT / "assets" / "portraits").exists(), "anciens portraits retirés")
 print("OK v3 équipe 3D animée")
+
+for a in agents:
+    must(bool(a.get("pour_toi")) and len(a["pour_toi"]) <= 90 and html.escape(a["pour_toi"], quote=False) in eq, f"phrase pour_toi {a['slug']}")
+print("OK v3 équipe : une phrase chacun")
