@@ -87,8 +87,8 @@ must("199" not in text, "ancien prix 199 absent du texte")
 must("169 €" not in text, "ancien prix 169 € absent du texte")
 must("count-price" not in idx, "mécanisme count-price supprimé")
 must("limité" not in text.lower(), "jamais le mot « limité »")
-must(text.count("0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics") >= 3,
-     "micro-texte de désamorçage sous les CTA tarifs + modal")
+must(text.count("0 € aujourd'hui · Annulable en 2 clics") >= 7,
+     "ligne de risque vérifiée sous les boutons d'essai (haut, relances, offres, appel final, fenêtre)")
 
 # ── data/faq.json (Task 2, task 10) : 10 Q/R, alimente aussi le schema.org FAQPage ──
 faq_path = ROOT / "data" / "faq.json"
@@ -179,7 +179,7 @@ must('href="/agents/"' in integ and 'href="/#tarif"' in integ and 'href="/#faq"'
      "nav/footer : Agents + ancres absolues vers la home (/#tarif, /#faq)")
 must("cloudflareinsights.com/beacon" in integ, "beacon analytics présent sur /integrations/")
 must("cloudflareinsights.com/beacon" in idx, "beacon analytics présent sur la home")
-must("0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics" in integ,
+must("0 € aujourd'hui · Annulable en 2 clics" in integ,
      "micro-texte habituel sous le CTA essai de /integrations/")
 must("{{" not in integ, "aucun token {{...}} orphelin dans integrations/index.html")
 _sm = (dist / "sitemap.xml").read_text()
@@ -208,7 +208,9 @@ must("https://revaly.io/bienvenue/" not in _sm, "/bienvenue/ absente du sitemap 
 print("OK")
 
 # ── v3 : données des nouveaux blocs et règles de texte ──
-INTERDITS = ["agentique", "IA autonome", "Unipile", "Composio", "Anthropic", "Claude", "OpenAI", "GPT", "Pipedream"]
+INTERDITS = ["agentique", "IA autonome", "Unipile", "Composio", "Anthropic", "Claude", "OpenAI", "GPT", "Pipedream",
+             # promesses des concurrents à ne jamais reprendre (recherche concurrents.md du 12/10) et engagements non vérifiés
+             "24 h/24", "24h/24", "pilote automatique", "autonome", "rappel avant la fin de l'essai", "annoncé par email", "obligation légale"]
 for nom in ["outils", "reseaux", "clients-voient", "calculateur"]:
     must((ROOT / "data" / f"{nom}.json").exists(), f"data/{nom}.json existe")
 outils = json.loads((ROOT / "data" / "outils.json").read_text())
@@ -431,11 +433,12 @@ must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 must("setInterval(" in idx and "3000 / rots.length" in idx and "if (REDUCED) return;" in idx, "états qui changent toutes les 3 s, figés en mouvement réduit")
 must('id="board-pause"' in idx and 'aria-pressed="false"' in idx, "bouton pause de l'animation (AA 2.2.2)")
 # Ordre des sections du brief
-_ordre = ['id="hero"', 'id="bande-outils"', 'id="bande-reseaux"', 'id="probleme"', 'id="comment"', 'id="equipe"',
-          'id="plus-rien-oublie"', 'id="clients-voient"', 'id="parler"', 'id="calculateur"', 'id="controle"',
+# Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
+_ordre = ['id="hero"', 'id="bande-outils"', 'id="bande-reseaux"', 'id="probleme"', 'id="comment"', 'id="controle"', 'id="equipe"',
+          'id="plus-rien-oublie"', 'id="clients-voient"', 'id="parler"', 'id="calculateur"',
           'id="tarif"', 'id="faq"', 'id="demo"']
 _pos = [idx.find(x) for x in _ordre]
-must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des 13 blocs du brief")
+must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
 _t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 for titre in ["Tu es agent immobilier. Pas secrétaire.", "Ton équipe se branche en dix minutes.",
               "Six spécialistes. Un seul abonnement.", "Ce que voient tes clients : un service impeccable.",
@@ -455,7 +458,7 @@ for e in _ea:
         must(html.escape(x, quote=False).replace(" :", "\u00a0:") in _eq or html.escape(x, quote=False) in _eq, f"tâche de {e['slug']} : {x}")
     must(f'href="/agents/{e["slug"]}/"' in _eq, f"fiche de {e['slug']} reliée")
 _pb = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
-must(_pb.count("<svg") == 3 and "M21.25 8.2A10 10 0 1 0 16 21.16" in _pb, "trois icônes Lucide (aucun SVG fait main)")
+must(_pb.count('class="pb-ico"') == 3 and "M21.25 8.2A10 10 0 1 0 16 21.16" in _pb, "trois icônes Lucide (aucun SVG fait main)")
 must('class="sticky-cta"' in idx and ">Démo<" in idx.split('class="sticky-cta"', 1)[1][:600], "barre collante : Essayer 7 jours + Démo")
 # Police : Geist partout, aucune police à empattements chargée
 for page in sorted(dist.rglob("*.html")):
@@ -486,7 +489,9 @@ print("OK nettoyage")
 
 # ── Offre fondateurs : absente tant que le lien et l'API ne sont pas posés ; sinon compteur réel, 2 s max ──
 must(_build.FONDATEURS_LINK == "" and _build.FONDATEURS_API == "", "offre fondateurs livrée éteinte")
-must("data-fondateurs" not in idx and "Offre fondateurs" not in idx and "99 €" not in idx and "offre-fondateurs" not in idx, "aucune trace de l'offre fondateurs quand elle est éteinte")
+_sans_css = re.sub(r"<style.*?</style>", "", idx, flags=re.S)
+must("data-fondateurs" not in _sans_css and "Offre fondateurs" not in _sans_css and "99 €" not in _sans_css and "offre-fondateurs" not in _sans_css,
+     "aucune trace de l'offre fondateurs dans la page quand elle est éteinte (balisage et script)")
 _f = _build.fondateurs_blocs("https://buy.stripe.com/test_fondateurs", "https://api.revaly.io/fondateurs")
 must(_f["FONDATEURS_HERO"].count("data-fondateurs hidden") == 1 and _f["FONDATEURS_TARIF"].count("data-fondateurs hidden") == 1, "blocs masqués tant que le compteur n'a pas répondu")
 must("Solo à 99 € HT/mois à vie pour les 100 premiers" in _f["FONDATEURS_HERO"] and "99 € HT/mois à vie pour les 100 premiers" in _f["FONDATEURS_TARIF"], "texte de l'offre")
@@ -497,3 +502,22 @@ must("setTimeout(() => ctl.abort(), 2000)" in _js and "d.ouvert === true" in _js
 must(not re.search(r"\b\d{2,3}\b", re.sub(r"2000|99|100", "", _js)), "aucun nombre de places écrit en dur")
 must(".hp-fond { margin: 8px 0 0; min-height: 1.6em;" in idx, "place réservée dans le haut (aucun décalage à l'affichage du compteur)")
 print("OK offre fondateurs")
+
+# ── Ronde conversion (12/10, recherches besoins/concurrents/conversion + décisions de Julien) ──
+_pb2 = html.unescape(re.sub(r"<[^>]+>", "", idx.split('id="probleme"', 1)[1].split("</section>", 1)[0])).replace("\u00a0", " ")
+must("« Après chaque visite, le silence est souvent la pire expérience possible pour un vendeur. »" in _pb2 and "Journal de l'Agence, mai 2026" in _pb2, "citation sourcée en tête du problème")
+must(_pb2.find("Le vendeur sans nouvelles depuis dix jours.") < _pb2.find("La relance que tu voulais faire hier soir."), "le vendeur sans nouvelles en premier")
+_inst = "Installation offerte : on branche Modelo, ta boîte mail et ton agenda avec toi."
+must(_t.count(_inst) >= 2 and idx.find(_inst) > idx.find('id="comment"') and idx.split('id="tarif"', 1)[1].count(_inst) >= 1, "installation offerte sous « Comment ça marche » et dans les prix")
+must("Pas de frais de mise en place." in html.unescape(idx.split('id="tarif"', 1)[1].split("</section>", 1)[0]), "prix : pas de frais de mise en place")
+must(idx.count('class="cta-relance"') == 3, "trois relances d'essai entre les sections")
+_ctl = html.unescape(idx.split('id="controle"', 1)[1].split("</section>", 1)[0])
+must("t'attend en brouillon" in _ctl and "24 h" not in _ctl, "« Rien ne part sans toi » : brouillon, sans « 24 h/24 »")
+_emma = next(e for e in json.loads((ROOT / "data" / "equipe-accueil.json").read_text()) if e["slug"] == "emma")
+must(_emma["taches"][0].startswith("Compte rendu de visite") and "Bilan de commercialisation" in _emma["taches"][1], "Emma : compte rendu et bilan vendeur en tête")
+for _q in json.loads((ROOT / "data" / "faq.json").read_text()):
+    must("rappel par email" not in _q["reponse"].lower() and "avant la fin de l'essai" not in _q["reponse"].lower(),
+         f"FAQ sans rappel de fin d'essai non vérifié : {_q['question'][:30]}")
+_bv = (dist / "bienvenue" / "index.html").read_text()
+must(re.search(r'<a class="btn" href="https://calendly\.com/contact-chiclick/30min"[^>]*data-track="installation"[^>]*>Réserver mon installation</a>', _bv), "/bienvenue/ : réserver mon installation")
+print("OK ronde conversion")

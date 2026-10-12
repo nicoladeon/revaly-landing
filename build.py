@@ -171,7 +171,7 @@ def agent_main(a, agents):
           <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
           <button type="button" class="btn ghost tb-talk" data-goto-tarif>Discuter avec {name}</button>
         </div>
-        <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+        <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
       </div>
       {_conv_panel(a)}
     </div>
@@ -198,12 +198,12 @@ def agent_main(a, agents):
   <section class="wrap">
     <div class="ag-recall rv">
       <p class="ag-recall-t">{name} et toute l'équipe — les six agents — dès <b>129 € HT/mois</b>.</p>
-      <p class="ag-recall-s">Formée à ton métier, disponible 24 h/24, dans tes outils.</p>
+      <p class="ag-recall-s">Formée à ton métier, dans tes outils. Rien ne part sans toi.</p>
       <div class="crsl-actions" style="justify-content: center;">
         <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
         <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
       </div>
-      <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+      <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
     </div>
   </section>'''
 
@@ -223,7 +223,7 @@ def agents_index_main(agents):
     <div class="ag-cards">{cards}</div>
     <div style="text-align:center; margin-top: 44px;">
       <button type="button" class="btn" data-goto-tarif data-track="essai">Recruter l'équipe — Essayer 7 jours</button>
-      <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
+      <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
     </div>
   </section>'''
 
@@ -529,7 +529,13 @@ bienvenue_body = '''  <section class="wrap" style="min-height: 100vh; display: f
         <p style="font-size: 14.5px; line-height: 1.5; color: var(--muted); margin: 8px 0 0;">On vient de t'envoyer ton <b style="color: var(--ink);">lien de connexion</b>. Clique dessus pour ouvrir ton espace et rencontrer Max &amp; toute l'équipe.</p>
       </div>
 
-      <p style="font-size: 13px; color: var(--subtle); margin: 20px 0 0;">Essai 7 jours &middot; 0 &euro; aujourd'hui &middot; annulation en deux clics</p>
+      <div style="margin-top: 22px; padding: 20px; border-radius: 14px; border: 0.5px solid var(--line); text-align: center;">
+        <p style="margin: 0; font-size: 15px; font-weight: 600; color: var(--ink);">Installation offerte</p>
+        <p style="font-size: 14.5px; line-height: 1.5; color: var(--muted); margin: 6px 0 14px;">On branche Modelo, ta boîte mail et ton agenda avec toi.</p>
+        <a class="btn" href="__CALENDLY__" target="_blank" rel="noopener" data-track="installation" style="justify-content: center;">Réserver mon installation</a>
+      </div>
+
+      <p style="font-size: 13px; color: var(--subtle); margin: 20px 0 0;">Essai 7 jours &middot; 0 &euro; aujourd'hui &middot; annulable en 2 clics</p>
     </div>
 
     <p class="cta-hint" style="margin-top: 22px; max-width: 42ch; font-size: 13px; color: var(--subtle);">Déjà cliqué le lien ? <a href="https://app.revaly.io/login" style="color: var(--iris); text-decoration: none; font-weight: 500;">Ouvrir Revaly</a>. Pas d'email ? Vérifie tes spams ou écris à <a href="mailto:support@revaly.io" style="color: inherit; text-decoration: underline;">support@revaly.io</a>.</p>
