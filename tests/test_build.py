@@ -312,3 +312,7 @@ must("html.js .conv.armed .msg:not(.on)" in idx, "bulles masquées seulement si 
 must('role="group"' in idx.split('id="parler"', 1)[1].split("</section>", 1)[0], "conversation : role=group")
 must(idx.count("revealOnce('#clients-voient')") == 1 and "revealOnce('.cv-carte')" not in idx, "un seul déclencheur pour #clients-voient")
 print("OK v3 correction 1")
+
+# ── Ronde de correction 2 : plus de script ni de CSS pour la grille de connecteurs retirée ──
+must("document.querySelector('.connectors')" not in idx and ".conn-marquee" not in idx and "@keyframes mq" not in idx, "script et CSS de l'ancien marquee retirés")
+print("OK v3 correction 2")

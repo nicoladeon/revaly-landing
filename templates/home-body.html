@@ -645,31 +645,6 @@
     dlg.addEventListener('close', () => { vid.pause(); btn.focus(); });
   })();
 
-  // ── Connecteurs : grille → marquee 2 rangées (pattern 21st, vanilla) ──
-  (() => {
-    if (REDUCED) return;
-    const grid = document.querySelector('.connectors');
-    const tiles = Array.from(grid.querySelectorAll('.conn'));
-    const more = grid.querySelector('.conn-more');
-    const zone = document.createElement('div');
-    zone.className = 'conn-marquee rv in';
-    [tiles.slice(0, 12), tiles.slice(12)].forEach((row, i) => {
-      const r = document.createElement('div');
-      r.className = 'mq-row' + (i === 1 ? ' rev' : '');
-      r.style.setProperty('--mq-dur', i === 1 ? '54s' : '46s');
-      const seq = document.createElement('div');
-      seq.className = 'mq-seq';
-      row.forEach((t) => seq.appendChild(t));
-      const dup = seq.cloneNode(true);
-      dup.setAttribute('aria-hidden', 'true');
-      r.append(seq, dup);
-      zone.appendChild(r);
-    });
-    more.style.marginTop = '12px';
-    grid.replaceWith(zone);
-    zone.after(more);
-  })();
-
   // ── Compteurs (j'aime, compétences, connecteurs, bande de preuve) ──
   const easeOut = (t) => 1 - Math.pow(1 - t, 3);
   function animNum(el, from, to, dur) {
