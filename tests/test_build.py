@@ -468,3 +468,11 @@ must('property="og:title" content="Une équipe d&#x27;agents IA qui travaille vr
 must('name="description" content="Visites confirmées, vendeurs informés, mandats suivis, posts prêts.' in idx, "description = sous-titre")
 must('name="twitter:description" content="Visites confirmées' in idx, "twitter:description = sous-titre")
 print("OK refonte accueil")
+
+# ── Nettoyage : fichiers de l'ancienne page retirés du dépôt et de la publication ──
+for f in ["template.html", "assets/hero.mp4", "assets/hero-poster.jpg", "assets/villa_hero.jpg", "assets/villa_post.jpg", "assets/fonts/fraunces-var.woff2"]:
+    must(not (ROOT / f).exists(), f"fichier hérité supprimé : {f}")
+for f in ["hero.mp4", "hero-poster.jpg", "fonts/fraunces-var.woff2"]:
+    must(not (dist / f).exists(), f"plus publié : {f}")
+must([f.name for f in (dist / "fonts").iterdir()] == ["geist-var.woff2"], "une seule police publiée : Geist")
+print("OK nettoyage")
