@@ -84,7 +84,7 @@ def _conv_panel(a):
 
 
 # ── Accueil : l'équipe au travail (haut de page) et les six cartes de l'équipe.
-# Une seule source : data/equipe-accueil.json (ordre, métier, états réels, trois tâches)
+# Une seule source : data/equipe-accueil.json (ordre, métier, trois tâches réelles)
 # + data/agents.json (prénom, phrase « pour_toi »). Hugo n'y figure pas.
 def _boucle(slug, taille):
     """Personnage equipe-v6 animé : image fixe d'abord, vidéo lancée par le script de la page."""
@@ -99,28 +99,12 @@ def _equipe_accueil():
     for e in equipe:
         if e["slug"] not in fiches or e["slug"] == "hugo":
             raise SystemExit(f"equipe-accueil.json : agent inconnu ou exclu ({e['slug']})")
-        if not 2 <= len(e["etats"]) <= 3 or len(e["taches"]) != 3:
-            raise SystemExit(f"equipe-accueil.json : 2 ou 3 états et 3 tâches pour {e['slug']}")
+        if len(e["taches"]) != 3:
+            raise SystemExit(f"equipe-accueil.json : 3 tâches pour {e['slug']}")
     return [dict(e, nom=fiches[e["slug"]]["name"], pour_toi=fiches[e["slug"]]["pour_toi"]) for e in equipe]
 
 def _typo(s):  # espaces insécables de la typographie française (« Vendu » ne se coupe pas, « : » reste collé)
     return s.replace("« ", "«\u00a0").replace(" »", "\u00a0»").replace(" :", "\u00a0:")
-
-def _coupure(s):  # mot trop long pour une colonne de 104 px : césure douce, invisible sinon
-    return s.replace("commercialisation", "commercia&shy;lisation")
-
-ACTIF = ' class="on"'  # premier état affiché (seul visible sans JavaScript)
-
-def hero_equipe():
-    tuiles = []
-    for e in _equipe_accueil():
-        etats = "".join(f'<span{ACTIF if i == 0 else ""}>{_coupure(_esc(x))}</span>' for i, x in enumerate(map(_typo, e["etats"])))
-        tuiles.append(
-            f'<li class="bd"><span class="bd-photo">{_boucle(e["slug"], 256)}</span>'
-            f'<p class="bd-nom"><b>{_esc(e["nom"])}</b><span class="sr-only">, </span><span>{_esc(e["metier"])}</span></p>'
-            f'<p class="bd-etat"><span class="sr-only">{" ; ".join(_esc(x) for x in e["etats"])}.</span>'
-            f'<span class="bd-rot" aria-hidden="true">{etats}</span></p></li>')
-    return "".join(tuiles)
 
 def equipe_cartes():
     cartes = []
@@ -136,6 +120,47 @@ def equipe_cartes():
             f'<ul class="eq-taches">{taches}</ul>'
             f'<a class="eq-lien" href="/agents/{e["slug"]}/">Voir la fiche {de}{nom}</a></article>')
     return "".join(cartes)
+
+
+# ── Haut de page (ronde Julien 1) : de vraies cartes de travail, au format des cartes « À valider » du produit
+# (data/cartes-accueil.json : agent, objet, extrait du message ; source prod notée pour chaque carte).
+def cartes_hero():
+    noms = {a["slug"]: a["name"] for a in json.loads((ROOT / "data" / "agents.json").read_text())}
+    cartes = json.loads((ROOT / "data" / "cartes-accueil.json").read_text())
+    out = []
+    for i, c in enumerate(cartes):
+        if c["slug"] not in noms or c["slug"] == "hugo":
+            raise SystemExit(f"cartes-accueil.json : agent inconnu ou exclu ({c['slug']})")
+        out.append(
+            f'<article class="carte" style="--slot:{i}" data-slot="{i}">'
+            f'<div class="carte-tete"><img src="/assets/equipe/boucles/{c["slug"]}@256.webp" width="36" height="36" alt="" />'
+            f'<p><b>{_esc(noms[c["slug"]])}</b> a préparé</p>'
+            f'<span class="carte-ok" aria-hidden="true">Valider</span></div>'
+            f'<p class="carte-objet">{_esc(_typo(c["objet"]))}</p>'
+            f'<p class="carte-msg">{_esc(_typo(c["message"]))}</p></article>')
+    return "".join(out)
+
+def preuve_reseaux(reseaux):
+    """Une seule bande de preuve sous les boutons : les logos des réseaux, en gris, immobiles."""
+    if not reseaux:
+        return ""
+    logos = "".join(_bande_item(r, False) for r in reseaux)
+    return (f'<div class="preuve" id="bande-reseaux"><p class="preuve-titre">Des agents de ces réseaux travaillent déjà avec Revaly</p>'
+            f'<ul class="preuve-logos">{logos}</ul>'
+            f'<p class="preuve-mention">Les marques citées appartiennent à leurs propriétaires.</p></div>')
+
+def outils_etape(outils):
+    """Les outils branchés, en petit, dans l'étape 1 de « Comment ça marche »."""
+    return (f'<ul class="et-logos" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(_bande_item(o, False) for o in outils)}</ul>'
+            '<p class="et-portails">Tes contacts SeLoger, Leboncoin et Bien\'ici arrivent directement chez Emma.</p>')
+
+def equipe_rangee():
+    """Les six visages, en plus petit, sous le film."""
+    out = []
+    for e in _equipe_accueil():
+        out.append(f'<li><span class="rg-photo">{_boucle(e["slug"], 64)}</span>'
+                   f'<b>{_esc(e["nom"])}</b><span>{_esc(e["metier"])}</span></li>')
+    return "".join(out)
 
 
 def agent_main(a, agents):
@@ -328,21 +353,6 @@ def _bande_item(i, copie):
     cls = "" if glyphe else ' class="large"'
     return f'<li{cls}>{img}{txt}</li>'
 
-def _bande(id_, titre, items, mention=""):
-    liste = lambda copie: "".join(_bande_item(i, copie) for i in items)
-    return (f'<section class="wrap bande" id="{id_}" aria-label="{_esc(titre)}"><p class="bande-titre">{_esc(titre)}</p>'
-            f'<div class="bande-defile" tabindex="0" role="region" aria-label="{_esc(titre)}"><ul>{liste(False)}</ul><ul aria-hidden="true">{liste(True)}</ul></div>'
-            + (f'<p class="bande-mention">{_esc(mention)}</p>' if mention else "") + "</section>")
-
-def bande_outils(outils):
-    return _bande("bande-outils", "Fonctionne avec tes outils", outils) + \
-        '<p class="wrap bande-portails">Tes contacts SeLoger, Leboncoin et Bien\'ici arrivent directement chez Emma.</p>'
-
-def bande_reseaux(reseaux):
-    if not reseaux: return ""
-    return _bande("bande-reseaux", "Des agents de ces réseaux travaillent déjà avec Revaly", reseaux,
-                  mention="Les marques citées appartiennent à leurs propriétaires.")
-
 QUI = {"acquereur": "L'acquéreur", "vendeur": "Le vendeur", "notaire": "Le notaire"}
 def clients_voient(items):
     cartes = "".join(
@@ -422,10 +432,11 @@ body_home = render("home-body.html", {
     "FONDATEUR_VISUEL": fondateur_visuel(),
     "CALCUL_STATIQUE": calculateur_statique(),
     "CALCUL_DEFAUT_M": str(CALCUL_DEFAUT[0]), "CALCUL_DEFAUT_V": str(CALCUL_DEFAUT[1]),
-    "HERO_EQUIPE": hero_equipe(),
     "EQUIPE_CARTES": equipe_cartes(),
-    "BANDE_OUTILS": bande_outils(json.loads((ROOT / "data" / "outils.json").read_text())),
-    "BANDE_RESEAUX": bande_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
+    "PREUVE": preuve_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
+    "OUTILS_ETAPE": outils_etape(json.loads((ROOT / "data" / "outils.json").read_text())),
+    "CARTES_HERO": cartes_hero(),
+    "EQUIPE_RANGEE": equipe_rangee(),
     "CLIENTS_VOIENT": clients_voient(json.loads((ROOT / "data" / "clients-voient.json").read_text())),
     "FAQ_ITEMS": faq_items(faq),
     "JSONLD": jsonld_blocks(faq),
@@ -437,9 +448,9 @@ write_page(
     path="/",
     og_title="Une équipe d'agents IA qui travaille vraiment pour toi.",
     og_desc=HERO_SOUS_TITRE,
-    # Les six visages du haut de page sont demandés tout de suite (affichage rapide sur mobile)
-    head="".join(f'<link rel="preload" as="image" type="image/webp" href="/assets/equipe/boucles/{k}@256.webp" fetchpriority="high" />'
-                 for k in ["max", "emma", "lucas", "christine", "zoe", "raphael"]),
+    # L'image fixe du film (premier affichage) est demandée tout de suite : verticale sur mobile, 16:9 au bureau
+    head=('<link rel="preload" as="image" type="image/webp" href="/film/poster-vertical@720.webp" media="(max-width: 699px)" fetchpriority="high" />'
+          '<link rel="preload" as="image" type="image/webp" href="/film/poster@1280.webp" media="(min-width: 700px)" fetchpriority="high" />'),
 )
 
 # ── Page /integrations (task 11) : catalogue searchable depuis data/integrations.json.
@@ -576,6 +587,14 @@ for static in ["og.jpg", "logo.png"]:
     if src.exists():
         shutil.copy(src, ROOT / "dist" / static)
 (ROOT / "dist" / "film").mkdir(exist_ok=True)
+try:  # Pillow présent en local : les WebP suivent toujours le dernier poster rendu ; sinon, celles du dépôt
+    from PIL import Image
+    for _src, _dst, _taille in [("poster.jpg", "poster@1280.webp", (1280, 720)), ("poster-vertical.jpg", "poster-vertical@720.webp", (720, 1280))]:
+        if (ROOT / "assets" / "film" / _src).exists():
+            Image.open(ROOT / "assets" / "film" / _src).convert("RGB").resize(_taille, Image.LANCZOS).save(
+                ROOT / "assets" / "film" / _dst, "WEBP", quality=74, method=6)
+except ImportError:
+    pass
 for f in (ROOT / "assets" / "film").glob("*"):
     if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
         shutil.copy(f, ROOT / "dist" / "film" / f.name)

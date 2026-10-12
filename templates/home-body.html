@@ -14,7 +14,7 @@
   @media (max-width: 640px) { .wrap { padding-left: 16px; padding-right: 16px; } }
 
   /* ── 1. Haut de page : promesse, deux boutons, puis l'équipe au travail ── */
-  .hp-hero { padding-top: clamp(24px, 3.4vw, 44px); text-align: center; }
+  .hp-hero { padding-top: clamp(20px, 2.6vw, 36px); text-align: center; }
   .hp-pill {
     display: inline-flex; align-items: center; gap: 9px; margin: 0; padding: 6px 14px 6px 12px;
     border-radius: 999px; background: var(--raised); border: 0.5px solid var(--line-strong); box-shadow: var(--shadow-sm);
@@ -22,11 +22,11 @@
   }
   .hp-pill i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--iris); box-shadow: 0 0 0 3px var(--iris-soft); }
   .hp-hero h1 {
-    margin: 16px auto 0; max-width: 980px;
-    font-size: clamp(39px, 5.4vw, 68px); font-weight: 500; line-height: 1.02; letter-spacing: -0.045em;
+    margin: 14px auto 0; max-width: 1000px;
+    font-size: clamp(40px, 5.4vw, 70px); font-weight: 560; line-height: 1; letter-spacing: -0.048em;
   }
   .hp-hero h1 .iris { color: var(--iris); }
-  .hp-lede { margin: 16px auto 0; max-width: 730px; font-size: clamp(16.5px, 1.5vw, 19px); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+  .hp-lede { margin: 16px auto 0; max-width: 760px; font-size: clamp(16.5px, 1.5vw, 19px); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
   /* Un seul bouton principal ; la démo reste à portée, en lien (elle ne concurrence pas l'essai) */
   .hp-cta { margin-top: 24px; display: flex; justify-content: center; align-items: center; gap: 8px 26px; flex-wrap: wrap; }
   .hp-cta .btn { min-height: 54px; padding: 14px 36px; font-size: 17px; justify-content: center; }
@@ -36,103 +36,118 @@
   }
   .hp-demo:hover { text-decoration-color: var(--ink); }
   .hp-micro { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+  .hp-micro .nw { white-space: nowrap; }
   .hp-fond { margin: 8px 0 0; min-height: 1.6em; font-size: 14px; }
   .hp-fond a { color: var(--iris-ink); font-weight: 500; text-underline-offset: 4px; }
-  .hp-rassure { list-style: none; margin: 14px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-  .hp-rassure li {
-    display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px 6px 10px; border-radius: 999px;
-    background: var(--raised); border: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--ink);
-  }
-  .hp-rassure svg { width: 15px; height: 15px; flex: none; color: var(--iris-ink); }
   @media (max-width: 520px) {
     .hp-cta { flex-wrap: nowrap; gap: 16px; }
     .hp-cta .btn { flex: 1 1 auto; padding: 14px 16px; font-size: 16.5px; }
     .hp-demo { flex: none; font-size: 15px; }
-    .hp-rassure { gap: 4px 14px; margin-top: 14px; }
-    .hp-rassure li { padding: 0; background: none; border: 0; font-size: 13px; color: var(--muted); }
   }
 
-  /* Le tableau « En ce moment chez toi » : six personnages, une pastille d'état chacun */
-  .board-zone { position: relative; margin: clamp(26px, 2.6vw, 32px) auto 0; }
-  .board-zone::before {
-    content: ""; position: absolute; z-index: -1; left: 8%; right: 8%; top: 12%; bottom: -6%;
-    border-radius: 50%; pointer-events: none; filter: blur(48px);
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--iris) 26%, transparent), transparent);
+  /* ── Preuve sociale, juste sous les boutons : une seule bande, immobile, logos en gris ── */
+  .preuve { margin: clamp(28px, 3vw, 36px) auto 0; text-align: center; }
+  .preuve-titre { margin: 0; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .preuve-logos { list-style: none; margin: 14px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 18px clamp(28px, 5vw, 64px); }
+  .preuve-logos li { display: flex; align-items: center; height: 32px; }
+  .preuve-logos img { display: block; filter: brightness(0); opacity: .55; }
+  .preuve-logos img[src$="laforet.svg"] { filter: grayscale(1); opacity: .6; }
+  @media (max-width: 520px) { .preuve-logos { gap: 14px 28px; } }
+  .preuve-mention { margin: 10px 0 0; font-size: 12px; color: var(--subtle); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .preuve-logos img { filter: brightness(0) invert(1); opacity: .6; }
+    :root:not([data-theme="light"]) .preuve-logos img[src$="laforet.svg"] { filter: grayscale(1) invert(1); }
   }
-  .board {
-    text-align: left; background: var(--raised); border: 0.5px solid var(--line-strong); border-radius: 28px;
-    padding: 14px 12px 18px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--iris) 10%, transparent), var(--shadow-md);
+  :root[data-theme="dark"] .preuve-logos img { filter: brightness(0) invert(1); opacity: .6; }
+  :root[data-theme="dark"] .preuve-logos img[src$="laforet.svg"] { filter: grayscale(1) invert(1); }
+
+  /* ── La vitrine : le film qui se lance seul (16:9 au bureau, vertical sur mobile) et le travail préparé ── */
+  .vitrine { position: relative; margin-top: clamp(28px, 3vw, 40px); display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .vitrine::before {
+    content: ""; position: absolute; z-index: -1; left: 6%; right: 6%; top: 8%; bottom: 0; border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--iris) 24%, transparent), transparent); filter: blur(56px); pointer-events: none;
   }
-  .board-tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 4px 12px; }
-  .board-titre { margin: 0; display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--muted); }
-  .board-live { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--iris); }
-  .board-live::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--iris); opacity: 0; animation: live 2.4s ease-out infinite; }
-  .board.pause .board-live::after { animation: none; }
+  .film-cadre {
+    position: relative; margin: 0; width: min(100%, 360px); aspect-ratio: 9 / 16; border-radius: 26px; overflow: hidden;
+    background: #E9EBF2; border: 0.5px solid var(--line-strong); box-shadow: 0 0 0 6px color-mix(in srgb, var(--raised) 70%, transparent), var(--shadow-xl);
+  }
+  .film-cadre picture, .film-cadre img, .film-cadre video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .film-cadre video { opacity: 0; transition: opacity .5s ease; }
+  .film-cadre.joue video { opacity: 1; }
+  .film-son {
+    position: absolute; right: 14px; bottom: 14px; z-index: 2; display: inline-flex; align-items: center; gap: 9px; min-height: 44px; padding: 10px 16px 10px 12px;
+    border: 0; border-radius: 999px; cursor: pointer; font: 600 14.5px/1 var(--font-sans); color: #fff;
+    background: rgba(12, 14, 20, .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    transition: transform .2s, background .2s;
+  }
+  .film-son:hover { background: rgba(12, 14, 20, .86); transform: translateY(-1px); }
+  .film-son svg { width: 18px; height: 18px; flex: none; }
+  .anim-pause {
+    position: absolute; right: 12px; top: 12px; z-index: 2; width: 44px; height: 44px; display: grid; place-items: center;
+    border: 0; border-radius: 50%; cursor: pointer; color: #fff; background: rgba(12, 14, 20, .55);
+  }
+  .anim-pause svg { width: 16px; height: 16px; }
+  .anim-pause .ico-play, .anim-pause[aria-pressed="true"] .ico-pause { display: none; }
+  .anim-pause[aria-pressed="true"] .ico-play { display: block; }
+  html:not(.js) .anim-pause { display: none; }
+  @media (prefers-reduced-motion: reduce) { .anim-pause { display: none; } }
+
+  /* Le travail préparé : de vraies cartes « À valider », comme dans l'appli ; 1 à la fois sur mobile, 3 au bureau */
+  .flux-zone { width: min(100%, 420px); }
+  .flux-titre { margin: 0 0 12px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .flux-live { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--iris); }
+  .flux-live::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--iris); opacity: 0; animation: live 2.4s ease-out infinite; }
+  .pause .flux-live::after { animation: none; }
   @keyframes live { 0% { transform: scale(.5); opacity: .8; } 100% { transform: scale(1.5); opacity: 0; } }
-  .board-pause {
-    flex: none; width: 44px; height: 44px; margin: -10px -6px -10px 0; display: grid; place-items: center;
-    border: 0; border-radius: 12px; background: none; color: var(--muted); cursor: pointer;
+  .flux { --h: 150px; --g: 12px; --n: 1; position: relative; height: calc(var(--n) * var(--h) + (var(--n) - 1) * var(--g)); }
+  .carte {
+    position: absolute; left: 0; right: 0; top: 0; height: var(--h); padding: 14px 16px; border-radius: 18px;
+    background: var(--raised); border: 0.5px solid var(--line-strong); box-shadow: var(--shadow-md); text-align: left;
+    transform: translateY(calc(var(--slot) * (var(--h) + var(--g)))); opacity: 0; visibility: hidden;
+    transition: transform .55s cubic-bezier(.32,.72,0,1), opacity .35s ease, visibility 0s .55s;
   }
-  .board-pause:hover { background: var(--bg-soft); color: var(--ink); }
-  .board-pause svg { width: 16px; height: 16px; }
-  .board-pause .ico-play, .board-pause[aria-pressed="true"] .ico-pause { display: none; }
-  .board-pause[aria-pressed="true"] .ico-play { display: block; }
-  html:not(.js) .board-pause { display: none; }
-  .bd-grille { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; }
-  .board-pied {
-    display: flex; align-items: center; justify-content: center; gap: 8px; margin: 16px 4px 0; padding-top: 14px;
-    border-top: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--ink); text-align: center;
+  .carte[data-slot="0"] { opacity: 1; visibility: visible; transition-delay: 0s; }
+  @media (min-width: 1000px) { .carte[data-slot="1"], .carte[data-slot="2"] { opacity: 1; visibility: visible; transition-delay: 0s; } }
+  .carte-tete { display: flex; align-items: center; gap: 10px; }
+  .carte-tete img { width: 36px; height: 36px; border-radius: 50%; flex: none; background: #F1F2F7; }
+  .carte-tete p { margin: 0; flex: 1; min-width: 0; font-size: 14px; color: var(--muted); }
+  .carte-tete b { color: var(--ink); font-weight: 600; }
+  .carte-ok { flex: none; padding: 7px 14px; border-radius: 10px; background: #4F46E5; color: #fff; font-size: 13px; font-weight: 600; }
+  .carte-objet { margin: 10px 0 0; font-size: 14.5px; font-weight: 600; line-height: 1.35; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .carte-msg { margin: 6px 0 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .flux-pied { margin: 12px 0 0; display: flex; align-items: flex-start; gap: 8px; font-size: 13.5px; font-weight: 500; line-height: 1.45; color: var(--ink); text-align: left; }
+  .flux-pied svg { margin-top: 1px; }
+  .flux-pied svg { width: 16px; height: 16px; flex: none; color: var(--iris-ink); }
+
+  /* L'équipe, en plus petit : six visages animés */
+  .rangee { margin-top: clamp(28px, 3.4vw, 40px); text-align: center; }
+  .rangee-titre { margin: 0; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .rangee ul { list-style: none; margin: 14px auto 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 10px; max-width: 360px; }
+  .rangee li { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
+  .rg-photo { display: block; width: 64px; height: 64px; border-radius: 50%; overflow: hidden; background: #F1F2F7; box-shadow: 0 0 0 3px var(--raised), 0 0 0 3.5px var(--line); margin-bottom: 6px; }
+  .rg-photo video { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .rangee b { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .rangee li > span:last-child { font-size: 12.5px; color: var(--muted); }
+
+  @media (min-width: 700px) {
+    .film-cadre { width: 100%; aspect-ratio: 16 / 9; border-radius: 24px; }
+    .rangee ul { grid-template-columns: repeat(6, minmax(0, 1fr)); max-width: 720px; }
   }
-  .board-pied svg { width: 16px; height: 16px; flex: none; color: var(--iris-ink); }
-  @media (min-width: 641px) and (max-width: 999px) { .board-zone { max-width: 680px; } }
-  .bd { min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
-  .bd-photo {
-    display: block; width: 100%; aspect-ratio: 1; border-radius: 18px; overflow: hidden;
-    background: #F1F2F7; box-shadow: inset 0 0 0 0.5px rgba(23, 26, 33, .08);
-  }
-  .bd-photo video { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .bd-nom { margin: 9px 0 0; line-height: 1.25; }
-  .bd-nom b { display: block; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
-  .bd-nom span:last-child { display: block; font-size: 13px; color: var(--muted); }
-  .bd-etat { margin: 8px 0 0; width: 100%; display: flex; justify-content: center; }
-  /* Les états sont empilés dans la même case (taille de l'état le plus long : aucun saut) ;
-     l'ancien s'efface, puis le nouveau apparaît : deux pastilles ne se chevauchent jamais. */
-  .bd-rot { display: grid; justify-items: center; align-items: start; max-width: 100%; }
-  .bd-rot > span {
-    grid-area: 1 / 1; max-width: 100%; padding: 5px 8px; border-radius: 10px;
-    background: color-mix(in srgb, var(--ink) 5%, var(--raised)); color: var(--ink);
-    font-size: 12px; font-weight: 500; line-height: 1.3; overflow-wrap: anywhere;
-    opacity: 0; transform: translateY(4px);
-    transition: opacity .18s ease, transform .3s cubic-bezier(.32,.72,0,1);
-  }
-  .bd-rot > span::before {
-    content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 6px 1px 0; border-radius: 50%;
-    background: var(--iris); vertical-align: middle;
-  }
-  .bd-rot > span.on { opacity: 1; transform: none; transition-delay: .2s; }
-  .bd-rot > span.out { transform: translateY(-5px); }
-  .film-btn {
-    display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 10px 20px; margin-top: 22px;
-    border: 0.5px solid var(--line-strong); border-radius: 999px; cursor: pointer;
-    font: 500 15px/1 var(--font-sans); color: var(--ink); background: var(--raised); box-shadow: var(--shadow-sm);
-    transition: transform .2s, box-shadow .2s;
-  }
-  .film-btn svg { width: 15px; height: 15px; color: var(--iris-ink); flex: none; }
-  .film-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
-  .film-btn:active { transform: scale(.98); }
   @media (min-width: 1000px) {
-    .board { padding: 18px 20px 22px; }
-    .bd-grille { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
-    .bd-photo { border-radius: 20px; }
-    .bd-rot > span { padding: 6px 10px; font-size: 12.5px; }
+    .vitrine { grid-template-columns: minmax(0, 1fr) 380px; align-items: start; gap: 28px; }
+    .film-cadre { margin-top: 30px; }
+    .flux { --n: 3; --h: 146px; }
+    .carte-objet { -webkit-line-clamp: 1; }
+    .flux-zone { width: 100%; }
   }
-  @media (prefers-reduced-motion: reduce) { .board-pause { display: none; } .board-live::after { animation: none; } }
+
   .film-dialog {
     width: min(92vw, 1100px); max-width: none; max-height: 92vh; padding: 0; margin: auto;
     border: 0; border-radius: 18px; overflow: hidden; background: var(--night-3); color: #fff; box-shadow: var(--shadow-xl);
   }
-  .film-dialog::backdrop { background: rgba(9, 11, 15, .72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-  .film-dialog video { display: block; width: 100%; max-height: 92vh; background: #000; }
+  .film-dialog.vertical { width: auto; height: min(92vh, 900px); aspect-ratio: 9 / 16; }
+  .film-dialog::backdrop { background: rgba(9, 11, 15, .78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .film-dialog video { display: block; width: 100%; height: 100%; max-height: 92vh; background: #000; }
   .film-close {
     position: absolute; top: 10px; right: 10px; z-index: 2; width: 44px; height: 44px;
     display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer;
@@ -140,39 +155,6 @@
   }
   .film-close:hover { background: rgba(18, 21, 28, .9); }
   .film-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-
-  /* ── 2. Bandes de logos : défilement continu, pause au survol/focus, grille statique si mouvement réduit ── */
-  .bande { padding-top: 40px; padding-bottom: 8px; text-align: center; }
-  .bande + .bande-portails + .bande, .bande-portails + .bande { padding-top: 32px; }
-  .bande-titre { margin: 0 0 16px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
-  .bande-defile { --gap: 56px; display: flex; gap: var(--gap); overflow: hidden; padding: 6px 0;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
-            mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
-  .bande-defile ul { display: flex; align-items: center; gap: var(--gap); flex-shrink: 0; min-width: 100%;
-    justify-content: space-around; list-style: none; margin: 0; padding: 0; animation: defile 38s linear infinite; }
-  .bande-defile:hover ul, .bande-defile:focus-within ul { animation-play-state: paused; }
-  .bande-defile li { display: flex; align-items: center; gap: 9px; flex-shrink: 0; height: 28px; white-space: nowrap; }
-  .bande-defile img { display: block; flex-shrink: 0; filter: grayscale(1); opacity: .62; }
-  .bande-defile:focus-visible { outline: 2px solid var(--iris); outline-offset: 4px; border-radius: 8px; }
-  .bande-defile .bande-nom { font-size: 15px; font-weight: 500; color: var(--muted); }
-  .bande-mention { margin: 14px 0 0; font-size: 12px; color: var(--subtle); }
-  .bande-portails { margin-top: 10px; margin-bottom: 0; text-align: center; font-size: 15px; color: var(--muted); }
-  /* logos à une teinte : aplatis dans le même gris ; Laforêt (deux tons) reste en niveaux de gris */
-  #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0); opacity: .5; }
-  #bande-reseaux img[src$="laforet.svg"] { opacity: .55; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .bande-defile img { filter: grayscale(1) invert(1); opacity: .6; }
-    :root:not([data-theme="light"]) #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0) invert(1); opacity: .5; }
-  }
-  :root[data-theme="dark"] .bande-defile img { filter: grayscale(1) invert(1); opacity: .6; }
-  :root[data-theme="dark"] #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0) invert(1); opacity: .5; }
-  @keyframes defile { to { transform: translateX(calc(-100% - var(--gap))); } }
-  @media (prefers-reduced-motion: reduce) {
-    .bande-defile { -webkit-mask-image: none; mask-image: none; }
-    .bande-defile ul { animation: none; flex-wrap: wrap; justify-content: center; row-gap: 20px; }
-    .bande-defile ul[aria-hidden="true"] { display: none; }
-  }
-
   /* ── 3. Le problème ── */
   .pb { display: grid; gap: 32px; align-items: center; }
   @media (min-width: 900px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 64px; } }
@@ -226,6 +208,8 @@
   .et-logos { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .et-logos li { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; border-radius: 12px; background: var(--raised); border: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--muted); }
   .et-logos img { display: block; filter: grayscale(1); opacity: .7; }
+  .et-logos .bande-nom { font-size: 13.5px; font-weight: 500; }
+  .et-portails { margin: 12px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .et-logos img { filter: grayscale(1) invert(1); } }
   :root[data-theme="dark"] .et-logos img { filter: grayscale(1) invert(1); }
   .et-visages { display: flex; }
@@ -583,48 +567,47 @@
         <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
         <a class="hp-demo" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
       </div>
-      <p class="hp-micro">0 € aujourd'hui · Annulable en 2 clics</p>
+      <p class="hp-micro"><span class="nw">0 € aujourd'hui ·</span> <span class="nw">Annulable en 2 clics ·</span> <span class="nw">Rien ne part sans toi</span></p>
       {{FONDATEURS_HERO}}
-      <ul class="hp-rassure" aria-label="Garanties">
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22v-5" /><path d="M15 8V2" /><path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z" /><path d="M9 8V2" /></svg>Branché sur Modelo</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></svg>Sans engagement</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></svg>Rien ne part sans toi</li>
-      </ul>
+      {{PREUVE}}
     </div>
 
     <div class="wrap hp-wide">
-      <div class="board-zone">
-        <div class="board" id="board">
-          <div class="board-tete">
-            <p class="board-titre" id="board-titre"><i class="board-live" aria-hidden="true"></i>En ce moment chez toi :</p>
-            <button type="button" class="board-pause" id="board-pause" aria-pressed="false" aria-label="Mettre en pause l'animation de l'équipe">
-              <svg class="ico-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="3" width="5" height="18" rx="1" /><rect x="5" y="3" width="5" height="18" rx="1" /></svg>
-              <svg class="ico-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg>
-            </button>
-          </div>
-          <ul class="bd-grille" aria-labelledby="board-titre">{{HERO_EQUIPE}}</ul>
-          <p class="board-pied"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m16 9-5.5 5.5L8 12" /></svg>Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides.</p>
+      <div class="vitrine">
+        <figure class="film-cadre" id="film-cadre">
+          <picture>
+            <source media="(max-width: 699px)" srcset="/film/poster-vertical@720.webp" type="image/webp" width="720" height="1280" />
+            <img src="/film/poster@1280.webp" width="1280" height="720" alt="Un agent immobilier en visite ; à côté, la carte « Rappel de visite » préparée par Emma, en attente de validation." fetchpriority="high" />
+          </picture>
+          <video id="film-boucle" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"></video>
+          <button type="button" class="anim-pause" id="anim-pause" aria-pressed="false" aria-label="Mettre en pause les animations">
+            <svg class="ico-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="3" width="5" height="18" rx="1" /><rect x="5" y="3" width="5" height="18" rx="1" /></svg>
+            <svg class="ico-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg>
+          </button>
+          <button type="button" id="voir-film" class="film-son" data-track="film" aria-haspopup="dialog">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" /><path d="M16 9a5 5 0 0 1 0 6" /><path d="M19.364 18.364a9 9 0 0 0 0-12.728" /></svg>
+            Regarder avec le son (45 s)
+          </button>
+        </figure>
+        <div class="flux-zone">
+          <p class="flux-titre" id="flux-titre"><i class="flux-live" aria-hidden="true"></i>En ce moment chez toi :</p>
+          <div class="flux" id="flux" role="group" aria-labelledby="flux-titre">{{CARTES_HERO}}</div>
+          <p class="flux-pied"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m16 9-5.5 5.5L8 12" /></svg>Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides.</p>
         </div>
       </div>
-      <button type="button" id="voir-film" class="film-btn" data-track="film" aria-haspopup="dialog">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg>
-        Voir le film (45 s)
-      </button>
+      <div class="rangee">
+        <p class="rangee-titre" id="rangee-titre">Ton équipe</p>
+        <ul aria-labelledby="rangee-titre">{{EQUIPE_RANGEE}}</ul>
+      </div>
     </div>
 
     <dialog id="film-dialog" class="film-dialog" aria-label="Le film Revaly, 45 secondes">
       <button type="button" class="film-close" id="film-close" aria-label="Fermer le film">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
       </button>
-      <video id="film-lecteur" controls playsinline preload="none" data-poster="film/poster.jpg">
-        <source src="film/revaly-45s.mp4" type="video/mp4" />
-      </video>
+      <video id="film-lecteur" controls playsinline preload="none"></video>
     </dialog>
   </section>
-
-  <!-- ═══════════════ 2. BANDES DE LOGOS ═══════════════ -->
-  {{BANDE_OUTILS}}
-  {{BANDE_RESEAUX}}
 
   <!-- ═══════════════ 3. LE PROBLÈME ═══════════════ -->
   <section class="wrap hp-sec" id="probleme">
@@ -635,7 +618,7 @@
     </figure>
     <div class="pb">
       <div>
-        <h2 class="title">Tu es agent immobilier. Pas secrétaire.</h2>
+        <h2 class="title">Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.</h2>
         <p class="sub">Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, publier, classer. Et ce qu'on oublie finit par coûter un mandat.</p>
       </div>
       <ul class="pb-liste">
@@ -656,12 +639,7 @@
           <h3>Tu branches Modelo, ton agenda et ta boîte mail.</h3>
           <p>Rien à migrer : Modelo reste ton CRM.</p>
           <div class="etape-visuel">
-            <ul class="et-logos" aria-label="Exemples d'outils branchés">
-              <li><img src="/assets/logos/modelo.svg" width="70" height="18" alt="Modelo" loading="lazy" /></li>
-              <li><img src="/assets/logos/google-agenda.svg" width="18" height="18" alt="" loading="lazy" />Agenda</li>
-              <li><img src="/assets/logos/gmail.svg" width="18" height="18" alt="" loading="lazy" />Gmail</li>
-              <li><img src="/assets/logos/outlook.svg" width="18" height="18" alt="" loading="lazy" />Outlook</li>
-            </ul>
+            {{OUTILS_ETAPE}}
           </div>
         </li>
         <li class="etape">
@@ -1223,35 +1201,75 @@
     if (document.readyState === 'complete') demarre(); else window.addEventListener('load', demarre, { once: true });
   })();
 
-  // ── Haut de page : l'équipe au travail. Chaque agent change d'état toutes les 3 s, décalé de 0,5 s
-  //    sur le précédent ; arrêt hors écran, onglet caché ou bouton pause. Mouvement réduit : premier état fixe. ──
+  // ── Pause générale (WCAG 2.2.2) : film, cartes et visages animés s'arrêtent ensemble ──
   (() => {
-    const board = document.getElementById('board');
-    const btn = document.getElementById('board-pause');
-    const rots = Array.from(board.querySelectorAll('.bd-rot'));
+    const btn = document.getElementById('anim-pause');
+    if (!btn) return;
     btn.addEventListener('click', () => {
       window.rvPause = !window.rvPause;
       btn.setAttribute('aria-pressed', String(window.rvPause));
-      board.classList.toggle('pause', window.rvPause);
+      document.getElementById('hero').classList.toggle('pause', window.rvPause);
       if (window.rvSyncLoops) window.rvSyncLoops();
+      if (window.rvSyncFilm) window.rvSyncFilm();
     });
-    if (REDUCED) return;
-    let enVue = true, t = 0;
-    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { enVue = en[0].isIntersecting; }).observe(board);
-    const suivant = (rot) => {
-      const s = rot.children;
-      const i = Array.from(s).findIndex((x) => x.classList.contains('on'));
-      const avant = s[i];
-      avant.classList.replace('on', 'out');
-      setTimeout(() => avant.classList.remove('out'), 400);
-      s[(i + 1) % s.length].classList.add('on');
+  })();
+
+  // ── Le film du haut se lance seul, muet, en boucle : vertical sur mobile, 16:9 au bureau. L'image fixe
+  //    s'affiche d'abord (premier affichage rapide) ; la vidéo n'est demandée qu'après le chargement de la page,
+  //    s'arrête hors écran, onglet caché ou en pause. Mouvement réduit ou économiseur de données : l'image seule. ──
+  (() => {
+    const cadre = document.getElementById('film-cadre');
+    const v = document.getElementById('film-boucle');
+    const saver = navigator.connection && navigator.connection.saveData;
+    if (!cadre || !v || REDUCED || saver) return;
+    let pret = false, enVue = true;
+    const sync = () => {
+      if (!pret) return;
+      const dlg = document.getElementById('film-dialog');
+      if (enVue && !document.hidden && !window.rvPause && !(dlg && dlg.open)) v.play().catch(() => {});
+      else if (!v.paused) v.pause();
     };
+    window.rvSyncFilm = sync;
+    v.addEventListener('playing', () => cadre.classList.add('joue'));
+    const lance = () => {
+      if (pret) return;
+      pret = true;
+      const base = matchMedia('(max-width: 699px)').matches ? '/film/boucle-vertical' : '/film/boucle';
+      v.innerHTML = '<source src="' + base + '.webm" type="video/webm" /><source src="' + base + '.mp4" type="video/mp4" />';
+      v.load();
+      sync();
+    };
+    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { enVue = en[0].isIntersecting; sync(); }, { threshold: 0.2 }).observe(cadre);
+    document.addEventListener('visibilitychange', sync);
+    if (document.readyState === 'complete') lance(); else window.addEventListener('load', lance, { once: true });
+  })();
+
+  // ── Le travail préparé : une nouvelle carte arrive en haut toutes les 4 s, les autres descendent.
+  //    1 carte visible sur mobile, 3 au bureau (CSS, d'après data-slot). Mouvement réduit : les premières cartes, fixes. ──
+  (() => {
+    const flux = document.getElementById('flux');
+    if (!flux) return;
+    const cartes = Array.from(flux.querySelectorAll('.carte'));
+    let ordre = cartes.map((_, i) => i), prochain = 3 % cartes.length, enVue = true;
+    const place = () => ordre.forEach((ci, slot) => {
+      cartes[ci].dataset.slot = String(slot);
+      cartes[ci].style.setProperty('--slot', String(slot));
+    });
+    place();
+    if (REDUCED || cartes.length < 2) return;
+    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { enVue = en[0].isIntersecting; }).observe(flux);
     setInterval(() => {
       if (window.rvPause || !enVue || document.hidden) return;
-      t += 1;
-      const r = rots[t % rots.length];
-      if (r && r.children.length > 1) suivant(r);
-    }, 3000 / rots.length);
+      const c = cartes[prochain];
+      c.style.transition = 'none';
+      c.style.setProperty('--slot', '-1');
+      c.dataset.slot = 'entree';
+      void c.offsetHeight;
+      c.style.transition = '';
+      ordre = [prochain].concat(ordre.filter((x) => x !== prochain));
+      prochain = (prochain + 1) % cartes.length;
+      place();
+    }, 4000);
   })();
 
   revealOnce('.auto-tuile');
@@ -1262,17 +1280,29 @@
     el.querySelectorAll('.msg').forEach((m, i) => setTimeout(() => m.classList.add('on'), i * 600));
   });
 
-  // ── Film : <dialog> natif (Échap ferme), pause à la fermeture, focus rendu au bouton ──
+  // ── Le film complet, avec le son : vertical sur mobile, 16:9 au bureau. Rien n'est téléchargé avant le clic.
+  //    <dialog> natif (Échap ferme), pause à la fermeture, focus rendu au bouton ; la boucle du haut s'arrête pendant ce temps. ──
   (() => {
     const dlg = document.getElementById('film-dialog');
     const btn = document.getElementById('voir-film');
     const vid = document.getElementById('film-lecteur');
     if (!dlg || !btn || !vid || typeof dlg.showModal !== 'function') return;
-    // L'image d'attente n'est demandée qu'à l'ouverture (rien à télécharger tant que le film reste fermé)
-    btn.addEventListener('click', () => { if (!vid.poster) vid.poster = vid.dataset.poster; dlg.showModal(); vid.play().catch(() => {}); });
+    btn.addEventListener('click', () => {
+      if (!vid.dataset.pret) {
+        const vertical = matchMedia('(max-width: 699px)').matches;
+        const base = vertical ? '/film/revaly-45s-vertical' : '/film/revaly-45s';
+        vid.poster = vertical ? '/film/poster-vertical@720.webp' : '/film/poster@1280.webp';
+        vid.innerHTML = '<source src="' + base + '.webm" type="video/webm" /><source src="' + base + '.mp4" type="video/mp4" />';
+        dlg.classList.toggle('vertical', vertical);
+        vid.dataset.pret = '1';
+      }
+      dlg.showModal();
+      if (window.rvSyncFilm) window.rvSyncFilm();
+      vid.play().catch(() => {});
+    });
     document.getElementById('film-close').addEventListener('click', () => dlg.close());
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
-    dlg.addEventListener('close', () => { vid.pause(); btn.focus(); });
+    dlg.addEventListener('close', () => { vid.pause(); btn.focus(); if (window.rvSyncFilm) window.rvSyncFilm(); });
   })();
 
   // ── Tarifs : bascule Mensuel/Annuel. Les deux variantes sont empilées (taille réservée, aucun saut),

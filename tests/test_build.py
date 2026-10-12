@@ -63,7 +63,7 @@ must('id="modelo"' not in idx and "Formés à ton métier" not in idx and "cmd-r
 must('id="preuve"' not in idx and "Recruter cette équipe" not in idx and "ça coûte combien" not in idx
      and "vs-row" not in idx and "vzone" not in idx, "section #preuve « Recruter cette équipe » supprimée")
 must("21:37" not in idx and "Une journée avec ton équipe" not in idx, "bloc « Une journée avec ton équipe » absent")
-must("hero.mp4" not in idx and 'id="film-boucle"' not in idx and "hero-poster" not in idx, "ancienne vidéo du haut de page retirée")
+must("hero.mp4" not in idx and "hero-poster" not in idx, "ancienne vidéo du haut de page retirée (remplacée par la boucle du film)")
 text = re.sub(r"<[^>]+>", "", idx)  # copy contiguë hors balises (spans typographiques)
 
 # ── Section #tarif : offre v3 (07/10/2026) 129/249 HT, conseiller ajouté 79, annuel −10 % ──
@@ -250,17 +250,19 @@ print("OK v3 données et texte")
 # ── Task 3 : haut de page v3 ──
 _txt = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 must("Ton équipe travaille. Toi, tu es avec tes clients." not in _txt and "Ton équipe travaille" not in idx, "ancien titre absent")
-_ras = idx.split('class="hp-rassure"', 1)[1].split("</ul>", 1)[0]
-must(all(x in _ras for x in ("Branché sur Modelo", "Sans engagement", "Rien ne part sans toi")), "réassurance : Branché sur Modelo, Sans engagement, Rien ne part sans toi")
+_micro = html.unescape(re.sub(r"<[^>]+>", "", idx.split('class="hp-micro"', 1)[1].split("</p>", 1)[0]))
+must(all(x in _micro for x in ("0 € aujourd'hui", "Annulable en 2 clics", "Rien ne part sans toi")), "ligne de risque : 0 €, annulable, rien ne part sans toi")
 must('id="voir-film"' in idx and 'id="film-dialog"' in idx, "lecteur du film")
-must('data-track="film"' in idx and "Voir le film (45 s)" in idx, "« Voir le film (45 s) » mesuré")
+must('data-track="film"' in idx and "Regarder avec le son (45 s)" in idx, "« Regarder avec le son (45 s) » mesuré")
 must("assistants IA" not in idx and "Autonome, 24 h/24" not in idx, "ancienne promesse retirée")
-for f in ["poster.jpg", "revaly-45s.mp4"]:
+for f in ["poster.jpg", "poster-vertical.jpg", "poster@1280.webp", "poster-vertical@720.webp", "boucle.webm", "boucle.mp4",
+          "boucle-vertical.webm", "boucle-vertical.mp4", "revaly-45s.webm", "revaly-45s.mp4", "revaly-45s-vertical.webm", "revaly-45s-vertical.mp4"]:
     must((dist / "film" / f).is_file(), f"dist/film/{f} copié")
 print("OK v3 haut de page")
 
-# ── Bandes de logos (Task 4) ──
-must('id="bande-outils"' in idx and "Fonctionne avec tes outils" in idx, "bande outils")
+# ── Logos (Task 4, revus le 12/10 au soir : une seule bande de preuve en haut, les outils en petit dans l'étape 1) ──
+must('id="bande-outils"' in idx and "Fonctionne avec tes outils" in idx, "outils branchés")
+must(idx.find('id="bande-outils"') > idx.find('id="comment"'), "les outils dans « Comment ça marche », plus en haut de page")
 must("Tes contacts SeLoger, Leboncoin et Bien'ici arrivent directement chez Emma" in idx.replace("&#x27;", "'"), "ligne portails")
 reseaux = json.loads((ROOT / "data" / "reseaux.json").read_text())
 if reseaux:
@@ -272,14 +274,15 @@ else:
 outils = json.loads((ROOT / "data" / "outils.json").read_text())
 for band, items in (("bande-outils", outils), ("bande-reseaux", reseaux)):
     if not items: continue
-    sec = idx.split(f'id="{band}"', 1)[1].split("</section>", 1)[0]
-    must(sec.count("<ul") == 2 and 'aria-hidden="true"' in sec, f"{band} : deux listes dont une aria-hidden")
-    must(sec.count('alt=""') >= len(items), f"{band} : images de la copie avec alt vide")
+    sec = idx.split(f'id="{band}"', 1)[1].split("</ul>", 1)[0]
+    must(sec.count("<li") == len(items), f"{band} : une seule liste, un logo par entrée (plus de copie défilante)")
     for i in items:
         must(i["logo"] and (ROOT / i["logo"]).exists(), f"{band} : logo présent pour {i['nom']}")
         must((dist / i["logo"]).exists(), f"{band} : logo copié dans dist pour {i['nom']}")
         must(i["nom"] in sec, f"{band} : nom {i['nom']}")
-must("prefers-reduced-motion" in idx and "bande-defile" in idx, "CSS défilement + réduit")
+must("bande-defile" not in idx and "@keyframes defile" not in idx, "plus de bande défilante")
+must(idx.find('id="bande-reseaux"') < idx.find('id="film-cadre"') and idx.find('id="bande-reseaux"') > idx.find('class="hp-cta"'), "preuve sociale juste sous le titre et le bouton")
+must(not re.search(r'id="bande-outils".{0,40}id="bande-reseaux"|id="bande-reseaux".{0,400}id="bande-outils"', idx, re.S), "jamais deux bandes de logos qui se suivent")
 for f in (ROOT / "assets" / "logos").rglob("*.svg"):
     t = f.read_text().lower()
     must(not re.search(r"<script|<image|foreignobject|\son[a-z]+\s*=|href\s*=", t), f"{f.name} : SVG sans script/href/image")
@@ -409,38 +412,44 @@ must("Visites confirmées, vendeurs informés, mandats suivis, posts prêts. Pen
 must('data-track="essai"' in _hero and 'data-track="demo"' in _hero and ">Essayer 7 jours<" in _hero and ">Réserver une démo<" in _hero, "deux boutons du haut mesurés")
 must(re.search(r'<a class="hp-demo"[^>]*data-track="demo">Réserver une démo</a>', _hero), "la démo en lien secondaire, l'essai seul bouton principal")
 must("0 € aujourd'hui · Annulable en 2 clics" in _hero_txt, "ligne de risque sous le bouton principal")
-must("Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides." in _hero_txt, "mode supervisé visible dans le tableau")
-must(idx.count('rel="preload" as="image"') == 6, "les six visages du haut préchargés")
+must("Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides." in _hero_txt, "mode supervisé visible sous les cartes")
 must("En ce moment chez toi :" in _hero_txt, "ligne « En ce moment chez toi : »")
-must(_hero.find('id="board"') < _hero.find('id="voir-film"'), "« Voir le film » sous la rangée")
+# Le film qui se lance seul (ronde Julien 1) : image fixe d'abord, vidéo muette en boucle demandée après le chargement
+_cadre = _hero.split('id="film-cadre"', 1)[1].split("</figure>", 1)[0]
+must('srcset="/film/poster-vertical@720.webp"' in _cadre and 'src="/film/poster@1280.webp"' in _cadre and 'fetchpriority="high"' in _cadre, "image fixe du film : verticale sur mobile, 16:9 au bureau")
+must(re.search(r'<video id="film-boucle" muted loop playsinline preload="none"', _cadre), "boucle muette, en boucle, dans la page, rien de chargé avant le script")
+must("'/film/boucle-vertical' : '/film/boucle'" in idx and "window.addEventListener('load', lance" in idx, "boucle verticale sur mobile, 16:9 au bureau, lancée après le chargement")
+must('id="voir-film"' in _cadre and 'data-track="film"' in _cadre, "« Regarder avec le son » sur le film")
+must("'/film/revaly-45s-vertical' : '/film/revaly-45s'" in idx, "film complet vertical sur mobile")
+must(idx.count('rel="preload" as="image"') == 2 and 'media="(max-width: 699px)"' in idx, "image fixe du film préchargée (une par format)")
+must(not re.search(r'<video[^>]*\sautoplay', idx), "aucune lecture automatique sans script (mouvement réduit respecté)")
+# Les cartes de travail : au format des cartes « À valider » du produit, 3 au plus, une nouvelle toutes les 4 s
+_cartes = json.loads((ROOT / "data" / "cartes-accueil.json").read_text())
+_flux = _hero.split('id="flux"', 1)[1].split("</div>\n", 1)[0]
+must(_flux.count('<article class="carte"') == len(_cartes) >= 3, "cartes de travail rendues depuis data/cartes-accueil.json")
+must(all(c.get("source") for c in _cartes), "chaque carte cite son origine dans le produit")
+must(_flux.count(" a préparé</p>") == len(_cartes) and _flux.count('<span class="carte-ok" aria-hidden="true">Valider</span>') == len(_cartes), "« X a préparé » + bouton « Valider » visuel")
+for c in _cartes:
+    must(html.escape(c["objet"], quote=False).replace(" :", "\u00a0:").replace("« ", "«\u00a0").replace(" »", "\u00a0»") in _flux, f"objet de la carte : {c['objet']}")
+must(".carte[data-slot=\"0\"]" in idx and '.carte[data-slot="1"], .carte[data-slot="2"]' in idx and "}, 4000);" in idx, "1 carte sur mobile, 3 au bureau, une nouvelle toutes les 4 s")
+must('id="anim-pause"' in _cadre and 'aria-pressed="false"' in _cadre, "bouton pause des animations (AA 2.2.2)")
 _ea = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
-must([e["slug"] for e in _ea] == ["max", "emma", "lucas", "christine", "zoe", "raphael"], "haut de page : six agents dans l'ordre du brief, sans Hugo")
-_board = _hero.split('id="board"', 1)[1]
-must(_board.count('class="bd"') == 6 and _board.count("<video data-loop") == 6, "six personnages animés dans le tableau")
+must([e["slug"] for e in _ea] == ["max", "emma", "lucas", "christine", "zoe", "raphael"], "équipe : six agents dans l'ordre du brief, sans Hugo")
+_rangee = _hero.split('class="rangee"', 1)[1]
+must(_rangee.count("<video data-loop") == 6, "les six visages restent visibles, en plus petit")
 for e in _ea:
-    must(f'poster="/assets/equipe/boucles/{e["slug"]}@256.webp"' in _board, f"personnage equipe-v6 de {e['slug']} en haut de page")
-    for etat in e["etats"]:
-        must(etat in _hero_txt, f"état de {e['slug']} : {etat}")
-    must(2 <= len(e["etats"]) <= 3 and len(e["taches"]) == 3, f"{e['slug']} : 2-3 états, 3 tâches")
-_brief = {"max": ["4 choses prêtes à valider", "Point du matin envoyé"], "emma": ["Rappel de visite prêt"],
-          "lucas": ["Avis de valeur en cours", "Bilan de commercialisation prêt"],
-          "christine": ["Pièces du compromis : 5/7", "Échéance du prêt suivie", "Bon de visite prêt pour 14 h"],
-          "zoe": ["Post « Vendu » prêt à publier", "Annonce rédigée"], "raphael": ["12 photos retouchées", "Visuel de l'annonce prêt"]}
-for slug, etats in _brief.items():
-    must(all(x in next(e for e in _ea if e["slug"] == slug)["etats"] for x in etats), f"états du brief présents pour {slug}")
-must(_board.count(' class="on"') == 6, "un état affiché par agent sans JavaScript")
+    must(f'poster="/assets/equipe/boucles/{e["slug"]}@256.webp"' in _rangee and len(e["taches"]) == 3, f"personnage equipe-v6 de {e['slug']} dans la rangée")
 must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
-must("setInterval(" in idx and "3000 / rots.length" in idx and "if (REDUCED) return;" in idx, "états qui changent toutes les 3 s, figés en mouvement réduit")
-must('id="board-pause"' in idx and 'aria-pressed="false"' in idx, "bouton pause de l'animation (AA 2.2.2)")
 # Ordre des sections du brief
 # Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
-_ordre = ['id="hero"', 'id="bande-outils"', 'id="bande-reseaux"', 'id="probleme"', 'id="comment"', 'id="controle"', 'id="equipe"',
+_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="probleme"', 'id="comment"', 'id="bande-outils"', 'id="controle"', 'id="equipe"',
           'id="plus-rien-oublie"', 'id="clients-voient"', 'id="parler"', 'id="calculateur"',
           'id="tarif"', 'id="faq"', 'id="demo"']
 _pos = [idx.find(x) for x in _ordre]
 must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
 _t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
-for titre in ["Tu es agent immobilier. Pas secrétaire.", "Ton équipe se branche en dix minutes.",
+must("Pas secrétaire" not in _t, "plus de « Pas secrétaire » (demande de Julien)")
+for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "Ton équipe se branche en dix minutes.",
               "Six spécialistes. Un seul abonnement.", "Ce que voient tes clients : un service impeccable.",
               "Combien d'heures te rend ton équipe ?", "Rien ne part sans toi.",
               "Une équipe entière pour moins qu'une demi-journée d'assistante par mois.", "Ton équipe peut commencer ce soir."]:
@@ -483,7 +492,7 @@ for f in ["template.html", "assets/hero.mp4", "assets/hero-poster.jpg", "assets/
 for f in ["hero.mp4", "hero-poster.jpg", "fonts/fraunces-var.woff2"]:
     must(not (dist / f).exists(), f"plus publié : {f}")
 must([f.name for f in (dist / "fonts").iterdir()] == ["geist-var.woff2"], "une seule police publiée : Geist")
-must(not re.search(r'(?<!data-)poster="film/poster.jpg"', idx) and 'data-poster="film/poster.jpg"' in idx, "image du film demandée seulement à l'ouverture")
+must('<video id="film-lecteur" controls playsinline preload="none"></video>' in idx, "film complet : rien demandé avant le clic (ni image ni vidéo)")
 must(re.findall(r"<h([1-6])", idx.split("<footer", 1)[1])[:1] == ["2"], "pied de page : titres de niveau 2 (pas de saut h2 → h4)")
 print("OK nettoyage")
 
