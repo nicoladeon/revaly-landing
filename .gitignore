@@ -4,3 +4,5 @@ dist/
 .wrangler/
 .superpowers/
 video/node_modules/
+film/rushes/
+film/frames/
