@@ -62,16 +62,19 @@
   :root[data-theme="dark"] .preuve-logos img[src$="laforet.svg"] { filter: grayscale(1) invert(1); }
 
   /* ── La vitrine : le film qui se lance seul (16:9 au bureau, vertical sur mobile) et le travail préparé ── */
-  .vitrine { position: relative; margin-top: clamp(28px, 3vw, 40px); display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); justify-items: center; }
-  .vitrine::before {
+  .hp-grille { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .hp-texte, .hp-grille > .preuve, .rangee { justify-self: stretch; }
+  .hp-film { position: relative; margin-top: clamp(28px, 3vw, 40px); width: min(100%, 360px); }
+  .hp-film::before {
     content: ""; position: absolute; z-index: -1; left: 6%; right: 6%; top: 8%; bottom: 0; border-radius: 50%;
     background: radial-gradient(closest-side, color-mix(in srgb, var(--iris) 24%, transparent), transparent); filter: blur(56px); pointer-events: none;
   }
   .film-cadre {
-    position: relative; margin: 0; width: min(100%, 360px); aspect-ratio: 9 / 16; border-radius: 26px; overflow: hidden;
+    position: relative; margin: 0; width: 100%; aspect-ratio: 9 / 16; border-radius: 26px; overflow: hidden;
     background: #E9EBF2; border: 0.5px solid var(--line-strong); box-shadow: 0 0 0 6px color-mix(in srgb, var(--raised) 70%, transparent), var(--shadow-xl);
   }
-  .film-cadre picture, .film-cadre img, .film-cadre video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* contain : la boucle s'affiche entière, jamais recadrée (16:9 dans un cadre 16:9, verticale dans un cadre vertical) */
+  .film-cadre picture, .film-cadre img, .film-cadre video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
   .film-cadre video { opacity: 0; transition: opacity .5s ease; }
   .film-cadre.joue video { opacity: 1; }
   .film-son {
@@ -93,7 +96,7 @@
   @media (prefers-reduced-motion: reduce) { .anim-pause { display: none; } }
 
   /* Le travail préparé : de vraies cartes « À valider », comme dans l'appli ; 1 à la fois sur mobile, 3 au bureau */
-  .flux-zone { width: min(100%, 420px); }
+  .flux-zone { margin-top: 20px; width: min(100%, 420px); }
   .flux-titre { margin: 0 0 12px; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--muted); }
   .flux-live { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--iris); }
   .flux-live::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--iris); opacity: 0; animation: live 2.4s ease-out infinite; }
@@ -107,7 +110,7 @@
     transition: transform .55s cubic-bezier(.32,.72,0,1), opacity .35s ease, visibility 0s .55s;
   }
   .carte[data-slot="0"] { opacity: 1; visibility: visible; transition-delay: 0s; }
-  @media (min-width: 1000px) { .carte[data-slot="1"], .carte[data-slot="2"] { opacity: 1; visibility: visible; transition-delay: 0s; } }
+  @media (min-width: 1024px) { .carte[data-slot="1"], .carte[data-slot="2"] { opacity: 1; visibility: visible; transition-delay: 0s; } }
   .carte-tete { display: flex; align-items: center; gap: 10px; }
   .carte-tete img { width: 36px; height: 36px; border-radius: 50%; flex: none; background: #F1F2F7; }
   .carte-tete p { margin: 0; flex: 1; min-width: 0; font-size: 14px; color: var(--muted); }
@@ -130,15 +133,30 @@
   .rangee li > span:last-child { font-size: 12.5px; color: var(--muted); }
 
   @media (min-width: 700px) {
-    .film-cadre { width: 100%; aspect-ratio: 16 / 9; border-radius: 24px; }
+    .hp-film { width: 100%; }
+    .film-cadre { aspect-ratio: 16 / 9; border-radius: 24px; }
     .rangee ul { grid-template-columns: repeat(6, minmax(0, 1fr)); max-width: 720px; }
   }
-  @media (min-width: 1000px) {
-    .vitrine { grid-template-columns: minmax(0, 1fr) 380px; align-items: start; gap: 28px; }
-    .film-cadre { margin-top: 30px; }
-    .flux { --n: 3; --h: 146px; }
+  /* Bureau : le texte à gauche, le film 16:9 entier à droite, au-dessus de la ligne de flottaison ;
+     dessous, la bande des réseaux, puis les 3 cartes de travail en rangée (la nouvelle arrive à gauche) */
+  @media (min-width: 1024px) {
+    .hp-hero { padding-top: clamp(28px, 3vw, 48px); }
+    .hp-grille {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); column-gap: clamp(40px, 4vw, 56px); align-items: center;
+      grid-template-areas: "texte film" "preuve preuve" "flux flux" "rangee rangee";
+    }
+    .hp-texte { grid-area: texte; text-align: left; }
+    .hp-hero h1 { margin-left: 0; font-size: clamp(40px, 3.75vw, 54px); line-height: 1.03; max-width: none; }
+    .hp-lede { margin-left: 0; font-size: 18px; max-width: 34em; }
+    .hp-cta { justify-content: flex-start; }
+    .hp-film { grid-area: film; margin-top: 0; }
+    .hp-grille > .preuve { grid-area: preuve; margin-top: clamp(32px, 3.4vw, 44px); }
+    .flux-zone { grid-area: flux; width: 100%; margin-top: clamp(28px, 3vw, 40px); }
+    .flux { --h: 150px; height: calc(var(--h) + 32px); margin: -16px -16px 0; padding: 16px; overflow: hidden; }
+    .carte { top: 16px; left: 16px; right: auto; width: calc((100% - 32px - 2 * var(--g)) / 3); transform: translateX(calc(var(--slot) * (100% + var(--g)))); }
     .carte-objet { -webkit-line-clamp: 1; }
-    .flux-zone { width: 100%; }
+    .flux-pied { margin-top: 0; }
+    .rangee { grid-area: rangee; }
   }
 
   .film-dialog {
@@ -596,7 +614,8 @@
 <main id="top">
   <!-- ═══════════════ 1. HAUT DE PAGE : la promesse et l'équipe au travail ═══════════════ -->
   <section class="hp-hero" id="hero" aria-labelledby="hero-titre">
-    <div class="wrap">
+    <div class="wrap hp-wide hp-grille">
+      <div class="hp-texte">
       <p class="hp-pill"><i aria-hidden="true"></i>6 agents IA spécialistes de l'immobilier</p>
       <h1 id="hero-titre">Une équipe d'agents IA qui travaille <span class="iris">vraiment</span> pour toi.</h1>
       <p class="hp-lede">{{HERO_SOUS_TITRE}}</p>
@@ -606,11 +625,9 @@
       </div>
       <p class="hp-micro"><span class="nw">0 € aujourd'hui ·</span> <span class="nw">Annulable en 2 clics ·</span> <span class="nw">Rien ne part sans toi</span></p>
       {{FONDATEURS_HERO}}
+      </div>
       {{PREUVE}}
-    </div>
-
-    <div class="wrap hp-wide">
-      <div class="vitrine">
+      <div class="hp-film">
         <figure class="film-cadre" id="film-cadre">
           <picture>
             <source media="(max-width: 699px)" srcset="/film/poster-vertical@720.webp" type="image/webp" width="720" height="1280" />
@@ -626,12 +643,12 @@
             Regarder avec le son (45 s)
           </button>
         </figure>
+      </div>
         <div class="flux-zone">
           <p class="flux-titre" id="flux-titre"><i class="flux-live" aria-hidden="true"></i>En ce moment chez toi :</p>
           <div class="flux" id="flux" role="group" aria-labelledby="flux-titre">{{CARTES_HERO}}</div>
           <p class="flux-pied"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m16 9-5.5 5.5L8 12" /></svg>Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides.</p>
         </div>
-      </div>
       <div class="rangee">
         <p class="rangee-titre" id="rangee-titre">Ton équipe</p>
         <ul aria-labelledby="rangee-titre">{{EQUIPE_RANGEE}}</ul>
@@ -1275,14 +1292,17 @@
     };
     window.rvSyncFilm = sync;
     v.addEventListener('playing', () => cadre.classList.add('joue'));
-    const lance = () => {
-      if (pret) return;
-      pret = true;
-      const base = matchMedia('(max-width: 699px)').matches ? '/film/boucle-vertical' : '/film/boucle';
+    const mobile = matchMedia('(max-width: 699px)');
+    const charge = () => {
+      const base = mobile.matches ? '/film/boucle-vertical' : '/film/boucle';
+      cadre.classList.remove('joue');
       v.innerHTML = '<source src="' + base + '.webm" type="video/webm" /><source src="' + base + '.mp4" type="video/mp4" />';
       v.load();
       sync();
     };
+    const lance = () => { if (pret) return; pret = true; charge(); };
+    // La fenêtre change de format après le chargement : la bonne boucle remplace l'autre (jamais la verticale dans le cadre 16:9)
+    mobile.addEventListener('change', () => { if (pret) charge(); });
     if ('IntersectionObserver' in window) new IntersectionObserver((en) => { enVue = en[0].isIntersecting; sync(); }, { threshold: 0.2 }).observe(cadre);
     document.addEventListener('visibilitychange', sync);
     if (document.readyState === 'complete') lance(); else window.addEventListener('load', lance, { once: true });

@@ -422,6 +422,7 @@ _cadre = _hero.split('id="film-cadre"', 1)[1].split("</figure>", 1)[0]
 must('srcset="/film/poster-vertical@720.webp"' in _cadre and 'src="/film/poster@1280.webp"' in _cadre and 'fetchpriority="high"' in _cadre, "image fixe du film : verticale sur mobile, 16:9 au bureau")
 must(re.search(r'<video id="film-boucle" muted loop playsinline preload="none"', _cadre), "boucle muette, en boucle, dans la page, rien de chargé avant le script")
 must("'/film/boucle-vertical' : '/film/boucle'" in idx and "window.addEventListener('load', lance" in idx, "boucle verticale sur mobile, 16:9 au bureau, lancée après le chargement")
+must("mobile.addEventListener('change'" in idx and "object-fit: contain" in idx, "la boucle suit le format de l'écran et n'est jamais recadrée")
 must('id="voir-film"' in _cadre and 'data-track="film"' in _cadre, "« Regarder avec le son » sur le film")
 must("'/film/revaly-45s-vertical' : '/film/revaly-45s'" in idx, "film complet vertical sur mobile")
 must(idx.count('rel="preload" as="image"') == 2 and 'media="(max-width: 699px)"' in idx, "image fixe du film préchargée (une par format)")
@@ -436,6 +437,10 @@ for c in _cartes:
     must(html.escape(c["objet"], quote=False).replace(" :", "\u00a0:").replace("« ", "«\u00a0").replace(" »", "\u00a0»") in _flux, f"objet de la carte : {c['objet']}")
 must(".carte[data-slot=\"0\"]" in idx and '.carte[data-slot="1"], .carte[data-slot="2"]' in idx and "}, 4000);" in idx, "1 carte sur mobile, 3 au bureau, une nouvelle toutes les 4 s")
 must('id="anim-pause"' in _cadre and 'aria-pressed="false"' in _cadre, "bouton pause des animations (AA 2.2.2)")
+must('grid-template-areas: "texte film" "preuve preuve" "flux flux" "rangee rangee";' in idx and "@media (min-width: 1024px)" in idx,
+     "bureau : texte à gauche, film à droite, puis la preuve et la rangée de 3 cartes")
+must(_hero.find('class="hp-texte"') < _hero.find('id="bande-reseaux"') < _hero.find('id="film-cadre"') < _hero.find('id="flux"'),
+     "mobile : texte, preuve, film, cartes (ordre du balisage)")
 _ea = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
 must([e["slug"] for e in _ea] == ["max", "emma", "lucas", "christine", "zoe", "raphael"], "équipe : six agents dans l'ordre du brief, sans Hugo")
 _rangee = _hero.split('class="rangee"', 1)[1]
