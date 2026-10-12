@@ -214,3 +214,19 @@ must("lien de connexion par email" in bt, "/bienvenue/ : message « va voir tes 
 must("https://revaly.io/bienvenue/" not in _sm, "/bienvenue/ absente du sitemap (noindex)")
 
 print("OK")
+
+# ── v3 : données des nouveaux blocs et règles de texte ──
+INTERDITS = ["agentique", "IA autonome", "Unipile", "Composio", "Anthropic", "Claude", "OpenAI", "GPT", "Pipedream"]
+for nom in ["outils", "reseaux", "clients-voient", "calculateur"]:
+    must((ROOT / "data" / f"{nom}.json").exists(), f"data/{nom}.json existe")
+outils = json.loads((ROOT / "data" / "outils.json").read_text())
+must([o["nom"] for o in outils] == ["Modelo", "Google Agenda", "Gmail", "Outlook", "WhatsApp", "Telegram", "Canva"], "outils : liste exacte de la spec")
+cv = json.loads((ROOT / "data" / "clients-voient.json").read_text())
+must([c["qui"] for c in cv] == ["acquereur", "vendeur", "notaire"], "clients-voient : 3 points de vue")
+calc = json.loads((ROOT / "data" / "calculateur.json").read_text())
+must(calc["plafond_heures_semaine"] == 15, "calculateur : plafond 15 h")
+must(all(t["minutes"] > 0 for t in calc["taches"]), "calculateur : minutes positives")
+visible = re.sub(r"<script.*?</script>|<style.*?</style>|data:[\w/+.-]+;base64,[A-Za-z0-9+/=]+", "", idx, flags=re.S)
+for mot in INTERDITS:
+    must(mot.lower() not in visible.lower(), f"mot interdit visible : {mot}")
+print("OK v3 données et texte")

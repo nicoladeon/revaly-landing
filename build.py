@@ -295,7 +295,7 @@ write_page(
     desc="Agent immobilier : recrute ton équipe d'agents IA — annonces, posts, relances, dossiers, mandats — branchée sur Modelo. Rien ne part sans toi. Essai 7 jours, dès 129 € HT/mois.",
     path="/",
     og_title="Agent immobilier, recrute ton équipe.",
-    og_desc="Six assistants IA autonomes, formés au métier de conseiller immobilier : annonces, relances, dossiers, mandats, photos. Dans tes outils, 24 h/24. Rien ne part sans toi. Dès 129 € HT/mois.",
+    og_desc="Six assistants IA, formés au métier de conseiller immobilier : annonces, relances, dossiers, mandats, photos. Dans tes outils, 24 h/24. Rien ne part sans toi. Dès 129 € HT/mois.",
 )
 
 # ── Page /integrations (task 11) : catalogue searchable depuis data/integrations.json.
