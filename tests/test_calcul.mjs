@@ -1,0 +1,11 @@
+import { heuresRendues } from "../assets/calcul.js";
+import cfg from "../data/calculateur.json" with { type: "json" };
+const ok = (c, m) => { if (!c) { console.error("FAIL:", m); process.exit(1); } };
+const r = heuresRendues(8, 40, cfg);
+ok(r.heures > 0 && r.heures <= 15, "heures dans ]0,15]");
+ok(heuresRendues(0, 0, cfg).heures === 0, "zéro → 0");
+ok(heuresRendues(-5, NaN, cfg).heures === 0, "négatif/NaN → 0");
+ok(heuresRendues(10000, 10000, cfg).heures === 15, "plafond 15");
+ok(r.detail.length === cfg.taches.length, "détail complet");
+ok(heuresRendues("abc", undefined, cfg).heures === 0, "texte/undefined → 0");
+console.log("OK calcul");

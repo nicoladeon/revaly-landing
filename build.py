@@ -3,7 +3,7 @@
 pour chaque page (home pour l'instant) via write_page(), copie les assets statiques,
 écrit robots.txt + sitemap.xml réels.
 Usage : python3 build.py  (puis : wrangler pages deploy dist --project-name revaly)"""
-import base64, html, json, pathlib, re, shutil
+import base64, html, json, math, pathlib, re, shutil
 ROOT = pathlib.Path(__file__).parent
 
 def uri(path, mime):
@@ -33,6 +33,7 @@ PAYMENT_LINKS = {
 
 repl = {"__CALENDLY__": CALENDLY_URL}
 repl["__META_PIXEL_ID__"] = META_PIXEL_ID
+repl["__CALCUL_JSON__"] = json.dumps(json.loads((ROOT / "data" / "calculateur.json").read_text()), ensure_ascii=False).replace("</", "<\\/")
 repl["__PAYMENT_LINKS_JSON__"] = json.dumps(PAYMENT_LINKS, ensure_ascii=False)
 for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:
     repl[f"__{k.upper()}128__"] = uri(f"assets/equipe/portraits/{k}@128.webp", "image/webp")
@@ -331,7 +332,36 @@ def clients_voient(items):
             f'<div class="cv-grille">{cartes}</div><p class="cv-chute">Un service impeccable. '
             f'Derrière, une seule personne… et son équipe.</p></section>')
 
+# ── Calculateur de temps rendu : même formule que assets/calcul.js (portée une fois ici pour
+# la phrase sans JavaScript ; tests/test_build.py compare les deux sur plusieurs entrées). ──
+CALCUL_CFG = json.loads((ROOT / "data" / "calculateur.json").read_text())
+CALCUL_DEFAUT = (8, 40)  # mandats par mois, visites par mois : valeurs pré-remplies
+
+def _arrondi(x):  # Math.round de JS : moitié vers le haut
+    return math.floor(x + 0.5)
+
+def heures_rendues(mandats, visites, cfg):
+    def borne(x, mx):
+        return min(x, mx) if x > 0 else 0
+    m, v = borne(mandats, 200), borne(visites, 400) / 4.33
+    detail = []
+    for t in cfg["taches"]:
+        n = v if t["par"] == "visite" else m / 4.33 if t["par"] == "mandat" else 1
+        detail.append({"libelle": t["libelle"], "minutes": _arrondi(n * t["minutes"])})
+    h = sum(d["minutes"] for d in detail) / 60
+    return {"heures": min(_arrondi(h * 2) / 2, cfg["plafond_heures_semaine"]), "detail": detail}
+
+def _h_fr(h):
+    return (str(int(h)) if h == int(h) else str(h)).replace(".", ",")
+
+def calculateur_statique():
+    r = heures_rendues(*CALCUL_DEFAUT, CALCUL_CFG)
+    return (f'Pour {CALCUL_DEFAUT[0]} mandats et {CALCUL_DEFAUT[1]} visites par mois, '
+            f'c\'est environ {_h_fr(r["heures"])} h par semaine rendues.')
+
 body_home = render("home-body.html", {
+    "CALCUL_STATIQUE": calculateur_statique(),
+    "CALCUL_DEFAUT_M": str(CALCUL_DEFAUT[0]), "CALCUL_DEFAUT_V": str(CALCUL_DEFAUT[1]),
     "TEAM_BLOCKS": team_blocks(),
     "BANDE_OUTILS": bande_outils(json.loads((ROOT / "data" / "outils.json").read_text())),
     "BANDE_RESEAUX": bande_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
@@ -469,6 +499,8 @@ for _a in _agents:
     )
 
 # ── Assets statiques servis à côté des pages (URL absolues : OG image, vidéo hero). ──
+(ROOT / "dist" / "assets").mkdir(exist_ok=True)
+shutil.copy(ROOT / "assets" / "calcul.js", ROOT / "dist" / "assets" / "calcul.js")
 for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
     src = ROOT / "assets" / static
     if src.exists():

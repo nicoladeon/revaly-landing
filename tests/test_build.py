@@ -334,3 +334,29 @@ print("OK v3 équipe 3D animée")
 for a in agents:
     must(bool(a.get("pour_toi")) and len(a["pour_toi"]) <= 90 and html.escape(a["pour_toi"], quote=False) in eq, f"phrase pour_toi {a['slug']}")
 print("OK v3 équipe : une phrase chacun")
+
+# ── Calculateur de temps rendu (task 9) ──
+subprocess.run(["node", str(ROOT / "tests" / "test_calcul.mjs")], check=True)
+must('id="calculateur"' in idx, "calculateur")
+must('id="calcul-cfg"' in idx and "__CALCUL_JSON__" not in idx and 'type="module" src="/assets/calcul.js"' in idx, "config injectée + module chargé")
+must((dist / "assets" / "calcul.js").exists(), "calcul.js copié dans dist")
+calc = idx.split('id="calculateur"', 1)[1].split("</section>", 1)[0]
+for t in ["Mandats signés par mois", "Visites par mois", 'aria-live="polite"', 'inputmode="numeric"',
+          "Calcul indicatif à partir de durées moyennes par tâche."]:
+    must(t.lower() in html.unescape(calc).lower(), f"calculateur : {t}")
+must("15 h" not in html.unescape(calc), "aucun chiffre plafond hors détail dans le bloc statique")
+must("calc-statique" in calc and "{{" not in calc and "undefined" not in calc and "NaN" not in calc, "repli sans JavaScript rendu")
+# La formule Python (phrase sans JS) et la formule JS donnent le même résultat.
+sys.path.insert(0, str(ROOT))
+_src = (ROOT / "build.py").read_text()
+_ns = {}
+_start = _src.index("def _arrondi"); _end = _src.index("def _h_fr")
+exec("import math\n" + _src[_start:_end], _ns)
+_cfg = json.loads((ROOT / "data" / "calculateur.json").read_text())
+_cas = [(8, 40), (0, 0), (1, 1), (3, 17), (25, 120), (60, 300), (200, 400), (10000, 10000), (-5, 12), (7, 0)]
+_js = subprocess.run(["node", "--input-type=module", "-e",
+    f"import {{heuresRendues}} from '{ROOT}/assets/calcul.js';import cfg from '{ROOT}/data/calculateur.json' with {{type:'json'}};"
+    f"console.log(JSON.stringify({json.dumps(_cas)}.map(([m,v])=>heuresRendues(m,v,cfg))))"],
+    check=True, capture_output=True, text=True).stdout
+for (m, v), jsr in zip(_cas, json.loads(_js)):
+    must(_ns["heures_rendues"](m, v, _cfg) == jsr, f"formule Python == JS pour ({m},{v})")

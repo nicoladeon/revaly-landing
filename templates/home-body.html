@@ -122,6 +122,35 @@
     </div>
   </section>
 
+  <!-- ═══════════════ CALCULATEUR : TEMPS RENDU ═══════════════ -->
+  <section class="wrap" id="calculateur">
+    <div class="calc rv">
+      <div class="calc-intro">
+        <span class="tag">Calcul</span>
+        <h2 class="title">Combien d'heures te rend ton équipe ?</h2>
+        <p class="sub">Dis-nous ton rythme du mois. On compte ce que ton équipe prépare à ta place, tâche par tâche. Le détail de chaque tâche s'affiche avec le résultat.</p>
+        <p class="calc-statique">{{CALCUL_STATIQUE}}</p>
+      </div>
+      <div class="calc-carte">
+        <div class="calc-champs">
+          <div class="calc-champ">
+            <label for="calc-mandats">Mandats signés par mois</label>
+            <input id="calc-mandats" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="{{CALCUL_DEFAUT_M}}" />
+          </div>
+          <div class="calc-champ">
+            <label for="calc-visites">Visites par mois</label>
+            <input id="calc-visites" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="{{CALCUL_DEFAUT_V}}" />
+          </div>
+        </div>
+        <p class="calc-resultat" id="calc-resultat" aria-live="polite"></p>
+        <ul class="calc-detail" id="calc-detail" aria-label="Détail par tâche, en minutes par semaine"></ul>
+        <p class="calc-note">Calcul indicatif à partir de durées moyennes par tâche.</p>
+      </div>
+    </div>
+    <script type="application/json" id="calcul-cfg">__CALCUL_JSON__</script>
+    <script type="module" src="/assets/calcul.js"></script>
+  </section>
+
   <!-- ═══════════════ RIEN NE PART SANS TOI (storyboard approbation) ═══════════════ -->
   <section class="wrap" id="controle">
     <div class="rv" style="text-align: center;">

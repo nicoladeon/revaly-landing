@@ -1111,6 +1111,28 @@
     html.js .cv-carte, html.js .cv-chute { opacity: 1 !important; transform: none !important; transition: none; }
   }
   /* ── Tu peux aussi leur parler : la conversation se joue message par message (600 ms) ── */
+  /* ── Calculateur de temps rendu ── */
+  .calc { display: grid; gap: 32px; grid-template-columns: 1fr; align-items: start; }
+  @media (min-width: 900px) { .calc { grid-template-columns: 1fr minmax(0, 480px); gap: 56px; } }
+  .calc-carte { background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-md); padding: 26px; display: none; }
+  .calc-actif .calc-carte { display: block; }
+  .calc-actif .calc-statique { display: none; }
+  .calc-statique { margin: 22px 0 0; font-size: 17px; line-height: 1.6; color: var(--ink); font-weight: 500; }
+  .calc-champs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 340px) { .calc-champs { grid-template-columns: 1fr; } }
+  .calc-champ { display: flex; flex-direction: column; justify-content: flex-end; }
+  .calc-champ label { display: block; font-size: 13.5px; font-weight: 500; color: var(--muted); margin-bottom: 7px; }
+  .calc-champ input { width: 100%; font: inherit; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); background: var(--bg); border: 0.5px solid var(--line-strong); border-radius: 12px; padding: 12px 14px; min-height: 48px; }
+  .calc-champ input:focus-visible { outline: 2px solid var(--iris); outline-offset: 1px; border-color: transparent; }
+  .calc-resultat { margin: 24px 0 0; padding-top: 22px; border-top: 0.5px solid var(--line); font-family: var(--font-display); font-size: 22px; line-height: 1.35; color: var(--ink); }
+  .calc-resultat b { color: var(--iris-deep); font-size: 1.5em; font-weight: 600; font-variant-numeric: tabular-nums; }
+  :root[data-theme="dark"] .calc-resultat b { color: var(--iris); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .calc-resultat b { color: var(--iris); } }
+  .calc-detail { list-style: none; margin: 16px 0 0; padding: 0; }
+  .calc-detail li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 0.5px solid var(--line); font-size: 14.5px; color: var(--muted); }
+  .calc-detail li:last-child { border-bottom: 0; }
+  .calc-detail li span:last-child { color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .calc-note { margin: 14px 0 0; font-size: 13px; color: var(--subtle); }
   .parler-grille { display: grid; gap: 28px; align-items: center; grid-template-columns: 1fr; }
   @media (min-width: 900px) { .parler-grille { grid-template-columns: 1fr minmax(0, 440px); gap: 56px; } }
   .conv { background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-md); overflow: hidden; width: 100%; max-width: 440px; }
