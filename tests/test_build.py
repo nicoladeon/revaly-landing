@@ -396,3 +396,8 @@ must("primary_color=6366f1" in idx and "hide_gdpr_banner=1" in idx, "paramètres
 must(re.search(r"\.demo-cal \{ display: none", idx) and "html.js .demo-cal { display: block; }" in idx, "boîte et phrase visibles seulement avec JS")
 must("s.onerror=repli" in idx and "n>=16" in idx, "repli si widget.js échoue ou iframe absente sous 8 s")
 print("OK v3 task 10")
+
+# ── Vocabulaire : le rapport du vendredi s'appelle « bilan de commercialisation » ──
+must("point vendeurs" not in idx.lower() and "bilan de la semaine" not in idx.lower() and "point de la semaine" not in idx.lower(), "ancien nom du rapport vendeur absent")
+must("bilan de commercialisation du vendredi" in idx, "tuile : bilan de commercialisation")
+print("OK v3 vocabulaire bilan")
