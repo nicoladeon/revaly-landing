@@ -612,6 +612,23 @@
     }, { threshold: 0.25 });
     els.forEach((el) => o.observe(el));
   };
+  // ── Équipe : chaque boucle ne se charge qu'à son entrée à l'écran, s'arrête dehors. Mouvement réduit ou économiseur de données : l'image fixe seule. ──
+  (() => {
+    const loops = document.querySelectorAll('video[data-loop]');
+    const saver = navigator.connection && navigator.connection.saveData;
+    if (REDUCED || saver || !('IntersectionObserver' in window)) return;
+    const vus = new Set();
+    const sync = () => loops.forEach((v) => {
+      if (vus.has(v) && !document.hidden) v.play().catch(() => {});
+      else if (!v.paused) v.pause();
+    });
+    const o = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { e.isIntersecting ? vus.add(e.target) : vus.delete(e.target); });
+      sync();
+    }, { threshold: 0.4 });
+    loops.forEach((v) => o.observe(v));
+    document.addEventListener('visibilitychange', sync);
+  })();
   revealOnce('.auto-tuile');
   revealOnce('#clients-voient');
   if (!REDUCED && 'IntersectionObserver' in window) document.querySelectorAll('.conv').forEach((el) => el.classList.add('armed'));

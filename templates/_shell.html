@@ -374,6 +374,11 @@
   .tb-head { grid-area: head; display: flex; align-items: center; gap: 18px; }
   .tb-ava { position: relative; flex: none; }
   .tb-ava img { width: 84px; height: 84px; box-shadow: inset 0 0 0 1px var(--line-strong), var(--shadow-sm); }
+  .tb-ava video {
+    display: block; width: 112px; height: 112px; aspect-ratio: 1; border-radius: 50%; object-fit: cover;
+    background: var(--bg-soft); box-shadow: inset 0 0 0 1px var(--line-strong), var(--shadow-sm);
+  }
+  .tb-loop .tb-dot { right: 5px; bottom: 6px; }
   .tb-dot {
     position: absolute; right: 3px; bottom: 4px; width: 15px; height: 15px; border-radius: 50%;
     background: var(--success); box-shadow: 0 0 0 3px var(--bg);
@@ -421,6 +426,7 @@
     }
     .tc-panel { margin-top: 22px; }
     .tb-ava img { width: 72px; height: 72px; }
+    .tb-ava video { width: 88px; height: 88px; }
   }
 
   /* La séquence jouée : armed = état initial, play = timeline (cf design-notes §4.2).

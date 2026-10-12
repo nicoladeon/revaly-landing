@@ -316,3 +316,17 @@ print("OK v3 correction 1")
 # ── Ronde de correction 2 : plus de script ni de CSS pour la grille de connecteurs retirée ──
 must("document.querySelector('.connectors')" not in idx and ".conn-marquee" not in idx and "@keyframes mq" not in idx, "script et CSS de l'ancien marquee retirés")
 print("OK v3 correction 2")
+
+# ── Équipe : personnages 3D validés, boucles animées (Task 7) ──
+for k in ["max", "emma", "lucas", "christine", "zoe", "raphael"]:
+    for ext in ("mp4", "webm", "webp"):
+        must((dist / "assets" / "equipe" / "boucles" / f"{k}@256.{ext}").exists(), f"boucle {k}@256.{ext}")
+    must(f'poster="/assets/equipe/boucles/{k}@256.webp"' in idx, f"poster {k}")
+eq = idx.split('id="equipe"', 1)[1].split("</section>", 1)[0]
+must("hugo" not in eq.lower(), "Hugo absent de l'équipe")
+must(not list((dist / "assets" / "equipe").rglob("hugo*")), "aucun fichier Hugo publié")
+must(eq.count("<video") == 6 and " autoplay" not in eq and 'preload="none"' in eq, "6 vidéos, pas d'autoplay, preload none")
+must('width="112" height="112"' in eq, "dimensions posées (pas de décalage)")
+must("matchMedia('(prefers-reduced-motion: reduce)')" in idx and "data-loop" in idx, "boucles lancées par script, jamais en mouvement réduit")
+must(not (ROOT / "assets" / "portraits").exists(), "anciens portraits retirés")
+print("OK v3 équipe 3D animée")

@@ -35,8 +35,8 @@ repl = {"__CALENDLY__": CALENDLY_URL}
 repl["__META_PIXEL_ID__"] = META_PIXEL_ID
 repl["__PAYMENT_LINKS_JSON__"] = json.dumps(PAYMENT_LINKS, ensure_ascii=False)
 for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:
-    repl[f"__{k.upper()}128__"] = uri(f"assets/portraits/{k}@128.webp", "image/webp")
-    repl[f"__{k.upper()}512__"] = uri(f"assets/portraits/{k}@512.webp", "image/webp")
+    repl[f"__{k.upper()}128__"] = uri(f"assets/equipe/portraits/{k}@128.webp", "image/webp")
+    repl[f"__{k.upper()}512__"] = uri(f"assets/equipe/portraits/{k}@512.webp", "image/webp")
 repl["__VILLA_HERO__"] = uri("assets/villa_hero.jpg", "image/jpeg")
 repl["__VILLA_POST__"] = uri("assets/villa_post.jpg", "image/jpeg")
 
@@ -96,7 +96,7 @@ def team_blocks():
         slides.append(f'''<div class="crsl-item" role="tabpanel" id="agent-{a["slug"]}" aria-label="{name}">
         <article class="tblock">
         <header class="tb-head">
-          <span class="tb-ava"><img class="face" src="__{k}512__" width="84" height="84" alt="Portrait {de}{name}" /><i class="tb-dot" aria-hidden="true"></i></span>
+          <span class="tb-ava tb-loop"><video class="face" data-loop muted loop playsinline preload="none" width="112" height="112" poster="/assets/equipe/boucles/{a["slug"]}@256.webp" role="img" aria-label="Portrait animé {de}{name}"><source src="/assets/equipe/boucles/{a["slug"]}@256.webm" type="video/webm" /><source src="/assets/equipe/boucles/{a["slug"]}@256.mp4" type="video/mp4" /></video><i class="tb-dot" aria-hidden="true"></i></span>
           <div>
             <h3 class="tb-name">{name}</h3>
             <p class="tb-role">{_esc(a["role"])}</p>
@@ -476,6 +476,7 @@ for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
 for f in (ROOT / "assets" / "film").glob("*"):
     if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
         shutil.copy(f, ROOT / "dist" / "film" / f.name)
+shutil.copytree(ROOT / "assets" / "equipe" / "boucles", ROOT / "dist" / "assets" / "equipe" / "boucles", dirs_exist_ok=True)
 shutil.copytree(ROOT / "assets" / "logos", ROOT / "dist" / "assets" / "logos", dirs_exist_ok=True)
 (ROOT / "dist" / "fonts").mkdir(exist_ok=True)
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
