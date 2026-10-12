@@ -558,7 +558,7 @@
       <button type="button" class="film-close" id="film-close" aria-label="Fermer le film">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
       </button>
-      <video id="film-lecteur" controls playsinline preload="none" poster="film/poster.jpg">
+      <video id="film-lecteur" controls playsinline preload="none" data-poster="film/poster.jpg">
         <source src="film/revaly-45s.mp4" type="video/mp4" />
       </video>
     </dialog>
@@ -954,20 +954,20 @@
         <p class="about">L'équipe d'agents IA des agents immobiliers français.</p>
       </div>
       <nav aria-label="Produit">
-        <h4>Produit</h4>
+        <h2>Produit</h2>
         <a href="/agents/">Agents</a>
         <a href="/integrations/">Intégrations</a>
         <a href="#tarif">Tarifs</a>
         <a href="#faq">FAQ</a>
       </nav>
       <nav aria-label="Légal">
-        <h4>Légal</h4>
+        <h2>Légal</h2>
         <a href="https://app.revaly.io/cgu">Conditions d'utilisation</a>
         <a href="https://app.revaly.io/confidentialite">Confidentialité</a>
         <a href="https://app.revaly.io/mentions-legales">Mentions légales</a>
       </nav>
       <nav aria-label="Compte">
-        <h4>Compte</h4>
+        <h2>Compte</h2>
         <a href="https://app.revaly.io/login">Connexion</a>
         <a href="mailto:support@revaly.io">support@revaly.io</a>
       </nav>
@@ -1199,7 +1199,8 @@
     const btn = document.getElementById('voir-film');
     const vid = document.getElementById('film-lecteur');
     if (!dlg || !btn || !vid || typeof dlg.showModal !== 'function') return;
-    btn.addEventListener('click', () => { dlg.showModal(); vid.play().catch(() => {}); });
+    // L'image d'attente n'est demandée qu'à l'ouverture (rien à télécharger tant que le film reste fermé)
+    btn.addEventListener('click', () => { if (!vid.poster) vid.poster = vid.dataset.poster; dlg.showModal(); vid.play().catch(() => {}); });
     document.getElementById('film-close').addEventListener('click', () => dlg.close());
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
     dlg.addEventListener('close', () => { vid.pause(); btn.focus(); });

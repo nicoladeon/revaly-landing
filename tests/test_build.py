@@ -475,4 +475,6 @@ for f in ["template.html", "assets/hero.mp4", "assets/hero-poster.jpg", "assets/
 for f in ["hero.mp4", "hero-poster.jpg", "fonts/fraunces-var.woff2"]:
     must(not (dist / f).exists(), f"plus publié : {f}")
 must([f.name for f in (dist / "fonts").iterdir()] == ["geist-var.woff2"], "une seule police publiée : Geist")
+must(not re.search(r'(?<!data-)poster="film/poster.jpg"', idx) and 'data-poster="film/poster.jpg"' in idx, "image du film demandée seulement à l'ouverture")
+must(re.findall(r"<h([1-6])", idx.split("<footer", 1)[1])[:1] == ["2"], "pied de page : titres de niveau 2 (pas de saut h2 → h4)")
 print("OK nettoyage")
