@@ -264,3 +264,31 @@ must("assistants IA" not in idx and "Autonome, 24 h/24" not in idx, "ancienne pr
 for f in ["poster.jpg", "boucle.mp4", "revaly-45s.mp4"]:
     must((dist / "film" / f).is_file(), f"dist/film/{f} copié")
 print("OK v3 haut de page")
+
+# ── Bandes de logos (Task 4) ──
+must('id="bande-outils"' in idx and "Fonctionne avec tes outils" in idx, "bande outils")
+must("Tes contacts SeLoger, Leboncoin et Bien'ici arrivent directement chez Emma" in idx.replace("&#x27;", "'"), "ligne portails")
+reseaux = json.loads((ROOT / "data" / "reseaux.json").read_text())
+if reseaux:
+    must("Des agents de ces réseaux travaillent déjà avec Revaly" in idx, "phrase exacte réseaux")
+    must("Les marques citées appartiennent à leurs propriétaires" in idx, "mention marques")
+    must('id="bande-reseaux"' in idx, "bande réseaux affichée")
+else:
+    must('id="bande-reseaux"' not in idx, "bande réseaux masquée si liste vide")
+outils = json.loads((ROOT / "data" / "outils.json").read_text())
+for band, items in (("bande-outils", outils), ("bande-reseaux", reseaux)):
+    if not items: continue
+    sec = idx.split(f'id="{band}"', 1)[1].split("</section>", 1)[0]
+    must(sec.count("<ul") == 2 and 'aria-hidden="true"' in sec, f"{band} : deux listes dont une aria-hidden")
+    must(sec.count('alt=""') >= len(items), f"{band} : images de la copie avec alt vide")
+    for i in items:
+        must(i["logo"] and (ROOT / i["logo"]).exists(), f"{band} : logo présent pour {i['nom']}")
+        must((dist / i["logo"]).exists(), f"{band} : logo copié dans dist pour {i['nom']}")
+        must(i["nom"] in sec, f"{band} : nom {i['nom']}")
+must("prefers-reduced-motion" in idx and "bande-defile" in idx, "CSS défilement + réduit")
+for f in (ROOT / "assets" / "logos").rglob("*.svg"):
+    t = f.read_text().lower()
+    must(not re.search(r"<script|<image|foreignobject|\son[a-z]+\s*=|href\s*=", t), f"{f.name} : SVG sans script/href/image")
+lic = (ROOT / "assets" / "logos" / "LICENSES.md").read_text()
+for n in ("orpi.svg", "laforet.svg", "iad.svg", "modelo.svg"):
+    must(n in lic, f"LICENSES.md cite {n}")

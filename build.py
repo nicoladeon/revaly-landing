@@ -289,8 +289,34 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
 
 # ── Home ──
 faq = json.loads((ROOT / "data" / "faq.json").read_text())
+# ── Bandes de logos (outils et réseaux) : données dans data/outils.json et data/reseaux.json ──
+def _bande_item(i, copie):
+    src = "/" + i["logo"]
+    nom = "" if copie else _esc(i["nom"])
+    img = f'<img src="{_esc(src)}" alt="{nom}" loading="lazy" height="24">'
+    glyphe = i["logo"] and not i["logo"].endswith("modelo.svg") and "/reseaux/" not in i["logo"]
+    txt = f'<span class="bande-nom">{_esc(i["nom"])}</span>' if glyphe else ""
+    return f'<li{"" if glyphe else " class=\"large\""}>{img}{txt}</li>'
+
+def _bande(id_, titre, items, mention=""):
+    liste = lambda copie: "".join(_bande_item(i, copie) for i in items)
+    return (f'<section class="wrap bande" id="{id_}" aria-label="{_esc(titre)}"><p class="bande-titre">{_esc(titre)}</p>'
+            f'<div class="bande-defile" tabindex="0"><ul>{liste(False)}</ul><ul aria-hidden="true">{liste(True)}</ul></div>'
+            + (f'<p class="bande-mention">{_esc(mention)}</p>' if mention else "") + "</section>")
+
+def bande_outils(outils):
+    return _bande("bande-outils", "Fonctionne avec tes outils", outils) + \
+        '<p class="wrap bande-portails">Tes contacts SeLoger, Leboncoin et Bien\'ici arrivent directement chez Emma.</p>'
+
+def bande_reseaux(reseaux):
+    if not reseaux: return ""
+    return _bande("bande-reseaux", "Des agents de ces réseaux travaillent déjà avec Revaly", reseaux,
+                  mention="Les marques citées appartiennent à leurs propriétaires.")
+
 body_home = render("home-body.html", {
     "TEAM_BLOCKS": team_blocks(),
+    "BANDE_OUTILS": bande_outils(json.loads((ROOT / "data" / "outils.json").read_text())),
+    "BANDE_RESEAUX": bande_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
     "FAQ_ITEMS": faq_items(faq),
     "JSONLD": jsonld_blocks(faq),
 })
@@ -432,6 +458,7 @@ for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
 for f in (ROOT / "assets" / "film").glob("*"):
     if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
         shutil.copy(f, ROOT / "dist" / "film" / f.name)
+shutil.copytree(ROOT / "assets" / "logos", ROOT / "dist" / "assets" / "logos", dirs_exist_ok=True)
 (ROOT / "dist" / "fonts").mkdir(exist_ok=True)
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
     shutil.copy(f, ROOT / "dist" / "fonts" / f.name)

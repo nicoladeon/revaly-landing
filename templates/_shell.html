@@ -1051,6 +1051,38 @@
   @media (min-width: 761px) { .rv-consent { left: auto; right: 20px; bottom: 20px; } }
   /* mobile : au-dessus de la barre collante quand elle est affichée */
   @media (max-width: 760px) { body:has(.sticky-cta.show) .rv-consent { bottom: calc(var(--rv-sticky-h, 88px) + 12px); } }
+  /* ── Bandes de logos : défilement continu, pause au survol/focus, grille statique si mouvement réduit ── */
+  .bande { padding-top: 36px; padding-bottom: 8px; text-align: center; }
+  .bande-titre { margin: 0 0 18px; font-size: 13px; font-weight: 500; letter-spacing: .04em; color: var(--subtle); }
+  .bande-defile { --gap: 56px; display: flex; gap: var(--gap); overflow: hidden; padding: 6px 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .bande-defile ul { display: flex; align-items: center; gap: var(--gap); flex-shrink: 0; min-width: 100%;
+    justify-content: space-around; list-style: none; margin: 0; padding: 0; animation: defile 38s linear infinite; }
+  .bande-defile:hover ul, .bande-defile:focus-within ul { animation-play-state: paused; }
+  .bande-defile li { display: flex; align-items: center; gap: 9px; flex-shrink: 0; height: 28px; white-space: nowrap; }
+  .bande-defile img { height: 24px; width: auto; display: block; filter: grayscale(1); opacity: .62; }
+  .bande-defile li.large img { height: 28px; }
+  .bande-defile .bande-nom { font-size: 15px; font-weight: 500; color: var(--muted); }
+  .bande-mention { margin: 14px 0 0; font-size: 12px; color: var(--subtle); }
+  .bande-portails { margin-top: 10px; margin-bottom: 0; text-align: center; font-size: 15px; color: var(--muted); }
+  /* logos à une teinte : aplatis dans le même gris ; Laforêt (deux tons) reste en niveaux de gris */
+  #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0); opacity: .5; }
+  #bande-reseaux img[src$="century21.svg"] { height: 16px; }
+  #bande-reseaux img[src$="orpi.svg"] { height: 30px; }
+  #bande-reseaux img[src$="laforet.svg"] { height: 22px; opacity: .55; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .bande-defile img { filter: grayscale(1) invert(1); opacity: .6; }
+    :root:not([data-theme="light"]) #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0) invert(1); opacity: .5; }
+  }
+  :root[data-theme="dark"] .bande-defile img { filter: grayscale(1) invert(1); opacity: .6; }
+  :root[data-theme="dark"] #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0) invert(1); opacity: .5; }
+  @keyframes defile { to { transform: translateX(calc(-100% - var(--gap))); } }
+  @media (prefers-reduced-motion: reduce) {
+    .bande-defile { -webkit-mask-image: none; mask-image: none; }
+    .bande-defile ul { animation: none; flex-wrap: wrap; justify-content: center; row-gap: 20px; }
+    .bande-defile ul[aria-hidden="true"] { display: none; }
+  }
 </style>
 
 <!-- Mesure d'audience sans cookie — Plausible (filtre bots, vrais navigateurs).
