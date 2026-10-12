@@ -201,8 +201,12 @@
 .tg-dur { font-size: 11px; color: #4C8F35; margin-top: 2px; }
 .tg-transcript { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(76, 143, 53, 0.25); font-size: 14px; }
 .tg-who { font-size: 13px; font-weight: 600; color: var(--brand-600); margin-bottom: 2px; }
-.tg-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 6px; }
+/* Message du bot suivi de ses boutons : sous la bulle, comme le clavier en
+   ligne de Telegram (✅ / ❌ des cartes à valider, telegram-webhook). */
+.tg-msg { align-self: flex-start; max-width: 82%; display: flex; flex-direction: column; gap: 4px; }
+.tg-msg .tg-in { max-width: 100%; }
+.tg-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 .tg-btns span {
-  display: grid; place-items: center; height: 34px; border-radius: 10px;
-  background: rgba(255, 255, 255, 0.55); font-size: 14px; color: #2C6EAB; font-weight: 500;
+  display: grid; place-items: center; height: 36px; border-radius: 10px;
+  background: rgba(52, 74, 96, 0.34); font-size: 14px; color: #FFFFFF; font-weight: 500;
 }

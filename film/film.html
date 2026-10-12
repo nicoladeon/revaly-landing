@@ -23,44 +23,95 @@
     --W: 1920px; --H: 1080px; --vie-w: 960px; --vie-h: 1080px; --eq-x: 960px; --eq-y: 0px; --eq-w: 960px; --eq-h: 1080px;
     --col: 88px; --col-w: 784px; --eyebrow-top: 66px; --agent-top: 136px; --art-top: 296px; --vocal-top: 300px;
     --z: 1.95; --z-christine: 1.62; --z-vocal: 1.62; --z-zoe: 1.8; --z-routine: 1.66;
-    --clients-top: 140px; --clients-size: 56px; --recu1: 260px; --recu2: 470px; --recu3: 680px;
+    --clients-top: 140px; --clients-size: 56px;
     --st-x: 480px; --st-bas: 96px; --st-taille: 40px; --st-large: 880px;
     --accroche-x: 72px; --accroche-bas: 132px; --accroche-taille: 76px; --parole-x: 72px; --parole-y: 118px; --parole-taille: 46px;
     --fin-bas: 90px; --fin-titre: 84px; --fin-ligne: 36px; --fin-visage: 76px; --fin-btn-h: 76px; --fin-btn: 30px;
     --fin-logo-top: 66px; --fin-note-bas: 104px; --fin-note: 21px;
+    --horloge-taille: 24px; --horloge-h: 44px;
+    --notif-titre: 36px; --notif-corps: 34px; --notif-ico: 96px; --notif-heure: 24px; --rail-top: 0px;
   }
+  /* Portrait 9:16 : la vie en haut (700 px), l'équipe dessous à 2,35×. Tout ce qui
+     compte reste entre y = 270 et y = 1250 (zone sûre des Reels) : en-tête et
+     horloge à 40 px, cartes recadrées sur leur ligne utile (voir pan()). */
   html[data-format="portrait"] {
-    --W: 1080px; --H: 1920px; --vie-w: 1080px; --vie-h: 860px; --eq-x: 0px; --eq-y: 860px; --eq-w: 1080px; --eq-h: 1060px;
-    --col: 64px; --col-w: 952px; --eyebrow-top: 34px; --agent-top: 100px; --art-top: 252px; --vocal-top: 252px;
-    --z: 2; --z-christine: 1.85; --z-vocal: 1.85; --z-zoe: 1.85; --z-routine: 1.9;
-    --clients-top: 40px; --clients-size: 60px; --recu1: 150px; --recu2: 350px; --recu3: 550px;
-    --st-x: 540px; --st-bas: 1088px; --st-taille: 56px; --st-large: 980px;
-    --accroche-x: 64px; --accroche-bas: 1150px; --accroche-taille: 88px; --parole-x: 64px; --parole-y: 76px; --parole-taille: 56px;
-    --fin-bas: 230px; --fin-titre: 76px; --fin-ligne: 40px; --fin-visage: 92px; --fin-btn-h: 92px; --fin-btn: 36px;
-    --fin-logo-top: 150px; --fin-note-bas: 200px; --fin-note: 25px;
+    --W: 1080px; --H: 1920px; --vie-w: 1080px; --vie-h: 700px; --eq-x: 0px; --eq-y: 700px; --eq-w: 1080px; --eq-h: 1400px;
+    --col: 64px; --col-w: 952px; --eyebrow-top: 22px; --agent-top: 92px; --art-top: 226px; --vocal-top: 226px;
+    --z: 2.35; --z-christine: 2.35; --z-vocal: 2.35; --z-zoe: 2.35; --z-routine: 2.35;
+    --clients-top: 24px; --clients-size: 52px;
+    --st-x: 540px; --st-bas: 1244px; --st-taille: 56px; --st-large: 980px;
+    --accroche-x: 64px; --accroche-bas: 1262px; --accroche-taille: 88px; --parole-x: 64px; --parole-y: 300px; --parole-taille: 56px;
+    --fin-bas: 370px; --fin-titre: 76px; --fin-ligne: 40px; --fin-visage: 92px; --fin-btn-h: 92px; --fin-btn: 36px;
+    --fin-logo-top: 300px; --fin-note-bas: 200px; --fin-note: 25px;
+    --horloge-taille: 40px; --horloge-h: 64px;
+    --notif-titre: 40px; --notif-corps: 38px; --notif-ico: 96px; --notif-heure: 25px; --rail-top: 450px;
   }
+  /* Carré 1:1 : la même pile, plus serrée ; rien d'utile sous y = 972. */
   html[data-format="carre"] {
-    --W: 1080px; --H: 1080px; --vie-w: 1080px; --vie-h: 520px; --eq-x: 0px; --eq-y: 520px; --eq-w: 1080px; --eq-h: 560px;
-    --col: 64px; --col-w: 952px; --eyebrow-top: 28px; --agent-top: 100px; --art-top: 252px; --vocal-top: 252px;
-    --z: 2; --z-christine: 1.85; --z-vocal: 1.85; --z-zoe: 1.85; --z-routine: 1.9;
-    --clients-top: 22px; --clients-size: 44px; --recu1: 90px; --recu2: 212px; --recu3: 350px;
-    --st-x: 540px; --st-bas: 584px; --st-taille: 56px; --st-large: 980px;
-    --accroche-x: 56px; --accroche-bas: 620px; --accroche-taille: 68px; --parole-x: 56px; --parole-y: 60px; --parole-taille: 48px;
+    --W: 1080px; --H: 1080px; --vie-w: 1080px; --vie-h: 520px; --eq-x: 0px; --eq-y: 520px; --eq-w: 1080px; --eq-h: 640px;
+    --col: 64px; --col-w: 952px; --eyebrow-top: 16px; --agent-top: 76px; --art-top: 186px; --vocal-top: 186px;
+    --z: 2; --z-christine: 2; --z-vocal: 2; --z-zoe: 2; --z-routine: 2;
+    --clients-top: 18px; --clients-size: 42px;
+    --st-x: 540px; --st-bas: 580px; --st-taille: 56px; --st-large: 980px;
+    --accroche-x: 56px; --accroche-bas: 590px; --accroche-taille: 68px; --parole-x: 56px; --parole-y: 70px; --parole-taille: 48px;
     --fin-bas: 110px; --fin-titre: 62px; --fin-ligne: 30px; --fin-visage: 64px; --fin-btn-h: 72px; --fin-btn: 28px;
     --fin-logo-top: 44px; --fin-note-bas: 100px; --fin-note: 19px;
+    --horloge-taille: 36px; --horloge-h: 58px;
+    --notif-titre: 38px; --notif-corps: 35px; --notif-ico: 88px; --notif-heure: 24px; --rail-top: 336px;
   }
   html[data-format="portrait"] #st, html[data-format="carre"] #st { white-space: normal; text-wrap: balance; }
   html[data-format="carre"] .fin-equipe { margin-bottom: 26px; }
   html[data-format="portrait"] .fin-ligne span { display: block; }
   html[data-format="carre"] .fin-btns { margin-top: 34px; }
-  html[data-format="carre"] .recu { padding: 14px 20px; grid-template-columns: 48px 1fr; border-radius: 20px; }
-  html[data-format="carre"] .recu-ico { width: 48px; height: 48px; border-radius: 14px; }
-  html[data-format="carre"] .recu-l1 { font-size: 23px; }
-  html[data-format="carre"] .recu-l1 span { font-size: 19px; }
-  html[data-format="carre"] .recu-l2 { font-size: 22px; }
-  html[data-format="portrait"] .recu-l1 { font-size: 30px; }
-  html[data-format="portrait"] .recu-l1 span { font-size: 24px; }
-  html[data-format="portrait"] .recu-l2 { font-size: 29px; }
+  html[data-pub] .fin-note { display: none; }
+  /* Rangée de l'agent : nom et métier sur une ligne, l'état dessous. */
+  html[data-format="portrait"] .agent, html[data-format="carre"] .agent { gap: 22px; }
+  html[data-format="portrait"] .agent .ra { --ra-s: 96px; }
+  html[data-format="carre"] .agent .ra { --ra-s: 76px; }
+  html[data-format="portrait"] .agent .ra-badge, html[data-format="carre"] .agent .ra-badge { width: 30px; height: 30px; border-width: 3px; }
+  html[data-format="portrait"] .agent-txt, html[data-format="carre"] .agent-txt { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; row-gap: 4px; align-items: baseline; }
+  html[data-format="portrait"] .agent-txt b { font-size: 46px; }
+  html[data-format="portrait"] .agent-txt .role { font-size: 28px; }
+  html[data-format="portrait"] .status { grid-column: 1 / -1; margin-top: 0; font-size: 32px; }
+  html[data-format="carre"] .agent-txt b { font-size: 38px; }
+  html[data-format="carre"] .agent-txt .role { font-size: 23px; }
+  html[data-format="carre"] .status { grid-column: 1 / -1; margin-top: 0; font-size: 27px; }
+  html[data-format="portrait"] .status .i, html[data-format="carre"] .status .i { font-size: 1em; }
+  /* Les cartes défilent dans leur cadre (fondu en haut) : la ligne utile reste visible. */
+  html[data-format="portrait"] .artefact, html[data-format="carre"] .artefact {
+    padding: 30px 48px 90px; margin: -30px 0 0 -48px;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 14px, #000 34px); mask-image: linear-gradient(180deg, transparent 0, transparent 14px, #000 34px);
+  }
+  html[data-format="portrait"] .artefact .z, html[data-format="carre"] .artefact .z { width: 400px !important; }
+  html[data-format="portrait"] .artefact .card, html[data-format="carre"] .artefact .card { width: auto !important; }
+  html[data-format="portrait"] #zoe-photo { height: 104px !important; }
+  html[data-format="carre"] #zoe-photo { height: 96px !important; }
+  /* L'équipe sous la notification, à l'ouverture (portrait et carré). */
+  #rail-equipe { display: none; position: absolute; left: var(--col); top: var(--rail-top); width: var(--col-w); opacity: 0; }
+  #rail-equipe span { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
+  #rail-equipe img { border-radius: 50%; background: var(--color-avatar-bg); box-shadow: 0 0 0 1px var(--color-avatar-line), var(--shadow-sm); }
+  #rail-equipe b { font-weight: 600; color: var(--color-fg); }
+  #rail-equipe i { font-style: normal; color: var(--color-fg-muted); }
+  html[data-format="portrait"] #rail-equipe { display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 34px; }
+  html[data-format="portrait"] #rail-equipe img { width: 112px; height: 112px; }
+  html[data-format="portrait"] #rail-equipe b { font-size: 34px; }
+  html[data-format="portrait"] #rail-equipe i { font-size: 25px; }
+  html[data-format="carre"] #rail-equipe { display: grid; grid-template-columns: repeat(6, 1fr); }
+  html[data-format="carre"] #rail-equipe img { width: 76px; height: 76px; }
+  html[data-format="carre"] #rail-equipe b { font-size: 22px; }
+  html[data-format="carre"] #rail-equipe i { display: none; }
+  /* Ce que voient tes clients : tailles par format (empilés par le script). */
+  html[data-format="portrait"] .recu { padding: 20px 26px; grid-template-columns: 56px 1fr; column-gap: 18px; border-radius: 26px; }
+  html[data-format="portrait"] .recu-ico { width: 56px; height: 56px; border-radius: 16px; }
+  html[data-format="portrait"] .recu-l1 { font-size: 32px; }
+  html[data-format="portrait"] .recu-l1 span { font-size: 26px; }
+  html[data-format="portrait"] .recu-l2 { font-size: 31px; line-height: 1.32; }
+  html[data-format="carre"] .recu { padding: 12px 18px; grid-template-columns: 44px 1fr; column-gap: 14px; border-radius: 20px; }
+  html[data-format="carre"] .recu-ico { width: 44px; height: 44px; border-radius: 13px; }
+  html[data-format="carre"] .recu-ico .i { font-size: 24px; }
+  html[data-format="carre"] .recu-l1 { font-size: 24px; }
+  html[data-format="carre"] .recu-l1 span { font-size: 20px; }
+  html[data-format="carre"] .recu-l2 { font-size: 23px; line-height: 1.3; margin-top: 2px; }
   #stage {
     width: var(--W); height: var(--H); position: relative; overflow: hidden;
     background: var(--ink-950); font-family: var(--font-sans);
@@ -87,11 +138,11 @@
     white-space: nowrap;
   }
   #horloge {
-    top: 66px; display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px;
+    top: 66px; display: inline-flex; align-items: center; gap: 0.42em; height: var(--horloge-h); padding: 0 0.66em;
     border-radius: var(--radius-full); background: var(--color-bg-raised); box-shadow: var(--shadow-sm);
-    font-size: 24px; font-weight: 400; color: var(--color-fg); white-space: nowrap;
+    font-size: var(--horloge-taille); font-weight: 400; color: var(--color-fg); white-space: nowrap;
   }
-  #horloge .i { font-size: 22px; color: var(--color-fg-muted); }
+  #horloge .i { font-size: 0.92em; color: var(--color-fg-muted); }
 
   .agent { left: var(--col); top: var(--agent-top); display: flex; align-items: center; gap: 28px; }
   .agent .ra { --ra-s: 116px; --ra-cutout: var(--color-bg); }
@@ -133,14 +184,14 @@
      corps d'agent-worker/handler.ts). Sombre sur le noir (A), claire sur la
      porcelaine (B). */
   #notif { position: absolute; left: 450px; top: 380px; width: 1020px; height: 180px; box-sizing: border-box; transform-origin: 50% 50%;
-    display: grid; grid-template-columns: 96px 1fr; column-gap: 28px; align-items: center; padding: 0 38px;
+    display: grid; grid-template-columns: var(--notif-ico) 1fr; column-gap: 24px; align-items: center; padding: 0 30px;
     border-radius: 38px; color: #fff; background: rgb(36, 38, 48);
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset, 0 30px 80px rgba(0, 0, 0, 0.55); opacity: 0; }
-  #notif img { width: 96px; height: 96px; border-radius: 22px; display: block; }
-  .notif-l1 { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; font-size: 36px; letter-spacing: -0.01em; white-space: nowrap; }
+  #notif img { width: var(--notif-ico); height: var(--notif-ico); border-radius: 23%; display: block; }
+  .notif-l1 { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; font-size: var(--notif-titre); letter-spacing: -0.01em; white-space: nowrap; }
   .notif-l1 b { font-weight: 600; }
-  .notif-l1 .heure { font-size: 24px; color: rgba(255, 255, 255, 0.55); }
-  .notif-l2 { font-size: 34px; color: rgba(255, 255, 255, 0.86); margin-top: 4px; letter-spacing: -0.005em; white-space: nowrap; }
+  .notif-l1 .heure { font-size: var(--notif-heure); color: rgba(255, 255, 255, 0.55); }
+  .notif-l2 { font-size: var(--notif-corps); color: rgba(255, 255, 255, 0.86); margin-top: 4px; letter-spacing: -0.005em; white-space: nowrap; }
   #notif.clair { color: var(--color-fg); background: rgba(255, 255, 255, 0.94); box-shadow: var(--shadow-xl); }
   #notif.clair .notif-l1 .heure { color: var(--color-fg-subtle); }
   #notif.clair .notif-l2 { color: var(--color-fg-muted); }
@@ -160,7 +211,6 @@
 
   /* ---------- Révélation : ce que voient tes clients ---------- */
   #clients-titre { left: var(--col); top: var(--clients-top); margin: 0; font-size: var(--clients-size); font-weight: 400; letter-spacing: -0.03em; line-height: 1.1; }
-  #recu1 { top: var(--recu1); } #recu2 { top: var(--recu2); } #recu3 { top: var(--recu3); }
   .recu {
     left: var(--col); width: var(--col-w); display: grid; grid-template-columns: 64px 1fr; column-gap: 20px; align-items: start;
     padding: 22px 26px; border-radius: 24px; background: var(--color-bg-raised); box-shadow: var(--shadow-lg);
@@ -251,6 +301,15 @@
     <p class="ui" id="pendant">Pendant ce temps…</p>
     <span class="ui" id="horloge"><svg class="i"><use href="#i-clock"/></svg><span class="tnum" id="horloge-t">Vendredi 15 h 15</span></span>
 
+    <div class="ui" id="rail-equipe">
+      <span><img src="assets/agents/max.webp" alt=""><b>Max</b><i>Directeur d'agence</i></span>
+      <span><img src="assets/agents/emma.webp" alt=""><b>Emma</b><i>Assistante de direction</i></span>
+      <span><img src="assets/agents/lucas.webp" alt=""><b>Lucas</b><i>Analyste de marché</i></span>
+      <span><img src="assets/agents/christine.webp" alt=""><b>Christine</b><i>Conseillère juridique</i></span>
+      <span><img src="assets/agents/zoe.webp" alt=""><b>Zoé</b><i>Community manager</i></span>
+      <span><img src="assets/agents/raphael.webp" alt=""><b>Raphaël</b><i>Photos et visuels</i></span>
+    </div>
+
     <!-- ===== 0:04-0:12 · Emma : rappel de la visite suivante (ui/carte-a-valider.html) ===== -->
     <div class="ui agent" id="ag-emma1">
       <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="4" data-a="12.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
@@ -290,9 +349,9 @@
       <div class="card" style="width:400px">
         <div class="card-top">
           <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/lucas.webp" alt=""></span></span>
-          <p class="card-title">Avis de valeur · 12 rue Garibaldi</p>
+          <p class="card-title">Avis de valeur · 27 avenue Jean-Jaurès</p>
           <span class="pill pill-quiet"><svg class="i"><use href="#i-file-chart"/></svg>PDF</span>
-          <p class="card-to">Pour M. et Mme Garnier · prix au m² du quartier, ventes DVF</p>
+          <p class="card-to">Pour Mme Bernard · prix au m² du quartier, ventes DVF</p>
         </div>
         <svg class="chart" viewBox="0 0 376 132" aria-hidden="true">
           <g stroke="rgba(12,15,22,0.08)" stroke-width="1"><line x1="0" y1="18" x2="376" y2="18"/><line x1="0" y1="58" x2="376" y2="58"/><line x1="0" y1="98" x2="376" y2="98"/></g>
@@ -305,16 +364,16 @@
       </div>
     </div></div>
 
-    <!-- ===== 0:16-0:20 · Christine : pièces du compromis ===== -->
+    <!-- ===== 0:30-0:34 · Christine : pièces du compromis, le soir ===== -->
     <div class="ui agent" id="ag-christine">
-      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/christine.mp4" muted preload="auto" playsinline data-de="15.6" data-a="20.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/christine.mp4" muted preload="auto" playsinline data-de="29.2" data-a="34.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
       <div class="agent-txt"><b>Christine</b><span class="role">Conseillère juridique</span>
         <span class="status"><span class="brand s1"><i class="dot"></i>Vérifie les pièces du compromis</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Relance prête, à valider</span></span>
       </div>
     </div>
     <div class="ui artefact" id="art-christine"><div class="z" style="zoom:var(--z-christine);width:440px;display:flex;flex-direction:column;gap:8px">
       <div class="steps">
-        <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>Pièces du compromis · 5 sur 7</div>
+        <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>Compromis de M. et Mme Roche · 5 pièces sur 7</div>
         <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Titre de propriété</span><span class="s">reçu</span></div>
         <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Diagnostics (DPE, amiante, électricité)</span><span class="s">reçus</span></div>
         <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Dernière taxe foncière</span><span class="s">reçue</span></div>
@@ -328,7 +387,7 @@
           <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/christine.webp" alt=""></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
           <p class="card-title">Relance des pièces du compromis</p>
           <span class="pill pill-quiet"><svg class="i"><use href="#i-mail"/></svg>e-mail</span>
-          <p class="card-to">À M. et Mme Garnier · E-mail</p>
+          <p class="card-to">À M. et Mme Roche · E-mail</p>
         </div>
         <div class="btns"><span class="btn btn-tint">Valider</span><span class="btn btn-quiet">Refuser</span></div>
       </div>
@@ -356,7 +415,7 @@
               <div><div class="tg-wave" id="onde-vocale"></div><div class="tg-dur tnum">0:04</div></div></div>
           </div>
           <div class="tg-in" id="tg-max"><div class="tg-who">Max</div>C'est noté. Emma prépare le mail pour Maître Lefèvre.<span class="tg-time tnum">17:55</span></div>
-          <div class="tg-in" id="tg-emma"><div class="tg-who">Emma</div>Mail à valider : relance de Maître Lefèvre pour la signature de jeudi.<span class="tg-time tnum">17:56</span>
+          <div class="tg-msg" id="tg-emma"><div class="tg-in"><div class="tg-who">Emma</div>Mail à valider : relance de Maître Lefèvre pour la signature de jeudi.<span class="tg-time tnum">17:56</span></div>
             <div class="tg-btns"><span>✅ Valider</span><span>❌ Refuser</span></div></div>
         </div>
       </div>
@@ -376,18 +435,18 @@
           <p class="card-title">Publication · Instagram et Facebook</p>
           <span class="pill pill-quiet"><svg class="i"><use href="#i-image"/></svg>1 photo</span>
         </div>
-        <div style="position:relative;border-radius:8px;overflow:hidden;height:132px;background:#ddd">
+        <div id="zoe-photo" style="position:relative;border-radius:8px;overflow:hidden;height:132px;background:#ddd">
           <img src="assets/post-vendu.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
           <span style="position:absolute;left:10px;top:10px;padding:3px 10px;border-radius:6px;background:#fff;font-size:12px;font-weight:600;letter-spacing:.06em">VENDU</span>
         </div>
-        <div class="paper">Vendu en 12 jours. Merci à M. et Mme Garnier pour leur confiance : cette maison du 12 rue Garibaldi a trouvé ses nouveaux propriétaires.</div>
+        <div class="paper">Vendu en 12 jours. Merci à M. Lambert pour sa confiance : cette maison de Tassin a trouvé ses nouveaux propriétaires.</div>
         <div class="btns"><span class="btn btn-tint">Valider</span><span class="btn btn-quiet">Refuser</span></div>
       </div>
     </div></div>
 
-    <!-- ===== 0:30-0:34 · Emma : la routine du vendredi 17 h (ui/routines.html) ===== -->
+    <!-- ===== 0:16-0:20 · Emma : la routine du vendredi 17 h, à 17 h (ui/routines.html) ===== -->
     <div class="ui agent" id="ag-emma3">
-      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="29.6" data-a="34.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="15.6" data-a="20.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
       <div class="agent-txt"><b>Emma</b><span class="role">Assistante de direction</span>
         <span class="status"><span class="brand s1"><i class="dot"></i>Routine du vendredi 17 h</span><span class="ok s2"><svg class="i"><use href="#i-check"/></svg>Point vendeurs prêt (6 vendeurs)</span></span>
       </div>
@@ -395,26 +454,26 @@
     <div class="ui artefact" id="art-routine"><div class="z" style="zoom:var(--z-routine);width:458px;display:flex;flex-direction:column;gap:8px">
       <div class="routine">
         <span class="ra" style="--ra-s:32px"><span class="ra-stack"><img src="assets/agents/emma.webp" alt=""></span></span>
-        <div><div class="routine-title">Point vendeurs du vendredi <span class="tag tag-line">Système · sans IA</span></div></div>
+        <div><div class="routine-title">Point vendeurs du vendredi</div></div>
         <p class="routine-line"><b>Le vendredi à 17 h</b> → <b>Emma</b> prépare pour chaque vendeur le compte rendu des visites de la semaine → sur Telegram</p>
       </div>
       <div class="steps">
         <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>6 comptes rendus préparés</div>
-        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. et Mme Garnier · 12 rue Garibaldi</span><span class="s">3 visites</span></div>
-        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Bernard · T3 avenue Jean-Jaurès</span><span class="s">2 visites</span></div>
-        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Roche · maison de Caluire</span><span class="s">4 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. et Mme Garnier · 12 rue des Lilas</span><span class="s">3 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Petit · T2 place Bellecour</span><span class="s">2 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Henry · T4 Croix-Rousse</span><span class="s">4 visites</span></div>
         <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Faure · studio rue Duguesclin</span><span class="s">1 visite</span></div>
-        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Lambert · loft quai Perrache</span><span class="s">2 visites</span></div>
-        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Petit · T2 place Bellecour</span><span class="s">3 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Morel · maison d'Écully</span><span class="s">2 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Blanc · T3 Monplaisir</span><span class="s">3 visites</span></div>
       </div>
     </div></div>
 
-    <!-- ===== 0:34-0:38 · ce que voient tes clients ===== -->
+    <!-- ===== 0:34-0:38,6 · ce que voient tes clients : exactement ce qu'on a vu préparer ===== -->
     <p class="ui" id="clients-titre">Ce que voient tes clients</p>
     <div class="ui recu" id="recu1">
       <span class="recu-ico"><svg class="i"><use href="#i-message"/></svg></span>
       <div><div class="recu-l1"><b>Camille Durand · acquéreuse</b><span>WhatsApp</span></div>
-        <div class="recu-l2">« Je vous confirme notre visite de samedi à 10h00, 12 rue des Lilas. À samedi ! »</div></div>
+        <div class="recu-l2">« Bonjour Camille, je vous rappelle notre visite aujourd'hui à 17h15 au 12 rue des Lilas. À tout à l'heure ! »</div></div>
     </div>
     <div class="ui recu" id="recu2">
       <span class="recu-ico"><svg class="i"><use href="#i-mail"/></svg></span>
@@ -422,9 +481,9 @@
         <div class="recu-l2">« Votre point de la semaine : 3 visites, dont un couple qui souhaite revenir avec un artisan. »</div></div>
     </div>
     <div class="ui recu" id="recu3">
-      <span class="recu-ico"><svg class="i"><use href="#i-file-text"/></svg></span>
+      <span class="recu-ico"><svg class="i"><use href="#i-mail"/></svg></span>
       <div><div class="recu-l1"><b>Maître Lefèvre · notaire</b><span>E-mail</span></div>
-        <div class="recu-l2">« Facture d'honoraires, 12 rue Garibaldi, en pièce jointe. »</div></div>
+        <div class="recu-l2">« Maître, je reviens vers vous pour la signature de jeudi : pouvez-vous me confirmer l'heure ? »</div></div>
     </div>
   </section>
 
@@ -463,22 +522,29 @@
 </div>
 
 <script>
-// Deux ouvertures à comparer (film.html#A, film.html#B) ; la suite est la même.
+// Deux ouvertures (film.html#A, film.html#B) ; la suite est la même.
 //  A : noir → la notification → l'écran se coupe en deux (storyboard §3).
 //  B : l'écran est déjà coupé ; sa vie à gauche dès l'image 0, la notification à droite.
-// Ancre : #B (défaut, choisie par Julien le 12/10), #A, et le format :
-// #B-portrait (9:16) ou #B-carre (1:1). L'ouverture A n'existe qu'en paysage.
-const [ANCRE_V, ANCRE_F] = location.hash.replace("#", "").split("-");
-const VARIANTE = (ANCRE_V || "B").toUpperCase() === "A" ? "A" : "B";
-const FORMAT = ["portrait", "carre"].includes(ANCRE_F) ? ANCRE_F : "paysage";
+// Ancre : #B (défaut, choisie par Julien le 12/10) ou #A, puis le format
+// (#B-portrait 9:16, #B-carre 1:1), puis -pub pour les publicités : image 0
+// complète (rien n'entre sur la 1re image), écran de fin plus court, sans la
+// ligne de détail des 15 h (illisible dans un fil). L'ouverture A n'existe qu'en paysage.
+const ANCRE = location.hash.replace("#", "").split("-");
+const VARIANTE = (ANCRE[0] || "B").toUpperCase() === "A" ? "A" : "B";
+const FORMAT = ["portrait", "carre"].includes(ANCRE[1]) ? ANCRE[1] : "paysage";
+const PUB = ANCRE.includes("pub");
 document.documentElement.dataset.format = FORMAT;
+if (PUB) document.documentElement.dataset.pub = "";
 // Géométrie de chaque format (les mêmes valeurs que les variables CSS) :
-// la vie (l, h), la cible de la notification (x, y, échelle), l'écart de
-// « Pendant ce temps… » en grand, et le repli de l'équipe à 0:37.
+//  vie [l, h] ; notif [x, y, échelle] et taille [nw, nh] de la notification posée ;
+//  pendant = écart de « Pendant ce temps… » en grand, ech = son échelle en titre de
+//  colonne ; revel = de combien la vie se resserre pour les messages des clients ;
+//  centre = cadrage de la poignée de main plein écran ; yCle = limite basse de ce
+//  qui compte (zone sûre) ; stFin = bas du sous-titre une fois la vie plein écran.
 const GEO = {
-  paysage: { W: 1920, H: 1080, vie: [960, 1080], notif: [1440, 590, 0.76], pendant: 324, repli: ["translateX(0px)", "translateX(960px)", "width", "960px", "1920px"], centre: 0.5 },
-  portrait: { W: 1080, H: 1920, vie: [1080, 860], notif: [540, 1252, 0.9], pendant: 176, repli: ["translateY(0px)", "translateY(1060px)", "height", "860px", "1920px"], centre: 0.6 },
-  carre: { W: 1080, H: 1080, vie: [1080, 520], notif: [540, 818, 0.86], pendant: 96, repli: ["translateY(0px)", "translateY(560px)", "height", "520px", "1080px"], centre: 0.55 },
+  paysage: { W: 1920, H: 1080, vie: [960, 1080], notif: [1440, 590, 0.76], nw: 1020, nh: 180, pendant: 324, ech: 0.382, revel: 0, centre: 0.5, yCle: Infinity, stFin: 96 },
+  portrait: { W: 1080, H: 1920, vie: [1080, 700], notif: [540, 960, 1], nw: 952, nh: 196, pendant: 40, ech: 0.6, revel: 180, centre: 0.68, yCle: 1236, stFin: 700 },
+  carre: { W: 1080, H: 1080, vie: [1080, 520], notif: [540, 730, 1], nw: 952, nh: 168, pendant: 18, ech: 0.6, revel: 80, centre: 0.6, yCle: 972, stFin: 140 },
 }[FORMAT];
 // L'ossature imposée fixe #stage à 1920×1080 en style en ligne : on l'ajuste au format.
 document.getElementById("stage").style.width = GEO.W + "px";
@@ -491,21 +557,24 @@ const RUSHES = [
   ["rush3", 12, 20, 0], ["rush4", 20, 26, 0], ["rush5", 26, 34, 0], ["rush6", 34, 45, 0],
 ];
 if (VARIANTE === "B") { document.getElementById("rush1").src = "graded/1b.mp4"; document.getElementById("rush2").src = "graded/2b.mp4"; }
-// Sous-titres incrustés : 40 caractères au plus, une idée chacun, rien que le
-// produit ne fasse pas. Pas de sous-titre sur l'ouverture : la notification se lit seule.
+// Sous-titres incrustés : 40 caractères au plus, une idée chacun, rien que le
+// produit ne fasse pas, posés au moment de ce qu'ils disent. Pas de sous-titre
+// sur l'ouverture : la notification se lit seule.
 const ST = [
-  [4, 7.6, VARIANTE === "B" ? "Emma prépare la suite." : "Tu fais visiter. Emma prépare la suite."],
-  [7.6, 12, "Un tap. Camille reçoit son rappel."],
+  [4, 8.2, VARIANTE === "B" ? "Emma prépare la suite." : "Tu fais visiter. Emma prépare la suite."],
+  [8.2, 12, "Un tap. Camille reçoit son rappel."],
   [12, 16, "Au café, Lucas chiffre le bien."],
-  [16, 20, "Christine prépare la relance des pièces."],
+  [16, 18.35, "17 h : Emma prépare le point vendeurs."],
+  [18.35, 20, "Le point vendeurs est prêt."],
   [20, 23, "Un vocal entre deux portes."],
   [23, 26, "Max transmet. Emma rédige le mail."],
-  [26, 29.6, "Le soir, Zoé prépare le post « Vendu »."],
-  [29.6, 34, "Le point vendeurs est prêt."],
-  [34, 40, "Tes clients sont tenus au courant."],
+  [26, 29.4, "Le soir, Zoé prépare le post « Vendu »."],
+  [29.4, 34, "Christine prépare la relance des pièces."],
+  [34, 40, "Tes clients reçoivent ce que tu valides."],
 ];
-// L'heure affichée à droite, « au même instant » que la scène de gauche.
-const HORLOGE = [[0, "Vendredi 15 h 15"], [12, "Vendredi 16 h 40"], [20, "Vendredi 17 h 55"], [26, "Vendredi 20 h 30"]];
+// L'heure affichée à droite, « au même instant » que la scène de gauche ; la
+// routine du vendredi 17 h tourne à 17 h.
+const HORLOGE = [[0, "Vendredi 15 h 15"], [12, "Vendredi 16 h 40"], [16, "Vendredi 17 h 00"], [20, "Vendredi 17 h 55"], [26, "Vendredi 20 h 30"]];
 
 const EASE = "cubic-bezier(.2,.7,.2,1)";
 const OUT = "cubic-bezier(.22,1,.36,1)";
@@ -579,20 +648,55 @@ function cadre(id, cles) {
   }));
 }
 
+// Portrait et carré : chaque carte défile dans son cadre pour que sa ligne
+// utile reste au-dessus de GEO.yCle. Les décalages se mesurent sur la mise en
+// page au repos ; pan() les joue ensuite (0,3 s chacun).
+const DEFILE = {};
+function mesure(art, cles) {
+  DEFILE[art] = cles.map(([t, sel]) => [t, Number.isFinite(GEO.yCle)
+    ? Math.max(0, Math.round($(sel, $(art)).getBoundingClientRect().bottom - GEO.yCle)) : 0]);
+}
+function decalage(art, t) {
+  let d = 0;
+  for (const [t0, sh] of DEFILE[art] || []) if (t >= t0) d = sh;
+  return d;
+}
+function pan(art) {
+  const cles = DEFILE[art] || [];
+  if (!cles.some(([, sh]) => sh > 0)) return;
+  const k = [[0, "translateY(0px)"]];
+  let avant = 0;
+  for (const [t, sh] of cles) { k.push([t, `translateY(${-avant}px)`, INOUT], [t + 0.3, `translateY(${-sh}px)`]); avant = sh; }
+  piste($(".pan", $(art)), "transform", k);
+}
+
 function construire() {
+  // Chaque carte dans un cadre qui défile (.pan), avant toute mesure.
+  $$(".artefact").forEach((a) => { const p = document.createElement("div"); p.className = "pan"; while (a.firstChild) p.appendChild(a.firstChild); a.appendChild(p); });
+  // Les messages des clients s'empilent sous leur titre.
+  const ct = $("#clients-titre");
+  let yr = ct.offsetTop + ct.offsetHeight + { paysage: 58, portrait: 26, carre: 14 }[FORMAT];
+  ["#recu1", "#recu2", "#recu3"].forEach((id) => { const e = $(id); e.style.top = yr + "px"; yr += e.offsetHeight + { paysage: 30, portrait: 18, carre: 10 }[FORMAT]; });
   // Mesures prises sur la mise en page au repos, avant toute animation.
-  const v = $("#valider").getBoundingClientRect(), x = v.left + v.width / 2, y = v.top + v.height / 2;
+  mesure("#art-rappel", [[7.75, "#btns"]]);
+  mesure("#art-lucas", [[13.3, ".prix"]]);
+  mesure("#art-routine", [[17.55, ".step.v:nth-child(4)"]]);
+  mesure("#art-vocal", [[21.6, "#tg-max"], [24.0, "#tg-emma"]]);
+  mesure("#art-zoe", [[27.5, ".paper"]]);
+  mesure("#art-christine", [[31.6, "#carte-relance"]]);
+  const v = $("#valider").getBoundingClientRect(), x = v.left + v.width / 2, y = v.top + v.height / 2 - decalage("#art-rappel", 8);
   const pd = $("#pendant"), hz = $("#horloge");
-  hz.style.left = pd.offsetLeft + pd.offsetWidth * 0.382 + 22 + "px";
-  hz.style.top = pd.offsetTop + (pd.offsetHeight * 0.382 - hz.offsetHeight) / 2 + "px";
+  hz.style.left = pd.offsetLeft + pd.offsetWidth * GEO.ech + 22 + "px";
+  hz.style.top = pd.offsetTop + (pd.offsetHeight * GEO.ech - hz.offsetHeight) / 2 + "px";
   // La notification part du centre de l'écran (ouverture A) ; en B elle se pose
   // dans la colonne de l'équipe (GEO.notif).
   const nt = $("#notif");
-  nt.style.left = (GEO.W - 1020) / 2 + "px";
-  nt.style.top = GEO.H * 0.435 - 90 + "px";
+  nt.style.width = GEO.nw + "px"; nt.style.height = GEO.nh + "px";
+  nt.style.left = (GEO.W - GEO.nw) / 2 + "px";
+  nt.style.top = GEO.H * 0.435 - GEO.nh / 2 + "px";
   const [nx, ny, ns] = GEO.notif, ndx = nx - GEO.W / 2, ndy = ny - GEO.H * 0.435;
   const nPose = (dy) => `translate(${ndx}px, ${ndy + dy}px) scale(${ns})`;
-  const P = GEO.pendant, pGrand = (dy) => `translate(0px, ${P + dy}px) scale(1)`;
+  const P = GEO.pendant, pGrand = (dy) => `translate(0px, ${P + dy}px) scale(1)`, pPetit = `translate(0px, 0px) scale(${GEO.ech})`;
 
   // ===================== 0:00-0:04 · ouverture =====================
   if (VARIANTE === "A") {
@@ -605,27 +709,30 @@ function construire() {
     piste("#notif", "transform", [[0.3, "translate(0px, -30px) scale(0.97)", OUT], [0.65, "translate(0px, 0px) scale(1)", "linear"],
       [2.2, "translate(0px, 0px) scale(1)", INOUT], [2.6, "translate(-480px, 0px) scale(0.78)"]]);
     piste("#droite", "clipPath", [[2.2, "inset(0px 100% 0px 0px)", "cubic-bezier(.7,0,.2,1)"], [2.6, "inset(0px 0% 0px 0px)"]]);
-    piste("#pendant", "opacity", [[2.55, 0], [2.9, 1], [34.0, 1], [34.3, 0]], OUT);
+    piste("#pendant", "opacity", [[2.55, 0], [2.9, 1], [33.75, 1], [34.05, 0]], OUT);
     piste("#pendant", "transform", [[2.55, pGrand(28), OUT], [2.9, pGrand(0), "linear"],
-      [4.0, pGrand(0), "cubic-bezier(.7,0,.2,1)"], [4.4, "translate(0px, 0px) scale(0.382)"]]);
+      [4.0, pGrand(0), "cubic-bezier(.7,0,.2,1)"], [4.4, pPetit]]);
     piste("#w1", "opacity", [[3.85, 0], [4.15, 1]], "linear");
     cadre("rush1", [[3.85, 0.5, 1.0, 0], [5.0, 0.49, 1.015, 0], [6.0, 0.43, 1.03, 0], [7.6, 0.42, 1.05, 0]]);
     cadre("rush2", [[7.6, 0.78, 1.03, 0.3], [8.5, 0.72, 1.035, 0.3], [9.6, 0.64, 1.04, 0.3], [10.8, 0.6, 1.045, 0.3], [12.0, 0.56, 1.05, 0.3]]);
   } else {
-    // L'écran est déjà coupé : la porte s'ouvre à gauche, la grande ligne (en bas,
-    // sous les visages) arrive
-    // dans la première demi-seconde, la notification arrive à droite.
+    // L'écran est déjà coupé : la porte s'ouvre sur la vie, la grande ligne (sous
+    // les visages) arrive dans la première demi-seconde, la notification à côté.
+    // Pour une pub, tout est déjà en place à l'image 0.
     $("#notif").classList.add("clair");
     piste("#droite", "clipPath", [[0, "inset(0px 0% 0px 0px)"], [0.001, "inset(0px 0% 0px 0px)"]]);
-    piste("#accroche", "opacity", [[0.05, 0], [0.4, 1], [3.55, 1], [3.85, 0]], OUT);
-    piste("#accroche", "transform", [[0.05, "translateY(18px)", OUT], [0.4, "translateY(0px)", "linear"], [3.55, "translateY(0px)", INOUT], [3.85, "translateY(-14px)"]]);
-    piste("#accroche-voile", "opacity", [[0, 0.6], [0.35, 1], [3.6, 1], [3.95, 0]], "ease-in-out");
-    piste("#notif", "opacity", [[0.55, 0], [0.9, 1], [4.0, 1], [4.3, 0]], OUT);
-    piste("#notif", "transform", [[0.55, nPose(-36), OUT], [0.9, nPose(0), "linear"],
-      [4.0, nPose(0), INOUT], [4.3, nPose(-24)]]);
-    piste("#pendant", "opacity", [[1.15, 0], [1.5, 1], [34.0, 1], [34.3, 0]], OUT);
-    piste("#pendant", "transform", [[1.15, pGrand(28), OUT], [1.5, pGrand(0), "linear"],
-      [4.0, pGrand(0), "cubic-bezier(.7,0,.2,1)"], [4.4, "translate(0px, 0px) scale(0.382)"]]);
+    const e = (t) => (PUB ? 0 : t);          // entrée : à l'image 0 pour une pub
+    piste("#accroche", "opacity", [...(PUB ? [] : [[0.05, 0]]), [e(0.4), 1], [3.55, 1], [3.85, 0]], OUT);
+    piste("#accroche", "transform", [...(PUB ? [] : [[0.05, "translateY(18px)", OUT]]), [e(0.4), "translateY(0px)", "linear"], [3.55, "translateY(0px)", INOUT], [3.85, "translateY(-14px)"]]);
+    piste("#accroche-voile", "opacity", [...(PUB ? [] : [[0, 0.6]]), [e(0.35), 1], [3.6, 1], [3.95, 0]], "ease-in-out");
+    piste("#notif", "opacity", [...(PUB ? [] : [[0.55, 0]]), [e(0.9), 1], [4.0, 1], [4.3, 0]], OUT);
+    piste("#notif", "transform", [...(PUB ? [] : [[0.55, nPose(-36), OUT]]), [e(0.9), nPose(0), "linear"], [4.0, nPose(0), INOUT], [4.3, nPose(-24)]]);
+    piste("#pendant", "opacity", [...(PUB ? [] : [[1.15, 0]]), [e(1.5), 1], [33.75, 1], [34.05, 0]], OUT);
+    piste("#pendant", "transform", [...(PUB ? [] : [[1.15, pGrand(28), OUT]]), [e(1.5), pGrand(0), "linear"],
+      [4.0, pGrand(0), "cubic-bezier(.7,0,.2,1)"], [4.4, pPetit]]);
+    // L'équipe, sous la notification (portrait et carré).
+    piste("#rail-equipe", "opacity", [...(PUB ? [] : [[1.35, 0]]), [e(1.7), 1], [3.95, 1], [4.25, 0]], OUT);
+    piste("#rail-equipe", "transform", [...(PUB ? [] : [[1.35, "translateY(22px)", OUT]]), [e(1.7), "translateY(0px)", "linear"], [3.95, "translateY(0px)", INOUT], [4.25, "translateY(-16px)"]]);
     piste("#w1", "opacity", [[0, 1], [0.001, 1]], "linear");
     // Ralentis : t de film → source 1,0 + 0,75 t (plan 1), 1,5 + 0,6 (t − 4,6) (plan 2).
     cadre("rush1", [[0, 0.5, 1.0, 0], [1.33, 0.49, 1.015, 0], [2.67, 0.43, 1.03, 0], [4.6, 0.42, 1.04, 0]]);
@@ -633,7 +740,7 @@ function construire() {
   }
   // « Pendant ce temps… » se range en titre de colonne, l'heure arrive à côté.
   piste("#pendant", "color", [[4.0, "rgb(12, 15, 22)"], [4.4, "rgb(88, 97, 112)"]], "linear");
-  vie("#horloge", 4.3, 34.0, { dy: 0, x: 0, dyOut: 0 });
+  vie("#horloge", 4.3, 33.75, { dy: 0, x: 0, dyOut: 0 });
 
   // ===================== 0:04-0:12 · la visite / Emma (identique en A et B) =====================
   // La notification l'a dit : le rappel est prêt. Emma l'a préparé, il attend le tap.
@@ -655,26 +762,27 @@ function construire() {
   piste("#carte-badge", "backgroundColor", [[9.25, "rgb(79, 70, 229)"], [9.45, "rgb(18, 183, 106)"]], "linear");
   piste("#c4", "transform", [[9.4, "translateY(0px)", INOUT], [9.75, "translateY(-22px)"]]);
   piste("#c3", "transform", [[9.4, "translateY(22px)", INOUT], [9.75, "translateY(0px)"]]);
+  pan("#art-rappel");
 
-  // ===================== 0:12-0:20 · le café / Lucas puis Christine =====================
+  // ===================== 0:12-0:20 · le café : Lucas, puis la routine de 17 h =====================
   cadre("rush3", [[12.0, 0.55, 1.0], [16.0, 0.56, 1.03], [20.0, 0.57, 1.06]]);
-  agent("#ag-lucas", 12.05, 15.75, { travail: [12.25, 14.15], pret: 14.2, statuts: [[".s1", 12.1, 14.1], [".s2", 14.2, null]] });
+  // Lucas chiffre le bien de Mme Bernard, la vendeuse du café.
+  agent("#ag-lucas", 12.05, 15.75, { travail: [12.25, 14.15], pret: 14.2, statuts: [[".s1", 12.1, 14.2], [".s2", 14.2, null]] });
   vie("#art-lucas", 12.4, 15.75, { dy: 40, dIn: 0.4 });
   piste("#courbe", "strokeDashoffset", [[12.9, 100, "cubic-bezier(.45,0,.2,1)"], [14.0, 0]]);
   $$("#art-lucas .pt").forEach((p, i) => piste(p, "opacity", [[12.95 + i * 0.14, 0], [13.08 + i * 0.14, 1]], "linear"));
-  agent("#ag-christine", 16.05, 19.75, { travail: [16.25, 18.3], pret: 18.35, statuts: [[".s1", 16.1, 18.3], [".s2", 18.35, null]] });
-  vie("#art-christine", 16.35, 19.75, { dy: 40, dIn: 0.4 });
-  $$("#art-christine .step").forEach((s, i) => {
-    piste(s, "opacity", [[16.6 + i * 0.16, 0.0], [16.8 + i * 0.16, 1]], "linear");
-    const ck = $(".ck", s);
-    if (ck) piste(ck, "transform", [[16.9 + i * 0.22, "scale(0)", SPRING], [17.15 + i * 0.22, "scale(1)"]]);
-  });
-  vie("#carte-relance", 18.3, null, { dy: 18, dIn: 0.4 });
+  pan("#art-lucas");
+  // 17 h : la routine du vendredi tourne à son heure ; Emma prépare le point de
+  // chaque vendeur (dont M. Garnier, dont on visite la maison à 0:04).
+  agent("#ag-emma3", 16.05, 19.75, { travail: [16.25, 18.3], pret: 18.35, fini: 18.35, statuts: [[".s1", 16.1, 18.35], [".s2", 18.35, null]] });
+  vie("#art-routine", 16.35, 19.75, { dy: 40, dIn: 0.4 });
+  $$("#art-routine .step.v").forEach((s, i) => piste(s, "opacity", [[17.2 + i * 0.18, 0], [17.35 + i * 0.18, 1]], "linear"));
+  pan("#art-routine");
 
-  // ===================== 0:20-0:26 · le vocal / Max puis Emma =====================
+  // ===================== 0:20-0:26 · le vocal : Max transmet, Emma écrit au notaire =====================
   cadre("rush4", [[20.0, 0.43, 1.02], [26.0, 0.52, 1.05]]);
-  agent("#ag-max", 20.05, 22.55, { travail: [20.3, 21.9], pret: 21.95, statuts: [[".s1", 20.1, 21.9], [".s2", 21.95, null]] });
-  agent("#ag-emma2", 22.75, 25.75, { travail: [22.9, 24.3], pret: 24.35, statuts: [[".s1", 22.8, 24.3], [".s2", 24.35, null]] });
+  agent("#ag-max", 20.05, 22.55, { travail: [20.3, 21.9], pret: 21.95, statuts: [[".s1", 20.1, 21.95], [".s2", 21.95, null]] });
+  agent("#ag-emma2", 22.75, 25.75, { travail: [22.9, 24.3], pret: 24.35, statuts: [[".s1", 22.8, 24.35], [".s2", 24.35, null]] });
   vie("#art-vocal", 20.2, 25.75, { dy: 40, dIn: 0.4 });
   vie("#tg-vocal", 20.45, null, { dy: 16, dIn: 0.35 });
   $$("#onde-vocale i").forEach((b, i, all) => piste(b, "backgroundColor",
@@ -683,40 +791,62 @@ function construire() {
   piste("#parole-voile", "opacity", [[20.5, 0], [20.85, 1], [23.4, 1], [23.75, 0]], "ease-in-out");
   vie("#tg-max", 21.95, null, { dy: 16, dIn: 0.35 });
   vie("#tg-emma", 24.35, null, { dy: 16, dIn: 0.35 });
+  pan("#art-vocal");
 
-  // ===================== 0:26-0:34 · le soir / Zoé puis Emma =====================
+  // ===================== 0:26-0:34 · le soir : Zoé, puis Christine =====================
   cadre("rush5", [[26.0, 0.43, 1.0], [34.0, 0.45, 1.05]]);
-  // Le relais Zoé → Emma se fait avant 0:30 : à 0:30 la routine est déjà là.
-  agent("#ag-zoe", 26.05, 29.3, { travail: [26.25, 27.7], pret: 27.75, statuts: [[".s1", 26.1, 27.7], [".s2", 27.75, null]] });
-  vie("#art-zoe", 26.35, 29.3, { dy: 40, dIn: 0.4 });
-  agent("#ag-emma3", 29.6, 33.75, { travail: [29.8, 32.0], pret: 32.05, fini: 32.05, statuts: [[".s1", 29.65, 32.0], [".s2", 32.05, null]] });
-  vie("#art-routine", 29.85, 33.75, { dy: 40, dIn: 0.4 });
-  $$("#art-routine .step.v").forEach((s, i) => piste(s, "opacity", [[29.95 + i * 0.2, 0], [30.1 + i * 0.2, 1]], "linear"));
+  // Zoé : la maison de Tassin de M. Lambert, vendue.
+  agent("#ag-zoe", 26.05, 29.1, { travail: [26.25, 27.7], pret: 27.75, statuts: [[".s1", 26.1, 27.75], [".s2", 27.75, null]] });
+  vie("#art-zoe", 26.35, 29.1, { dy: 40, dIn: 0.4 });
+  pan("#art-zoe");
+  // Christine : les pièces du compromis de M. et Mme Roche, et la relance.
+  agent("#ag-christine", 29.4, 33.75, { travail: [29.6, 31.95], pret: 32.0, statuts: [[".s1", 29.45, 32.0], [".s2", 32.0, null]] });
+  vie("#art-christine", 29.55, 33.75, { dy: 40, dIn: 0.4 });
+  $$("#art-christine .step").forEach((s, i) => {
+    // La liste arrive entière avec la carte (jamais vide à 0:30), puis les pièces se cochent.
+    const ck = $(".ck", s);
+    if (ck) piste(ck, "transform", [[30.4 + i * 0.22, "scale(0)", SPRING], [30.65 + i * 0.22, "scale(1)"]]);
+  });
+  vie("#carte-relance", 31.95, null, { dy: 18, dIn: 0.35 });
+  pan("#art-christine");
 
   // ===================== 0:34-0:40 · ce que voient tes clients, puis la main serrée =====================
-  vie("#clients-titre", 34.1, null, { dy: 20, dIn: 0.35 });
-  vie("#recu1", 34.45, null, { dy: 30 });
-  vie("#recu2", 35.15, null, { dy: 30 });
-  vie("#recu3", 35.85, null, { dy: 30 });
-  // Le côté droit se replie : il ne reste qu'une personne et son client.
-  const [d0, d1, prop, g0, g1] = GEO.repli;
-  // Quand la vie prend tout l'écran, le sous-titre la suit : centré en paysage,
-  // en bas (au-dessus de la bande des contrôles) en portrait et en carré.
-  if (FORMAT === "paysage") piste("#st", "left", [[37.4, "480px", "cubic-bezier(.7,0,.25,1)"], [37.8, "960px"]]);
-  else piste("#st", "bottom", [[37.4, getComputedStyle($("#st")).bottom, "cubic-bezier(.7,0,.25,1)"], [37.8, FORMAT === "portrait" ? "200px" : "110px"]]);
-  piste("#droite", "transform", [[37.4, d0, "cubic-bezier(.7,0,.25,1)"], [37.8, d1]]);
-  piste("#gauche", prop, [[37.4, g0, "cubic-bezier(.7,0,.25,1)"], [37.8, g1]]);
-  cadre("rush6", [[34.0, 0.56, 1.0], [37.4, 0.56, 1.02], [37.8, GEO.centre, 1.0, 0.5, GEO.W, GEO.H], [45.0, GEO.centre, 1.0, 0.5, GEO.W, GEO.H]]);
+  // Exactement ce qu'on a vu préparer : le rappel validé à 0:08, le point du
+  // vendredi, la relance du notaire dictée à 0:20. Une carte toutes les 0,3 s.
+  vie("#clients-titre", 34.05, null, { dy: 20, dIn: 0.3 });
+  vie("#recu1", 34.3, null, { dy: 30, dIn: 0.3 });
+  vie("#recu2", 34.6, null, { dy: 30, dIn: 0.3 });
+  vie("#recu3", 34.9, null, { dy: 30, dIn: 0.3 });
+  // Puis le côté de l'équipe se replie (38,6 → 39,0) : il ne reste qu'une
+  // personne et son client, la poignée de main tenue jusqu'à 40 s. En portrait
+  // et en carré, la vie se resserre d'abord pour laisser lire les messages, et
+  // le sous-titre la suit.
+  const R = GEO.revel, F0 = 38.6, F1 = 39.0, C = "cubic-bezier(.7,0,.25,1)", [vw, vh] = GEO.vie;
+  if (FORMAT === "paysage") {
+    piste("#droite", "transform", [[F0, "translateX(0px)", C], [F1, "translateX(960px)"]]);
+    piste("#gauche", "width", [[F0, "960px", C], [F1, "1920px"]]);
+    piste("#st", "left", [[F0, "480px", C], [F1, "960px"]]);
+    cadre("rush6", [[34.0, 0.56, 1.0], [F0, 0.56, 1.02], [F1, GEO.centre, 1.0, 0.5, GEO.W, GEO.H], [45.0, GEO.centre, 1.0, 0.5, GEO.W, GEO.H]]);
+  } else {
+    const b0 = parseFloat(getComputedStyle($("#st")).bottom);
+    piste("#droite", "transform", [[34.0, "translateY(0px)", INOUT], [34.3, `translateY(${-R}px)`], [F0, `translateY(${-R}px)`, C], [F1, `translateY(${GEO.H}px)`]]);
+    piste("#gauche", "height", [[34.0, vh + "px", INOUT], [34.3, vh - R + "px"], [F0, vh - R + "px", C], [F1, GEO.H + "px"]]);
+    piste("#st", "bottom", [[34.0, b0 + "px", INOUT], [34.3, b0 + R + "px"], [F0, b0 + R + "px", C], [F1, GEO.stFin + "px"]]);
+    cadre("rush6", [[34.0, 0.56, 1.0, 0.5, vw, vh], [34.3, 0.56, 1.0, 0.5, vw, vh - R], [F0, 0.56, 1.02, 0.5, vw, vh - R],
+      [F1, GEO.centre, 1.0, 0.5, GEO.W, GEO.H], [45.0, GEO.centre, 1.0, 0.5, GEO.W, GEO.H]]);
+  }
 
   // ===================== 0:40-0:45 · la promesse =====================
   piste("#voile", "opacity", [[40.0, 0], [40.4, 0.94]], OUT);
   piste("#rush6", "filter", [[40.0, "blur(0px)"], [40.4, "blur(14px)"]], OUT);
-  vie(".fin-logo", 40.3, null, { dy: 12 });
-  vie(".fin-equipe", 40.45, null, { dy: 16 });
-  vie("#fin h1", 40.6, null, { dy: 26, dIn: 0.4 });
-  vie(".fin-ligne", 41.2, null, { dy: 16 });
-  vie(".fin-btns", 41.6, null, { dy: 16 });
-  vie(".fin-note", 41.9, null, { dy: 8 });
+  // Pub : l'écran de fin est complet dès 40,8 s (environ 3 s lisibles).
+  const T = PUB ? [40.1, 40.15, 40.2, 40.35, 40.45] : [40.3, 40.45, 40.6, 41.2, 41.6];
+  vie(".fin-logo", T[0], null, { dy: 12 });
+  vie(".fin-equipe", T[1], null, { dy: 16 });
+  vie("#fin h1", T[2], null, { dy: 26, dIn: 0.4 });
+  vie(".fin-ligne", T[3], null, { dy: 16 });
+  vie(".fin-btns", T[4], null, { dy: 16 });
+  if (!PUB) vie(".fin-note", 41.9, null, { dy: 8 });
 }
 
 // Barres de l'onde du vocal (hauteurs fixes : même image à chaque rendu).

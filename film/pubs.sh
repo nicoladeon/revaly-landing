@@ -1,28 +1,35 @@
 #!/bin/bash
-# Déclinaisons pour les pubs, montées depuis les rendus et la même musique
-# (mêmes sous-titres que le film vertical : 56 px, 40 caractères au plus).
-#   film/out/revaly-vertical-30s.mp4 : 9:16, 30 s = la visite et le tap (0-11,75),
-#     le vocal (20,05-25,75), la révélation et la fin (34-46,55)
-#   film/out/revaly-carre-15s.mp4    : 1:1, 15 s = l'accroche (0-4), la révélation et la fin (34-45)
-# Prérequis : film/revaly-47s-vertical-muet.mp4 (FORMAT=portrait render.sh 1410),
-#   film/carre-0-4-muet.mp4 et film/carre-34-45-muet.mp4 (FORMAT=carre, DEBUT=0/1020),
-#   film/music/musique.wav.
+# Pubs, rendues en mode pub (film.html#B-portrait-pub / #B-carre-pub : image 0
+# complète, fin courte et sans la ligne de détail des 15 h), montées image à
+# image sans coupe dans la musique : chaque pub a son propre fond (compose.py).
+#   film/out/revaly-vertical-30s.mp4 (9:16) : accroche 0-4 · tap et café 7,6-15,73 ·
+#     vocal 20,07-25,73 · « Vendu » 26-29,17 · révélation et fin 34-43,03
+#   film/out/revaly-carre-15s.mp4 (1:1)     : accroche 0-3 · tap → Validé 7,9-10 ·
+#     révélation et fin 34-43,9
+# Segments en images (30 i/s) : « début:nombre ». Les repères de musique de
+# compose.py (pub30, pub15) en découlent.
+# Usage : bash film/pubs.sh        (rend les segments manquants dans film/pub-segs/)
 set -e
 F="$(cd "$(dirname "$0")" && pwd)"
-O="$F/out"; mkdir -p "$O"
+O="$F/out"; G="$F/pub-segs"; mkdir -p "$O" "$G"
 T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT
 X264="-c:v libx264 -pix_fmt yuv420p -crf 18 -preset slow -movflags +faststart"
+V30=(0:120 228:244 602:170 780:95 1020:271)
+C15=(0:90 237:63 1020:297)
 
-# --- 9:16, 30 s ---
-V="$F/revaly-47s-vertical-muet.mp4"
-ffmpeg -hide_banner -loglevel error -y -i "$V" -filter_complex \
-  "[0:v]trim=0:11.75,setpts=PTS-STARTPTS[a];[0:v]trim=20.05:25.75,setpts=PTS-STARTPTS[b];[0:v]trim=34:46.55,setpts=PTS-STARTPTS[c];[a][b][c]concat=n=3:v=1:a=0[v]" \
-  -map "[v]" $X264 "$T/v30.mp4"
-bash "$F/mux.sh" "$T/v30.mp4" "$O/revaly-vertical-30s.mp4" \
-  "[0:a]atrim=0:11.75,asetpts=PTS-STARTPTS,afade=t=out:st=11.72:d=0.03[a];[0:a]atrim=20.05:25.75,asetpts=PTS-STARTPTS,afade=t=in:d=0.03,afade=t=out:st=5.67:d=0.03[b];[0:a]atrim=34:46.55,asetpts=PTS-STARTPTS,afade=t=in:d=0.03,afade=t=out:st=11.9:d=0.65[c];[a][b][c]concat=n=3:v=0:a=1"
+assemble() {  # $1=format $2=sortie $3=musique $4…=segments
+  local fmt="$1" out="$2" mus="$3"; shift 3
+  local entrees=() n=0
+  for seg in "$@"; do
+    local d="${seg%%:*}"; local c="${seg##*:}"; local f="$G/$fmt-$d-$c.mp4"
+    [ -s "$f" ] || FORMAT="$fmt" PUB=1 DEBUT="$d" ETAT="${ETAT:-$F/.gstack3/browse.json}" bash "$F/render.sh" "$c" "$f" | grep -E "prêt|capture|ÉCHEC"
+    entrees+=(-i "$f"); n=$((n+1))
+  done
+  local fl=""; for ((i=0; i<n; i++)); do fl="$fl[$i:v]"; done
+  ffmpeg -hide_banner -loglevel error -y "${entrees[@]}" -filter_complex "${fl}concat=n=$n:v=1:a=0[v]" -map "[v]" $X264 "$T/muet.mp4"
+  MUSIQUE="$F/music/$mus" bash "$F/mux.sh" "$T/muet.mp4" "$out" anull
+}
 
-# --- 1:1, 15 s ---
-ffmpeg -hide_banner -loglevel error -y -i "$F/carre-0-4-muet.mp4" -i "$F/carre-34-45-muet.mp4" -filter_complex \
-  "[0:v][1:v]concat=n=2:v=1:a=0[v]" -map "[v]" $X264 "$T/c15.mp4"
-bash "$F/mux.sh" "$T/c15.mp4" "$O/revaly-carre-15s.mp4" \
-  "[0:a]atrim=0:4,asetpts=PTS-STARTPTS,afade=t=out:st=3.97:d=0.03[a];[0:a]atrim=34:45,asetpts=PTS-STARTPTS,afade=t=in:d=0.03,afade=t=out:st=10.35:d=0.65[b];[a][b]concat=n=2:v=0:a=1"
+[ -s "$F/music/musique-pub30.wav" ] && [ -s "$F/music/musique-pub15.wav" ] || python3 "$F/music/compose.py" tout
+assemble portrait "$O/revaly-vertical-30s.mp4" musique-pub30.wav "${V30[@]}"
+assemble carre "$O/revaly-carre-15s.mp4" musique-pub15.wav "${C15[@]}"

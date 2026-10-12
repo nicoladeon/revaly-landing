@@ -1,14 +1,14 @@
 #!/bin/bash
 # Pose la musique sur un film muet, normalisée à −16 LUFS / −1,5 dBTP
 # (deux passes de loudnorm : mesure, puis correction linéaire).
-# Usage : bash film/mux.sh VIDEO_MUETTE SORTIE.mp4 ["filtre audio"]
+# Usage : [MUSIQUE=fichier.wav] bash film/mux.sh VIDEO_MUETTE SORTIE.mp4 ["filtre audio"]
 #   par défaut : les 45 premières secondes de film/music/musique.wav, fondu de 0,7 s à la fin.
-#   ex. pub : bash film/mux.sh pub-muette.mp4 pub.mp4 "[0:a]atrim=0:11.75[a];…;[a][b]concat=n=2:v=0:a=1"
+#   pub : MUSIQUE=film/music/musique-pub30.wav bash film/mux.sh pub-muette.mp4 pub.mp4 anull
 set -e
 F="$(cd "$(dirname "$0")" && pwd)"
 V="${1:?vidéo muette}"; OUT="${2:?sortie}"
 FILTRE="${3:-atrim=0:45,asetpts=PTS-STARTPTS,afade=t=out:st=44.3:d=0.7}"
-M="$F/music/musique.wav"
+M="${MUSIQUE:-$F/music/musique.wav}"
 [ -s "$M" ] || { echo "musique absente : python3 film/music/compose.py"; exit 1; }
 [ -s "$V" ] || { echo "vidéo absente : $V"; exit 1; }
 T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT

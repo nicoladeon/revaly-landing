@@ -1,11 +1,12 @@
 #!/bin/bash
 # Capture image par image de film/film.html puis encodage x264 (chaîne du film
 # KW estim du 19/08, ~/kwestim-video/film/render.sh).
-# Usage : [VARIANTE=B|A] [FORMAT=paysage|portrait|carre] [DEBUT=image] bash film/render.sh TOTAL [sortie.mp4]
+# Usage : [VARIANTE=B|A] [FORMAT=paysage|portrait|carre] [PUB=1] [DEBUT=image] bash film/render.sh TOTAL [sortie.mp4]
 #   bash film/render.sh 1350                    → film/revaly-45s-muet.mp4           (16:9, ouverture B)
 #   FORMAT=portrait bash film/render.sh 1350    → film/revaly-45s-vertical-muet.mp4  (9:16)
 #   bash film/render.sh 300                     → film/maquette-10s-B.mp4            (0:00-0:10)
-#   FORMAT=carre DEBUT=1020 bash film/render.sh 330 sortie.mp4   (1:1, de 0:34 à 0:45)
+#   FORMAT=carre PUB=1 DEBUT=1020 bash film/render.sh 297 sortie.mp4   (1:1 de pub, de 0:34 à 0:43,9)
+# PUB=1 : film.html#…-pub (image 0 complète, fin courte, sans la ligne de détail des 15 h).
 # Prérequis : film/graded/ rempli par film/grade.sh.
 # Le navigateur est un serveur gstack browse sans fenêtre, propre au film
 # (état dans film/.gstack/) : le serveur avec fenêtre du dépôt ne rend pas les
@@ -21,11 +22,12 @@ FORMAT="${FORMAT:-paysage}"
 DEBUT="${DEBUT:-0}"
 CHUNK=100
 case "$FORMAT" in
-  paysage)  VP=1920x1080; ANCRE="$VARIANTE"; SUF="" ;;
+  paysage)  VP=1920x1080; ANCRE="$VARIANTE-paysage"; SUF="" ;;
   portrait) VP=1080x1920; ANCRE="$VARIANTE-portrait"; SUF="-vertical" ;;
   carre)    VP=1080x1080; ANCRE="$VARIANTE-carre"; SUF="-carre" ;;
   *) echo "FORMAT inconnu : $FORMAT"; exit 1 ;;
 esac
+[ -n "$PUB" ] && ANCRE="$ANCRE-pub"
 if [ -n "$2" ]; then MP4="$2"
 elif [ "$TOTAL" -le 300 ]; then MP4="$F/maquette-10s-$VARIANTE$SUF.mp4"
 elif [ "$VARIANTE" = "B" ]; then MP4="$F/revaly-45s$SUF-muet.mp4"
