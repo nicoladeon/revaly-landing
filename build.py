@@ -38,8 +38,6 @@ repl["__PAYMENT_LINKS_JSON__"] = json.dumps(PAYMENT_LINKS, ensure_ascii=False)
 for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:
     repl[f"__{k.upper()}128__"] = uri(f"assets/equipe/portraits/{k}@128.webp", "image/webp")
     repl[f"__{k.upper()}512__"] = uri(f"assets/equipe/portraits/{k}@512.webp", "image/webp")
-repl["__VILLA_HERO__"] = uri("assets/villa_hero.jpg", "image/jpeg")
-repl["__VILLA_POST__"] = uri("assets/villa_post.jpg", "image/jpeg")
 
 def render(tpl: str, ctx: dict) -> str:
     html = (ROOT / "templates" / tpl).read_text()
@@ -77,49 +75,59 @@ def _conv_panel(a):
         </div>'''
 
 
-def team_blocks():
-    """Carrousel façon Limova (demande Julien 16/07) : onglets têtes d'agents +
-    slides défilantes (scroll-snap), une conversation par slide, fiche complète
-    sur /agents/{slug}/."""
-    agents = json.loads((ROOT / "data" / "agents.json").read_text())
-    tabs, slides = [], []
-    for i, a in enumerate(agents):
-        k, name = a["slug"].upper(), _esc(a["name"])
-        de = "d'" if a["name"][0].lower() in "aeéiou" else "de "
-        caps = "".join(f"<li>{_CHECK}<span>{_esc(c)}</span></li>" for c in a["capacites"][:4])
-        on = " on" if i == 0 else ""
-        sel = "true" if i == 0 else "false"
-        tabs.append(
-            f'<button type="button" class="crsl-tab{on}" data-i="{i}" role="tab" '
-            f'aria-selected="{sel}" aria-controls="agent-{a["slug"]}">'
-            f'<img class="face" src="__{k}128__" width="40" height="40" alt="" />'
-            f'<span>{name}</span></button>')
-        slides.append(f'''<div class="crsl-item" role="tabpanel" id="agent-{a["slug"]}" aria-label="{name}">
-        <article class="tblock">
-        <header class="tb-head">
-          <span class="tb-ava tb-loop"><video class="face" data-loop muted loop playsinline preload="none" width="112" height="112" poster="/assets/equipe/boucles/{a["slug"]}@256.webp" role="img" aria-label="Portrait animé {de}{name}"><source src="/assets/equipe/boucles/{a["slug"]}@256.webm" type="video/webm" /><source src="/assets/equipe/boucles/{a["slug"]}@256.mp4" type="video/mp4" /></video><i class="tb-dot" aria-hidden="true"></i></span>
-          <div>
-            <h3 class="tb-name">{name}</h3>
-            <p class="tb-role">{_esc(a["role"])}</p>
-          </div>
-        </header>
-        {_conv_panel(a)}
-        <p class="tb-pour">{_esc(a["pour_toi"])}</p>
-        <div class="tb-detail">
-          <ul class="tb-caps">{caps}</ul>
-          <div class="crsl-actions">
-            <a class="btn small" href="/agents/{a["slug"]}/">Voir tout ce que {name} sait faire <span class="arr" aria-hidden="true">→</span></a>
-            <button type="button" class="btn ghost small tb-talk" data-goto-tarif>Discuter avec {name}</button>
-          </div>
-        </div>
-      </article>
-      </div>''')
-    return f'''<div class="crsl-tabs rv" role="tablist" aria-label="Choisir un agent">{"".join(tabs)}</div>
-    <div class="crsl-zone rv">
-      <button type="button" class="crsl-arrow prev" aria-label="Agent précédent" disabled>&larr;</button>
-      <div class="crsl" id="crsl" tabindex="0" aria-live="polite">{"".join(slides)}</div>
-      <button type="button" class="crsl-arrow next" aria-label="Agent suivant">&rarr;</button>
-    </div>'''
+# ── Accueil : l'équipe au travail (haut de page) et les six cartes de l'équipe.
+# Une seule source : data/equipe-accueil.json (ordre, métier, états réels, trois tâches)
+# + data/agents.json (prénom, phrase « pour_toi »). Hugo n'y figure pas.
+def _boucle(slug, taille):
+    """Personnage equipe-v6 animé : image fixe d'abord, vidéo lancée par le script de la page."""
+    return (f'<video data-loop muted loop playsinline preload="none" width="{taille}" height="{taille}" '
+            f'poster="/assets/equipe/boucles/{slug}@256.webp" aria-hidden="true">'
+            f'<source src="/assets/equipe/boucles/{slug}@256.webm" type="video/webm" />'
+            f'<source src="/assets/equipe/boucles/{slug}@256.mp4" type="video/mp4" /></video>')
+
+def _equipe_accueil():
+    fiches = {a["slug"]: a for a in json.loads((ROOT / "data" / "agents.json").read_text())}
+    equipe = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
+    for e in equipe:
+        if e["slug"] not in fiches or e["slug"] == "hugo":
+            raise SystemExit(f"equipe-accueil.json : agent inconnu ou exclu ({e['slug']})")
+        if not 2 <= len(e["etats"]) <= 3 or len(e["taches"]) != 3:
+            raise SystemExit(f"equipe-accueil.json : 2 ou 3 états et 3 tâches pour {e['slug']}")
+    return [dict(e, nom=fiches[e["slug"]]["name"], pour_toi=fiches[e["slug"]]["pour_toi"]) for e in equipe]
+
+def _typo(s):  # espaces insécables de la typographie française (« Vendu » ne se coupe pas, « : » reste collé)
+    return s.replace("« ", "«\u00a0").replace(" »", "\u00a0»").replace(" :", "\u00a0:")
+
+def _coupure(s):  # mot trop long pour une colonne de 104 px : césure douce, invisible sinon
+    return s.replace("commercialisation", "commercia&shy;lisation")
+
+ACTIF = ' class="on"'  # premier état affiché (seul visible sans JavaScript)
+
+def hero_equipe():
+    tuiles = []
+    for e in _equipe_accueil():
+        etats = "".join(f'<span{ACTIF if i == 0 else ""}>{_coupure(_esc(x))}</span>' for i, x in enumerate(map(_typo, e["etats"])))
+        tuiles.append(
+            f'<li class="bd"><span class="bd-photo">{_boucle(e["slug"], 256)}</span>'
+            f'<p class="bd-nom"><b>{_esc(e["nom"])}</b><span class="sr-only">, </span><span>{_esc(e["metier"])}</span></p>'
+            f'<p class="bd-etat"><span class="sr-only">{" ; ".join(_esc(x) for x in e["etats"])}.</span>'
+            f'<span class="bd-rot" aria-hidden="true">{etats}</span></p></li>')
+    return "".join(tuiles)
+
+def equipe_cartes():
+    cartes = []
+    for e in _equipe_accueil():
+        nom = _esc(e["nom"])
+        de = "d'" if e["nom"][0].lower() in "aeéiou" else "de "
+        taches = "".join(f"<li>{_CHECK}<span>{_esc(_typo(x))}</span></li>" for x in e["taches"])
+        cartes.append(
+            f'<article class="eq" id="agent-{e["slug"]}">'
+            f'<div class="eq-tete"><span class="eq-photo">{_boucle(e["slug"], 168)}</span>'
+            f'<div><h3 class="eq-nom">{nom}</h3><p class="eq-metier">{_esc(e["metier"])}</p></div></div>'
+            f'<p class="eq-pour">{_esc(e["pour_toi"])}</p>'
+            f'<ul class="eq-taches">{taches}</ul>'
+            f'<a class="eq-lien" href="/agents/{e["slug"]}/">Voir la fiche {de}{nom}</a></article>')
+    return "".join(cartes)
 
 
 def agent_main(a, agents):
@@ -287,7 +295,11 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
     if not noindex:
         PAGES.append(path)
 
+# dist/ repart de zéro à chaque construction : aucun fichier retiré (ancienne vidéo, police) ne reste publié.
+# On vide son contenu sans supprimer le dossier lui-même (un serveur local peut y être lancé).
 (ROOT / "dist").mkdir(exist_ok=True)
+for _vieux in (ROOT / "dist").iterdir():
+    shutil.rmtree(_vieux) if _vieux.is_dir() else _vieux.unlink()
 
 # ── Home ──
 faq = json.loads((ROOT / "data" / "faq.json").read_text())
@@ -328,8 +340,8 @@ def clients_voient(items):
     cartes = "".join(
         f'<figure class="cv-carte"><figcaption>{QUI[c["qui"]]} · {_esc(c["canal"])}</figcaption>'
         f'<blockquote>{_esc(c["message"])}</blockquote></figure>' for c in items)
-    return (f'<section class="wrap" id="clients-voient"><h2 class="title">Ce que voient tes clients</h2>'
-            f'<div class="cv-grille">{cartes}</div><p class="cv-chute">Un service impeccable. '
+    return (f'<section class="wrap hp-sec" id="clients-voient"><h2 class="title">Ce que voient tes clients : un service impeccable.</h2>'
+            f'<div class="cv-grille">{cartes}</div><p class="cv-chute">'
             f'Derrière, une seule personne… et son équipe.</p></section>')
 
 # ── Calculateur de temps rendu : même formule que assets/calcul.js (portée une fois ici pour
@@ -371,11 +383,15 @@ def fondateur_visuel():
         return f'<img class="fondateur-photo" src="{uri("assets/fondateur.jpg", "image/jpeg")}" width="72" height="72" alt="Julien, fondateur de Revaly" />'
     return '<span class="fondateur-mono" aria-hidden="true">J</span>'
 
+HERO_SOUS_TITRE = ("Visites confirmées, vendeurs informés, mandats suivis, posts prêts. Pendant que tu es "
+                   "sur le terrain, ton équipe avance. Toi, tu valides d'un geste.")
 body_home = render("home-body.html", {
+    "HERO_SOUS_TITRE": HERO_SOUS_TITRE,
     "FONDATEUR_VISUEL": fondateur_visuel(),
     "CALCUL_STATIQUE": calculateur_statique(),
     "CALCUL_DEFAUT_M": str(CALCUL_DEFAUT[0]), "CALCUL_DEFAUT_V": str(CALCUL_DEFAUT[1]),
-    "TEAM_BLOCKS": team_blocks(),
+    "HERO_EQUIPE": hero_equipe(),
+    "EQUIPE_CARTES": equipe_cartes(),
     "BANDE_OUTILS": bande_outils(json.loads((ROOT / "data" / "outils.json").read_text())),
     "BANDE_RESEAUX": bande_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
     "CLIENTS_VOIENT": clients_voient(json.loads((ROOT / "data" / "clients-voient.json").read_text())),
@@ -384,11 +400,11 @@ body_home = render("home-body.html", {
 })
 write_page(
     "index.html", body_home,
-    title="Revaly — Ton équipe travaille, toi tu es avec tes clients",
-    desc="Six agents IA de l'immobilier préparent tes visites, tes mandats, tes relances et tes posts, jour et nuit. Branché sur Modelo. Tu valides d'un geste. Essai 7 jours, dès 129 € HT/mois.",
+    title="Revaly — Une équipe d'agents IA qui travaille vraiment pour toi",
+    desc=HERO_SOUS_TITRE,
     path="/",
-    og_title="Ton équipe travaille. Toi, tu es avec tes clients.",
-    og_desc="Six agents IA de l'immobilier préparent tes visites, tes mandats, tes relances et tes posts, jour et nuit. Tu valides d'un geste. Rien ne part sans toi. Dès 129 € HT/mois.",
+    og_title="Une équipe d'agents IA qui travaille vraiment pour toi.",
+    og_desc=HERO_SOUS_TITRE,
 )
 
 # ── Page /integrations (task 11) : catalogue searchable depuis data/integrations.json.
@@ -511,10 +527,10 @@ for _a in _agents:
         path=f"/agents/{_a['slug']}/",
     )
 
-# ── Assets statiques servis à côté des pages (URL absolues : OG image, vidéo hero). ──
+# ── Assets statiques servis à côté des pages (URL absolues : image de partage, logo). ──
 (ROOT / "dist" / "assets").mkdir(exist_ok=True)
 shutil.copy(ROOT / "assets" / "calcul.js", ROOT / "dist" / "assets" / "calcul.js")
-for static in ["og.jpg", "hero.mp4", "hero-poster.jpg", "logo.png"]:
+for static in ["og.jpg", "logo.png"]:
     src = ROOT / "assets" / static
     if src.exists():
         shutil.copy(src, ROOT / "dist" / static)

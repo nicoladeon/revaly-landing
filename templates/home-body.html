@@ -1,3 +1,502 @@
+<style>
+  /* ── Accueil (refonte du 12/10/2026) : styles propres à la page. Le socle (couleurs, Geist,
+       boutons, navigation, fenêtre d'essai, pied de page) vit dans _shell.html. ── */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .hp-sec { padding-top: clamp(88px, 11vw, 136px); }
+  .hp-wide { max-width: 1160px; }
+  .hp-centre { text-align: center; }
+  .hp-centre p.sub { margin-left: auto; margin-right: auto; }
+  .hp-band {
+    margin-top: clamp(88px, 11vw, 136px); padding: clamp(72px, 9vw, 112px) 0;
+    background: var(--raised); border-top: 0.5px solid var(--line); border-bottom: 0.5px solid var(--line);
+  }
+  h2.title { margin-top: 0; }
+  @media (max-width: 640px) { .wrap { padding-left: 16px; padding-right: 16px; } }
+
+  /* ── 1. Haut de page : promesse, deux boutons, puis l'équipe au travail ── */
+  .hp-hero { padding-top: clamp(24px, 3.4vw, 44px); text-align: center; }
+  .hp-pill {
+    display: inline-flex; align-items: center; gap: 9px; margin: 0; padding: 6px 14px 6px 12px;
+    border-radius: 999px; background: var(--raised); border: 0.5px solid var(--line-strong); box-shadow: var(--shadow-sm);
+    font-size: 14px; font-weight: 500; line-height: 1.3; color: var(--ink);
+  }
+  .hp-pill i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--iris); box-shadow: 0 0 0 3px var(--iris-soft); }
+  .hp-hero h1 {
+    margin: 16px auto 0; max-width: 980px;
+    font-size: clamp(39px, 5.6vw, 70px); font-weight: 500; line-height: 1.02; letter-spacing: -0.045em;
+  }
+  .hp-hero h1 .iris { color: var(--iris); }
+  .hp-lede { margin: 16px auto 0; max-width: 730px; font-size: clamp(16.5px, 1.5vw, 19px); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+  .hp-cta { margin-top: 24px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .hp-cta .btn { min-height: 52px; padding: 13px 26px; font-size: 16.5px; justify-content: center; }
+  .hp-rassure { margin: 14px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+  .hp-rassure .nw { white-space: nowrap; }
+  @media (max-width: 520px) {
+    .hp-cta { flex-wrap: nowrap; }
+    .hp-cta .btn { flex: 1 1 0; min-width: 0; padding: 12px 8px; font-size: 15.5px; }
+  }
+
+  /* Le tableau « En ce moment chez toi » : six personnages, une pastille d'état chacun */
+  .board-zone { position: relative; margin: clamp(30px, 3.4vw, 40px) auto 0; }
+  .board-zone::before {
+    content: ""; position: absolute; z-index: -1; left: 8%; right: 8%; top: 12%; bottom: -6%;
+    border-radius: 50%; pointer-events: none; filter: blur(48px);
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--iris) 26%, transparent), transparent);
+  }
+  .board {
+    text-align: left; background: var(--raised); border: 0.5px solid var(--line-strong); border-radius: 28px;
+    padding: 14px 12px 18px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--iris) 10%, transparent), var(--shadow-md);
+  }
+  .board-tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 4px 12px; }
+  .board-titre { margin: 0; display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .board-live { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--iris); }
+  .board-live::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--iris); opacity: 0; animation: live 2.4s ease-out infinite; }
+  .board.pause .board-live::after { animation: none; }
+  @keyframes live { 0% { transform: scale(.5); opacity: .8; } 100% { transform: scale(1.5); opacity: 0; } }
+  .board-pause {
+    flex: none; width: 44px; height: 44px; margin: -10px -6px -10px 0; display: grid; place-items: center;
+    border: 0; border-radius: 12px; background: none; color: var(--muted); cursor: pointer;
+  }
+  .board-pause:hover { background: var(--bg-soft); color: var(--ink); }
+  .board-pause svg { width: 16px; height: 16px; }
+  .board-pause .ico-play, .board-pause[aria-pressed="true"] .ico-pause { display: none; }
+  .board-pause[aria-pressed="true"] .ico-play { display: block; }
+  html:not(.js) .board-pause { display: none; }
+  .bd-grille { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; }
+  .bd { min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .bd-photo {
+    display: block; width: 100%; aspect-ratio: 1; border-radius: 18px; overflow: hidden;
+    background: #F1F2F7; box-shadow: inset 0 0 0 0.5px rgba(23, 26, 33, .08);
+  }
+  .bd-photo video { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .bd-nom { margin: 9px 0 0; line-height: 1.25; }
+  .bd-nom b { display: block; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+  .bd-nom span:last-child { display: block; font-size: 13px; color: var(--muted); }
+  .bd-etat { margin: 8px 0 0; width: 100%; display: flex; justify-content: center; }
+  /* Les états sont empilés dans la même case (taille de l'état le plus long : aucun saut) ;
+     l'ancien s'efface, puis le nouveau apparaît : deux pastilles ne se chevauchent jamais. */
+  .bd-rot { display: grid; justify-items: center; align-items: start; max-width: 100%; }
+  .bd-rot > span {
+    grid-area: 1 / 1; max-width: 100%; padding: 5px 8px; border-radius: 10px;
+    background: color-mix(in srgb, var(--ink) 5%, var(--raised)); color: var(--ink);
+    font-size: 12px; font-weight: 500; line-height: 1.3; overflow-wrap: anywhere;
+    opacity: 0; transform: translateY(4px);
+    transition: opacity .18s ease, transform .3s cubic-bezier(.32,.72,0,1);
+  }
+  .bd-rot > span::before {
+    content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 6px 1px 0; border-radius: 50%;
+    background: var(--iris); vertical-align: middle;
+  }
+  .bd-rot > span.on { opacity: 1; transform: none; transition-delay: .2s; }
+  .bd-rot > span.out { transform: translateY(-5px); }
+  .film-btn {
+    display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 10px 20px; margin-top: 22px;
+    border: 0.5px solid var(--line-strong); border-radius: 999px; cursor: pointer;
+    font: 500 15px/1 var(--font-sans); color: var(--ink); background: var(--raised); box-shadow: var(--shadow-sm);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .film-btn svg { width: 15px; height: 15px; color: var(--iris-ink); flex: none; }
+  .film-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .film-btn:active { transform: scale(.98); }
+  @media (min-width: 1000px) {
+    .board { padding: 18px 20px 22px; }
+    .bd-grille { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
+    .bd-photo { border-radius: 20px; }
+    .bd-rot > span { padding: 6px 10px; font-size: 12.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .board-pause { display: none; } .board-live::after { animation: none; } }
+  .film-dialog {
+    width: min(92vw, 1100px); max-width: none; max-height: 92vh; padding: 0; margin: auto;
+    border: 0; border-radius: 18px; overflow: hidden; background: var(--night-3); color: #fff; box-shadow: var(--shadow-xl);
+  }
+  .film-dialog::backdrop { background: rgba(9, 11, 15, .72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .film-dialog video { display: block; width: 100%; max-height: 92vh; background: #000; }
+  .film-close {
+    position: absolute; top: 10px; right: 10px; z-index: 2; width: 44px; height: 44px;
+    display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer;
+    color: #fff; background: rgba(18, 21, 28, .7);
+  }
+  .film-close:hover { background: rgba(18, 21, 28, .9); }
+  .film-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+  /* ── 2. Bandes de logos : défilement continu, pause au survol/focus, grille statique si mouvement réduit ── */
+  .bande { padding-top: 40px; padding-bottom: 8px; text-align: center; }
+  .bande + .bande-portails + .bande, .bande-portails + .bande { padding-top: 32px; }
+  .bande-titre { margin: 0 0 16px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
+  .bande-defile { --gap: 56px; display: flex; gap: var(--gap); overflow: hidden; padding: 6px 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .bande-defile ul { display: flex; align-items: center; gap: var(--gap); flex-shrink: 0; min-width: 100%;
+    justify-content: space-around; list-style: none; margin: 0; padding: 0; animation: defile 38s linear infinite; }
+  .bande-defile:hover ul, .bande-defile:focus-within ul { animation-play-state: paused; }
+  .bande-defile li { display: flex; align-items: center; gap: 9px; flex-shrink: 0; height: 28px; white-space: nowrap; }
+  .bande-defile img { display: block; flex-shrink: 0; filter: grayscale(1); opacity: .62; }
+  .bande-defile:focus-visible { outline: 2px solid var(--iris); outline-offset: 4px; border-radius: 8px; }
+  .bande-defile .bande-nom { font-size: 15px; font-weight: 500; color: var(--muted); }
+  .bande-mention { margin: 14px 0 0; font-size: 12px; color: var(--subtle); }
+  .bande-portails { margin-top: 10px; margin-bottom: 0; text-align: center; font-size: 15px; color: var(--muted); }
+  /* logos à une teinte : aplatis dans le même gris ; Laforêt (deux tons) reste en niveaux de gris */
+  #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0); opacity: .5; }
+  #bande-reseaux img[src$="laforet.svg"] { opacity: .55; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .bande-defile img { filter: grayscale(1) invert(1); opacity: .6; }
+    :root:not([data-theme="light"]) #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0) invert(1); opacity: .5; }
+  }
+  :root[data-theme="dark"] .bande-defile img { filter: grayscale(1) invert(1); opacity: .6; }
+  :root[data-theme="dark"] #bande-reseaux img:not([src$="laforet.svg"]) { filter: brightness(0) invert(1); opacity: .5; }
+  @keyframes defile { to { transform: translateX(calc(-100% - var(--gap))); } }
+  @media (prefers-reduced-motion: reduce) {
+    .bande-defile { -webkit-mask-image: none; mask-image: none; }
+    .bande-defile ul { animation: none; flex-wrap: wrap; justify-content: center; row-gap: 20px; }
+    .bande-defile ul[aria-hidden="true"] { display: none; }
+  }
+
+  /* ── 3. Le problème ── */
+  .pb { display: grid; gap: 32px; align-items: center; }
+  @media (min-width: 900px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 64px; } }
+  .pb-liste { list-style: none; margin: 0; padding: 4px 0; background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); }
+  .pb-liste li { display: flex; align-items: center; gap: 14px; padding: 16px 20px; font-size: 16.5px; line-height: 1.45; color: var(--ink); }
+  .pb-liste li + li { border-top: 0.5px solid var(--line); }
+  .pb-ico { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--bg-soft); color: var(--muted); }
+  .pb-ico svg { width: 20px; height: 20px; }
+
+  /* ── 4. Comment ça marche ── */
+  .etapes { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 14px; }
+  @media (min-width: 900px) { .etapes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
+  .etape { display: flex; flex-direction: column; padding: 24px 22px 22px; background: var(--bg); border: 0.5px solid var(--line); border-radius: 22px; }
+  .etape-n {
+    width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--iris-deep); color: #fff; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums;
+  }
+  .etape h3 { margin: 18px 0 0; font-size: 19px; font-weight: 550; line-height: 1.3; letter-spacing: -0.015em; }
+  .etape p { margin: 8px 0 0; font-size: 15.5px; line-height: 1.55; color: var(--muted); }
+  .etape-visuel { margin-top: auto; padding-top: 22px; }
+  .et-logos { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .et-logos li { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; border-radius: 12px; background: var(--raised); border: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--muted); }
+  .et-logos img { display: block; filter: grayscale(1); opacity: .7; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .et-logos img { filter: grayscale(1) invert(1); } }
+  :root[data-theme="dark"] .et-logos img { filter: grayscale(1) invert(1); }
+  .et-visages { display: flex; }
+  .et-visages img { width: 44px; height: 44px; border-radius: 50%; box-shadow: 0 0 0 3px var(--bg); background: #F1F2F7; }
+  .et-visages img + img { margin-left: -10px; }
+  .et-carte { display: grid; gap: 6px; padding: 14px; border-radius: 16px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); font-size: 13.5px; color: var(--muted); }
+  .et-carte b { color: var(--ink); font-weight: 600; font-size: 14.5px; }
+  .et-boutons { display: flex; gap: 8px; margin-top: 6px; }
+  .et-boutons span { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border-radius: 9px; font-size: 13px; font-weight: 600; }
+  .et-ok { background: var(--iris-deep); color: #fff; }
+  .et-non { background: var(--bg-soft); color: var(--muted); }
+  .auto-badge { justify-self: start; padding: 2px 9px; border-radius: 99px; background: #4F46E5; color: #fff; font-size: 11.5px; font-weight: 600; letter-spacing: .02em; }
+
+  /* ── 5. L'équipe : six cartes, les visages en grand ── */
+  .eq-grille { margin-top: 40px; display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 700px) { .eq-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1040px) { .eq-grille { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
+  .eq { display: flex; flex-direction: column; padding: 16px 16px 18px; background: var(--raised); border: 0.5px solid var(--line); border-radius: 26px; box-shadow: var(--shadow-sm); }
+  .eq-tete { display: flex; align-items: flex-end; gap: 16px; }
+  .eq-photo { flex: none; width: 160px; height: 160px; border-radius: 20px; overflow: hidden; background: #F1F2F7; box-shadow: inset 0 0 0 0.5px rgba(23, 26, 33, .08); }
+  .eq-photo video { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .eq-tete > div { min-width: 0; padding-bottom: 4px; }
+  .eq-nom { margin: 0; font-size: 23px; font-weight: 550; letter-spacing: -0.025em; line-height: 1.1; }
+  .eq-metier { margin: 4px 0 0; font-size: 14px; color: var(--muted); }
+  .eq-pour { margin: 18px 4px 0; font-size: 17px; line-height: 1.45; letter-spacing: -0.01em; color: var(--ink); text-wrap: pretty; }
+  .eq-taches { list-style: none; margin: 16px 4px 0; padding: 14px 0 0; border-top: 0.5px solid var(--line); display: grid; gap: 9px; }
+  .eq-taches li { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; line-height: 1.45; color: var(--muted); }
+  .eq-taches svg { width: 16px; height: 16px; flex: none; margin-top: 2.5px; color: var(--iris-ink); }
+  .eq-lien {
+    margin: auto 4px 0; padding-top: 12px; min-height: 44px; display: inline-flex; align-items: flex-end; align-self: flex-start;
+    font-size: 14px; font-weight: 500; color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px;
+  }
+  .eq-lien:hover { text-decoration-color: var(--ink); }
+
+  /* ── 6. Plus rien d'oublié : 4 tuiles, mini-carte « À valider » qui se pose une fois à l'entrée dans l'écran ── */
+  .auto-grille { display: grid; gap: 14px; margin-top: 36px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .auto-grille { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1040px) { .auto-grille { grid-template-columns: repeat(4, 1fr); } }
+  .auto-tuile { display: flex; flex-direction: column; background: var(--raised); border: 0.5px solid var(--line);
+    border-radius: 20px; box-shadow: var(--shadow-sm); padding: 22px 20px 20px; }
+  .auto-tuile h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+  .auto-tuile p { margin: 8px 0 18px; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+  .auto-carte { margin-top: auto; display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px;
+    background: var(--iris-soft); border: 0.5px solid var(--iris-glow); font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+  .auto-carte b { color: var(--ink); font-weight: 600; }
+  @media (min-width: 720px) { .auto-carte span:last-child { min-height: 2.9em; } }
+  html.js .auto-tuile .auto-carte { transition: opacity .3s ease-out, transform .3s ease-out; }
+  html.js .auto-tuile:not(.vu) .auto-carte { opacity: 0; transform: translateY(10px); }
+  html.js .auto-tuile:nth-child(2) .auto-carte { transition-delay: .08s; }
+  html.js .auto-tuile:nth-child(3) .auto-carte { transition-delay: .16s; }
+  html.js .auto-tuile:nth-child(4) .auto-carte { transition-delay: .24s; }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .auto-tuile .auto-carte { opacity: 1 !important; transform: none !important; transition: none; }
+  }
+
+  /* ── 7. Ce que voient tes clients : trois messages reçus, tels qu'ils arrivent ── */
+  .cv-grille { display: grid; gap: 14px; margin-top: 36px; grid-template-columns: 1fr; }
+  @media (min-width: 860px) { .cv-grille { grid-template-columns: repeat(3, 1fr); } }
+  .cv-carte { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+  .cv-carte figcaption { font-size: 13px; font-weight: 500; color: var(--muted); padding-left: 4px; }
+  .cv-carte blockquote { margin: 0; flex: 1; padding: 16px 18px; background: var(--raised); border: 0.5px solid var(--line);
+    border-radius: 18px 18px 18px 5px; box-shadow: var(--shadow-sm); font-size: 15.5px; line-height: 1.6; color: var(--ink); }
+  .cv-chute { margin: 28px 0 0; font-weight: 500; font-size: clamp(20px, 2.4vw, 24px);
+    line-height: 1.3; letter-spacing: -0.02em; color: var(--ink); max-width: 760px; text-wrap: balance; }
+  html.js .cv-carte, html.js .cv-chute { transition: opacity .4s ease-out, transform .4s ease-out; }
+  html.js #clients-voient:not(.vu) .cv-carte, html.js #clients-voient:not(.vu) .cv-chute { opacity: 0; transform: translateY(12px); }
+  html.js .cv-carte:nth-child(2) { transition-delay: .1s; }
+  html.js .cv-carte:nth-child(3) { transition-delay: .2s; }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .cv-carte, html.js .cv-chute { opacity: 1 !important; transform: none !important; transition: none; }
+  }
+
+  /* ── 8. Tu peux aussi leur parler : la conversation Telegram se joue message par message (600 ms) ── */
+  .parler-grille { display: grid; gap: 32px; align-items: center; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .parler-grille { grid-template-columns: 1fr minmax(0, 440px); gap: 64px; } }
+  .conv { background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-md); overflow: hidden; width: 100%; max-width: 440px; }
+  .conv-tete { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 0.5px solid var(--line); }
+  .conv-tete img { border-radius: 50%; display: block; background: #F1F2F7; }
+  .conv-tete b { display: block; font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .conv-tete span { font-size: 12.5px; color: var(--muted); }
+  .conv-canal { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: var(--muted); }
+  .conv-canal svg { width: 16px; height: 16px; fill: currentColor; }
+  .conv-corps { display: flex; flex-direction: column; gap: 10px; padding: 18px; background: var(--bg-soft); }
+  .msg { max-width: 86%; }
+  .msg.moi { align-self: flex-end; background: #4F46E5; color: #fff; padding: 12px 14px; border-radius: 18px 18px 5px 18px; }
+  .msg.max { align-self: flex-start; background: var(--raised); border: 0.5px solid var(--line); padding: 11px 15px; border-radius: 18px 18px 18px 5px; box-shadow: var(--shadow-sm); font-size: 15px; line-height: 1.5; }
+  .msg p { margin: 0; }
+  .vocal { display: flex; align-items: center; gap: 12px; }
+  .onde { display: flex; align-items: center; gap: 3px; height: 26px; }
+  .onde i { display: block; width: 3px; border-radius: 2px; background: rgba(255,255,255,.85); }
+  .onde i:nth-child(1) { height: 8px; } .onde i:nth-child(2) { height: 16px; } .onde i:nth-child(3) { height: 24px; } .onde i:nth-child(4) { height: 12px; }
+  .onde i:nth-child(5) { height: 20px; } .onde i:nth-child(6) { height: 26px; } .onde i:nth-child(7) { height: 14px; } .onde i:nth-child(8) { height: 22px; }
+  .onde i:nth-child(9) { height: 10px; } .onde i:nth-child(10) { height: 18px; } .onde i:nth-child(11) { height: 12px; } .onde i:nth-child(12) { height: 6px; }
+  .duree { font-size: 13px; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.85); }
+  .transcrit { margin-top: 8px !important; padding-top: 8px; border-top: 0.5px solid rgba(255,255,255,.28); font-size: 14.5px; line-height: 1.45; font-style: italic; }
+  .conv-carte { display: grid; gap: 4px; font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+  .conv-carte b { color: var(--ink); font-weight: 600; }
+  .conv-carte .auto-badge { margin-bottom: 2px; }
+  html.js .conv .msg { transition: opacity .3s ease-out, transform .3s ease-out; }
+  html.js .conv.armed .msg:not(.on) { opacity: 0; transform: translateY(10px); }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .conv .msg { opacity: 1 !important; transform: none !important; transition: none; }
+  }
+
+  /* ── 9. Calculateur de temps rendu ── */
+  .calc { display: grid; gap: 32px; grid-template-columns: 1fr; }
+  .calc-carte, .calc-statique { background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-md); padding: 24px; }
+  .calc-carte { display: none; gap: 28px; grid-template-columns: 1fr; }
+  .calc-actif .calc-carte { display: grid; }
+  .calc-actif .calc-statique { display: none; }
+  @media (min-width: 900px) {
+    .calc-carte { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 48px; padding: 36px; align-items: start; }
+    .calc-carte .calc-champs { grid-template-columns: 1fr; gap: 18px; }
+    .calc-carte .calc-resultat { margin-top: 0; padding-top: 0; border-top: 0; }
+  }
+  @media (max-width: 760px) { #calculateur { padding-bottom: calc(var(--rv-sticky-h, 122px) + 32px); } }
+  .calc-statique .calc-resultat { margin-top: 0; padding-top: 0; border-top: 0; }
+  .calc-plafond { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
+  .calc-champs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 340px) { .calc-champs { grid-template-columns: 1fr; } }
+  .calc-champ { display: flex; flex-direction: column; justify-content: flex-end; }
+  .calc-champ label { display: block; font-size: 13.5px; font-weight: 500; color: var(--muted); margin-bottom: 7px; }
+  .calc-champ input { width: 100%; font: inherit; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); background: var(--bg); border: 0.5px solid var(--line-strong); border-radius: 12px; padding: 12px 14px; min-height: 48px; }
+  .calc-champ input:focus-visible { outline: 2px solid var(--iris); outline-offset: 1px; border-color: transparent; }
+  .calc-resultat { margin: 24px 0 0; padding-top: 22px; border-top: 0.5px solid var(--line); font-size: 21px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.35; color: var(--ink); }
+  .calc-resultat b { color: var(--iris-ink); font-size: 1.5em; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .calc-detail { list-style: none; margin: 16px 0 0; padding: 0; }
+  .calc-detail li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 0.5px solid var(--line); font-size: 14.5px; color: var(--muted); }
+  .calc-detail li:last-child { border-bottom: 0; }
+  .calc-detail li span:last-child { color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .calc-note { margin: 14px 0 0; font-size: 13px; color: var(--subtle); }
+
+  /* ── 10. Rien ne part sans toi : storyboard (① brouillon ② notification ③ tu envoies depuis ta boîte),
+       quatre engagements, le fondateur. armed/play une seule fois ; sans JS ou mouvement réduit : état final. ── */
+  .ap-flow { display: grid; grid-template-columns: 1fr 44px 1fr 44px 1fr; align-items: stretch; margin-top: 44px; }
+  .ap-step { display: flex; flex-direction: column; min-width: 0; }
+  .ap-label { margin: 0 0 10px; text-align: center; font-size: 13px; font-weight: 500; color: var(--muted); }
+  .ap-card {
+    flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center; gap: 12px;
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-md); padding: 18px;
+  }
+  .ap-arrow { display: grid; place-items: center; padding-top: 28px; color: var(--subtle); }
+  .ap-arrow svg { width: 20px; height: 20px; }
+  .ap-mail-head { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 0.5px solid var(--line); }
+  .ap-mail-head img { width: 30px; height: 30px; background: #F1F2F7; }
+  .ap-mail-head .who { min-width: 0; }
+  .ap-mail-head .who b { display: block; font-size: 13.5px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+  .ap-mail-head .who span { display: block; font-size: 12px; color: var(--muted); }
+  .ap-pill { margin-left: auto; flex: none; padding: 3px 10px; border-radius: 999px; background: var(--iris-soft); color: var(--iris-ink); font-size: 11.5px; font-weight: 600; }
+  .ap-mail-line { margin: 0; display: flex; gap: 8px; font-size: 12.5px; line-height: 1.5; color: var(--muted); }
+  .ap-mail-line .k { flex: none; width: 38px; color: var(--subtle); }
+  .ap-mail-line b { color: var(--ink); font-weight: 600; }
+  .ap-mail-prev { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .ap-notif-head { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .ap-notif-head b { color: var(--muted); font-weight: 600; }
+  .ap-notif-head time { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .ap-wa { width: 20px; height: 20px; border-radius: 6px; background: #25D366; display: grid; place-items: center; flex: none; }
+  .ap-wa svg { width: 12px; height: 12px; fill: #fff; display: block; }
+  .ap-notif-msg { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
+  .ap-notif-msg b { display: block; font-weight: 650; }
+  .ap-gmail-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 14px 0 12px; }
+  .ap-envoyer { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px; background: var(--iris-deep); color: #fff; font-size: 14px; font-weight: 600; }
+  .ap-envoyer svg { width: 14px; height: 14px; }
+  .ap-from { font-size: 12.5px; color: var(--muted); }
+  .ap-sent {
+    display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; border-radius: 12px;
+    background: color-mix(in srgb, var(--success) 8%, var(--raised)); border: 0.5px solid color-mix(in srgb, var(--success) 30%, transparent);
+    font-size: 13px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  .ap-sent svg { width: 16px; height: 16px; color: var(--success); flex: none; }
+  html.js .ap-flow.armed .ap-step, html.js .ap-flow.armed .ap-arrow { opacity: 0; }
+  html.js .ap-flow.armed .ap-s1 { transform: translateY(14px); }
+  html.js .ap-flow.armed .ap-s2 { transform: translateY(12px) scale(.97); }
+  html.js .ap-flow.armed .ap-s3 { transform: translateY(14px); }
+  html.js .ap-flow.armed .ap-sent { opacity: 0; transform: translateY(10px) scale(.97); }
+  .ap-flow.play .ap-s1 { animation: apIn .5s cubic-bezier(.32,.72,0,1) forwards; }
+  .ap-flow.play .ap-a1 { animation: apIn .25s ease-out .55s forwards; }
+  .ap-flow.play .ap-s2 { animation: apIn .45s cubic-bezier(.34,1.3,.5,1) .7s forwards; }
+  .ap-flow.play .ap-a2 { animation: apIn .25s ease-out 1.3s forwards; }
+  .ap-flow.play .ap-s3 { animation: apIn .4s cubic-bezier(.32,.72,0,1) 1.45s forwards; }
+  .ap-flow.play .ap-envoyer { animation: apPress .22s ease-out 2s; }
+  .ap-flow.play .ap-sent { animation: apIn .45s cubic-bezier(.34,1.3,.5,1) 2.25s forwards; }
+  .ap-flow.play .ap-sent svg path { stroke-dasharray: 30; stroke-dashoffset: 30; animation: apCheck .5s ease-out 2.5s forwards; }
+  @keyframes apIn { to { opacity: 1; transform: none; } }
+  @keyframes apPress { 50% { transform: scale(.9); } }
+  @keyframes apCheck { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .ap-flow.armed .ap-step, html.js .ap-flow.armed .ap-arrow,
+    html.js .ap-flow.armed .ap-sent { opacity: 1; transform: none; }
+  }
+  @media (max-width: 880px) {
+    .ap-flow { grid-template-columns: minmax(0, 1fr); max-width: 440px; margin-left: auto; margin-right: auto; row-gap: 10px; }
+    .ap-arrow { padding-top: 0; }
+    .ap-arrow svg { transform: rotate(90deg); }
+  }
+  .proof-note { margin: 18px auto 0; text-align: center; font-size: 13px; color: var(--muted); max-width: 640px; }
+  .confiance { list-style: none; margin: 40px auto 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .confiance li { background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px; padding: 20px 20px 22px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 6px; text-align: left; }
+  .confiance b { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+  .confiance span { font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+  .confiance em { font-style: normal; color: var(--subtle); font-size: 13px; display: block; margin-top: 2px; }
+  .fondateur {
+    display: flex; align-items: flex-start; gap: 20px; max-width: 760px; margin: 28px auto 0; padding: 24px 26px;
+    background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); text-align: left;
+  }
+  .fondateur-mono, .fondateur-photo { flex: none; width: 72px; height: 72px; border-radius: 50%; }
+  .fondateur-photo { object-fit: cover; }
+  .fondateur-mono { display: inline-flex; align-items: center; justify-content: center; background: var(--iris-soft); color: var(--iris-ink); font-size: 32px; font-weight: 500; box-shadow: inset 0 0 0 1px var(--line); }
+  .fondateur h3 { margin: 0; font-size: clamp(18px, 2.4vw, 21px); font-weight: 550; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); text-wrap: balance; }
+  .fondateur blockquote { margin: 12px 0 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
+  .fondateur blockquote p { margin: 0; }
+  .fondateur-sig { margin: 12px 0 0; font-size: 14.5px; color: var(--muted); }
+  .fondateur-sig b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 480px) { .fondateur { padding: 18px; gap: 14px; flex-direction: column; } .fondateur-mono, .fondateur-photo { width: 56px; height: 56px; font-size: 26px; } }
+
+  /* ── 11. Prix : 3 offres, bascule Mensuel/Annuel sans saut de mise en page ── */
+  .bill-toggle {
+    display: flex; width: fit-content; margin: 32px auto 0; padding: 4px; gap: 4px;
+    border-radius: 999px; background: var(--bg); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm);
+  }
+  html:not(.js) .bill-toggle { display: none; } /* sans JS : Mensuel statique, pas de contrôle mort */
+  .bt-opt {
+    position: relative; display: inline-flex; align-items: center; gap: 8px;
+    min-height: 44px; padding: 0 20px; border-radius: 999px; cursor: pointer;
+    font-size: 14px; font-weight: 550; color: var(--muted);
+    transition: background .2s cubic-bezier(.32,.72,0,1), color .2s cubic-bezier(.32,.72,0,1);
+  }
+  .bt-opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .bt-opt:hover { color: var(--ink); }
+  .bt-opt:has(input:checked) { background: var(--iris-deep); color: #fff; }
+  .bt-opt:has(input:focus-visible) { outline: 2px solid var(--iris); outline-offset: 3px; }
+  .bt-badge { padding: 3px 9px; border-radius: 999px; white-space: nowrap; font-size: 11px; font-weight: 650; background: var(--iris-soft); color: var(--iris-ink); }
+  .bt-opt:has(input:checked) .bt-badge { background: rgba(255,255,255,.16); color: #fff; }
+  .plans { display: grid; gap: 16px; margin-top: 36px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
+  .plan {
+    position: relative; display: flex; flex-direction: column; text-align: left;
+    background: var(--bg); border-radius: 22px; padding: 28px 26px;
+    border: 0.5px solid var(--line); box-shadow: var(--shadow-sm);
+  }
+  .plan.featured { background: var(--raised); border: 1.5px solid var(--iris); box-shadow: var(--shadow-md); }
+  .plan .badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    padding: 4px 14px; border-radius: 999px; white-space: nowrap;
+    background: var(--iris-deep); color: #fff; font-size: 12px; font-weight: 600;
+  }
+  .plan h3 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .plan .for { margin: 4px 0 0; font-size: 13.5px; color: var(--muted); }
+  .plan .amount { font-weight: 500; letter-spacing: -0.035em; font-size: 42px; line-height: 1; margin: 20px 0 0; font-variant-numeric: tabular-nums; }
+  .plan .amount .unit { font-size: 14px; letter-spacing: 0; color: var(--muted); }
+  .plan .bill-note { margin: 8px 0 0; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .checklist { list-style: none; padding: 0; margin: 20px 0 24px; display: grid; gap: 10px; flex: 1; }
+  .checklist li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); }
+  .checklist svg { width: 17px; height: 17px; color: var(--iris-ink); flex: none; margin-top: 2px; }
+  .plan .btn { width: 100%; justify-content: center; }
+  .plan .plan-hint { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+  .swap { display: inline-grid; }
+  .swap > span {
+    grid-area: 1 / 1; justify-self: start; visibility: hidden; opacity: 0;
+    transition: opacity .22s cubic-bezier(.32,.72,0,1), transform .22s cubic-bezier(.32,.72,0,1), visibility 0s .22s;
+  }
+  .plan-hint .swap > span { justify-self: center; }
+  #tarif[data-billing="monthly"] .swap > .sw-y { transform: translateY(10px); }
+  #tarif[data-billing="yearly"] .swap > .sw-m { transform: translateY(-10px); }
+  #tarif[data-billing="monthly"] .swap > .sw-m,
+  #tarif[data-billing="yearly"] .swap > .sw-y { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; }
+  @media (prefers-reduced-motion: reduce) { .swap > span, .bt-opt { transition: none; } }
+  .ht-note { text-align: center; margin: 18px 0 0; font-size: 13px; color: var(--muted); }
+  .garanties { list-style: none; margin: 24px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; }
+  .garanties li { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+  .garanties svg { width: 15px; height: 15px; color: var(--iris-ink); flex: none; }
+
+  /* ── 12. FAQ ── */
+  .faq-grid { display: grid; gap: 40px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); align-items: start; }
+  .faq-grid > div:first-child { position: sticky; top: 88px; }
+  @media (max-width: 700px) { .faq-grid > div:first-child { position: static; } }
+  .faq-item { border-bottom: 0.5px solid var(--line); }
+  .faq-item > button {
+    width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px;
+    padding: 18px 4px; background: none; border: none; cursor: pointer;
+    font-family: var(--font-sans); text-align: left; color: var(--ink);
+  }
+  .faq-item > button span { flex: 1; font-size: 16px; font-weight: 550; }
+  .faq-item .chev { color: var(--muted); transition: transform .2s; flex: none; }
+  .faq-item[data-open="true"] .chev { transform: rotate(180deg); }
+  .faq-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s cubic-bezier(.32,.72,0,1); }
+  .faq-item[data-open="true"] .faq-body { grid-template-rows: 1fr; }
+  .faq-body > div { overflow: hidden; }
+  .faq-body p { margin: 0 4px 18px; font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 620px; }
+
+  /* ── 13. Appel final + démo intégrée ── */
+  #demo .final { padding-top: 0; }
+  .final .faces { display: flex; justify-content: center; margin-bottom: 22px; }
+  .final .faces img { width: 56px; height: 56px; border-radius: 50%; background: #F1F2F7; box-shadow: 0 0 0 3px var(--bg); }
+  .final .faces img + img { margin-left: -12px; }
+  .final h2.title { margin-left: auto; margin-right: auto; font-size: clamp(32px, 5vw, 52px); }
+  .final-cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 28px; }
+  .final-cta .btn { min-height: 52px; }
+  .demo-cal { display: none; margin: 40px auto 0; max-width: 820px; width: 100%; min-width: 0; text-align: center; }
+  .demo-titre { font-size: 15px; color: var(--muted); margin: 0 0 14px; }
+  .demo-cal .calendly-inline-widget { border-radius: 18px; overflow: hidden; border: 0.5px solid var(--line); background: var(--raised); max-width: 100%; }
+  .demo-cal iframe { max-width: 100%; }
+  #demo { overflow-x: clip; }
+  html.js .demo-cal { display: block; }
+  .demo-repli { margin: 0; padding: 24px 16px; text-align: center; }
+  .demo-cal.ok .demo-repli { display: none; }
+  .demo-cal.repli .calendly-inline-widget { height: auto !important; min-height: 0; border: 0; background: none; }
+
+  /* ── Barre collante mobile : visible une fois les boutons du haut dépassés ── */
+  .sticky-cta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    display: none; gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-top: 0.5px solid var(--line);
+    transform: translateY(110%); visibility: hidden;
+    transition: transform .3s cubic-bezier(.32,.72,0,1), visibility 0s .3s;
+  }
+  .sticky-cta.show { transform: none; visibility: visible; transition-delay: 0s; }
+  .sticky-cta .btn { justify-content: center; }
+  .sticky-cta .btn:first-child { flex: 1 1 auto; }
+  @media (max-width: 760px) { .sticky-cta { display: flex; } }
+</style>
+
 <!-- ═══════════════ NAV ═══════════════ -->
 <div class="nav-shell">
   <nav class="nav wrap" aria-label="Navigation principale">
@@ -16,34 +515,41 @@
 </div>
 
 <main id="top">
-  <!-- ═══════════════ HERO ═══════════════ -->
-  <section id="hero" class="wrap hero">
-    <p class="kicker h-in"><span id="geo-kicker">Ton équipe d'agents IA</span><span class="kicker-extra"> · formée à l'immobilier</span></p>
-    <h1 class="h-in d1"><span class="h1-big">Ton équipe travaille.</span> <span class="h1-big h1-second">Toi, tu es avec <em>tes clients</em>.</span></h1>
-    <p class="sub h-in d2">Six agents IA de l'immobilier préparent tes visites, tes mandats, tes relances et tes posts, jour et nuit. Tu valides d'un geste.</p>
-    <div class="hero-cta h-in d3">
-      <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
-      <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
-      <span class="hint"><span class="nw">Branché sur Modelo ·</span> <span class="nw">Sans engagement ·</span> <span class="nw">Rien ne part sans toi</span></span>
+  <!-- ═══════════════ 1. HAUT DE PAGE : la promesse et l'équipe au travail ═══════════════ -->
+  <section class="hp-hero" id="hero" aria-labelledby="hero-titre">
+    <div class="wrap">
+      <p class="hp-pill"><i aria-hidden="true"></i>6 agents IA spécialistes de l'immobilier</p>
+      <h1 id="hero-titre">Une équipe d'agents IA qui travaille <span class="iris">vraiment</span> pour toi.</h1>
+      <p class="hp-lede">{{HERO_SOUS_TITRE}}</p>
+      <div class="hp-cta">
+        <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
+        <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
+      </div>
+      <p class="hp-rassure"><span class="nw">Branché sur Modelo ·</span> <span class="nw">Sans engagement ·</span> <span class="nw">Rien ne part sans toi</span></p>
     </div>
 
-    <div class="film-zone h-in d4">
-      <div class="film-frame">
-        <video id="film-boucle" autoplay muted loop playsinline preload="metadata" poster="film/poster.jpg" aria-hidden="true" tabindex="-1">
-          <source src="film/boucle.mp4" type="video/mp4" />
-        </video>
-        <script>if (matchMedia('(prefers-reduced-motion: reduce)').matches) { var v = document.getElementById('film-boucle'); v.preload = 'none'; v.removeAttribute('autoplay'); }</script>
-        <img class="film-still" src="film/poster.jpg" alt="" width="2400" height="1000" />
+    <div class="wrap hp-wide">
+      <div class="board-zone">
+        <div class="board" id="board">
+          <div class="board-tete">
+            <p class="board-titre" id="board-titre"><i class="board-live" aria-hidden="true"></i>En ce moment chez toi :</p>
+            <button type="button" class="board-pause" id="board-pause" aria-pressed="false" aria-label="Mettre en pause l'animation de l'équipe">
+              <svg class="ico-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="3" width="5" height="18" rx="1" /><rect x="5" y="3" width="5" height="18" rx="1" /></svg>
+              <svg class="ico-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg>
+            </button>
+          </div>
+          <ul class="bd-grille" aria-labelledby="board-titre">{{HERO_EQUIPE}}</ul>
+        </div>
       </div>
       <button type="button" id="voir-film" class="film-btn" data-track="film" aria-haspopup="dialog">
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg>
         Voir le film (45 s)
       </button>
     </div>
 
     <dialog id="film-dialog" class="film-dialog" aria-label="Le film Revaly, 45 secondes">
       <button type="button" class="film-close" id="film-close" aria-label="Fermer le film">
-        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
       </button>
       <video id="film-lecteur" controls playsinline preload="none" poster="film/poster.jpg">
         <source src="film/revaly-45s.mp4" type="video/mp4" />
@@ -51,16 +557,86 @@
     </dialog>
   </section>
 
+  <!-- ═══════════════ 2. BANDES DE LOGOS ═══════════════ -->
   {{BANDE_OUTILS}}
   {{BANDE_RESEAUX}}
 
-  <!-- ═══════════════ PLUS RIEN D'OUBLIÉ ═══════════════ -->
-  <section class="wrap" id="plus-rien-oublie">
-    <div class="rv">
-      <span class="tag">Les automatismes</span>
-      <h2 class="title">Plus rien d'oublié</h2>
-      <p class="sub">Quatre moments que tout le monde rate quand la semaine file. Ici, c'est préparé à l'avance. Tu relis, tu valides.</p>
+  <!-- ═══════════════ 3. LE PROBLÈME ═══════════════ -->
+  <section class="wrap hp-sec" id="probleme">
+    <div class="pb">
+      <div>
+        <h2 class="title">Tu es agent immobilier. Pas secrétaire.</h2>
+        <p class="sub">Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, publier, classer. Et ce qu'on oublie finit par coûter un mandat.</p>
+      </div>
+      <ul class="pb-liste">
+        <li><span class="pb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2" /><path d="M20 12v5" /><path d="M20 21h.01" /><path d="M21.25 8.2A10 10 0 1 0 16 21.16" /></svg></span>La relance que tu voulais faire hier soir.</li>
+        <li><span class="pb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20" /><path d="M4.93 4.929a10 10 0 0 0-1.938 11.412 2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 0 0 11.302-1.989" /><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65" /></svg></span>Le vendeur sans nouvelles depuis dix jours.</li>
+        <li><span class="pb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="2" x2="22" y1="2" y2="22" /><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83" /><line x1="13.5" x2="6" y1="13.5" y2="21" /><line x1="18" x2="21" y1="12" y2="15" /><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59" /><path d="M21 15V5a2 2 0 0 0-2-2H9" /></svg></span>Le post du «&nbsp;Vendu&nbsp;» que tu n'as jamais publié.</li>
+      </ul>
     </div>
+  </section>
+
+  <!-- ═══════════════ 4. COMMENT ÇA MARCHE ═══════════════ -->
+  <section class="hp-band" id="comment">
+    <div class="wrap">
+      <h2 class="title">Ton équipe se branche en dix minutes.</h2>
+      <ol class="etapes">
+        <li class="etape">
+          <span class="etape-n" aria-hidden="true">1</span>
+          <h3>Tu branches Modelo, ton agenda et ta boîte mail.</h3>
+          <p>Rien à migrer : Modelo reste ton CRM.</p>
+          <div class="etape-visuel">
+            <ul class="et-logos" aria-label="Exemples d'outils branchés">
+              <li><img src="/assets/logos/modelo.svg" width="70" height="18" alt="Modelo" loading="lazy" /></li>
+              <li><img src="/assets/logos/google-agenda.svg" width="18" height="18" alt="" loading="lazy" />Agenda</li>
+              <li><img src="/assets/logos/gmail.svg" width="18" height="18" alt="" loading="lazy" />Gmail</li>
+              <li><img src="/assets/logos/outlook.svg" width="18" height="18" alt="" loading="lazy" />Outlook</li>
+            </ul>
+          </div>
+        </li>
+        <li class="etape">
+          <span class="etape-n" aria-hidden="true">2</span>
+          <h3>Ton équipe prépare, jour et nuit.</h3>
+          <p>Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.</p>
+          <div class="etape-visuel">
+            <span class="et-visages" aria-hidden="true">
+              <img src="/assets/equipe/boucles/max@256.webp" width="44" height="44" alt="" loading="lazy" />
+              <img src="/assets/equipe/boucles/emma@256.webp" width="44" height="44" alt="" loading="lazy" />
+              <img src="/assets/equipe/boucles/lucas@256.webp" width="44" height="44" alt="" loading="lazy" />
+              <img src="/assets/equipe/boucles/christine@256.webp" width="44" height="44" alt="" loading="lazy" />
+              <img src="/assets/equipe/boucles/zoe@256.webp" width="44" height="44" alt="" loading="lazy" />
+              <img src="/assets/equipe/boucles/raphael@256.webp" width="44" height="44" alt="" loading="lazy" />
+            </span>
+          </div>
+        </li>
+        <li class="etape">
+          <span class="etape-n" aria-hidden="true">3</span>
+          <h3>Tu valides d'un geste.</h3>
+          <p>Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.</p>
+          <div class="etape-visuel" aria-hidden="true">
+            <div class="et-carte">
+              <span class="auto-badge">À valider</span>
+              <b>Rappel de visite · Emma</b>
+              <span>SMS à Camille : visite à 17 h 15.</span>
+              <span class="et-boutons"><span class="et-ok">Valider</span><span class="et-non">Refuser</span></span>
+            </div>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 5. L'ÉQUIPE ═══════════════ -->
+  <section class="wrap hp-wide hp-sec" id="equipe">
+    <h2 class="title">Six spécialistes. Un seul abonnement.</h2>
+    <p class="sub">Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.</p>
+    <div class="eq-grille">{{EQUIPE_CARTES}}</div>
+  </section>
+
+  <!-- ═══════════════ 6. PLUS RIEN D'OUBLIÉ ═══════════════ -->
+  <section class="wrap hp-sec" id="plus-rien-oublie">
+    <h2 class="title">Plus rien d'oublié</h2>
+    <p class="sub">Quatre moments que tout le monde rate quand la semaine file. Ici, c'est préparé à l'avance. Tu relis, tu valides.</p>
     <div class="auto-grille">
       <article class="auto-tuile">
         <h3>Le rappel de visite, 2 h avant</h3>
@@ -85,34 +661,22 @@
     </div>
   </section>
 
+  <!-- ═══════════════ 7. CE QUE VOIENT TES CLIENTS ═══════════════ -->
   {{CLIENTS_VOIENT}}
 
-  <!-- ═══════════════ L'ÉQUIPE ═══════════════ -->
-  <section class="wrap" id="equipe">
-    <div class="rv">
-      <span class="tag">L'équipe</span>
-      <h2 class="title">Ton équipe, au complet sous tes yeux</h2>
-      <p class="sub">Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues — pas de prompts, pas de réglages.</p>
-    </div>
-    {{TEAM_BLOCKS}}
-    <p class="rv" style="text-align: center; font-size: 14px; color: var(--subtle); margin: 26px 0 0;">Plus de <b style="color: var(--iris);"><span class="cnt" data-to="50">50</span> compétences immobilières</b> déjà au travail — et il s'en ajoute chaque semaine.</p>
-
-    <div class="rv" style="max-width: 660px; margin: 64px auto 0; padding: 30px 34px; background: var(--raised); border: 0.5px solid var(--line); border-left: 3px solid var(--iris); border-radius: 14px; box-shadow: var(--shadow-sm);">
-      <p style="margin: 0; font-family: var(--font-display); font-size: 19px; line-height: 1.55; color: var(--ink);">« Revaly n'est pas né dans une boîte de tech. Il est né un dimanche soir, entre un post Facebook en retard et trois relances jamais parties. Je l'ai construit pour mon agence — maintenant il travaille aussi pour la tienne. »</p>
-      <p style="margin: 14px 0 0; font-size: 13.5px; color: var(--subtle);"><b style="color: var(--muted); font-weight: 600;">Julien</b> — fondateur de Revaly, conseiller immobilier</p>
-    </div>
-  </section>
-
-  <!-- ═══════════════ TU PEUX AUSSI LEUR PARLER ═══════════════ -->
-  <section class="wrap" id="parler">
+  <!-- ═══════════════ 8. TU PEUX AUSSI LEUR PARLER ═══════════════ -->
+  <section class="wrap hp-sec" id="parler">
     <div class="parler-grille">
-      <div class="rv">
-        <span class="tag">Par message</span>
+      <div>
         <h2 class="title">Tu peux aussi leur parler</h2>
         <p class="sub">Un vocal depuis ta voiture, une phrase dans ta messagerie. Max comprend, confie la tâche au bon équipier, et te montre ce qu'il prépare avant que quoi que ce soit parte.</p>
       </div>
-      <div class="conv" role="group" aria-label="Exemple de conversation avec Max">
-        <div class="conv-tete"><img src="__MAX128__" width="40" height="40" alt="" /><div><b>Max</b><span>Coordinateur de ton équipe</span></div></div>
+      <div class="conv" role="group" aria-label="Exemple de conversation avec Max sur Telegram">
+        <div class="conv-tete">
+          <img src="/assets/equipe/boucles/max@256.webp" width="40" height="40" alt="" loading="lazy" />
+          <div><b>Max</b><span>Coordinateur de ton équipe</span></div>
+          <span class="conv-canal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" /></svg>Telegram</span>
+        </div>
         <div class="conv-corps">
           <div class="msg moi"><div class="vocal"><span class="onde" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="duree">0:04</span></div><p class="transcrit">Max, relance le notaire pour jeudi</p></div>
           <div class="msg max"><p>Je le confie à Emma.</p></div>
@@ -122,11 +686,10 @@
     </div>
   </section>
 
-  <!-- ═══════════════ CALCULATEUR : TEMPS RENDU ═══════════════ -->
-  <section class="wrap" id="calculateur">
-    <div class="calc rv">
+  <!-- ═══════════════ 9. CALCULATEUR : TEMPS RENDU ═══════════════ -->
+  <section class="wrap hp-sec" id="calculateur">
+    <div class="calc">
       <div class="calc-intro">
-        <span class="tag">Calcul</span>
         <h2 class="title">Combien d'heures te rend ton équipe ?</h2>
         <p class="sub">Dis-nous ton rythme du mois. On compte ce que ton équipe prépare à ta place, tâche par tâche. Le détail de chaque tâche s'affiche avec le résultat.</p>
       </div>
@@ -161,28 +724,25 @@
     <script type="module" src="/assets/calcul.js"></script>
   </section>
 
-  <!-- ═══════════════ RIEN NE PART SANS TOI (storyboard approbation) ═══════════════ -->
-  <section class="wrap" id="controle">
-    <div class="rv" style="text-align: center;">
-      <span class="tag" style="justify-content: center;">Sous ton contrôle</span>
-      <h2 class="title">Rien ne part sans toi.</h2>
-      <p class="sub" style="margin-left: auto; margin-right: auto;">Ils travaillent 24 h/24 — mais rien ne part sans ton accord. Et tes emails, c'est toi qui les envoies, depuis ta boîte.</p>
-    </div>
-    <div class="ap-flow rv">
+  <!-- ═══════════════ 10. RIEN NE PART SANS TOI : confiance + fondateur ═══════════════ -->
+  <section class="wrap hp-sec hp-centre" id="controle">
+    <h2 class="title">Rien ne part sans toi.</h2>
+    <p class="sub">Ils travaillent 24 h/24, mais rien ne part sans ton accord. Et tes e-mails, c'est toi qui les envoies, depuis ta boîte.</p>
+    <div class="ap-flow">
       <div class="ap-step ap-s1">
         <p class="ap-label">1 · Emma rédige</p>
         <div class="ap-card">
           <div class="ap-mail-head">
-            <img class="face" src="__EMMA128__" width="30" height="30" alt="" />
+            <img class="face" src="/assets/equipe/boucles/emma@256.webp" width="30" height="30" alt="" loading="lazy" />
             <span class="who"><b>Emma</b><span>Assistante</span></span>
             <span class="ap-pill">Brouillon</span>
           </div>
-          <p class="ap-mail-line"><span class="k">À</span><span>M. Moreau — acquéreur</span></p>
-          <p class="ap-mail-line"><span class="k">Objet</span><b>Confirmation visite — samedi 11 h</b></p>
+          <p class="ap-mail-line"><span class="k">À</span><span>M. Moreau, acquéreur</span></p>
+          <p class="ap-mail-line"><span class="k">Objet</span><b>Confirmation visite, samedi 11 h</b></p>
           <p class="ap-mail-prev">Bonjour M. Moreau, je vous confirme la visite de la villa des Cèdres ce samedi à 11 h. D'ici là, je reste à votre disposition…</p>
         </div>
       </div>
-      <span class="ap-arrow ap-a1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg></span>
+      <span class="ap-arrow ap-a1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></span>
       <div class="ap-step ap-s2">
         <p class="ap-label">2 · Elle te demande</p>
         <div class="ap-card">
@@ -191,262 +751,159 @@
             <b>WhatsApp</b>
             <time datetime="11:41">11 h 41</time>
           </div>
-          <p class="ap-notif-msg"><b>Emma</b>Brouillon prêt dans ta boîte mail — tu relis, tu envoies.</p>
+          <p class="ap-notif-msg"><b>Emma</b>Brouillon prêt dans ta boîte mail : tu relis, tu envoies.</p>
         </div>
       </div>
-      <span class="ap-arrow ap-a2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg></span>
+      <span class="ap-arrow ap-a2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></span>
       <div class="ap-step ap-s3">
         <p class="ap-label">3 · Tu relis et tu envoies</p>
         <div class="ap-card">
-          <p class="ap-mail-line"><span class="k">Objet</span><b>Confirmation visite — samedi 11 h</b></p>
+          <p class="ap-mail-line"><span class="k">Objet</span><b>Confirmation visite, samedi 11 h</b></p>
           <div class="ap-gmail-row">
-            <span class="ap-envoyer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>Envoyer</span>
-            <span class="ap-from">depuis ta boîte mail — pas d'un robot</span>
+            <span class="ap-envoyer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.714 3.048a.498.498 0 0 0-.683.627l2.843 7.627a2 2 0 0 1 0 1.396l-2.842 7.627a.498.498 0 0 0 .682.627l18-8.5a.5.5 0 0 0 0-.904z" /><path d="M6 12h16" /></svg>Envoyer</span>
+            <span class="ap-from">depuis ta boîte mail</span>
           </div>
           <p class="ap-sent" style="margin: 0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Envoyé · 11 h 42</p>
         </div>
       </div>
     </div>
-    <p class="proof-note rv">Verrouillé dans le produit : email en brouillon dans ta boîte, post en attente de relecture, action sensible confirmée — toujours.</p>
+    <p class="proof-note">Verrouillé dans le produit : e-mail en brouillon dans ta boîte, post en attente de relecture, action sensible confirmée. Toujours.</p>
 
-    <ul class="confiance rv">
+    <ul class="confiance">
       <li><b>Tu valides tout.</b><span>Chaque message, post ou document arrive en carte « À valider » avant l'envoi.</span></li>
       <li><b>Modelo reste ton CRM.</b><span>L'équipe y lit et y range, rien à migrer. Ton agenda et ta boîte mail restent les tiens.</span></li>
       <li><b>Qualité mesurée.</b><span>89&nbsp;% de réussite sur 53 situations réelles <em>(mesure interne, octobre 2026)</em></span></li>
       <li><b>Tes données restent à toi.</b><span>Elles ne servent qu'à ton équipe, jamais à d'autres.</span></li>
     </ul>
 
-    <div class="fondateur rv">
+    <figure class="fondateur">
       {{FONDATEUR_VISUEL}}
       <div class="fondateur-txt">
         <h3>Créé par un agent immobilier, pour les agents immobiliers</h3>
-        <p><b>Julien</b> · Agent immobilier</p>
+        <blockquote><p>« Revaly n'est pas né dans une boîte de tech. Il est né un dimanche soir, entre un post Facebook en retard et trois relances jamais parties. Je l'ai construit pour mon agence. Maintenant, il travaille aussi pour la tienne. »</p></blockquote>
+        <figcaption class="fondateur-sig"><b>Julien</b> · Agent immobilier</figcaption>
       </div>
-    </div>
+    </figure>
   </section>
 
-  <!-- ═══════════════ FORMÉS À TON MÉTIER (CRM vivant + radar DPE) ═══════════════ -->
-  <section class="wrap" id="modelo">
-    <div class="rv">
-      <span class="tag">Ton métier</span>
-      <h2 class="title">Formés à ton métier.</h2>
-      <p class="sub">Pas un outil générique : une équipe qui écrit dans ton CRM et surveille ton secteur.</p>
-    </div>
-    <div class="modelo-grid">
-      <div class="rv">
-        <h3 class="metier-h3">Ton CRM devient vivant</h3>
-        <p class="metier-p">Ils ne se contentent pas de lire Modelo : ils y <b>écrivent</b> — la saisie, c'est fini.</p>
-        <ul class="cap-list">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Création de contact</b><i>vendeur ou acquéreur, dicté en une phrase, dédoublonné par email</i></span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Fiche acquéreur complète</b><i>budget, secteur, critères de recherche — prête pour tes rapprochements</i></span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Comptes rendus de visite</b><i>dictés en voiture, rangés sur le bon contact et le bon bien</i></span></li>
-        </ul>
+  <!-- ═══════════════ 11. PRIX ═══════════════ -->
+  <section class="hp-band hp-centre" id="tarif" data-billing="monthly">
+    <div class="wrap">
+      <h2 class="title">Une équipe entière pour moins qu'une demi-journée d'assistante par mois.</h2>
+      <p class="sub">Une assistante à mi-temps, c'est ~1&nbsp;200&nbsp;€/mois. Ici, les six agents sont inclus dans chaque offre. Essai 7 jours avec carte, sans engagement : tu pars quand tu veux, avec tes données.</p>
+      <div class="bill-toggle" role="radiogroup" aria-label="Rythme de facturation">
+        <label class="bt-opt">
+          <input type="radio" name="billing" value="monthly" checked />
+          <span class="bt-label">Mensuel</span>
+        </label>
+        <label class="bt-opt">
+          <input type="radio" name="billing" value="yearly" />
+          <span class="bt-label">Annuel</span>
+          <span class="bt-badge">−10 %</span>
+        </label>
       </div>
-      <div class="cmd-result rv" aria-hidden="true">
-        <div class="bubble me" style="justify-self: end;">Max, crée une fiche acquéreur pour M. Bernard : budget 450 000 €, cherche un T4 à <span class="geo-city">Aix</span> centre, rappelle-moi vendredi</div>
-        <div class="cr-slot">
-        <div class="cr-typing typing"><i></i><i></i><i></i></div>
-        <div class="result-card">
-          <p class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Créé dans Modelo</p>
-          <ul>
-            <li><span class="k">Contact</span><span><b>M. Bernard</b> — acquéreur</span></li>
-            <li><span class="k">Recherche</span><span>T4 · <span class="geo-city">Aix-en-Provence</span> centre · ≤ 450 000 €</span></li>
-            <li><span class="k">Tâche</span><span>Rappel vendredi 9 h — assignée à toi</span></li>
+      <div class="plans">
+        <div class="plan">
+          <h3>Solo</h3>
+          <p class="for">Pour le conseiller indépendant</p>
+          <p class="amount">
+            <span class="swap"><span class="sw-m" data-monthly>129 €<span class="unit"> HT /mois</span></span><span class="sw-y" data-yearly aria-hidden="true">116,10 €<span class="unit"> HT /mois</span></span></span>
+          </p>
+          <p class="bill-note">
+            <span class="swap"><span class="sw-m" data-monthly>Facturé au mois HT, sans engagement</span><span class="sw-y" data-yearly aria-hidden="true">Facturé 1 393,20 € HT une fois par an (−10 %)</span></span>
+          </p>
+          <ul class="checklist">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>1 conseiller</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, inclus</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 30 photos studio + 4 vidéos par mois</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
           </ul>
+          <button type="button" class="btn" data-waitlist="solo" data-track="essai">Essayer 7 jours</button>
+          <p class="plan-hint">
+            <span class="swap"><span class="sw-m" data-monthly>0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</span><span class="sw-y" data-yearly aria-hidden="true">0 € aujourd'hui · 1 393,20 € HT à la fin de l'essai, annoncé par email · annulation en 2 clics</span></span>
+          </p>
         </div>
+        <div class="plan featured">
+          <span class="badge">Recommandé</span>
+          <h3>Agence</h3>
+          <p class="for">Pour l'agence, espace partagé</p>
+          <p class="amount">
+            <span class="swap"><span class="sw-m" data-monthly>249 €<span class="unit"> HT /mois</span></span><span class="sw-y" data-yearly aria-hidden="true">224,10 €<span class="unit"> HT /mois</span></span></span>
+          </p>
+          <p class="bill-note">
+            <span class="swap"><span class="sw-m" data-monthly>Facturé au mois HT, sans engagement</span><span class="sw-y" data-yearly aria-hidden="true">Facturé 2 689,20 € HT une fois par an (−10 %)</span></span>
+          </p>
+          <ul class="checklist">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span class="swap"><span class="sw-m" data-monthly>3 conseillers inclus, puis 79&nbsp;€&nbsp;HT/mois par conseiller ajouté</span><span class="sw-y" data-yearly aria-hidden="true">3 conseillers inclus, puis 853,20&nbsp;€&nbsp;HT/an par conseiller ajouté</span></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, pour chaque conseiller</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 100 photos + 16 vidéos par mois, partagées</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
+          </ul>
+          <button type="button" class="btn" data-waitlist="agence" data-track="essai">Essayer 7 jours</button>
+          <p class="plan-hint">
+            <span class="swap"><span class="sw-m" data-monthly>0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</span><span class="sw-y" data-yearly aria-hidden="true">0 € aujourd'hui · 2 689,20 € HT à la fin de l'essai, annoncé par email · annulation en 2 clics</span></span>
+          </p>
+        </div>
+        <div class="plan">
+          <h3>Réseaux</h3>
+          <p class="for">Franchises et réseaux</p>
+          <p class="amount" style="font-size: 32px; padding-top: 6px;">Sur mesure</p>
+          <p class="bill-note">Volume, déploiement et facturation adaptés au réseau</p>
+          <ul class="checklist">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Conseillers et agences : sur mesure</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, pour chaque conseiller</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Studio photos + vidéos, volume sur mesure</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Interlocuteur dédié, facturation centralisée</li>
+          </ul>
+          <a class="btn ghost" href="mailto:support@revaly.io">Nous contacter</a>
+          <p class="plan-hint">Réponse d'un humain sous 24 h · sans engagement</p>
         </div>
       </div>
+      <p class="ht-note">Tous les prix sont indiqués hors taxes (HT), TVA en sus. Annuel : −10 % sur 12 mois.</p>
+      <ul class="garanties">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours avec carte, 0 € aujourd'hui</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Rappel par e-mail avant la fin de l'essai</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Annulation en 2 clics</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sans engagement</li>
+      </ul>
     </div>
-
-    <!-- Radar DPE : carte notification STATIQUE (un seul moment signé par section
-         = l'animation CRM ci-dessus). Mécanique réelle : cron-dpe-alerts, rayon
-         réglable, alerte Telegram + dpe-recents à la demande (annexe A). -->
-    <div class="dpe-grid">
-      <div class="rv">
-        <h3 class="metier-h3">Le radar DPE : des biens à rentrer, avant tout le monde</h3>
-        <p class="metier-p">Un nouveau DPE dans ton secteur, c'est souvent un bien qui prépare sa mise en vente — tu le sais avant qu'il arrive sur le marché. Et un F ou G, c'est un propriétaire qui devra vendre ou rénover.</p>
-      </div>
-      <div class="dpe-card rv" aria-hidden="true">
-        <div class="dpe-head">
-          <span class="dpe-tg"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span>
-          <b>Telegram</b>
-          <time datetime="08:07">08 h 07</time>
-        </div>
-        <p class="dpe-msg"><b>Lucas · Radar DPE</b>Nouveau diagnostic déposé à <span class="geo-city">Aix-en-Provence</span> : maison <strong>92 m²</strong>, <strong>classée F</strong> — à <strong>1,2 km</strong> de l'agence.</p>
-      </div>
-    </div>
-
-    <p class="metier-breadth rv">Formés aussi sur <b>les ventes réelles</b> (base notariée), <b>les dossiers de vente</b>, <b>les mandats</b> et <b>le droit immobilier français</b>.</p>
-    <a class="conn-more metier-more rv" href="/integrations/"><span>Et pour tout le reste : <b>3 200+ outils connectés</b> <span class="arr" aria-hidden="true">→</span></span></a>
   </section>
 
-  <!-- ═══════════════ PREUVE : LA PILE DE VALEUR (spec §3.5) ═══════════════ -->
-  <!-- Tarifs marché sourcés le 16/07/2026 — ordres de grandeur CONSERVATEURS du spec
-       confirmés, jamais gonflés :
-       · Assistante immobilière : 24 000-35 000 € brut/an temps plein (fr.talent.com,
-         hellowork.com, top-metiers.fr — CCN immobilier n°3090, avenant n°110 du 04/03/2026)
-         → mi-temps chargé employeur ≥ 1 200 €/mois. Spec ~1 200 € : fourchette basse.
-       · Community manager freelance : petits forfaits 500-800 €/mois, fourchette
-         courante 300-2 000 €/mois (facemweb.com, anthonyrusso.fr, plateya.fr grille 2026).
-         Spec ~400 € : fourchette basse.
-       · Photographe immobilier : 80-250 €/séance en moyenne nationale, forfait standard
-         avec retouche 200-400 € (mondevis.com, nodalview.com, pixinshot.fr).
-         Spec ~150 €/bien : fourchette basse.
-       · Analyste marché ~300 €/rapport : bas de fourchette des avis de valeur / études
-         de marché facturés à l'unité. -->
-  <section class="wrap" id="preuve">
-    <div class="rv" style="text-align:center;">
-      <span class="tag" style="justify-content:center;">Fais le calcul</span>
-      <h2 class="title">Recruter cette équipe, en vrai, ça coûte combien ?</h2>
-      <p class="sub" style="margin-left:auto; margin-right:auto;">Poste par poste, au tarif du marché français — fourchettes basses, jamais gonflées.</p>
-    </div>
-
-    <!-- La pile qui s'empile : 6 lignes en stagger → compteur → total rayé → chute 129 €.
-         no-JS / reduced-motion : tout est statique, total déjà rayé, 129 € déjà posé. -->
-    <div class="vzone">
-      <div class="vstack">
-        <div class="vs-head"><span>Le poste</span><span>Au tarif du marché</span><span>Dans ton équipe</span></div>
-        <div class="vs-row"><p class="vs-job">Assistante — relances, emails, agenda</p><p class="vs-price"><span class="amt">~1 200 €</span><span class="per">/mois à mi-temps</span></p><p class="vs-agent"><img class="face" src="__EMMA128__" width="26" height="26" alt="" /><b>Emma</b></p></div>
-        <div class="vs-row"><p class="vs-job">Community manager — posts, visuels à ta charte</p><p class="vs-price"><span class="amt">~400 €</span><span class="per">/mois en freelance</span></p><p class="vs-agent"><img class="face" src="__ZOE128__" width="26" height="26" alt="" /><b>Zoé</b></p></div>
-        <div class="vs-row"><p class="vs-job">Retouche photo, home staging, vidéos de biens</p><p class="vs-price"><span class="amt">~150 €</span><span class="per">/bien</span></p><p class="vs-agent"><img class="face" src="__RAPHAEL128__" width="26" height="26" alt="" /><b>Raphaël</b></p></div>
-        <div class="vs-row"><p class="vs-job">Analyste marché — estimations, rapports</p><p class="vs-price"><span class="amt">~300 €</span><span class="per">/rapport</span></p><p class="vs-agent"><img class="face" src="__LUCAS128__" width="26" height="26" alt="" /><b>Lucas</b></p></div>
-        <div class="vs-row"><p class="vs-job">Suivi juridique des mandats, dossiers complets</p><p class="vs-price"><span class="none">facturé à l'acte</span></p><p class="vs-agent"><img class="face" src="__CHRISTINE128__" width="26" height="26" alt="" /><b>Christine</b></p></div>
-        <div class="vs-row"><p class="vs-job">Un coordinateur qui repère les opportunités du secteur et orchestre tout</p><p class="vs-price"><span class="none">introuvable</span></p><p class="vs-agent"><img class="face" src="__MAX128__" width="26" height="26" alt="" /><b>Max</b></p></div>
-        <div class="vs-total">
-          <p class="vs-total-l">Une vraie équipe, au tarif du marché</p>
-          <s class="vs-sum">plus de <b><span id="vs-cnt">2 000</span> €</b><span class="unit">/mois</span></s>
-        </div>
-      </div>
-      <div class="vs-punch">
-        <p class="vs-97">Ton équipe : <b>129 €<span class="pm"> HT/mois.</span></b></p>
-        <p class="vs-sub">Formée au métier, jamais malade, disponible 24 h/24.</p>
-      </div>
-    </div>
-
-    <!-- Bande « Pas une démo » SUPPRIMÉE (retour Julien 16/07 — ne servait à rien ici).
-         Emplacement réservé : témoignages bêta quand ils existeront, juste avant #tarif. -->
-  </section>
-
-  <!-- ═══════════════ TARIF ═══════════════ -->
-  <section class="wrap" id="tarif" data-billing="monthly">
-    <div class="rv" style="text-align: center;">
-      <span class="tag">Tarifs</span>
-      <h2 class="title">Une équipe entière, au prix d'une demi-journée d'assistante.</h2>
-      <p class="sub" style="margin-left: auto; margin-right: auto;">Une assistante à mi-temps, c'est ~1&nbsp;200&nbsp;€/mois. Ici, les six agents sont inclus dans chaque offre — et tu pars quand tu veux, avec tes données.</p>
-    </div>
-    <div class="bill-toggle rv" role="radiogroup" aria-label="Rythme de facturation">
-      <label class="bt-opt">
-        <input type="radio" name="billing" value="monthly" checked />
-        <span class="bt-label">Mensuel</span>
-      </label>
-      <label class="bt-opt">
-        <input type="radio" name="billing" value="yearly" />
-        <span class="bt-label">Annuel</span>
-        <span class="bt-badge">−10 %</span>
-      </label>
-    </div>
-    <div class="plans">
-      <div class="plan rv">
-        <h3>Solo</h3>
-        <p class="for">Pour le conseiller indépendant</p>
-        <p class="amount">
-          <span class="swap"><span class="sw-m" data-monthly>129 €<span class="unit"> HT /mois</span></span><span class="sw-y" data-yearly aria-hidden="true">116,10 €<span class="unit"> HT /mois</span></span></span>
-        </p>
-        <p class="bill-note">
-          <span class="swap"><span class="sw-m" data-monthly>Facturé au mois HT, sans engagement</span><span class="sw-y" data-yearly aria-hidden="true">Facturé 1 393,20 € HT une fois par an (−10 %)</span></span>
-        </p>
-        <ul class="checklist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>1 conseiller</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, inclus</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 30 photos studio + 4 vidéos par mois</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
-        </ul>
-        <button type="button" class="btn" data-waitlist="solo" data-track="essai">Essayer 7 jours</button>
-        <p class="plan-hint">
-          <span class="swap"><span class="sw-m" data-monthly>0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</span><span class="sw-y" data-yearly aria-hidden="true">0 € aujourd'hui · 1 393,20 € HT à la fin de l'essai, annoncé par email · annulation en 2 clics</span></span>
-        </p>
-      </div>
-      <div class="plan featured rv">
-        <span class="badge">Recommandé</span>
-        <h3>Agence</h3>
-        <p class="for">Pour l'agence — espace partagé</p>
-        <p class="amount">
-          <span class="swap"><span class="sw-m" data-monthly>249 €<span class="unit"> HT /mois</span></span><span class="sw-y" data-yearly aria-hidden="true">224,10 €<span class="unit"> HT /mois</span></span></span>
-        </p>
-        <p class="bill-note">
-          <span class="swap"><span class="sw-m" data-monthly>Facturé au mois HT, sans engagement</span><span class="sw-y" data-yearly aria-hidden="true">Facturé 2 689,20 € HT une fois par an (−10 %)</span></span>
-        </p>
-        <ul class="checklist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span class="swap"><span class="sw-m" data-monthly>3 conseillers inclus, puis 79&nbsp;€&nbsp;HT/mois par conseiller ajouté</span><span class="sw-y" data-yearly aria-hidden="true">3 conseillers inclus, puis 853,20&nbsp;€&nbsp;HT/an par conseiller ajouté</span></span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, pour chaque conseiller</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inclus : 100 photos + 16 vidéos par mois, partagées</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours, 0 € aujourd'hui</li>
-        </ul>
-        <button type="button" class="btn" data-waitlist="agence" data-track="essai">Essayer 7 jours</button>
-        <p class="plan-hint">
-          <span class="swap"><span class="sw-m" data-monthly>0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</span><span class="sw-y" data-yearly aria-hidden="true">0 € aujourd'hui · 2 689,20 € HT à la fin de l'essai, annoncé par email · annulation en 2 clics</span></span>
-        </p>
-      </div>
-      <div class="plan rv">
-        <h3>Réseaux</h3>
-        <p class="for">Franchises et réseaux</p>
-        <p class="amount" style="font-size: 30px; padding-top: 8px;">Sur mesure</p>
-        <p class="bill-note">Volume, déploiement et facturation adaptés au réseau</p>
-        <ul class="checklist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Conseillers et agences : sur mesure</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Les 6 agents IA, pour chaque conseiller</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Studio photos + vidéos, volume sur mesure</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Nouvelles capacités chaque semaine, incluses</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Interlocuteur dédié, facturation centralisée</li>
-        </ul>
-        <a class="btn ghost" href="mailto:support@revaly.io">Nous contacter</a>
-        <p class="plan-hint">Réponse d'un humain sous 24 h · sans engagement</p>
-      </div>
-    </div>
-    <p class="ht-note rv" style="text-align: center; margin-top: 18px; font-size: 13px; color: var(--muted, #6b7280);">Tous les prix sont indiqués hors taxes (HT), TVA en sus. Annuel : −10 % sur 12 mois.</p>
-    <ul class="garanties rv">
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>0 € aujourd'hui</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Rappel par email avant la fin de l'essai</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Annulation en 2 clics</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sans engagement</li>
-    </ul>
-  </section>
-
-  <!-- ═══════════════ FAQ ═══════════════ -->
-  <section class="wrap" id="faq">
+  <!-- ═══════════════ 12. FAQ ═══════════════ -->
+  <section class="wrap hp-sec" id="faq">
     <div class="faq-grid">
-      <div class="rv">
-        <span class="tag">FAQ</span>
+      <div>
         <h2 class="title">Les questions qu'on nous pose</h2>
-        <p class="sub">Et si tu préfères en parler, écris-nous — un humain répond.</p>
+        <p class="sub">Et si tu préfères en parler, écris-nous : un humain répond.</p>
         <a class="btn ghost" href="mailto:support@revaly.io" style="margin-top: 20px;">Écrire à l'équipe</a>
       </div>
-      <div class="rv" id="faq-list">{{FAQ_ITEMS}}</div>
+      <div id="faq-list">{{FAQ_ITEMS}}</div>
     </div>
     <noscript><style>.faq-body { grid-template-rows: 1fr; } .faq-item .chev { display: none; }</style></noscript>
   </section>
 
-  <!-- ═══════════════ CTA FINAL + DÉMO INTÉGRÉE ═══════════════ -->
-  <section class="wrap" id="demo">
-    <div class="final rv">
+  <!-- ═══════════════ 13. APPEL FINAL + DÉMO INTÉGRÉE ═══════════════ -->
+  <section class="wrap hp-sec" id="demo">
+    <div class="final">
       <span class="faces" aria-hidden="true">
-        <img class="face" src="__MAX128__" width="52" height="52" alt="" />
-        <img class="face" src="__EMMA128__" width="52" height="52" alt="" />
-        <img class="face" src="__CHRISTINE128__" width="52" height="52" alt="" />
-        <img class="face" src="__ZOE128__" width="52" height="52" alt="" />
-        <img class="face" src="__RAPHAEL128__" width="52" height="52" alt="" />
-        <img class="face" src="__LUCAS128__" width="52" height="52" alt="" />
+        <img src="/assets/equipe/boucles/max@256.webp" width="56" height="56" alt="" loading="lazy" />
+        <img src="/assets/equipe/boucles/emma@256.webp" width="56" height="56" alt="" loading="lazy" />
+        <img src="/assets/equipe/boucles/lucas@256.webp" width="56" height="56" alt="" loading="lazy" />
+        <img src="/assets/equipe/boucles/christine@256.webp" width="56" height="56" alt="" loading="lazy" />
+        <img src="/assets/equipe/boucles/zoe@256.webp" width="56" height="56" alt="" loading="lazy" />
+        <img src="/assets/equipe/boucles/raphael@256.webp" width="56" height="56" alt="" loading="lazy" />
       </span>
-      <h2 class="title" style="font-size: clamp(30px, 4.6vw, 46px);">Ton équipe peut commencer <span style="color: var(--iris);">ce soir</span>.</h2>
-      <p class="sub" style="margin-left: auto; margin-right: auto; text-align: center;">
+      <h2 class="title">Ton équipe peut commencer ce soir.</h2>
+      <p class="sub" style="margin-left: auto; margin-right: auto;">
         Chaque semaine sans équipe, ce sont des relances oubliées et des mandats qui
         expirent en silence. Demain matin, ça peut être : post prêt, relances
         rédigées, dossier complet.
       </p>
       <div class="final-cta">
-        <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
+        <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
         <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
       </div>
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
@@ -513,8 +970,8 @@
 </footer>
 
 <div class="sticky-cta">
-  <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours <span class="arr" aria-hidden="true">→</span></button>
-  <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" style="margin-left: 10px;" data-track="demo">Réserver une démo</a>
+  <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
+  <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo" aria-label="Réserver une démo">Démo</a>
 </div>
 
 <!-- ═══════════════ MODAL LISTE D'ATTENTE ═══════════════ -->
@@ -556,6 +1013,7 @@
 
 <script>
   document.documentElement.classList.add('js');
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── Liste d'attente ──
   const WL_ENDPOINT = 'https://dzqcffmkrttzruwjqvwi.supabase.co/functions/v1/waitlist';
@@ -574,10 +1032,8 @@
     wl.classList.remove('open');
     if (wlLastFocus) wlLastFocus.focus();
   }
-  // ── Vente directe : CTA « Essayer 7 jours » → Stripe Payment Link (essai 7 j).
-  //    La périodicité suit le toggle Mensuel/Annuel des tarifs (défaut mensuel).
-  //    Liens non configurés (PAYMENT_LINKS vides) → repli propre sur la liste
-  //    d'attente : déployer avant de remplir les URLs ne change rien au live. ──
+  // ── Vente directe : les cartes « Essayer 7 jours » → Stripe Payment Link (essai 7 j).
+  //    La périodicité suit la bascule Mensuel/Annuel. Liens absents → repli sur la liste d'attente. ──
   const PAYMENT_LINKS = __PAYMENT_LINKS_JSON__;
   function billingPeriod() {
     const r = document.querySelector('input[name="billing"]:checked');
@@ -591,15 +1047,11 @@
   }
   document.querySelectorAll('[data-waitlist]').forEach((b) =>
     b.addEventListener('click', () => startCheckout(b.dataset.waitlist)));
-  // CTA génériques (header/hero/CTA final/sticky) : depuis la vente directe,
-  // « Essayer » codé en dur sur solo envoyait au checkout SOLO sans choix
-  // (retour Julien 21/07). Ils amènent désormais à la section tarifs, où le
-  // choix Solo/Agence + Mensuel/Annuel existe ; seules les CARTES déclenchent
-  // le checkout.
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Les autres « Essayer 7 jours » (haut, barre, appel final) mènent aux offres : le choix Solo/Agence
+  // et Mensuel/Annuel s'y fait, seules les cartes ouvrent le paiement (retour Julien 21/07).
   document.querySelectorAll('[data-goto-tarif]').forEach((b) =>
     b.addEventListener('click', () => {
-      document.getElementById('tarif').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+      document.getElementById('tarif').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
     }));
   document.getElementById('wl-x').addEventListener('click', wlClose);
   wl.addEventListener('click', (e) => { if (e.target === wl) wlClose(); });
@@ -636,21 +1088,23 @@
     }
   });
 
-  // CTA collant mobile : après le hero, caché près du CTA final ET sur la section tarif
-  // (sinon il recouvre les boutons des cartes).
-  const sticky = document.querySelector('.sticky-cta');
-  const finalCta = document.querySelector('.final');
-  const tarifSec = document.getElementById('tarif');
-  window.addEventListener('scroll', () => {
-    const past = window.scrollY > 900;
-    const nearEnd = finalCta && finalCta.getBoundingClientRect().top < window.innerHeight;
-    const tr = tarifSec.getBoundingClientRect();
-    const onTarif = tr.top < window.innerHeight && tr.bottom > 0;
-    sticky.classList.toggle('show', past && !nearEnd && !onTarif);
-  }, { passive: true });
+  // ── Barre collante mobile : après les boutons du haut, cachée sur les offres et près de l'appel final ──
+  (() => {
+    const sticky = document.querySelector('.sticky-cta');
+    const haut = document.querySelector('.hp-cta');
+    const fin = document.querySelector('.final');
+    const tarif = document.getElementById('tarif');
+    const maj = () => {
+      const passe = haut.getBoundingClientRect().bottom < 0;
+      const proche = fin.getBoundingClientRect().top < window.innerHeight;
+      const t = tarif.getBoundingClientRect();
+      sticky.classList.toggle('show', passe && !proche && !(t.top < window.innerHeight && t.bottom > 0));
+    };
+    window.addEventListener('scroll', maj, { passive: true });
+    maj();
+  })();
 
-  // ── FAQ : accordéons rendus par build.py depuis data/faq.json — ici on ne fait
-  // que brancher l'ouverture/fermeture (chevron + transition = CSS existant) ──
+  // ── FAQ : accordéons rendus par build.py depuis data/faq.json ──
   document.querySelectorAll('.faq-item > button').forEach((btn) => {
     btn.addEventListener('click', () => {
       const item = btn.parentElement;
@@ -660,33 +1114,6 @@
     });
   });
 
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { rootMargin: '-60px' });
-  document.querySelectorAll('.rv').forEach((el) => io.observe(el));
-  setTimeout(() => document.querySelectorAll('.rv:not(.in)').forEach((el) => el.classList.add('in')), 3000);
-  // ── Personnalisation par ville (best-effort, rien n'est stocké) ──
-  fetch('/api/geo')
-    .then((r) => r.json())
-    .then(({ city }) => {
-      if (!city || typeof city !== 'string') return;
-      const ville = city.trim().slice(0, 30);
-      if (ville.length < 2 || !/^[\p{L} '’-]+$/u.test(ville)) return;
-      const k = document.getElementById('geo-kicker');
-      if (k) k.textContent = "Ton équipe d'agents IA à " + ville;
-      document.querySelectorAll('.geo-city').forEach((el) => { el.textContent = ville; });
-    })
-    .catch(() => {});
-
-  // ── Interrupteurs d'automatisation : jouables (démo) ──
-  document.querySelectorAll('.switch').forEach((sw) => {
-    sw.addEventListener('click', () => {
-      const on = sw.getAttribute('aria-checked') !== 'false';
-      sw.setAttribute('aria-checked', String(!on));
-    });
-  });
-
-  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Révélation unique à l'entrée dans l'écran : ajoute .vu (ou appelle fn). Mouvement réduit : tout est déjà visible.
   const revealOnce = (sel, fn) => {
     const els = document.querySelectorAll(sel);
@@ -696,23 +1123,61 @@
     }, { threshold: 0.25 });
     els.forEach((el) => o.observe(el));
   };
-  // ── Équipe : chaque boucle ne se charge qu'à son entrée à l'écran, s'arrête dehors. Mouvement réduit ou économiseur de données : l'image fixe seule. ──
+
+  // ── Personnages : chaque boucle ne se charge qu'après la page, à son entrée à l'écran, et s'arrête dehors,
+  //    onglet caché ou en pause. Mouvement réduit ou économiseur de données : l'image fixe seule. ──
   (() => {
     const loops = document.querySelectorAll('video[data-loop]');
     const saver = navigator.connection && navigator.connection.saveData;
     if (REDUCED || saver || !('IntersectionObserver' in window)) return;
     const vus = new Set();
     const sync = () => loops.forEach((v) => {
-      if (vus.has(v) && !document.hidden) v.play().catch(() => {});
+      if (vus.has(v) && !document.hidden && !window.rvPause) v.play().catch(() => {});
       else if (!v.paused) v.pause();
     });
-    const o = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { e.isIntersecting ? vus.add(e.target) : vus.delete(e.target); });
-      sync();
-    }, { threshold: 0.4 });
-    loops.forEach((v) => o.observe(v));
-    document.addEventListener('visibilitychange', sync);
+    window.rvSyncLoops = sync;
+    const demarre = () => {
+      const o = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { e.isIntersecting ? vus.add(e.target) : vus.delete(e.target); });
+        sync();
+      }, { threshold: 0.4 });
+      loops.forEach((v) => o.observe(v));
+      document.addEventListener('visibilitychange', sync);
+    };
+    if (document.readyState === 'complete') demarre(); else window.addEventListener('load', demarre, { once: true });
   })();
+
+  // ── Haut de page : l'équipe au travail. Chaque agent change d'état toutes les 3 s, décalé de 0,5 s
+  //    sur le précédent ; arrêt hors écran, onglet caché ou bouton pause. Mouvement réduit : premier état fixe. ──
+  (() => {
+    const board = document.getElementById('board');
+    const btn = document.getElementById('board-pause');
+    const rots = Array.from(board.querySelectorAll('.bd-rot'));
+    btn.addEventListener('click', () => {
+      window.rvPause = !window.rvPause;
+      btn.setAttribute('aria-pressed', String(window.rvPause));
+      board.classList.toggle('pause', window.rvPause);
+      if (window.rvSyncLoops) window.rvSyncLoops();
+    });
+    if (REDUCED) return;
+    let enVue = true, t = 0;
+    if ('IntersectionObserver' in window) new IntersectionObserver((en) => { enVue = en[0].isIntersecting; }).observe(board);
+    const suivant = (rot) => {
+      const s = rot.children;
+      const i = Array.from(s).findIndex((x) => x.classList.contains('on'));
+      const avant = s[i];
+      avant.classList.replace('on', 'out');
+      setTimeout(() => avant.classList.remove('out'), 400);
+      s[(i + 1) % s.length].classList.add('on');
+    };
+    setInterval(() => {
+      if (window.rvPause || !enVue || document.hidden) return;
+      t += 1;
+      const r = rots[t % rots.length];
+      if (r && r.children.length > 1) suivant(r);
+    }, 3000 / rots.length);
+  })();
+
   revealOnce('.auto-tuile');
   revealOnce('#clients-voient');
   if (!REDUCED && 'IntersectionObserver' in window) document.querySelectorAll('.conv').forEach((el) => el.classList.add('armed'));
@@ -720,19 +1185,6 @@
     el.classList.add('vu');
     el.querySelectorAll('.msg').forEach((m, i) => setTimeout(() => m.classList.add('on'), i * 600));
   });
-
-
-  // ── Vidéo hero : joue quand elle est à l'écran, se met en pause hors champ ──
-  const hv = document.getElementById('film-boucle');
-  if (hv && REDUCED) hv.pause();
-  if (hv && !REDUCED) {
-    const tryPlay = () => { if (getComputedStyle(hv).display !== 'none' && hv.paused) hv.play().catch(() => {}); };
-    new IntersectionObserver((entries) => {
-      entries.forEach((e) => { e.isIntersecting ? tryPlay() : hv.pause(); });
-    }, { threshold: 0.2 }).observe(hv);
-    window.addEventListener('load', tryPlay, { once: true });
-    document.addEventListener('click', tryPlay, { once: true, passive: true });
-  }
 
   // ── Film : <dialog> natif (Échap ferme), pause à la fermeture, focus rendu au bouton ──
   (() => {
@@ -746,30 +1198,8 @@
     dlg.addEventListener('close', () => { vid.pause(); btn.focus(); });
   })();
 
-  // ── Compteurs (j'aime, compétences, connecteurs, bande de preuve) ──
-  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-  function animNum(el, from, to, dur) {
-    if (REDUCED) { el.textContent = to.toLocaleString('fr-FR'); return; }
-    const t0 = performance.now();
-    (function tick(now) {
-      const p = Math.min(1, (now - t0) / dur);
-      el.textContent = Math.round(from + (to - from) * easeOut(p)).toLocaleString('fr-FR');
-      if (p < 1) requestAnimationFrame(tick);
-    })(t0);
-  }
-  const cio = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (!e.isIntersecting) return;
-      cio.unobserve(e.target);
-      animNum(e.target, 0, Number(e.target.dataset.to), 900);
-    });
-  }, { threshold: 0.35 });
-  document.querySelectorAll('.cnt').forEach((el) => cio.observe(el));
-
-  // ── Tarifs : toggle Mensuel/Annuel — le glissement des prix est le moment
-  //    signé de la section. Les deux variantes ([data-monthly]/[data-yearly])
-  //    sont empilées dans une grid : largeur/hauteur réservées = zéro saut de
-  //    layout, la bascule ne touche que transform/opacity (220 ms). ──
+  // ── Tarifs : bascule Mensuel/Annuel. Les deux variantes sont empilées (taille réservée, aucun saut),
+  //    seuls transform/opacity bougent. ──
   (() => {
     const sec = document.getElementById('tarif');
     function setBilling(mode) {
@@ -781,131 +1211,18 @@
       r.addEventListener('change', () => setBilling(r.value)));
   })();
 
-  // ── CTA légèrement magnétiques (desktop pointeur fin uniquement) ──
-  if (!REDUCED && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    document.querySelectorAll('.btn').forEach((b) => {
-      b.addEventListener('mousemove', (e) => {
-        const r = b.getBoundingClientRect();
-        const x = ((e.clientX - r.left) / r.width - 0.5) * 6;
-        const y = ((e.clientY - r.top) / r.height - 0.5) * 4;
-        b.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
-      });
-      b.addEventListener('mouseleave', () => { b.style.transform = ''; });
-    });
-  }
-
-  // ── « Ton CRM devient vivant » : la séquence se joue à l'arrivée à l'écran ──
-  const cr = document.querySelector('.cmd-result');
-  if (cr && !REDUCED) {
-    cr.classList.add('armed');
-    new IntersectionObserver((entries, io) => {
-      entries.forEach((e) => { if (e.isIntersecting) { cr.classList.add('play'); io.disconnect(); } });
-    }, { threshold: 0.55 }).observe(cr);
-  }
-
-  // ── « Rien ne part sans toi » : le storyboard d'approbation se joue à l'arrivée
-  //    (mécanique #modelo : armed/play, IO ~0.5, déclenchement unique) ──
+  // ── « Rien ne part sans toi » : le storyboard se joue une fois à l'arrivée ──
   (() => {
     const ap = document.querySelector('.ap-flow');
-    if (!ap || REDUCED) return;
+    if (!ap || REDUCED || !('IntersectionObserver' in window)) return;
     ap.classList.add('armed');
-    // ~0.5, borné pour rester atteignable quand la pile mobile dépasse le viewport
+    // ~0.5, borné pour rester atteignable quand la pile mobile dépasse l'écran
     const th = Math.min(0.5, (window.innerHeight * 0.6) / Math.max(1, ap.offsetHeight));
     new IntersectionObserver((entries, io) => {
       entries.forEach((e) => { if (e.isIntersecting) { ap.classList.add('play'); io.disconnect(); } });
     }, { threshold: th }).observe(ap);
   })();
-
-  // ── Équipe : chaque bloc joue sa conversation à l'arrivée à l'écran
-  //    (réutilise la mécanique #modelo : armed/play, IO 0.55, trigger once) ──
-  (() => {
-    const blocks = document.querySelectorAll('.tblock');
-    if (!blocks.length || REDUCED) return;
-    blocks.forEach((b) => b.classList.add('armed'));
-    const tio = new IntersectionObserver((entries) => {
-      entries.filter((e) => e.isIntersecting).forEach((e, i) => {
-        tio.unobserve(e.target);
-        const blk = e.target.closest('.tblock');
-        // stagger 90 ms si deux conversations arrivent dans le même batch IO
-        setTimeout(() => blk.classList.add('play'), i * 90);
-      });
-    }, { threshold: 0.55 });
-    blocks.forEach((b) => tio.observe(b.querySelector('.tc-panel')));
-  })();
-
-  // ── Carrousel équipe (façon Limova) : onglets + flèches + swipe scroll-snap.
-  //    La slide visible rejoue sa conversation via l'observer tio ci-dessus
-  //    (une slide horizontale hors écran n'intersecte pas → ne joue pas). ──
-  (() => {
-    const crsl = document.getElementById('crsl');
-    if (!crsl) return;
-    const tabs = Array.from(document.querySelectorAll('.crsl-tab'));
-    const prev = document.querySelector('.crsl-arrow.prev');
-    const next = document.querySelector('.crsl-arrow.next');
-    const n = crsl.children.length;
-    let cur = 0;
-    function goTo(i, smooth = true) {
-      i = Math.max(0, Math.min(n - 1, i));
-      crsl.scrollTo({ left: i * crsl.clientWidth, behavior: (smooth && !REDUCED) ? 'smooth' : 'auto' });
-    }
-    function sync() {
-      const i = Math.round(crsl.scrollLeft / Math.max(1, crsl.clientWidth));
-      if (i === cur) return;
-      cur = i;
-      tabs.forEach((t, k) => { t.classList.toggle('on', k === i); t.setAttribute('aria-selected', String(k === i)); });
-      prev.disabled = i === 0;
-      next.disabled = i === n - 1;
-      tabs[i]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: REDUCED ? 'auto' : 'smooth' });
-    }
-    tabs.forEach((t) => t.addEventListener('click', () => goTo(Number(t.dataset.i))));
-    prev.addEventListener('click', () => goTo(cur - 1));
-    next.addEventListener('click', () => goTo(cur + 1));
-    let raf = 0;
-    crsl.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(sync); }, { passive: true });
-    crsl.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); goTo(cur + 1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(cur - 1); }
-    });
-    window.addEventListener('resize', () => goTo(cur, false));
-  })();
-
-  // ── Pile de valeur (#preuve) : lignes en stagger → compteur animNum →
-  //    « plus de 2 000 €/mois » rayé → chute « 129 € » (design-notes §4.4).
-  //    UN SEUL IO pour toute la séquence, trigger once. reduced-motion / no-JS :
-  //    le HTML porte déjà l'état final (total rayé, 129 € posé). ──
-  (() => {
-    const vz = document.querySelector('.vzone');
-    if (!vz || REDUCED) return;
-    const cnt = document.getElementById('vs-cnt');
-    vz.classList.add('armed');
-    cnt.textContent = '0';
-    // seuil ~0.35, borné pour rester atteignable quand la pile mobile dépasse le viewport
-    const th = Math.min(0.35, (window.innerHeight * 0.5) / Math.max(1, vz.offsetHeight));
-    new IntersectionObserver((entries, io) => {
-      entries.forEach((e) => {
-        if (!e.isIntersecting) return;
-        io.disconnect();
-        vz.classList.add('play');                                  // pile : fin ≈ 750 ms
-        setTimeout(() => animNum(cnt, 0, 2000, 1500), 850);        // compteur, pile posée
-        setTimeout(() => vz.classList.add('struck'), 2500);        // compteur stable +150 ms
-        setTimeout(() => vz.classList.add('landed'), 2920);        // trait tracé +100 ms
-      });
-    }, { threshold: th }).observe(vz);
-  })();
-
-  // ── Spotlight : le halo suit le curseur sur les cartes ──
-  if (window.matchMedia('(hover: hover)').matches) {
-    document.querySelectorAll('.plan').forEach((c) => {
-      c.addEventListener('mousemove', (e) => {
-        const r = c.getBoundingClientRect();
-        c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
-        c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
-      });
-    });
-  }
 </script>
-
-<!-- Analytics : beacon Cloudflare injecté par _shell.html sur toutes les pages -->
 
 <!-- JSON-LD généré par build.py : FAQPage (faq.json schema:true) + Organization + Product/Offers -->
 {{JSONLD}}
