@@ -587,13 +587,20 @@ for static in ["og.jpg", "logo.png"]:
     if src.exists():
         shutil.copy(src, ROOT / "dist" / static)
 (ROOT / "dist" / "film").mkdir(exist_ok=True)
-try:  # Pillow présent en local : les WebP suivent toujours le dernier poster rendu ; sinon, celles du dépôt
+# Image fixe du haut = première image de la boucle (le passage à la vidéo ne se voit pas). Refaite à chaque
+# construction quand ffmpeg et Pillow sont là (les fichiers du film peuvent être remplacés, mêmes noms) ;
+# sinon, les WebP du dépôt servent telles quelles.
+try:
+    import subprocess, tempfile
     from PIL import Image
-    for _src, _dst, _taille in [("poster.jpg", "poster@1280.webp", (1280, 720)), ("poster-vertical.jpg", "poster-vertical@720.webp", (720, 1280))]:
-        if (ROOT / "assets" / "film" / _src).exists():
-            Image.open(ROOT / "assets" / "film" / _src).convert("RGB").resize(_taille, Image.LANCZOS).save(
-                ROOT / "assets" / "film" / _dst, "WEBP", quality=74, method=6)
-except ImportError:
+    if shutil.which("ffmpeg"):
+        for _src, _dst, _taille in [("boucle.mp4", "poster@1280.webp", (1280, 720)), ("boucle-vertical.mp4", "poster-vertical@720.webp", (720, 1280))]:
+            if (ROOT / "assets" / "film" / _src).exists():
+                with tempfile.TemporaryDirectory() as _d:
+                    _png = pathlib.Path(_d) / "f.png"
+                    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(ROOT / "assets" / "film" / _src), "-frames:v", "1", str(_png)], check=True)
+                    Image.open(_png).convert("RGB").resize(_taille, Image.LANCZOS).save(ROOT / "assets" / "film" / _dst, "WEBP", quality=74, method=6)
+except (ImportError, subprocess.CalledProcessError):
     pass
 for f in (ROOT / "assets" / "film").glob("*"):
     if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
