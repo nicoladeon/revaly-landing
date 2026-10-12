@@ -20,6 +20,10 @@ CALENDLY_URL = "https://calendly.com/contact-chiclick/30min"
 # ✅ Liens MODE LIVE — offre v3 (08/10/2026) : Solo 129 / 1 393,20 € HT, Agence
 # 249 / 2 689,20 € HT (3 conseillers inclus), essai 7 j, metadata offer=v3.
 # Les liens v2 (97 / 229 €) sont désactivés après la mise en ligne.
+# Identifiant du pixel Meta — À FOURNIR par Julien. Vide = ni bandeau de
+# consentement ni pixel (en France, le pixel exige un « Accepter » préalable).
+META_PIXEL_ID = ""
+
 PAYMENT_LINKS = {
     "solo/monthly": "https://buy.stripe.com/dRmeVc2Vi39EgBT07Ic7u04",
     "solo/yearly": "https://buy.stripe.com/6oUeVc67ucKebhz5s2c7u05",
@@ -28,6 +32,7 @@ PAYMENT_LINKS = {
 }
 
 repl = {"__CALENDLY__": CALENDLY_URL}
+repl["__META_PIXEL_ID__"] = META_PIXEL_ID
 repl["__PAYMENT_LINKS_JSON__"] = json.dumps(PAYMENT_LINKS, ensure_ascii=False)
 for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:
     repl[f"__{k.upper()}128__"] = uri(f"assets/portraits/{k}@128.webp", "image/webp")
@@ -145,7 +150,7 @@ def agent_main(a, agents):
       <div>
         <ul class="tb-caps ag-caps">{caps}</ul>
         <div class="crsl-actions">
-          <button type="button" class="btn" data-goto-tarif>Essayer 7 jours</button>
+          <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
           <button type="button" class="btn ghost tb-talk" data-goto-tarif>Discuter avec {name}</button>
         </div>
         <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
@@ -177,8 +182,8 @@ def agent_main(a, agents):
       <p class="ag-recall-t">{name} et toute l'équipe — les six agents — dès <b>129 € HT/mois</b>.</p>
       <p class="ag-recall-s">Formée à ton métier, disponible 24 h/24, dans tes outils.</p>
       <div class="crsl-actions" style="justify-content: center;">
-        <button type="button" class="btn" data-goto-tarif>Essayer 7 jours</button>
-        <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener">Réserver une démo</a>
+        <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
+        <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
       </div>
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
     </div>
@@ -199,7 +204,7 @@ def agents_index_main(agents):
     <p class="sub">Chacun porte un vrai métier de l'agence — clique pour voir sa fiche de poste complète : ce qu'il fait tout seul, et ce qu'il sait faire à la demande.</p>
     <div class="ag-cards">{cards}</div>
     <div style="text-align:center; margin-top: 44px;">
-      <button type="button" class="btn" data-goto-tarif>Recruter l'équipe — Essayer 7 jours</button>
+      <button type="button" class="btn" data-goto-tarif data-track="essai">Recruter l'équipe — Essayer 7 jours</button>
       <p class="cta-hint">0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics</p>
     </div>
   </section>'''
@@ -389,7 +394,8 @@ bienvenue_body = '''  <section class="wrap" style="min-height: 100vh; display: f
     </div>
 
     <p class="cta-hint" style="margin-top: 22px; max-width: 42ch; font-size: 13px; color: var(--subtle);">Déjà cliqué le lien ? <a href="https://app.revaly.io/login" style="color: var(--iris); text-decoration: none; font-weight: 500;">Ouvrir Revaly</a>. Pas d'email ? Vérifie tes spams ou écris à <a href="mailto:support@revaly.io" style="color: inherit; text-decoration: underline;">support@revaly.io</a>.</p>
-  </section>'''
+  </section>
+  <script>addEventListener("load",function(){window.rvTrack&&rvTrack('essai_demarre')})</script>'''
 write_page(
     "bienvenue/index.html", bienvenue_body,
     title="Bienvenue — ton équipe Revaly t'attend",

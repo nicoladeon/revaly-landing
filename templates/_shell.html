@@ -1131,15 +1131,50 @@
   .ag-card .nm { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--ink); margin-top: 12px; }
   .ag-card .rl { font-size: 13.5px; color: var(--muted); }
   .ag-card .go { font-size: 13.5px; color: var(--iris); font-weight: 550; margin-top: 12px; }
+
+  /* ── Bandeau de consentement (pixel Meta) ── */
+  .rv-consent {
+    position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 60;
+    max-width: 440px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 8px;
+    padding: 14px 16px; background: var(--raised); color: var(--ink);
+    border: 0.5px solid var(--line-strong); border-radius: 16px; box-shadow: var(--shadow-md);
+  }
+  .rv-consent[hidden] { display: none; }
+  .rv-consent p { flex: 1 1 100%; margin: 0; font-size: 14px; line-height: 1.4; color: var(--ink); }
+  .rv-consent .btn { flex: 1 1 0; justify-content: center; min-height: 44px; padding: 9px 16px; font-size: 14px; }
+  .rv-consent .btn:focus-visible { outline: 2px solid var(--iris); outline-offset: 2px; }
+  @media (min-width: 761px) { .rv-consent { left: auto; right: 20px; bottom: 20px; } }
 </style>
 
 <!-- Mesure d'audience sans cookie — Plausible (filtre bots, vrais navigateurs).
      outbound-links : compte aussi les clics sortants (Payment Links Stripe, Calendly). -->
 <script defer data-domain="revaly.io" src="https://plausible.io/js/script.outbound-links.js"></script>
+<script>window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}</script>
 </head>
 <body>
 {{BODY}}
 <!-- Cloudflare Web Analytics — sans cookie, RGPD-compatible, sur TOUTES les pages -->
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "54e677d024f949b18171f6d2ff6b905c"}'></script>
+<div id="rv-consent" class="rv-consent" hidden role="dialog" aria-label="Mesure d'audience">
+  <p>On mesure l'efficacité de nos pubs avec Meta. Tu acceptes ?</p>
+  <button type="button" data-c="0" class="btn ghost">Refuser</button>
+  <button type="button" data-c="1" class="btn">Accepter</button>
+</div>
+<script>
+(function(){
+  var KEY="rv-consent", PIXEL="__META_PIXEL_ID__";
+  function loadPixel(){ if(!PIXEL||window.fbq) return;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', PIXEL); fbq('track','PageView'); }
+  var c=null; try{c=localStorage.getItem(KEY)}catch(e){}
+  var box=document.getElementById("rv-consent");
+  if(c==="1") loadPixel(); else if(c!=="0" && PIXEL) box.hidden=false;
+  box.addEventListener("click",function(e){var v=e.target.getAttribute("data-c"); if(v===null) return;
+    try{localStorage.setItem(KEY,v)}catch(_){} box.hidden=true; if(v==="1") loadPixel();});
+  window.rvTrack=function(n){ try{ window.plausible && plausible(n); }catch(_){}
+    try{ window.fbq && fbq('trackCustom', n); }catch(_){} };
+  document.addEventListener("click",function(e){var t=e.target.closest("[data-track]"); if(t) rvTrack(t.getAttribute("data-track"));});
+})();
+</script>
 </body>
 </html>

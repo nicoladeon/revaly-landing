@@ -236,4 +236,11 @@ for page in sorted(dist.rglob("*.html")):
     visible = _NOISE.sub("", page.read_text())
     for mot in INTERDITS:
         must(mot.lower() not in visible.lower(), f"mot interdit visible : {mot} ({page.relative_to(dist)})")
+# ── Task 2 : mesure et consentement ──
+must("window.rvTrack" in idx, "rvTrack présent")
+must("fbq('init'" not in idx.split("rv-consent")[0], "pixel Meta jamais initialisé avant le bandeau")
+must('id="rv-consent"' in idx and "Refuser" in idx and "Accepter" in idx, "bandeau de consentement")
+must(idx.count('data-track="essai"') >= 2 and idx.count('data-track="demo"') >= 2, "CTA suivis")
+bienv = (dist / "bienvenue" / "index.html").read_text()
+must("rvTrack('essai_demarre')" in bienv, "essai démarré mesuré au retour de Stripe")
 print("OK v3 données et texte")
