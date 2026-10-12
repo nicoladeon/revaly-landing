@@ -117,9 +117,10 @@ nouveaux visuels dans un second temps.
 
 - **Essayer 7 jours** : liens de paiement Stripe v3 existants (`build.py`, PAYMENT_LINKS),
   essai de 7 jours avec carte ; retour vers la page de bienvenue existante.
-- **Réserver une démo** : **par défaut, la page de prise de rendez-vous de Google
-  Agenda** du compte contact@chiclick.fr (gratuite, le rendez-vous arrive dans l'agenda
-  que Revaly lit déjà) ; 20 minutes ; intégrée en bas de page.
+- **Réserver une démo** : **le Calendly existant** (`CALENDLY_URL` de `build.py`,
+  rendez-vous de 30 min, déjà en ligne et fonctionnel) ; intégré en bas de page ; la
+  réservation est mesurée. La page de rendez-vous Google Agenda reste une option si
+  Julien la préfère.
 
 ## 7. Hors périmètre
 
