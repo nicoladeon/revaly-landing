@@ -321,10 +321,20 @@ def bande_reseaux(reseaux):
     return _bande("bande-reseaux", "Des agents de ces réseaux travaillent déjà avec Revaly", reseaux,
                   mention="Les marques citées appartiennent à leurs propriétaires.")
 
+QUI = {"acquereur": "L'acquéreur", "vendeur": "Le vendeur", "notaire": "Le notaire"}
+def clients_voient(items):
+    cartes = "".join(
+        f'<figure class="cv-carte"><figcaption>{QUI[c["qui"]]} · {_esc(c["canal"])}</figcaption>'
+        f'<blockquote>{_esc(c["message"])}</blockquote></figure>' for c in items)
+    return (f'<section class="wrap" id="clients-voient"><h2 class="title">Ce que voient tes clients</h2>'
+            f'<div class="cv-grille">{cartes}</div><p class="cv-chute">Un service impeccable. '
+            f'Derrière, une seule personne… et son équipe.</p></section>')
+
 body_home = render("home-body.html", {
     "TEAM_BLOCKS": team_blocks(),
     "BANDE_OUTILS": bande_outils(json.loads((ROOT / "data" / "outils.json").read_text())),
     "BANDE_RESEAUX": bande_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
+    "CLIENTS_VOIENT": clients_voient(json.loads((ROOT / "data" / "clients-voient.json").read_text())),
     "FAQ_ITEMS": faq_items(faq),
     "JSONLD": jsonld_blocks(faq),
 })

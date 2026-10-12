@@ -296,3 +296,7 @@ for n in ("orpi.svg", "laforet.svg", "iad.svg", "modelo.svg"):
 # ── Bloc « Plus rien d'oublié » (Task 5) ──
 must('id="plus-rien-oublie"' in idx and idx.count('class="auto-tuile') == 4, "4 automatismes")
 print("OK v3 plus rien d'oublié")
+
+# ── Bloc « Ce que voient tes clients » (Task 6) ──
+must('id="clients-voient"' in idx and all(c["message"] in html.unescape(idx) for c in cv), "messages clients rendus")
+print("OK v3 ce que voient tes clients")
