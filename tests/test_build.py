@@ -365,12 +365,15 @@ for (m, v), jsr in zip(_cas, json.loads(_js)):
 # ── Task 10 : confiance, fondateur, FAQ des objections, démo intégrée ──
 _t10 = html.unescape(idx).replace("\u00a0", " ")
 must("Créé par un agent immobilier, pour les agents immobiliers" in _t10, "bloc fondateur")
-must("89 % de réussite sur 53 situations réelles" in _t10 and "mesure interne, octobre 2026" in _t10, "chiffre qualité sourcé")
-must("89&nbsp;% de réussite" in idx or "89 % de réussite" in idx, "espace insécable avant % (chiffre qualité)")
+_t10n = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", idx)).replace("\u00a0", " "))
+must("89 % de réussite sur 53 situations réelles" in _t10n and "mesure interne, octobre 2026" in _t10n, "chiffre qualité sourcé")
+must("89&nbsp;%" in idx and "89 %" not in idx, "espace insécable avant % (chiffre qualité)")
 must(idx.find('id="controle"') < idx.find('id="tarif"') < idx.find('id="faq"'), "ordre confiance → tarif → FAQ")
 _conf = idx.split('id="controle"', 1)[1].split("</section>", 1)[0]
-must("Créé par un agent immobilier" in html.unescape(_conf) and "Modelo reste ton CRM" in html.unescape(_conf), "fondateur et CRM dans Confiance")
-must('class="fondateur"' in _conf and ('class="fondateur-photo"' in _conf or 'class="fondateur-mono"' in _conf), "carte fondateur : photo ou monogramme")
+_pf = idx.split('id="preuve-fondateur"', 1)[1].split("</section>", 1)[0]
+must("Créé par un agent immobilier" in html.unescape(_pf) and "Modelo reste ton CRM" in html.unescape(_conf), "fondateur dans la preuve sous le haut de page, CRM dans « Rien ne part sans toi »")
+must('class="fondateur"' in _pf and ('class="fondateur-photo"' in _pf or 'class="fondateur-mono"' in _pf), "carte fondateur : photo ou monogramme")
+must("89&nbsp;%" in _pf and "mesure interne, octobre 2026" in _pf, "chiffre qualité en grand, sourcé, à côté du fondateur")
 faqq = [q["question"] for q in json.loads((ROOT / "data" / "faq.json").read_text())]
 for k in ["CRM", "se trompe", "données", "technique", "annule"]:
     must(any(k.lower() in q.lower() for q in faqq), f"FAQ couvre : {k}")
@@ -442,8 +445,10 @@ for e in _ea:
 must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 # Ordre des sections du brief
 # Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
-_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="probleme"', 'id="comment"', 'id="bande-outils"', 'id="controle"', 'id="equipe"',
-          'id="plus-rien-oublie"', 'id="clients-voient"', 'id="parler"', 'id="calculateur"',
+# Ronde Julien 1 (playbook des références) : preuve juste après le haut, les collègues avant « Rien ne part sans toi »,
+# « Ce que voient tes clients » dans le même bloc que « Plus rien d'oublié ».
+_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="preuve-fondateur"', 'id="probleme"', 'id="comment"', 'id="bande-outils"',
+          'id="equipe"', 'id="controle"', 'id="plus-rien-oublie"', 'id="clients-voient"', 'id="parler"', 'id="calculateur"',
           'id="tarif"', 'id="faq"', 'id="demo"']
 _pos = [idx.find(x) for x in _ordre]
 must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
@@ -519,7 +524,8 @@ must(_pb2.find("Le vendeur sans nouvelles depuis dix jours.") < _pb2.find("La re
 _inst = "Installation offerte : on branche Modelo, ta boîte mail et ton agenda avec toi."
 must(_t.count(_inst) >= 2 and idx.find(_inst) > idx.find('id="comment"') and idx.split('id="tarif"', 1)[1].count(_inst) >= 1, "installation offerte sous « Comment ça marche » et dans les prix")
 must("Pas de frais de mise en place." in html.unescape(idx.split('id="tarif"', 1)[1].split("</section>", 1)[0]), "prix : pas de frais de mise en place")
-must(idx.count('class="cta-relance"') == 3, "trois relances d'essai entre les sections")
+must(idx.count('class="cta-relance"') == 2, "relances d'essai entre les sections (après la validation, sous le calculateur)")
+must(idx.count('class="') and all(f'aria-label="{x}' in idx for x in ("Les six agents, à faire défiler", "Les trois étapes", "Les trois offres")), "rangées à faire glisser sur mobile (page plus courte)")
 _ctl = html.unescape(idx.split('id="controle"', 1)[1].split("</section>", 1)[0])
 must("t'attend en brouillon" in _ctl and "24 h" not in _ctl, "« Rien ne part sans toi » : brouillon, sans « 24 h/24 »")
 _emma = next(e for e in json.loads((ROOT / "data" / "equipe-accueil.json").read_text()) if e["slug"] == "emma")

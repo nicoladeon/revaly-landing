@@ -358,9 +358,9 @@ def clients_voient(items):
     cartes = "".join(
         f'<figure class="cv-carte"><figcaption>{QUI[c["qui"]]} · {_esc(c["canal"])}</figcaption>'
         f'<blockquote>{_esc(c["message"])}</blockquote></figure>' for c in items)
-    return (f'<section class="wrap hp-sec" id="clients-voient"><h2 class="title">Ce que voient tes clients : un service impeccable.</h2>'
-            f'<div class="cv-grille">{cartes}</div><p class="cv-chute">'
-            f'Derrière, une seule personne… et son équipe.</p></section>')
+    return (f'<div class="cv-bloc" id="clients-voient"><h3 class="cv-titre">Ce que voient tes clients&nbsp;: un service impeccable.</h3>'
+            f'<div class="cv-grille glisse" tabindex="0" role="region" aria-label="Trois messages reçus, à faire défiler">{cartes}</div><p class="cv-chute">'
+            f'Derrière, une seule personne… et son équipe.</p></div>')
 
 # ── Calculateur de temps rendu : même formule que assets/calcul.js (portée une fois ici pour
 # la phrase sans JavaScript ; tests/test_build.py compare les deux sur plusieurs entrées). ──

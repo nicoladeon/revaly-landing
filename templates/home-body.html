@@ -2,15 +2,15 @@
   /* ── Accueil (refonte du 12/10/2026) : styles propres à la page. Le socle (couleurs, Geist,
        boutons, navigation, fenêtre d'essai, pied de page) vit dans _shell.html. ── */
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-  .hp-sec { padding-top: clamp(88px, 11vw, 136px); }
+  .hp-sec { padding-top: clamp(72px, 10vw, 136px); }
   .hp-wide { max-width: 1160px; }
   .hp-centre { text-align: center; }
   .hp-centre p.sub { margin-left: auto; margin-right: auto; }
   .hp-band {
-    margin-top: clamp(88px, 11vw, 136px); padding: clamp(72px, 9vw, 112px) 0;
+    margin-top: clamp(72px, 10vw, 136px); padding: clamp(60px, 8vw, 112px) 0;
     background: var(--raised); border-top: 0.5px solid var(--line); border-bottom: 0.5px solid var(--line);
   }
-  h2.title { margin-top: 0; }
+  h2.title { margin-top: 0; font-weight: 560; letter-spacing: -0.04em; }
   @media (max-width: 640px) { .wrap { padding-left: 16px; padding-right: 16px; } }
 
   /* ── 1. Haut de page : promesse, deux boutons, puis l'équipe au travail ── */
@@ -155,6 +155,37 @@
   }
   .film-close:hover { background: rgba(18, 21, 28, .9); }
   .film-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  /* ── 2. La preuve : le fondateur et le chiffre qualité, côte à côte ── */
+  .pf-grille { display: grid; gap: 20px; align-items: stretch; }
+  @media (min-width: 900px) { .pf-grille { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; } }
+  .preuve-fond .fondateur { margin: 0; max-width: none; height: 100%; }
+  .pf-chiffre { display: flex; flex-direction: column; justify-content: center; padding: 24px 26px; border-radius: 22px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
+  .pf-nombre { margin: 0; font-size: clamp(56px, 7vw, 84px); font-weight: 560; line-height: 1; letter-spacing: -0.05em; color: var(--iris-ink); font-variant-numeric: tabular-nums; }
+  .pf-legende { margin: 10px 0 0; font-size: 17px; font-weight: 500; line-height: 1.4; color: var(--ink); }
+  .pf-legende em { display: block; margin-top: 2px; font-style: normal; font-size: 13.5px; font-weight: 400; color: var(--muted); }
+  .pf-detail { margin: 14px 0 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+
+  /* ── Rangées à faire glisser sur mobile (équipe, automatismes) : la page raccourcit, le bureau garde ses grilles ── */
+  @media (max-width: 699px) {
+    .glisse {
+      display: flex !important; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 16px;
+      margin-left: -16px; margin-right: -16px; padding: 4px 16px 14px; scrollbar-width: none;
+    }
+    .glisse::-webkit-scrollbar { display: none; }
+    .glisse > * { flex: 0 0 84%; scroll-snap-align: start; }
+    .glisse:focus-visible { outline-offset: -2px; }
+    .ap-flow.glisse { max-width: none; margin-top: 32px; }
+    .ap-flow.glisse .ap-arrow { display: none; }
+    .ap-flow.glisse > .ap-step { flex-basis: 86%; }
+    .plans.glisse { padding-top: 18px; margin-top: 24px; }
+    .plans.glisse > .plan { flex-basis: 86%; }
+    .etapes.glisse { margin-top: 28px; }
+    .rangee ul { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; max-width: none; }
+    .rg-photo { width: 50px; height: 50px; margin-bottom: 4px; }
+    .rangee b { font-size: 12.5px; }
+    .rangee li > span:last-child { display: none; }
+  }
+
   /* ── 3. Le problème ── */
   .pb { display: grid; gap: 32px; align-items: center; }
   @media (min-width: 900px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 64px; } }
@@ -265,7 +296,9 @@
     html.js .auto-tuile .auto-carte { opacity: 1 !important; transform: none !important; transition: none; }
   }
 
-  /* ── 7. Ce que voient tes clients : trois messages reçus, tels qu'ils arrivent ── */
+  /* ── Ce que voient tes clients : la seconde moitié de « Plus rien d'oublié » ── */
+  .cv-bloc { margin-top: clamp(40px, 5vw, 64px); }
+  .cv-titre { margin: 0; font-size: clamp(22px, 2.6vw, 28px); font-weight: 560; line-height: 1.2; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
   .cv-grille { display: grid; gap: 14px; margin-top: 36px; grid-template-columns: 1fr; }
   @media (min-width: 860px) { .cv-grille { grid-template-columns: repeat(3, 1fr); } }
   .cv-carte { margin: 0; display: flex; flex-direction: column; gap: 12px; }
@@ -407,6 +440,10 @@
   }
   .proof-note { margin: 18px auto 0; text-align: center; font-size: 13px; color: var(--muted); max-width: 640px; }
   .confiance { list-style: none; margin: 40px auto 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  @media (max-width: 699px) {
+    .confiance { gap: 0; margin-top: 28px; }
+    .confiance li { padding: 14px 2px !important; border-radius: 0 !important; background: none !important; border: 0 !important; border-top: 0.5px solid var(--line) !important; box-shadow: none !important; }
+  }
   .confiance li { background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px; padding: 20px 20px 22px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 6px; text-align: left; }
   .confiance b { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
   .confiance span { font-size: 14.5px; line-height: 1.55; color: var(--muted); }
@@ -609,6 +646,25 @@
     </dialog>
   </section>
 
+  <!-- ═══════════════ 2. LA PREUVE : le fondateur est du métier, la qualité est mesurée ═══════════════ -->
+  <section class="wrap hp-sec preuve-fond" id="preuve-fondateur" aria-label="Pourquoi nous faire confiance">
+    <div class="pf-grille">
+    <figure class="fondateur">
+      {{FONDATEUR_VISUEL}}
+      <div class="fondateur-txt">
+        <h3>Créé par un agent immobilier, pour les agents immobiliers</h3>
+        <blockquote><p>« Revaly n'est pas né dans une boîte de tech. Il est né un dimanche soir, entre un post Facebook en retard et trois relances jamais parties. Je l'ai construit pour mon agence. Maintenant, il travaille aussi pour la tienne. »</p></blockquote>
+        <figcaption class="fondateur-sig"><b>Julien</b> · Agent immobilier</figcaption>
+      </div>
+    </figure>
+      <div class="pf-chiffre">
+        <p class="pf-nombre">89&nbsp;%</p>
+        <p class="pf-legende">de réussite sur 53 situations réelles <em>(mesure interne, octobre 2026)</em></p>
+        <p class="pf-detail">Et chaque envoi t'attend quand même en brouillon : tu relis avant que quoi que ce soit parte.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ 3. LE PROBLÈME ═══════════════ -->
   <section class="wrap hp-sec" id="probleme">
     <figure class="pb-citation">
@@ -633,7 +689,7 @@
   <section class="hp-band" id="comment">
     <div class="wrap">
       <h2 class="title">Ton équipe se branche en dix minutes.</h2>
-      <ol class="etapes">
+      <ol class="etapes glisse" tabindex="0" role="region" aria-label="Les trois étapes, à faire défiler">
         <li class="etape">
           <span class="etape-n" aria-hidden="true">1</span>
           <h3>Tu branches Modelo, ton agenda et ta boîte mail.</h3>
@@ -675,11 +731,18 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 5. RIEN NE PART SANS TOI : le mode supervisé, la preuve, le fondateur ═══════════════ -->
+  <!-- ═══════════════ 5. L'ÉQUIPE ═══════════════ -->
+  <section class="wrap hp-sec" id="equipe">
+    <h2 class="title">Six spécialistes. Un seul abonnement.</h2>
+    <p class="sub">Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.</p>
+    <div class="eq-grille glisse" tabindex="0" role="region" aria-label="Les six agents, à faire défiler">{{EQUIPE_CARTES}}</div>
+  </section>
+
+  <!-- ═══════════════ 6. RIEN NE PART SANS TOI : le mode supervisé, en vrai ═══════════════ -->
   <section class="wrap hp-sec hp-centre" id="controle">
     <h2 class="title">Rien ne part sans toi.</h2>
     <p class="sub">Chaque message, post ou document t'attend en brouillon : tu relis, tu corriges si besoin, tu valides. Et tes e-mails, c'est toi qui les envoies, depuis ta boîte.</p>
-    <div class="ap-flow">
+    <div class="ap-flow glisse" tabindex="0" role="region" aria-label="Comment une validation se passe, à faire défiler">
       <div class="ap-step ap-s1">
         <p class="ap-label">1 · Emma rédige</p>
         <div class="ap-card">
@@ -723,34 +786,17 @@
     <ul class="confiance">
       <li><b>Tu valides tout.</b><span>Chaque message, post ou document arrive en carte « À valider » avant l'envoi.</span></li>
       <li><b>Modelo reste ton CRM.</b><span>L'équipe y lit et y range, rien à migrer. Ton agenda et ta boîte mail restent les tiens.</span></li>
-      <li><b>Qualité mesurée.</b><span>89&nbsp;% de réussite sur 53 situations réelles <em>(mesure interne, octobre 2026)</em></span></li>
       <li><b>Tes données restent à toi.</b><span>Elles ne servent qu'à ton équipe, jamais à d'autres.</span></li>
     </ul>
 
-    <figure class="fondateur">
-      {{FONDATEUR_VISUEL}}
-      <div class="fondateur-txt">
-        <h3>Créé par un agent immobilier, pour les agents immobiliers</h3>
-        <blockquote><p>« Revaly n'est pas né dans une boîte de tech. Il est né un dimanche soir, entre un post Facebook en retard et trois relances jamais parties. Je l'ai construit pour mon agence. Maintenant, il travaille aussi pour la tienne. »</p></blockquote>
-        <figcaption class="fondateur-sig"><b>Julien</b> · Agent immobilier</figcaption>
-      </div>
-    </figure>
     <div class="cta-relance"><button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button><p>0 € aujourd'hui · Annulable en 2 clics</p></div>
   </section>
 
-  <!-- ═══════════════ 6. L'ÉQUIPE ═══════════════ -->
-  <section class="wrap hp-sec" id="equipe">
-    <h2 class="title">Six spécialistes. Un seul abonnement.</h2>
-    <p class="sub">Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.</p>
-    <div class="eq-grille">{{EQUIPE_CARTES}}</div>
-    <div class="cta-relance"><button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button><p>0 € aujourd'hui · Annulable en 2 clics</p></div>
-  </section>
-
-  <!-- ═══════════════ 7. PLUS RIEN D'OUBLIÉ ═══════════════ -->
+  <!-- ═══════════════ 7. PLUS RIEN D'OUBLIÉ (+ ce que voient tes clients) ═══════════════ -->
   <section class="wrap hp-sec" id="plus-rien-oublie">
     <h2 class="title">Plus rien d'oublié</h2>
     <p class="sub">Quatre moments que tout le monde rate quand la semaine file. Ici, c'est préparé à l'avance. Tu relis, tu valides.</p>
-    <div class="auto-grille">
+    <div class="auto-grille glisse" tabindex="0" role="region" aria-label="Quatre automatismes, à faire défiler">
       <article class="auto-tuile">
         <h3>Le bilan de commercialisation du vendredi</h3>
         <p>Chaque vendredi, ton vendeur reçoit son bilan de commercialisation : visites, retours, offres.</p>
@@ -772,12 +818,10 @@
         <div class="auto-carte"><span class="auto-badge">À valider</span><b>Relance · acquéreur</b><span>Accord de prêt : échéance dans 10 jours.</span></div>
       </article>
     </div>
+    {{CLIENTS_VOIENT}}
   </section>
 
-  <!-- ═══════════════ 8. CE QUE VOIENT TES CLIENTS ═══════════════ -->
-  {{CLIENTS_VOIENT}}
-
-  <!-- ═══════════════ 9. TU PEUX AUSSI LEUR PARLER ═══════════════ -->
+  <!-- ═══════════════ 8. TU PEUX AUSSI LEUR PARLER ═══════════════ -->
   <section class="wrap hp-sec" id="parler">
     <div class="parler-grille">
       <div>
@@ -799,7 +843,7 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 10. CALCULATEUR : TEMPS RENDU ═══════════════ -->
+  <!-- ═══════════════ 9. CALCULATEUR : TEMPS RENDU ═══════════════ -->
   <section class="wrap hp-sec" id="calculateur">
     <div class="calc">
       <div class="calc-intro">
@@ -838,7 +882,7 @@
     <script type="module" src="/assets/calcul.js"></script>
   </section>
 
-  <!-- ═══════════════ 11. PRIX ═══════════════ -->
+  <!-- ═══════════════ 10. PRIX ═══════════════ -->
   <section class="hp-band hp-centre" id="tarif" data-billing="monthly">
     <div class="wrap">
       <h2 class="title">Une équipe entière pour moins qu'une demi-journée d'assistante par mois.</h2>
@@ -855,7 +899,7 @@
           <span class="bt-badge">−10 %</span>
         </label>
       </div>
-      <div class="plans">
+      <div class="plans glisse" tabindex="0" role="region" aria-label="Les trois offres, à faire défiler">
         <div class="plan">
           <h3>Solo</h3>
           <p class="for">Pour le conseiller indépendant</p>
@@ -926,7 +970,7 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 12. FAQ ═══════════════ -->
+  <!-- ═══════════════ 11. FAQ ═══════════════ -->
   <section class="wrap hp-sec" id="faq">
     <div class="faq-grid">
       <div>
@@ -939,7 +983,7 @@
     <noscript><style>.faq-body { grid-template-rows: 1fr; } .faq-item .chev { display: none; }</style></noscript>
   </section>
 
-  <!-- ═══════════════ 13. APPEL FINAL + DÉMO INTÉGRÉE ═══════════════ -->
+  <!-- ═══════════════ 12. APPEL FINAL + DÉMO INTÉGRÉE ═══════════════ -->
   <section class="wrap hp-sec" id="demo">
     <div class="final">
       <span class="faces" aria-hidden="true">
