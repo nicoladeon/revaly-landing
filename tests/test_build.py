@@ -272,7 +272,7 @@ must("Ton équipe travaille. Toi, tu es avec tes clients." not in _txt and "Ton 
 _micro = html.unescape(re.sub(r"<[^>]+>", "", idx.split('class="hp-micro"', 1)[1].split("</p>", 1)[0]))
 must(all(x in _micro for x in ("0 € aujourd'hui", "Annulable en 2 clics", "Rien ne part sans toi")), "ligne de risque : 0 €, annulable, rien ne part sans toi")
 must('id="voir-film"' in idx and 'id="film-dialog"' in idx, "lecteur du film")
-must('data-track="film"' in idx and "Regarder avec le son (45 s)" in idx, "« Regarder avec le son (45 s) » mesuré")
+must('data-track="film"' in idx and "Regarder avec le son (1 min)" in idx, "« Regarder avec le son (1 min) » mesuré")
 must("assistants IA" not in idx and "Autonome, 24 h/24" not in idx, "ancienne promesse retirée")
 for f in ["poster.jpg", "poster-vertical.jpg", "poster@1280.webp", "poster-vertical@720.webp", "boucle.webm", "boucle.mp4",
           "boucle-vertical.webm", "boucle-vertical.mp4", "revaly-45s.webm", "revaly-45s.mp4", "revaly-45s-vertical.webm", "revaly-45s-vertical.mp4"]:
@@ -639,7 +639,7 @@ must('preload="none"' in _v and "autoplay" not in _v and "<source" not in idx.sp
      "vidéo du haut : aucun préchargement, sources posées par le script après le chargement")
 must(_cadre.find("<picture>") < _cadre.find('<video id="film-boucle"') and ".film-cadre video { opacity: 0;" in idx and ".film-cadre.joue video { opacity: 1; }" in idx,
      "image fixe d'abord, la vidéo apparaît en lecture")
-must("vid.poster = vertical ? '/assets/film/poster-vertical.jpg' : '/assets/film/poster.jpg';" in idx, "film complet : image du brief (0:42) en attente")
+must("vid.poster = vertical ? '/assets/film/poster-vertical.jpg' : '/assets/film/poster.jpg';" in idx, "film complet : image fixe de l'équipe en attente")
 must(not (ROOT / "video").exists() and "hero.mp4" not in idx and not (ROOT / "assets" / "hero.mp4").exists(), "ancien film et sa source retirés")
 _gi = (ROOT / ".gitignore").read_text()
 must("film/rushes/" in _gi and "film/frames*/" in _gi, "rushes et images de rendu du film ignorés")
