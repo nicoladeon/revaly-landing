@@ -490,8 +490,19 @@ for c in _cartes:
     must(html.escape(c["objet"], quote=False).replace(" :", "\u00a0:").replace("« ", "«\u00a0").replace(" »", "\u00a0»") in _flux, f"objet de la carte : {c['objet']}")
 must(".carte[data-slot=\"0\"]" in idx and '.carte[data-slot="1"], .carte[data-slot="2"]' in idx and "}, 4000);" in idx, "1 carte sur mobile, 3 au bureau, une nouvelle toutes les 4 s")
 must('id="anim-pause"' in _cadre and 'aria-pressed="false"' in _cadre, "bouton pause des animations (AA 2.2.2)")
-must('grid-template-areas: "texte film" "preuve preuve" "flux flux";' in idx and "@media (min-width: 1024px)" in idx,
-     "bureau : texte à gauche, film à droite, puis la preuve et la rangée de 3 cartes")
+must('grid-template-areas: "texte film"' not in idx and ".hp-hero { padding-top: clamp(20px, 2.6vw, 36px); text-align: center; }" in idx
+     and ".hp-film { position: relative; margin-top: clamp(28px, 3vw, 40px); width: 100%; }" in idx,
+     "ronde du 13/10 : haut de page centré à toutes les largeurs, le film en grand sur toute la largeur du contenu")
+# L'échelle des titres (une seule source : --h1 / --h2) : H1 ≥ 1,55 × H2 à 1440, ≥ 1,4 × H2 à 390
+def _clamp(nom):
+    m = re.search(nom + r": clamp\((\d+(?:\.\d+)?)px, (\d+(?:\.\d+)?)vw, (\d+(?:\.\d+)?)px\)", idx)
+    must(m, f"token {nom} en clamp(px, vw, px)")
+    lo, vw, hi = map(float, m.groups())
+    return lambda largeur: min(max(lo, vw * largeur / 100), hi)
+_h1, _h2 = _clamp("--h1"), _clamp("--h2")
+must(_h1(1440) / _h2(1440) >= 1.55 and _h1(390) / _h2(390) >= 1.4, f"H1/H2 : {_h1(1440):.0f}/{_h2(1440):.0f} à 1440, {_h1(390):.0f}/{_h2(390):.0f} à 390")
+must(86 <= _h1(1440) <= 92 and 44 <= _h1(390) <= 46 and 54 <= _h2(1440) <= 56 and 30 <= _h2(390) <= 32, "tailles visées : H1 88-92 / 44-46, H2 56 / 30-32")
+must(re.search(r"\.hp-hero h1 \{[^}]*font-size: var\(--h1\)", idx) and re.search(r"\.tete-titre \{[^}]*font-size: var\(--h2\)", idx), "H1 et H2 lisent les tokens")
 must(_hero.find('class="hp-texte"') < _hero.find('id="bande-reseaux"') < _hero.find('id="film-cadre"') < _hero.find('id="flux"'),
      "mobile : texte, preuve, film, cartes (ordre du balisage)")
 _ea = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
@@ -693,7 +704,7 @@ must(len(_h2) == len(_sections) - 1 and all('class="tete-titre"' in a for a in _
 for _, _sid in _sections[1:]:
     _s = _main.split(f'id="{_sid}"', 1)[1].split("</section>", 1)[0]
     must(_s.count('<header class="tete') == 1 and _s.count("<h2") == 1, f"une tête de section unique dans #{_sid}")
-must(re.search(r"\.tete-titre \{[^}]*font-size: clamp\(", idx) and len(re.findall(r"\.tete-titre[^{]*\{[^}]*font-size", idx)) == 1, "tous les H2 de section à la même taille (un seul clamp)")
+must(re.search(r"\.tete-titre \{[^}]*font-size: var\(--h2\)", idx) and len(re.findall(r"\.tete-titre[^{]*\{[^}]*font-size", idx)) == 1, "tous les H2 de section à la même taille (un seul token)")
 must("Geist Mono" in idx and (dist / "fonts" / "geist-mono-var.woff2").is_file() and (ROOT / "assets" / "fonts" / "OFL-Geist.txt").is_file(), "pastilles en Geist Mono (licence OFL jointe)")
 must(_main.split('id="probleme"', 1)[1].count("data-ap") >= 10, "apparitions au défilement posées sur les blocs")
 must('[data-ap]:not(.vu) { opacity: 0; transform: translateY(24px); filter: blur(8px); }' in idx and "70ms" in idx, "apparition flou → net, montée de 24 px, décalage entre frères")

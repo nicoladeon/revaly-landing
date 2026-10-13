@@ -5,11 +5,11 @@
   /* ── 1. Haut de page : promesse, deux boutons, puis l'équipe au travail ── */
   .hp-hero { padding-top: clamp(20px, 2.6vw, 36px); text-align: center; }
   .hp-hero h1 {
-    margin: 14px auto 0; max-width: 1000px;
-    font-size: clamp(40px, 5.4vw, 70px); font-weight: 560; line-height: 1; letter-spacing: -0.048em;
+    margin: 14px auto 0; max-width: 1120px; text-wrap: balance;
+    font-size: var(--h1); font-weight: 600; line-height: 1.02; letter-spacing: -0.035em;
   }
   .hp-hero h1 .iris { color: var(--iris); }
-  .hp-lede { margin: 16px auto 0; max-width: 760px; font-size: clamp(16.5px, 1.5vw, 19px); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+  .hp-lede { margin: 16px auto 0; max-width: 760px; font-size: clamp(17px, 1.4vw, 20px); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
   /* Un seul bouton principal ; la démo reste à portée, en lien (elle ne concurrence pas l'essai) */
   .hp-cta { margin-top: 24px; display: flex; justify-content: center; align-items: center; gap: 8px 26px; flex-wrap: wrap; }
   .hp-cta .btn { min-height: 54px; padding: 14px 36px; font-size: 17px; justify-content: center; }
@@ -77,7 +77,7 @@
   /* ── La vitrine : le film qui se lance seul (16:9 au bureau, vertical sur mobile) et le travail préparé ── */
   .hp-grille { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; }
   .hp-texte, .hp-grille > .preuve { justify-self: stretch; }
-  .hp-film { position: relative; margin-top: clamp(28px, 3vw, 40px); width: min(100%, 360px); }
+  .hp-film { position: relative; margin-top: clamp(28px, 3vw, 40px); width: 100%; }
   .hp-film::before {
     content: ""; position: absolute; z-index: -1; left: 6%; right: 6%; top: 8%; bottom: 0; border-radius: 50%;
     background: radial-gradient(closest-side, color-mix(in srgb, var(--iris) 24%, transparent), transparent); filter: blur(56px); pointer-events: none;
@@ -136,24 +136,15 @@
   .flux-pied svg { width: 16px; height: 16px; flex: none; color: var(--iris-ink); }
 
   @media (min-width: 700px) {
-    .hp-film { width: 100%; }
     .film-cadre { aspect-ratio: 16 / 9; border-radius: 24px; }
   }
-  /* Bureau : le texte à gauche, le film 16:9 entier à droite, au-dessus de la ligne de flottaison ;
-     dessous, la bande des réseaux, puis les 3 cartes de travail en rangée (la nouvelle arrive à gauche) */
+  /* Tout centré, à toutes les largeurs (ronde Julien du 13/10) : pastille, H1, sous-titre, boutons, bande des réseaux,
+     puis le film en grand sur toute la largeur du contenu (16:9 au bureau, boucle verticale sur mobile) ;
+     au bureau, les 3 cartes de travail en rangée dessous (la nouvelle arrive à gauche) */
   @media (min-width: 1024px) {
     .hp-hero { padding-top: clamp(28px, 3vw, 48px); }
-    .hp-grille {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); column-gap: clamp(40px, 4vw, 56px); align-items: center;
-      grid-template-areas: "texte film" "preuve preuve" "flux flux";
-    }
-    .hp-texte { grid-area: texte; text-align: left; }
-    .hp-hero h1 { margin-left: 0; font-size: clamp(40px, 3.75vw, 54px); line-height: 1.03; max-width: none; }
-    .hp-lede { margin-left: 0; font-size: 18px; max-width: 34em; }
-    .hp-cta { justify-content: flex-start; }
-    .hp-film { grid-area: film; margin-top: 0; }
-    .hp-grille > .preuve { grid-area: preuve; margin-top: clamp(28px, 2.8vw, 36px); }
-    .flux-zone { grid-area: flux; width: 100%; margin-top: clamp(22px, 2.4vw, 30px); }
+    .hp-grille > .preuve { margin-top: clamp(28px, 2.8vw, 36px); }
+    .flux-zone { width: 100%; margin-top: clamp(22px, 2.4vw, 30px); }
     .flux { --h: 150px; height: calc(var(--h) + 32px); margin: -16px -16px 0; padding: 16px; overflow: hidden; }
     .carte { top: 16px; left: 16px; right: auto; width: calc((100% - 32px - 2 * var(--g)) / 3); transform: translateX(calc(var(--slot) * (100% + var(--g)))); }
     .carte-objet { -webkit-line-clamp: 1; }
@@ -769,7 +760,6 @@
     .cy-prets li:nth-child(n+4) { display: none; }
     .cy-quotidien { display: none; }
     .eq-fleches { display: none !important; }
-    .hp-film { width: min(100%, 270px); }
     .flux-zone { display: none; }
     .faq-encore-s { display: none; }
     html.js .ot-liste:not(.ouvert) li:nth-child(n+3) { display: none; }
