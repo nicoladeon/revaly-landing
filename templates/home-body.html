@@ -498,10 +498,10 @@
   .sc-agenda { margin: 12px 0 0; border-radius: 12px; background: var(--bg); box-shadow: inset 0 0 0 .5px var(--line); color: var(--ink); overflow: hidden; font-size: 12.5px; }
   .sc-agenda-t { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 8px 10px 6px; border-bottom: .5px solid var(--line); }
   .sc-agenda-t b { font-weight: 600; white-space: nowrap; } .sc-agenda-t span { color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; font-size: 11.5px; }
-  .sc-heures { --hr: 3.4em; position: relative; height: calc((var(--n) - 1) * var(--hr) + 1.4em); padding-left: 3em; overflow: hidden;
-    background: repeating-linear-gradient(to bottom, var(--line) 0 .5px, transparent .5px var(--hr)); background-position: 0 .6em; }
-  .sc-heures > i { position: absolute; left: 8px; top: calc(var(--h) * var(--hr) + .6em); transform: translateY(-100%); padding-bottom: 2px; font-style: normal; font-size: .9em; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1; }
-  .sc-ev { position: absolute; left: 3em; right: 8px; top: calc(var(--debut) * var(--hr) + .6em); height: calc(var(--duree) * var(--hr)); padding: 3px 7px; border-radius: 6px; background: color-mix(in srgb, var(--iris) 18%, var(--raised)); border-left: 3px solid var(--iris); line-height: 1.2; overflow: hidden; box-sizing: border-box; }
+  .sc-heures { --hr: 3.4em; position: relative; height: calc((var(--n) - 1) * var(--hr) + 2.3em); padding-left: 3em; overflow: hidden;
+    background: repeating-linear-gradient(to bottom, var(--line) 0 .5px, transparent .5px var(--hr)); background-position: 0 1.5em; }
+  .sc-heures > i { position: absolute; left: 8px; top: calc(var(--h) * var(--hr) + 1.5em); transform: translateY(-100%); padding-bottom: 2px; font-style: normal; font-size: .9em; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1; }
+  .sc-ev { position: absolute; left: 3em; right: 8px; top: calc(var(--debut) * var(--hr) + 1.5em); height: calc(var(--duree) * var(--hr)); padding: 3px 7px; border-radius: 6px; background: color-mix(in srgb, var(--iris) 18%, var(--raised)); border-left: 3px solid var(--iris); line-height: 1.2; overflow: hidden; box-sizing: border-box; }
   .sc-ev b { display: block; font-weight: 600; font-size: .95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .sc-ev span { display: block; color: var(--muted); font-size: .85em; margin-top: 2px; white-space: nowrap; }
   /* La carte du secteur (lightbox de la carte du Radar DPE) : vraies rues OpenStreetMap, pastilles des DPE, l'agence au centre */
   .sc-carte { --carte-fond: #EEF0F4; --carte-rue: #fff; --carte-liseret: #D6D9E2; --carte-vert: #DDE8DA; position: relative; width: min(92vw, 880px); aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; background: var(--carte-fond); }
@@ -537,6 +537,49 @@
   }
   @container scene (max-width: 640px) { .sc-photo img { aspect-ratio: 4 / 5; } }
   @media (prefers-reduced-motion: reduce) { .sc-moi::after { animation: none; } .nc, .nc-coches li, .nc-actions, .nc-fait, .nc-ok, .nc-ok::after { animation: none !important; transition: none !important; } html.js .cy-panneau:not(.joue) .nc, html.js .cy-panneau:not(.joue) .nc-coches li { opacity: 1; transform: none; } }
+
+  /* ── 3 ter. Max : un téléphone (notre maquette : cadre arrondi, porcelaine, iris), la conversation arrive bulle après bulle
+       (apparitions data-ap décalées), les trois points à côté ── */
+  .mx-bloc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 4vw, 64px); margin-top: var(--tete-visuel); }
+  .mx-scene { display: grid; justify-items: center; }
+  .mx-scene::before { inset: -8% -10%; }
+  .mx-tel { width: min(100%, 360px); border-radius: 36px; padding: 10px; background: var(--raised); border: 0.5px solid var(--line-strong); box-shadow: var(--shadow-xl); }
+  .mx-tete { display: flex; align-items: center; gap: 8px; padding: 10px 12px 12px; font-size: 14px; color: var(--muted); }
+  .mx-tete b { color: var(--ink); font-weight: 600; font-size: 15px; } .mx-tete span { font-size: 13px; }
+  .mx-tete .lg { color: #26A5E4; width: 20px; height: 20px; margin-right: 2px; }
+  .mx-fil { display: grid; gap: 10px; padding: 12px; border-radius: 28px; background: var(--bg); }
+  .mx-b { max-width: 88%; padding: 10px 12px; border-radius: 18px; font-size: 15px; line-height: 1.4; }
+  .mx-toi { justify-self: end; background: var(--iris-deep); color: #fff; border-bottom-right-radius: 6px; }
+  .mx-max { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; background: var(--raised); border: 0.5px solid var(--line); border-bottom-left-radius: 6px; color: var(--ink); }
+  .mx-max img { border-radius: 50%; background: #F1F2F7; } .mx-max p { margin: 0; }
+  .mx-vocal { display: flex; align-items: center; gap: 10px; }
+  .mx-play { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, .18); flex: none; }
+  .mx-play svg { width: 16px; height: 16px; fill: #fff; stroke: none; margin-left: 2px; }
+  .mx-ondes { display: flex; align-items: center; gap: 2px; height: 22px; }
+  .mx-ondes i { width: 3px; height: calc(var(--b) * 2px); border-radius: 2px; background: rgba(255, 255, 255, .85); }
+  .mx-vocal b { font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; opacity: .9; }
+  .mx-transcrit { display: block; margin-top: 8px; padding-top: 8px; border-top: 0.5px solid rgba(255, 255, 255, .25); font-size: 13.5px; line-height: 1.4; opacity: .92; }
+  .mx-carte { padding: 12px 14px; border-radius: 16px; background: var(--raised); border: 0.5px solid var(--line-strong); box-shadow: var(--shadow-sm); }
+  .mx-carte-t { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted); }
+  .mx-carte-t img { border-radius: 50%; background: #F1F2F7; } .mx-carte-t b { color: var(--ink); font-weight: 600; }
+  .mx-carte-t em { margin-left: auto; font-style: normal; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--iris-soft); color: var(--iris-ink); }
+  .mx-objet { margin: 8px 0 0; font-size: 15px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+  .mx-detail { margin: 4px 0 0; font-size: 13.5px; line-height: 1.4; color: var(--muted); }
+  .mx-boutons { display: flex; gap: 8px; margin-top: 10px; }
+  .mx-ok, .mx-non { display: inline-flex; align-items: center; min-height: 36px; padding: 0 16px; border-radius: 10px; font-size: 14px; font-weight: 600; }
+  .mx-ok { background: var(--iris-deep); color: #fff; } .mx-non { background: var(--bg-soft); color: var(--muted); }
+  .mx-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
+  .mx-points li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; }
+  .mx-ico { width: 44px; height: 44px; padding: 11px; border-radius: 14px; background: var(--iris-soft); color: var(--iris-ink); }
+  .mx-points b { display: block; font-size: 19px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.25; color: var(--ink); }
+  .mx-points p { margin: 6px 0 0; font-size: 16px; line-height: 1.5; color: var(--muted); }
+  @media (max-width: 860px) {
+    .mx-bloc { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .mx-points { gap: 14px; }
+    .mx-points li { grid-template-columns: 36px minmax(0, 1fr); gap: 12px; }
+    .mx-ico { width: 36px; height: 36px; padding: 8px; border-radius: 11px; }
+    .mx-points b { font-size: 16.5px; } .mx-points p { font-size: 15px; }
+  }
 
   /* ── 5. Tu ne changes pas d'outil : les tuiles des outils (Modelo en tête), puis ce que l'équipe fait dans Modelo ── */
   .ot-tuiles { list-style: none; margin: var(--tete-visuel) auto 0; padding: 0; max-width: 1000px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }

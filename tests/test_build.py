@@ -815,7 +815,7 @@ for m in _moments:
     else:
         must('class="nc-vignette"' not in _pn, f"moment {m['id']} : pas de vignette")
     must(len(re.findall(r"<li style=\"--v:", _pn.split('class="cy-prets"', 1)[1])) <= 4 and ".cy-prets li:nth-child(n+4) { display: none; }" in idx, f"moment {m['id']} : rangée « prêt » à 3 pastilles au plus")
-must('style="--debut:1.25;--duree:0.75"' in _cy and "top: calc(var(--debut) * var(--hr) + .6em); height: calc(var(--duree) * var(--hr))" in idx, "agenda exact (carte d'Emma) : 17:15 – 18:00 posé sur la grille, hauteur selon la durée")
+must('style="--debut:1.25;--duree:0.75"' in _cy and "top: calc(var(--debut) * var(--hr) + 1.5em); height: calc(var(--duree) * var(--hr))" in idx, "agenda exact (carte d'Emma) : 17:15 – 18:00 posé sur la grille, hauteur selon la durée")
 must('<dialog class="lb" id="lb"' in _cy and "lb.showModal()" in idx and "lb.close()" in idx and 'id="lb-fermer"' in _cy, "lightbox : une boîte de dialogue native (Échap ferme), bouton Fermer")
 must('href="/assets/accueil/carte-secteur.svg#carte"' in _cy and "© OpenStreetMap" in _cy and (dist / "assets" / "accueil" / "carte-secteur.svg").is_file(), "carte du secteur (vignette et lightbox de Hugo) : vraies rues, attribution")
 must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in idx and re.search(r"\.cy-prets li \{[^}]*font-size: 15px", idx), "mobile : onglets aimantés, pastilles à 15 px")
