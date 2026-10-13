@@ -48,24 +48,51 @@
     .hp-demo { flex: none; font-size: 15px; }
   }
 
-  /* ── Preuve sociale, juste sous les boutons : une seule bande, immobile, logos en gris ── */
-  .preuve { margin: clamp(28px, 3vw, 36px) auto 0; text-align: center; }
+  /* ── Preuve sociale, juste sous les boutons : UNE bande de logos des réseaux qui défile lentement ──
+     Deux listes identiques côte à côte glissent chacune de toute leur largeur : la boucle ne saute jamais.
+     Logos en aplat gris (« mono ») ou en gris contrasté qui garde les parties blanches évidées (« gris »),
+     couleur d'origine au survol en clair ; en sombre, inversés. Pause au survol et avec le bouton pause du film. */
+  .preuve { margin: clamp(28px, 3vw, 36px) 0 0; min-width: 0; text-align: center; }
   .preuve-titre { margin: 0; font-size: 14px; font-weight: 500; color: var(--muted); }
-  /* Version texte (décision de Julien, en attendant l'avis du juriste) : même place, même poids visuel que la bande de logos */
-  .preuve-texte { margin: 0 auto; max-width: 34em; font-size: clamp(17px, 1.6vw, 20px); font-weight: 400; line-height: 1.45; letter-spacing: -0.01em; color: var(--muted); text-wrap: balance; }
-  .preuve-texte b { font-weight: 600; color: color-mix(in srgb, var(--ink) 72%, var(--muted)); white-space: nowrap; }
-  .preuve-logos { list-style: none; margin: 14px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 18px clamp(28px, 5vw, 64px); }
-  .preuve-logos li { display: flex; align-items: center; height: 32px; }
-  .preuve-logos img { display: block; filter: brightness(0); opacity: .55; }
-  .preuve-logos img[src$="laforet.svg"] { filter: grayscale(1); opacity: .6; }
-  @media (max-width: 520px) { .preuve-logos { gap: 14px 28px; } }
+  .preuve-texte { margin: 10px auto 0; max-width: 40em; font-size: 15px; line-height: 1.5; color: var(--muted); text-wrap: balance; }
+  .preuve-texte b { font-weight: 500; white-space: nowrap; }
+  .marquee {
+    --gap: 56px; display: flex; overflow: hidden; margin-top: 16px; padding: 6px 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  }
+  .marquee-liste {
+    list-style: none; margin: 0; padding: 0 var(--gap) 0 0; flex: none; display: flex; align-items: center; gap: var(--gap);
+    animation: defile 110s linear infinite;
+  }
+  .marquee:hover .marquee-liste, #hero.pause .marquee-liste { animation-play-state: paused; }
+  @keyframes defile { to { transform: translateX(-100%); } }
+  .marquee li { flex: none; display: flex; align-items: center; height: 44px; }
+  .marquee img { display: block; width: auto; height: calc(var(--h) * 1px); opacity: .55; transition: filter .25s, opacity .25s; }
+  .marquee .r-mono { filter: brightness(0); }
+  .marquee .r-gris { filter: grayscale(1) brightness(.75) contrast(2.2); }
+  .marquee img.r-couleur:hover { filter: none; opacity: 1; }
+  @media (max-width: 520px) {
+    .marquee { --gap: 40px; margin-top: 12px; }
+    .marquee li { height: 36px; }
+    .marquee img { height: calc(var(--h) * .8px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { -webkit-mask-image: none; mask-image: none; }
+    .marquee-liste { flex: 1 1 100%; flex-wrap: wrap; justify-content: center; padding: 0; gap: 14px 40px; animation: none; }
+    .marquee-liste[aria-hidden] { display: none; }
+  }
   .preuve-mention { margin: 10px 0 0; font-size: 12px; color: var(--subtle); }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .preuve-logos img { filter: brightness(0) invert(1); opacity: .6; }
-    :root:not([data-theme="light"]) .preuve-logos img[src$="laforet.svg"] { filter: grayscale(1) invert(1); }
+    :root:not([data-theme="light"]) .marquee img { opacity: .6; }
+    :root:not([data-theme="light"]) .marquee .r-mono { filter: brightness(0) invert(1); }
+    :root:not([data-theme="light"]) .marquee .r-gris { filter: grayscale(1) brightness(.75) contrast(2.2) invert(1); }
+    :root:not([data-theme="light"]) .marquee img:hover { opacity: .95; }
   }
-  :root[data-theme="dark"] .preuve-logos img { filter: brightness(0) invert(1); opacity: .6; }
-  :root[data-theme="dark"] .preuve-logos img[src$="laforet.svg"] { filter: grayscale(1) invert(1); }
+  :root[data-theme="dark"] .marquee img { opacity: .6; }
+  :root[data-theme="dark"] .marquee .r-mono { filter: brightness(0) invert(1); }
+  :root[data-theme="dark"] .marquee .r-gris { filter: grayscale(1) brightness(.75) contrast(2.2) invert(1); }
+  :root[data-theme="dark"] .marquee img:hover { opacity: .95; }
 
   /* ── La vitrine : le film qui se lance seul (16:9 au bureau, vertical sur mobile) et le travail préparé ── */
   .hp-grille { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; }

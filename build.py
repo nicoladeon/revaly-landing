@@ -140,26 +140,52 @@ def cartes_hero():
             f'<p class="carte-msg">{_esc(_typo(c["message"]))}</p></article>')
     return "".join(out)
 
-# Preuve sociale sous les boutons. Décision de Julien (12/10) : les noms des réseaux EN TEXTE, sans logo, en attendant
-# l'avis de son juriste. RESEAUX_LOGOS = True rallume la bande de logos (assets/logos/reseaux/ gardé) sans autre changement.
-RESEAUX_LOGOS = False
+# Preuve sociale sous les boutons : UNE bande de logos des réseaux qui défile lentement (décision de Julien, 12/10 au soir).
+# Chaque logo se règle dans data/reseaux.json : hauteur optique (px au bureau), rendu « mono » (aplat) ou « gris » (logo
+# à parties blanches évidées), couleur d'origine au survol ou non (logos blancs). RESEAUX_LOGOS = False : les noms en texte.
+RESEAUX_LOGOS = True
+RESEAUX_TITRE = "Pensé pour les agents de tous les réseaux"
+RESEAUX_MENTION = "Les marques citées appartiennent à leurs propriétaires."
 
 def _liste_fr(noms):  # « A, B, C et D »
     return noms[0] if len(noms) == 1 else ", ".join(noms[:-1]) + " et " + noms[-1]
 
+def _ratio_logo(chemin):
+    """Largeur / hauteur du fichier (viewBox du SVG, en-tête du WebP) : la place est réservée avant le chargement."""
+    f = ROOT / chemin
+    if f.suffix == ".svg":
+        vb = re.search(r'viewBox="[\d.\-]+[ ,]+[\d.\-]+[ ,]+([\d.]+)[ ,]+([\d.]+)"', f.read_text())
+        return float(vb.group(1)) / float(vb.group(2))
+    b = f.read_bytes()
+    if b[12:16] == b"VP8X":
+        return (1 + int.from_bytes(b[24:27], "little")) / (1 + int.from_bytes(b[27:30], "little"))
+    if b[12:16] == b"VP8L":
+        bits = int.from_bytes(b[21:25], "little")
+        return ((bits & 0x3FFF) + 1) / (((bits >> 14) & 0x3FFF) + 1)
+    return (int.from_bytes(b[26:28], "little") & 0x3FFF) / (int.from_bytes(b[28:30], "little") & 0x3FFF)
+
+def _logo_reseau(r, copie):
+    h = r["hauteur"]
+    w = round(h * _ratio_logo(r["logo"]))
+    cls = f'r-{r["rendu"]}' + (" r-couleur" if r["couleur"] else "")
+    alt = "" if copie else _esc(r["nom"])  # la copie qui boucle la bande est masquée aux lecteurs d'écran
+    return f'<li><img class="{cls}" src="/{_esc(r["logo"])}" alt="{alt}" width="{w}" height="{h}" style="--h:{h}" decoding="async"></li>'
+
 def preuve_reseaux(reseaux, logos=None):
-    """Une seule ligne de preuve sous les boutons : les noms des réseaux (ou leurs logos en gris si logos=True)."""
+    """Une seule bande de preuve sous les boutons : les logos des réseaux qui défilent (ou leurs noms si logos=False)."""
     if not reseaux:
         return ""
     logos = RESEAUX_LOGOS if logos is None else logos
-    mention = '<p class="preuve-mention">Les marques citées appartiennent à leurs propriétaires.</p>'
-    if logos:
-        items = "".join(_bande_item(r, False) for r in reseaux)
-        return (f'<div class="preuve" id="bande-reseaux"><p class="preuve-titre">Des agents de ces réseaux travaillent déjà avec Revaly</p>'
-                f'<ul class="preuve-logos">{items}</ul>{mention}</div>')
-    noms = _liste_fr([f"<b>{_esc(r['nom'])}</b>" for r in reseaux])
-    return (f'<div class="preuve" id="bande-reseaux"><p class="preuve-texte">Des agents de {noms} utilisent déjà Revaly.</p>'
-            f'{mention}</div>')
+    titre = f'<p class="preuve-titre">{_esc(RESEAUX_TITRE)}</p>'
+    mention = f'<p class="preuve-mention">{_esc(RESEAUX_MENTION)}</p>'
+    if not logos:
+        noms = _liste_fr([f"<b>{_esc(r['nom'])}</b>" for r in reseaux])
+        return f'<div class="preuve" id="bande-reseaux">{titre}<p class="preuve-texte">{noms}.</p>{mention}</div>'
+    liste = "".join(_logo_reseau(r, False) for r in reseaux)
+    copie = "".join(_logo_reseau(r, True) for r in reseaux)
+    return (f'<div class="preuve" id="bande-reseaux">{titre}'
+            f'<div class="marquee"><ul class="marquee-liste">{liste}</ul>'
+            f'<ul class="marquee-liste" aria-hidden="true">{copie}</ul></div>{mention}</div>')
 
 def outils_etape(outils):
     """Les outils branchés, en petit, dans l'étape 1 de « Comment ça marche »."""
@@ -351,8 +377,8 @@ OUT.mkdir()
 # L'accueil n'affiche (et ne décrit en JSON-LD) que les questions marquées « accueil » ; les autres restent
 # dans data/faq.json pour une future page FAQ.
 faq = [f for f in json.loads((ROOT / "data" / "faq.json").read_text()) if f.get("accueil")]
-# ── Bandes de logos (outils et réseaux) : données dans data/outils.json et data/reseaux.json ──
-_HAUTEUR_LOGO = {"century21.svg": 16, "orpi.svg": 30, "laforet.svg": 22, "iad.svg": 28, "modelo.svg": 28}
+# ── Logos des outils (étape 1 de « Comment ça marche ») : données dans data/outils.json ──
+_HAUTEUR_LOGO = {"modelo.svg": 28}
 
 def _bande_item(i, copie):
     src = "/" + i["logo"]

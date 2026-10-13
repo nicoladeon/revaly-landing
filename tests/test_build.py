@@ -228,7 +228,11 @@ must([c["qui"] for c in cv] == ["acquereur", "vendeur", "notaire"], "clients-voi
 calc = json.loads((ROOT / "data" / "calculateur.json").read_text())
 must(calc["plafond_heures_semaine"] == 15, "calculateur : plafond 15 h")
 must(all(t["minutes"] > 0 for t in calc["taches"]), "calculateur : minutes positives")
-must([r["nom"] for r in json.loads((ROOT / "data" / "reseaux.json").read_text())] == ["Century 21", "Orpi", "Laforêt", "IAD"], "reseaux : Century 21, Orpi, Laforêt, IAD")
+RESEAUX_NOMS = ["Century 21", "Orpi", "Laforêt", "IAD", "Guy Hoquet", "ERA Immobilier", "Nestenn", "L'Adresse", "Arthurimmo.com",
+                "Cimm Immobilier", "Solvimo", "RE/MAX France", "Coldwell Banker France", "Square Habitat", "Citya", "Nexity", "SAFTI",
+                "Capifrance", "Optimhome", "Propriétés-privées.com", "efficity", "BSK Immobilier", "Dr House Immo", "3G Immo",
+                "Sextant Properties", "AXO & Actifs"]
+must([r["nom"] for r in json.loads((ROOT / "data" / "reseaux.json").read_text())] == RESEAUX_NOMS, "reseaux : les 26 réseaux, dans l'ordre demandé")
 for nom in ["outils", "reseaux"]:
     for e in json.loads((ROOT / "data" / f"{nom}.json").read_text()):
         must(not e["logo"] or (ROOT / e["logo"]).is_file(), f"{nom} : logo existe ({e['logo']})")
@@ -276,15 +280,33 @@ reseaux = json.loads((ROOT / "data" / "reseaux.json").read_text())
 sys.path.insert(0, str(ROOT))
 import build as _build  # (construction idempotente ; même module réutilisé plus bas)
 if reseaux:
-    # Décision de Julien (12/10) : noms en texte, sans logo, en attendant l'avis du juriste (RESEAUX_LOGOS = False)
-    must(_build.RESEAUX_LOGOS is False, "réseaux : version texte livrée (logos éteints)")
-    _pr = idx.split('id="bande-reseaux"', 1)[1].split("</div>", 1)[0]
-    must("Des agents de <b>Century 21</b>, <b>Orpi</b>, <b>Laforêt</b> et <b>IAD</b> utilisent déjà Revaly." in _pr, "phrase des réseaux, noms en gras")
-    must("<img" not in _pr and "/assets/logos/reseaux/" not in idx and "<a " not in _pr, "aucun logo ni lien de réseau affiché")
-    must("Les marques citées appartiennent à leurs propriétaires" in _pr, "mention marques")
-    _pl = _build.preuve_reseaux(reseaux, logos=True)
-    must(_pl.count("<img") == len(reseaux) and "Des agents de ces réseaux travaillent déjà avec Revaly" in _pl and all((ROOT / r["logo"]).exists() for r in reseaux),
-         "bande de logos prête à être rallumée d'une ligne (RESEAUX_LOGOS = True)")
+    # Décision de Julien (12/10 au soir) : UNE bande de logos qui défile, titre et mention tenus dans des constantes
+    must(_build.RESEAUX_LOGOS is True, "réseaux : bande de logos allumée")
+    _pr = idx.split('id="bande-reseaux"', 1)[1].split('<div class="hp-film">', 1)[0]
+    must(f'<p class="preuve-titre">{_build.RESEAUX_TITRE}</p>' in _pr and _build.RESEAUX_TITRE == "Pensé pour les agents de tous les réseaux",
+         "titre au-dessus de la bande : « Pensé pour les agents de tous les réseaux »")
+    must(_pr.count('class="marquee"') == 1 and idx.count('class="marquee"') == 1 and _pr.count('class="marquee-liste"') == 2,
+         "une seule bande (la 2e liste n'est que la copie qui boucle)")
+    _l1, _l2 = re.findall(r'<ul class="marquee-liste"( aria-hidden="true")?>(.*?)</ul>', _pr, re.S)
+    must(_l1[0] == "" and _l2[0] == ' aria-hidden="true"', "la copie qui boucle est masquée aux lecteurs d'écran")
+    must(re.findall(r'alt="([^"]*)"', html.unescape(_l1[1])) == RESEAUX_NOMS, "26 logos dans l'ordre, alt = nom du réseau")
+    must(set(re.findall(r'alt="([^"]*)"', _l2[1])) == {""} and _l2[1].count("<img") == len(reseaux), "copie : mêmes logos, alt vide")
+    must(all(re.search(r'width="\d+" height="\d+"', i) for i in re.findall(r"<img[^>]*>", _pr)), "taille réservée sur chaque logo (aucun décalage)")
+    for r in reseaux:
+        f = ROOT / r["logo"]
+        must(f.is_file() and (dist / r["logo"]).is_file(), f"logo présent et copié : {r['logo']}")
+        must(f.suffix in (".svg", ".webp") and f.stat().st_size <= 6000, f"logo léger (SVG ou WebP ≤ 6 Ko) : {r['logo']}")
+        must(r["rendu"] in ("mono", "gris") and isinstance(r["couleur"], bool) and 14 <= r["hauteur"] <= 48, f"réglage du logo : {r['nom']}")
+        if f.suffix == ".svg":
+            must(not re.search(r"<script|href|<image|<use|foreignObject|\son\w+=", f.read_text(), re.I), f"SVG sans script ni lien : {r['logo']}")
+    must("Les marques citées appartiennent à leurs propriétaires." in _pr, "mention marques sous la bande")
+    must("<a " not in _pr, "aucun lien vers un réseau")
+    must("@keyframes defile" in idx and "animation-play-state: paused" in idx, "défilement continu, pause au survol")
+    _rm = idx.split("@media (prefers-reduced-motion: reduce) {\n    .marquee {", 1)
+    must(len(_rm) == 2 and "animation: none" in _rm[1].split("}\n  }", 1)[0] and "flex-wrap: wrap" in _rm[1].split("}\n  }", 1)[0],
+         "mouvement réduit : bande immobile, sur plusieurs lignes")
+    _txt_r = _build.preuve_reseaux(reseaux, logos=False)
+    must("<img" not in _txt_r and all(_build._esc(r["nom"]) in _txt_r for r in reseaux), "repli en texte (RESEAUX_LOGOS = False) : les noms, sans logo")
 else:
     must('id="bande-reseaux"' not in idx, "bande réseaux masquée si liste vide")
 outils = json.loads((ROOT / "data" / "outils.json").read_text())
@@ -296,7 +318,7 @@ for band, items in (("bande-outils", outils),):
         must(i["logo"] and (ROOT / i["logo"]).exists(), f"{band} : logo présent pour {i['nom']}")
         must((dist / i["logo"]).exists(), f"{band} : logo copié dans dist pour {i['nom']}")
         must(i["nom"] in sec, f"{band} : nom {i['nom']}")
-must("bande-defile" not in idx and "@keyframes defile" not in idx, "plus de bande défilante")
+must("bande-defile" not in idx, "plus d'ancienne bande défilante des outils")
 must(idx.find('id="bande-reseaux"') < idx.find('id="film-cadre"') and idx.find('id="bande-reseaux"') > idx.find('class="hp-cta"'), "preuve sociale juste sous le titre et le bouton")
 must(not re.search(r'id="bande-outils".{0,40}id="bande-reseaux"|id="bande-reseaux".{0,400}id="bande-outils"', idx, re.S), "jamais deux bandes de logos qui se suivent")
 for f in (ROOT / "assets" / "logos").rglob("*.svg"):
