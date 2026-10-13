@@ -70,10 +70,10 @@
     "role": "assistante admin",
     "pour_toi": "Elle prépare tes réponses aux emails, tes relances et tes confirmations de visite.",
     "question": "Emma, quoi de neuf ?",
-    "reponse": "Trois emails importants ce matin, brouillons de réponse prêts. La visite de 15 h est confirmée. Et la fiche de Mme Dubois est dans Modelo — budget 280 000 €, 3 chambres : elle recevra les biens correspondants automatiquement.",
+    "reponse": "Trois emails importants ce matin, brouillons de réponse prêts. La visite de 15 h est confirmée. Et la fiche de Mme Dubois est dans ton CRM — budget 280 000 €, 3 chambres : elle recevra les biens correspondants automatiquement.",
     "capacites": [
       "Un brouillon prêt pour chaque email qui compte",
-      "Écrit les fiches contact ET les fiches recherche acquéreur dans Modelo (le rapprochement, c'est Modelo qui l'envoie — on ne réinvente pas ton CRM)",
+      "Écrit les fiches contact ET les fiches recherche acquéreur dans ton CRM (le rapprochement, c'est lui qui l'envoie — on ne le réinvente pas)",
       "Compte-rendu de visite rédigé depuis ta note vocale",
       "Relances des prospects inactifs : TU les actives, tu règles le délai, le ton et le canal"
     ],
@@ -91,7 +91,7 @@
         },
         {
           "titre": "Offre acceptée → félicitations prêtes",
-          "pitch": "Une offre passe « acceptée » dans Modelo ? Elle te prépare le message de félicitations au client et te prévient — le moment que tes clients retiennent.",
+          "pitch": "Une offre passe « acceptée » dans ton CRM ? Elle te prépare le message de félicitations au client et te prévient — le moment que tes clients retiennent.",
           "source": "cron-modelo-offers"
         }
       ],
@@ -102,8 +102,8 @@
           "source": "read-inbox, draft-email"
         },
         {
-          "titre": "Fiches Modelo à jour",
-          "pitch": "Elle écrit les fiches contact et les fiches recherche acquéreur dans Modelo — le rapprochement avec les biens, c'est Modelo qui s'en charge.",
+          "titre": "Fiches CRM à jour",
+          "pitch": "Elle écrit les fiches contact et les fiches recherche acquéreur dans ton CRM — le rapprochement avec les biens, c'est lui qui s'en charge.",
           "source": "create-modelo-contact, create-modelo-search"
         },
         {
@@ -177,7 +177,7 @@
           "source": "verify-mandat"
         },
         {
-          "titre": "Ton dernier mandat vérifié depuis Modelo",
+          "titre": "Ton dernier mandat vérifié depuis ton CRM",
           "pitch": "Elle va chercher ton dernier mandat signé dans ton CRM : durée, exclusivité, honoraires, échéances — recommandations et points d'attention à la clé.",
           "source": "check-modelo-mandate"
         },

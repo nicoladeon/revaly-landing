@@ -1,7 +1,7 @@
 [
   {
     "question": "J'ai déjà un CRM : je dois en changer ?",
-    "reponse": "Non. Modelo reste ton CRM : l'équipe lit tes biens, tes contacts et tes rendez-vous, et y range ce qu'elle prépare. Ton agenda et ta boîte mail restent les tiens. Rien à migrer.",
+    "reponse": "Non. Ton équipe travaille dans ton CRM. Modelo est branché aujourd'hui, d'autres CRM arrivent. Ton agenda et ta boîte mail restent les tiens. Rien à migrer.",
     "schema": true,
     "accueil": true
   },
@@ -19,7 +19,7 @@
   },
   {
     "question": "Je ne suis pas technique, c'est compliqué à installer ?",
-    "reponse": "Non. L'installation est faite avec toi : on branche Modelo, ta boîte mail et ton agenda ensemble, puis tu parles à Max par écrit ou en vocal, sur WhatsApp, Telegram ou dans l'application.",
+    "reponse": "Non. L'installation est faite avec toi : on branche ton CRM (Modelo aujourd'hui), ta boîte mail et ton agenda ensemble, puis tu parles à Max par écrit ou en vocal, sur WhatsApp, Telegram ou dans l'application.",
     "schema": true,
     "accueil": true
   },

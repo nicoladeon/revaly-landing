@@ -320,7 +320,7 @@ outils = json.loads((ROOT / "data" / "outils.json").read_text())
 for band, items in (("bande-outils", outils),):
     if not items: continue
     sec = idx.split(f'id="{band}"', 1)[1].split("</ul>", 1)[0]
-    must(sec.count("<li") == len(_build.OUTILS_TUILES), f"{band} : une seule liste, une tuile par outil (plus de copie défilante)")
+    must(sec.count("<li") == len(_build.OUTILS_TUILES) + 1 and sec.count('class="ot ot-bientot"') == 1, f"{band} : une seule liste, une tuile par outil + « Ton CRM · bientôt » (plus de copie défilante)")
     must(re.findall(r'<li class="ot([^"]*)"', sec)[0] == " ot-modelo" and 'alt="Modelo"' in sec.split("</li>", 1)[0], "Modelo en tête des outils")
     for i in items:
         must(i["logo"] and (ROOT / i["logo"]).exists(), f"{band} : logo présent pour {i['nom']}")
@@ -420,7 +420,7 @@ _pf = idx.split('id="controle"', 1)[1].split("</section>", 1)[0]
 must('id="preuve-fondateur"' not in idx, "plus de bloc de preuve séparé sous le haut de page")
 must("Créé par un agent immobilier" in html.unescape(_pf) and "Le mot du fondateur" in _pf, "le mot du fondateur dans « Pourquoi nous faire confiance »")
 must("« Revaly n'est pas né" not in html.unescape(_pf), "mot du fondateur sans guillemets décoratifs (pas de doublon avec la citation)")
-must("Rien à migrer : Modelo reste ton CRM." in html.unescape(idx) and any("CRM" in q["question"] for q in faq), "Modelo reste le CRM : étape 1 et FAQ")
+must("Rien à migrer : ton CRM reste le tien (Modelo aujourd'hui, d'autres arrivent)." in html.unescape(idx) and any("CRM" in q["question"] for q in faq), "ton CRM reste le tien : étape 1 et FAQ")
 must('class="fondateur"' in _pf and ('class="fondateur-photo"' in _pf or 'class="fondateur-mono"' in _pf), "carte fondateur : photo ou monogramme")
 must("89&nbsp;%" in _pf and "mesure interne, octobre 2026" in _pf, "chiffre qualité en grand, sourcé, à côté du fondateur")
 faqq = [q["question"] for q in json.loads((ROOT / "data" / "faq.json").read_text())]
@@ -524,14 +524,14 @@ must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
 _t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 must("Pas secrétaire" not in _t, "plus de « Pas secrétaire » (demande de Julien)")
 for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "De la prospection à l'acte. Et même après.",
-              "Modelo reste ton CRM. Ton équipe travaille dedans.", "Ton équipe en place en 3 étapes",
+              "Tu gardes tes outils. Ton équipe travaille dedans.", "Ton équipe en place en 3 étapes",
               "Six spécialistes. Un seul abonnement.",
               "Combien d'heures te rend ton équipe ?", "Rien ne part sans toi.",
               "Une équipe entière pour moins qu'une demi-journée d'assistante par mois.", "Ton équipe peut commencer ce soir."]:
     must(titre in _t, f"titre : {titre}")
 for phrase in ["Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, publier, classer. Et ce qu'on oublie finit par coûter un mandat.",
                "La relance que tu voulais faire hier soir.", "Le vendeur sans nouvelles depuis dix jours.", "Le post du « Vendu » que tu n'as jamais publié.",
-               "On branche Modelo, ta boîte mail et ton agenda avec toi.", "Rien à migrer : Modelo reste ton CRM.",
+               "On branche ton CRM, ta boîte mail et ton agenda avec toi.", "Rien à migrer : ton CRM reste le tien (Modelo aujourd'hui, d'autres arrivent).",
                "Ton équipe prépare, jour et nuit.", "Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.",
                "Tu valides d'un geste.", "Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.",
                "Essai 7 jours avec carte"]:
@@ -655,7 +655,7 @@ for page in sorted(dist.rglob("*.html")):
         must(mot not in _vis.lower(), f"mise en route sans « {mot} » ({page.relative_to(dist)})")
     must("pendant le lancement" not in _vis.lower(), f"plus de « pendant le lancement » à côté de « pas de frais de mise en place » ({page.relative_to(dist)})")
 _tech = next(f for f in faq if f["question"].startswith("Je ne suis pas technique"))
-must(_tech["reponse"] == "Non. L'installation est faite avec toi : on branche Modelo, ta boîte mail et ton agenda ensemble, puis tu parles à Max par écrit ou en vocal, sur WhatsApp, Telegram ou dans l'application.", "FAQ « pas technique » : installation faite avec toi")
+must(_tech["reponse"] == "Non. L'installation est faite avec toi : on branche ton CRM (Modelo aujourd'hui), ta boîte mail et ton agenda ensemble, puis tu parles à Max par écrit ou en vocal, sur WhatsApp, Telegram ou dans l'application.", "FAQ « pas technique » : installation faite avec toi")
 must(html.unescape(idx).count("Installation faite avec toi, offerte.") == 2, "installation : une seule formulation, sous les étapes et dans les prix")
 _suivi = subprocess.run(["git", "-C", str(ROOT), "ls-files", "film/out", "film/maquette-10s-A.mp4", "film/maquette-10s-B.mp4"], capture_output=True, text=True).stdout.strip()
 must(_suivi == "" and "film/out/" in _gi and "film/maquette-*.mp4" in _gi, "pubs et maquettes du film hors du suivi Git")
@@ -784,8 +784,10 @@ must(_vend["agent"] == "lucas" and "bilan de commercialisation" in _vend["repons
 must("démarch" not in html.unescape(_cy).lower(), "pas de démarchage automatique")
 _ot = idx.split('id="outils"', 1)[1].split("</section>", 1)[0]
 must([n for n, _ in _build.OUTILS_TUILES][0] == "Modelo" and all(html.escape(n, quote=False) in _ot for n, _ in _build.OUTILS_TUILES), "les tuiles des outils, Modelo en tête")
-must(all(html.escape(x, quote=False).replace(" :", "\u00a0:") in _ot for x in _build.DANS_MODELO) and "Toute écriture dans Modelo passe par une carte à valider." in _ot,
-     "ce que l'équipe fait dans Modelo, toute écriture validée")
+must(all(html.escape(x, quote=False).replace(" :", "\u00a0:") in _ot for x in _build.DANS_MODELO) and "Toute écriture dans ton CRM passe par une carte à valider." in _ot and 'class="ot ot-bientot"' in _ot and "mailto:support@revaly.io" in _ot and "dans Modelo aujourd'hui" in _ot and "Modelo est branché aujourd'hui, d'autres CRM arrivent." in html.unescape(idx),
+     "ce que l'équipe fait dans ton CRM (Modelo aujourd'hui), tuile « Ton CRM · bientôt », lien support, FAQ (décision Julien 13/10)")
+_txt_crm = html.unescape(re.sub(r"<[^>]+>", " ", idx))
+must(not re.search(r"(Netty|Hektor|Apimo|Ubiflow|Pericles|Immofacile)\b", _txt_crm), "jamais la promesse qu'un autre CRM précis est déjà branché")
 for f in ["googledrive.svg", "facebook.svg", "instagram.svg", "linkedin.svg"]:
     must((dist / "assets" / "logos" / f).is_file() and f in lic, f"logo {f} publié, licence notée")
 must('id="ot-voir" aria-expanded="false" aria-controls="ot-liste"' in _ot and "html.js .ot-liste:not(.ouvert) li:nth-child(n+4) { display: none; }" in idx, "liste Modelo : trois points, le reste dépliable (dans la page)")

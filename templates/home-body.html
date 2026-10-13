@@ -654,6 +654,8 @@
   .ot-tuiles { list-style: none; margin: var(--tete-visuel) auto 0; padding: 0; max-width: 1000px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
   .ot { display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 18px 0 14px; border-radius: 16px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); font-size: 15px; font-weight: 500; color: var(--ink); }
   .ot img { display: block; width: auto; height: 26px; }
+  .ot-bientot { border-style: dashed; color: var(--muted); } .ot-bientot em { font-style: normal; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--iris-soft); color: var(--iris-ink); }
+  .ot-crm { margin: 12px 0 0; text-align: center; font-size: 14.5px; color: var(--muted); } .ot-crm a { color: var(--iris-ink); font-weight: 500; text-underline-offset: 4px; }
   .ot-modelo { padding: 0 20px; border-color: color-mix(in srgb, var(--iris) 55%, transparent); box-shadow: 0 0 0 3px var(--iris-soft), var(--shadow-sm); }
   .ot-modelo-bloc { max-width: 880px; margin: 22px auto 0; padding: 22px 26px 16px; border-radius: 24px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
   .ot-modelo-t { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 16px; font-size: 16.5px; font-weight: 600; color: var(--ink); }
@@ -1135,10 +1137,10 @@
       {{TETE_OUTILS}}
       <div data-ap>{{OUTILS_TUILES}}</div>
       <div class="ot-modelo-bloc" data-ap>
-        <p class="ot-modelo-t"><img src="/assets/logos/modelo.svg" width="86" height="22" alt="Modelo" loading="lazy"><span>Ce que ton équipe fait dans Modelo</span></p>
+        <p class="ot-modelo-t"><img src="/assets/logos/modelo.svg" width="86" height="22" alt="Modelo" loading="lazy"><span>Ce que ton équipe fait dans ton CRM (dans Modelo aujourd'hui)</span></p>
         <ul class="ot-liste" id="ot-liste">{{DANS_MODELO}}</ul>
-        <div class="ot-pied"><button type="button" class="calc-plus" id="ot-voir" aria-expanded="false" aria-controls="ot-liste"><span>Voir tout ce que l'équipe fait dans Modelo</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-        <p class="ot-note">Toute écriture dans Modelo passe par une carte à valider. Rien à migrer.</p></div>
+        <div class="ot-pied"><button type="button" class="calc-plus" id="ot-voir" aria-expanded="false" aria-controls="ot-liste"><span>Voir tout ce que l'équipe fait dans ton CRM</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <p class="ot-note">Toute écriture dans ton CRM passe par une carte à valider. Rien à migrer.</p></div>
       </div>
     </div>
   </section>
@@ -1335,9 +1337,9 @@
       <div class="etapes-bloc auto" id="etapes" data-ap>
         <ol class="etapes">
           <li class="etape" data-ouvert="true">
-            <h3><button type="button" id="etape-b0" aria-controls="demo-vue-0" aria-current="step"><span class="etape-n" aria-hidden="true">1</span><span class="etape-t">On branche Modelo, ta boîte mail et ton agenda avec toi.</span></button></h3>
+            <h3><button type="button" id="etape-b0" aria-controls="demo-vue-0" aria-current="step"><span class="etape-n" aria-hidden="true">1</span><span class="etape-t">On branche ton CRM, ta boîte mail et ton agenda avec toi.</span></button></h3>
             <div class="etape-corps" id="etape-c0">
-              <p>Rien à migrer : Modelo reste ton CRM.</p>
+              <p>Rien à migrer : ton CRM reste le tien (Modelo aujourd'hui, d'autres arrivent).</p>
               <p class="etape-offert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation faite avec toi, offerte.</span></p>
             </div>
             <span class="etape-barre" aria-hidden="true"><i></i></span>
@@ -1795,7 +1797,7 @@
       const ouvert = b.getAttribute('aria-expanded') !== 'true';
       b.setAttribute('aria-expanded', String(ouvert));
       l.classList.toggle('ouvert', ouvert);
-      b.firstElementChild.textContent = ouvert ? 'Masquer' : "Voir tout ce que l'équipe fait dans Modelo";
+      b.firstElementChild.textContent = ouvert ? 'Masquer' : "Voir tout ce que l'équipe fait dans ton CRM";
     });
   })();
 

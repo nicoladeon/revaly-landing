@@ -24,7 +24,7 @@
      },
      {
       "titre": "Jamais un client de l'agence",
-      "pitch": "Il retire les adresses déjà dans ton fichier et refuse un vendeur, un acquéreur ou une fiche Modelo existante.",
+      "pitch": "Il retire les adresses déjà dans ton fichier et refuse un vendeur, un acquéreur ou une fiche existante de ton CRM.",
       "source": "prospection.ts : add-prospect, chasse F et G"
      }
     ],

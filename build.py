@@ -266,7 +266,7 @@ def scene_html(ident):
 MAX_SCENE = {
     "vocal": {"duree": "0:12", "texte": "Max, relance le notaire pour jeudi et prépare le bon de visite de 17 h."},
     "reponse": "C'est noté. Christine prépare le bon de visite, Emma prépare la relance du notaire. Je te mets les deux à valider.",
-    "cartes": [{"agent": "christine", "objet": "Bon de visite · 12 rue des Lilas · 17 h 15", "detail": "PDF au format de l'agence, visiteur et mandat lus dans Modelo."},
+    "cartes": [{"agent": "christine", "objet": "Bon de visite · 12 rue des Lilas · 17 h 15", "detail": "PDF au format de l'agence, visiteur et mandat lus dans ton CRM."},
                {"agent": "emma", "objet": "Relance du notaire · Me Lambert · jeudi", "detail": "E-mail en brouillon dans ta boîte : tu relis, tu envoies."}],
     "points": [("mic", "Vocal ou texte, depuis le terrain", "Sur WhatsApp ou Telegram, entre deux visites : Max comprend ce que tu lui confies."),
                ("users", "Il confie chaque tâche au bon équipier", "Le bon de visite à Christine, la relance à Emma, le post à Zoé. Tu n'as rien à répartir."),
@@ -326,7 +326,7 @@ OUTILS_FICHE_GOOGLE = ("Fiche Google", "assets/logos/googlemybusiness.svg")
 DANS_MODELO = ["Lit tes biens, tes contacts, tes visites, tes offres et tes étapes de vente : une étape franchie déclenche le travail qui suit",
                "Relie chaque vente à son bien",
                "Crée et met à jour les fiches contact, y compris les demandes qui arrivent des portails",
-               "Inscrit les actions et les rendez-vous dans l'agenda Modelo",
+               "Inscrit les actions et les rendez-vous dans l'agenda de ton CRM",
                "Crée la fiche recherche de l'acquéreur",
                "Consigne tes échanges (e-mails, messages) sur la bonne fiche",
                "Vérifie le dossier de mandat"]
@@ -341,8 +341,12 @@ def outils_tuiles():
         w = round(h * float(vb.group(1)) / float(vb.group(2)))
         img = f'<img src="/{_esc(logo)}" alt="{_esc(nom) if mot else ""}" width="{w}" height="{h}" loading="lazy">'
         lis.append(f'<li class="ot{" ot-modelo" if mot else ""}">{img}{"" if mot else f"<span>{_esc(nom)}</span>"}</li>')
+    # Décision Julien (13/10) : « ne parle pas que de Modelo, on va se connecter à tous les CRM » — vérité du jour : seul Modelo est
+    # branché. Une tuile « Ton CRM · bientôt » et le lien pour nous dire lequel ; jamais la promesse d'un autre CRM précis.
+    lis.insert(1, '<li class="ot ot-bientot"><span>Ton CRM</span><em>bientôt</em></li>')
     modelo = "".join(f"<li>{_CHECK}<span>{_esc(_typo(x))}</span></li>" for x in DANS_MODELO)
-    return {"OUTILS_TUILES": f'<ul class="ot-tuiles" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(lis)}</ul>',
+    return {"OUTILS_TUILES": f'<ul class="ot-tuiles" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(lis)}</ul>'
+                             '<p class="ot-crm"><a href="mailto:support@revaly.io?subject=Mon%20CRM">Ton CRM n\'est pas encore là ? Dis-nous lequel.</a></p>',
             "DANS_MODELO": modelo}
 
 def equipe_onglets():
@@ -669,7 +673,7 @@ def jsonld_blocks(faq):
          "name": "Revaly",
          "description": "L'équipe d'agents IA des agents immobiliers français : "
                         "annonces, posts, relances, dossiers, mandats — branchée sur "
-                        "Modelo. Rien ne part sans toi.",
+                        "ton CRM (Modelo aujourd'hui). Rien ne part sans toi.",
          "image": "https://revaly.io/og.jpg",
          "brand": {"@type": "Brand", "name": "Revaly"},
          "offers": [
@@ -815,8 +819,8 @@ TETES = {
                                      "publier, classer. Et ce qu'on oublie finit par coûter un mandat.", cote=True, id_titre="t-probleme"),
     "TETE_CYCLE": dict(sur_titre="La solution", titre="De la prospection à l'acte. Et même après.",
                        sous_titre="À chaque moment de la vente, ton équipe a déjà préparé la suite. Toi, tu valides.", id_titre="t-cycle"),
-    "TETE_OUTILS": dict(sur_titre="Tes outils", titre="Modelo reste ton CRM. Ton équipe travaille dedans.",
-                        sous_titre="Tu ne changes pas d'outil : ton équipe se branche sur ceux que tu utilises déjà, et on le fait avec toi.",
+    "TETE_OUTILS": dict(sur_titre="Tes outils", titre="Tu gardes tes outils. Ton équipe travaille dedans.",
+                        sous_titre="Tu ne changes pas d'outil : ton équipe se branche sur ceux que tu utilises déjà, et on le fait avec toi. Ton CRM aussi : Modelo aujourd'hui, d'autres arrivent.",
                         id_titre="t-outils"),
     "TETE_SOLUTION": dict(sur_titre="Mise en route", titre="Ton équipe en place en 3 étapes",
                           sous_titre="Pas de logiciel à apprendre : on branche tes outils avec toi, ton équipe prépare, tu valides.",
@@ -971,7 +975,7 @@ bienvenue_body = '''  <section class="wrap" style="min-height: 100vh; display: f
 
       <div style="margin-top: 22px; padding: 20px; border-radius: 14px; border: 0.5px solid var(--line); text-align: center;">
         <p style="margin: 0; font-size: 15px; font-weight: 600; color: var(--ink);">Installation offerte</p>
-        <p style="font-size: 14.5px; line-height: 1.5; color: var(--muted); margin: 6px 0 14px;">On branche Modelo, ta boîte mail et ton agenda avec toi.</p>
+        <p style="font-size: 14.5px; line-height: 1.5; color: var(--muted); margin: 6px 0 14px;">On branche ton CRM (Modelo aujourd'hui), ta boîte mail et ton agenda avec toi.</p>
         <a class="btn" href="__CALENDLY__" target="_blank" rel="noopener" data-track="installation" style="justify-content: center;">Réserver mon installation</a>
       </div>
 

@@ -89,7 +89,7 @@
    ]
   },
   "emma": {
-   "description": "Emma prépare tes confirmations de visite, tes relances et tes réponses aux e-mails, et tient tes fiches à jour dans Modelo.",
+   "description": "Emma prépare tes confirmations de visite, tes relances et tes réponses aux e-mails, et tient tes fiches à jour dans ton CRM.",
    "capacites": [
     "Confirmation la veille, rappel le jour J, suivi le lendemain",
     "Compte rendu de visite rédigé depuis ton vocal",
@@ -152,8 +152,8 @@
        "texte": "Une note vocale après la visite, et le compte rendu est rédigé : l'e-mail du vendeur est retrouvé grâce au mandat."
       },
       {
-       "titre": "Fiches Modelo à jour",
-       "texte": "Elle écrit les fiches contact et les fiches recherche acquéreur dans Modelo, y compris pour les demandes des portails."
+       "titre": "Fiches CRM à jour",
+       "texte": "Elle écrit les fiches contact et les fiches recherche acquéreur dans ton CRM, y compris pour les demandes des portails."
       }
      ]
     },
@@ -162,15 +162,15 @@
      "items": [
       {
        "titre": "Offre acceptée, félicitations prêtes",
-       "texte": "Une offre passe « acceptée » dans Modelo ? Elle te prépare le message de félicitations au client et te prévient."
+       "texte": "Une offre passe « acceptée » dans ton CRM ? Elle te prépare le message de félicitations au client et te prévient."
       },
       {
        "titre": "Relance du prêt",
-       "texte": "L'échéance du prêt approche sans nouvelles dans Modelo : la relance de l'acquéreur est prête, cinq jours avant."
+       "texte": "L'échéance du prêt approche sans nouvelles dans ton CRM : la relance de l'acquéreur est prête, cinq jours avant."
       },
       {
        "titre": "Facture d'honoraires",
-       "texte": "Deux jours avant l'acte : la facture d'après le mandat et la vente dans Modelo, et l'e-mail au notaire avec la facture jointe."
+       "texte": "Deux jours avant l'acte : la facture d'après le mandat et la vente dans ton CRM, et l'e-mail au notaire avec la facture jointe."
       },
       {
        "titre": "Demande d'avis Google",
@@ -198,7 +198,7 @@
     {
      "titre": "Le mandat",
      "question": "Christine, je rends l'estimation des Perrin demain.",
-     "reponse": "Ton mandat est pré-rempli sur ton modèle avec les données de Modelo, à faire valider par ton juriste. Il manque le titre de propriété : Emma a préparé la relance au vendeur.",
+     "reponse": "Ton mandat est pré-rempli sur ton modèle avec les données de ton CRM, à faire valider par ton juriste. Il manque le titre de propriété : Emma a préparé la relance au vendeur.",
      "vocal": false
     },
     {
@@ -224,7 +224,7 @@
       },
       {
        "titre": "Mandat sur ton modèle",
-       "texte": "Avec ton modèle importé, le mandat est pré-rempli avec les données de Modelo, à faire valider par ton juriste. Sans modèle : une fiche de préparation."
+       "texte": "Avec ton modèle importé, le mandat est pré-rempli avec les données de ton CRM, à faire valider par ton juriste. Sans modèle : une fiche de préparation."
       },
       {
        "titre": "Tes documents, à l'identique",
@@ -458,7 +458,7 @@
     {
      "titre": "Le bilan de commercialisation",
      "question": "Lucas, je vois Mme Lefèvre demain pour son bilan.",
-     "reponse": "Ton bilan de commercialisation est prêt : les visites et les offres lues dans Modelo, un document pour elle et une note de préparation pour toi.",
+     "reponse": "Ton bilan de commercialisation est prêt : les visites et les offres lues dans ton CRM, un document pour elle et une note de préparation pour toi.",
      "vocal": false
     },
     {
@@ -497,7 +497,7 @@
      "items": [
       {
        "titre": "Bilan de commercialisation",
-       "texte": "Avant le rendez-vous avec le vendeur : les visites et les offres lues dans Modelo, un document pour lui et une note de préparation pour toi."
+       "texte": "Avant le rendez-vous avec le vendeur : les visites et les offres lues dans ton CRM, un document pour lui et une note de préparation pour toi."
       },
       {
        "titre": "Bien immobile depuis 60 jours",
@@ -587,7 +587,7 @@
      "items": [
       {
        "titre": "Jamais un client de l'agence",
-       "texte": "Il retire les adresses déjà dans ton fichier et refuse un vendeur, un acquéreur ou une fiche Modelo existante."
+       "texte": "Il retire les adresses déjà dans ton fichier et refuse un vendeur, un acquéreur ou une fiche existante de ton CRM."
       },
       {
        "titre": "L'accord et l'opposition respectés",
