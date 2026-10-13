@@ -469,14 +469,14 @@ _pos = [idx.find(x) for x in _ordre]
 must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
 _t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 must("Pas secrétaire" not in _t, "plus de « Pas secrétaire » (demande de Julien)")
-for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "Ton équipe se branche en dix minutes.",
+for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "On installe ton équipe avec toi.",
               "Six spécialistes. Un seul abonnement.",
               "Combien d'heures te rend ton équipe ?", "Rien ne part sans toi.",
               "Une équipe entière pour moins qu'une demi-journée d'assistante par mois.", "Ton équipe peut commencer ce soir."]:
     must(titre in _t, f"titre : {titre}")
 for phrase in ["Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, publier, classer. Et ce qu'on oublie finit par coûter un mandat.",
                "La relance que tu voulais faire hier soir.", "Le vendeur sans nouvelles depuis dix jours.", "Le post du « Vendu » que tu n'as jamais publié.",
-               "Tu branches Modelo, ton agenda et ta boîte mail.", "Rien à migrer : Modelo reste ton CRM.",
+               "On branche Modelo, ta boîte mail et ton agenda avec toi.", "Rien à migrer : Modelo reste ton CRM.",
                "Ton équipe prépare, jour et nuit.", "Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.",
                "Tu valides d'un geste.", "Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.",
                "Essai 7 jours avec carte"]:
@@ -536,7 +536,7 @@ print("OK offre fondateurs")
 _pb2 = html.unescape(re.sub(r"<[^>]+>", "", idx.split('id="probleme"', 1)[1].split("</section>", 1)[0])).replace("\u00a0", " ")
 must("« Après chaque visite, le silence est souvent la pire expérience possible pour un vendeur. »" in _pb2 and "Journal de l'Agence, mai 2026" in _pb2, "citation sourcée en tête du problème")
 must(_pb2.find("Le vendeur sans nouvelles depuis dix jours.") < _pb2.find("La relance que tu voulais faire hier soir."), "le vendeur sans nouvelles en premier")
-_inst = "Installation offerte : on branche Modelo, ta boîte mail et ton agenda avec toi."
+_inst = "Installation faite avec toi, offerte."
 must(_t.count(_inst) >= 2 and idx.find(_inst) > idx.find('id="comment"') and idx.split('id="tarif"', 1)[1].count(_inst) >= 1, "installation offerte sous « Comment ça marche » et dans les prix")
 must("Pas de frais de mise en place." in html.unescape(idx.split('id="tarif"', 1)[1].split("</section>", 1)[0]), "prix : pas de frais de mise en place")
 must(idx.count('class="cta-relance"') == 2, "relances d'essai entre les sections (après la validation, sous le calculateur ; masquées sur mobile, barre collante)")
@@ -582,3 +582,18 @@ _suivis = subprocess.run(["git", "-C", str(ROOT), "ls-files", "film/rushes", "fi
 must(_suivis == "", "aucun rush ni image de rendu suivi par git")
 must(".film-dialog.vertical { width: min(92vw, calc(min(92vh, 900px) * 9 / 16));" in idx, "lecteur vertical jamais plus large que l'écran")
 print("OK T13b film final")
+
+# ── Revue finale (12/10) : la mise en route est faite AVEC le client ; pas de promesse de durée ou de « clics » ──
+for page in sorted(dist.rglob("*.html")):
+    _vis = html.unescape(_NOISE.sub("", page.read_text()))
+    for mot in ("dix minutes", "quelques minutes", "quelques clics", "deux clics", "se branche en"):
+        must(mot not in _vis.lower(), f"mise en route sans « {mot} » ({page.relative_to(dist)})")
+    must("pendant le lancement" not in _vis.lower(), f"plus de « pendant le lancement » à côté de « pas de frais de mise en place » ({page.relative_to(dist)})")
+_tech = next(f for f in faq if f["question"].startswith("Je ne suis pas technique"))
+must(_tech["reponse"] == "Non. L'installation est faite avec toi : on branche Modelo, ta boîte mail et ton agenda ensemble, puis tu parles à Max par écrit ou en vocal, sur WhatsApp, Telegram ou dans l'application.", "FAQ « pas technique » : installation faite avec toi")
+must(html.unescape(idx).count("Installation faite avec toi, offerte.") == 2, "installation : une seule formulation, sous les étapes et dans les prix")
+_suivi = subprocess.run(["git", "-C", str(ROOT), "ls-files", "film/out", "film/maquette-10s-A.mp4", "film/maquette-10s-B.mp4"], capture_output=True, text=True).stdout.strip()
+must(_suivi == "" and "film/out/" in _gi and "film/maquette-*.mp4" in _gi, "pubs et maquettes du film hors du suivi Git")
+must(not (ROOT / "netlify.toml").exists() and not (ROOT / "netlify").exists() and (ROOT / "functions" / "_middleware.ts").exists(),
+     "plus de configuration Netlify ; le masquage Polynésie reste dans functions/ (Cloudflare)")
+print("OK revue finale")

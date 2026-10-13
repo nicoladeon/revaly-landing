@@ -506,7 +506,7 @@ write_page(
     "integrations/index.html", render("integrations-body.html", integrations_ctx()),
     title="Intégrations — 3 200+ outils connectés | Revaly",
     desc="Modelo et Netty en natif, et 3 200+ outils via connecteurs : Gmail, Google Agenda, "
-         "WhatsApp, DocuSign, Stripe, Canva… Ton équipe IA se branche sur tes outils en deux clics.",
+         "WhatsApp, DocuSign, Stripe, Canva… L'installation de ton équipe IA est faite avec toi.",
     path="/integrations/",
 )
 
