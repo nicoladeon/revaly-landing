@@ -14,6 +14,11 @@
 <style>
   html, body { margin: 0; background: #000; }
   body { width: var(--W); height: var(--H); overflow: hidden; }
+  /* Contrôle du rendu : sous l'image (hors cadre, rognée à l'encodage), une
+     bande de 16 cases noires ou blanches porte le numéro de l'image. render.sh
+     la relit sur chaque capture : une image dans le désordre est refaite. */
+  #code { position: fixed; left: 0; top: var(--H); width: var(--W); height: 8px; display: flex; background: #000; }
+  #code i { flex: 1; height: 100%; background: #000; }
   /* Trois formats, une seule mise en scène (film.html#B, #B-portrait, #B-carre).
      Paysage 16:9 : la vie à gauche, l'équipe à droite. Portrait 9:16 : la vie
      en haut, l'équipe en bas, l'interface à 2×. Carré 1:1 : la même pile, pour
@@ -63,7 +68,9 @@
   html[data-format="carre"] .fin-equipe { margin-bottom: 26px; }
   html[data-format="portrait"] .fin-ligne span { display: block; }
   html[data-format="carre"] .fin-btns { margin-top: 34px; }
-  html[data-pub] .fin-note { display: none; }
+  html[data-pub] .fin-note, html[data-pub] .fin-ligne .fin-15h { display: none !important; }
+  html[data-format="portrait"] #fin h1 br, html[data-format="carre"] #fin h1 br { display: none; }
+  html[data-format="portrait"] #fin h1, html[data-format="carre"] #fin h1 { text-wrap: balance; max-width: 940px; }
   /* Rangée de l'agent : nom et métier sur une ligne, l'état dessous. */
   html[data-format="portrait"] .agent, html[data-format="carre"] .agent { gap: 22px; }
   html[data-format="portrait"] .agent .ra { --ra-s: 96px; }
@@ -448,17 +455,17 @@
     <div class="ui agent" id="ag-emma3">
       <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="15.6" data-a="20.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
       <div class="agent-txt"><b>Emma</b><span class="role">Assistante de direction</span>
-        <span class="status"><span class="brand s1"><i class="dot"></i>Routine du vendredi 17 h</span><span class="ok s2"><svg class="i"><use href="#i-check"/></svg>Point vendeurs prêt (6 vendeurs)</span></span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Routine du vendredi 17 h</span><span class="ok s2"><svg class="i"><use href="#i-check"/></svg>Bilans de commercialisation prêts (6)</span></span>
       </div>
     </div>
     <div class="ui artefact" id="art-routine"><div class="z" style="zoom:var(--z-routine);width:458px;display:flex;flex-direction:column;gap:8px">
       <div class="routine">
         <span class="ra" style="--ra-s:32px"><span class="ra-stack"><img src="assets/agents/emma.webp" alt=""></span></span>
-        <div><div class="routine-title">Point vendeurs du vendredi</div></div>
-        <p class="routine-line"><b>Le vendredi à 17 h</b> → <b>Emma</b> prépare pour chaque vendeur le compte rendu des visites de la semaine → sur Telegram</p>
+        <div><div class="routine-title">Bilan de commercialisation du vendredi</div></div>
+        <p class="routine-line"><b>Le vendredi à 17 h</b> → <b>Emma</b> prépare pour chaque vendeur son bilan de commercialisation de la semaine → sur Telegram</p>
       </div>
       <div class="steps">
-        <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>6 comptes rendus préparés</div>
+        <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>6 bilans de commercialisation préparés</div>
         <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. et Mme Garnier · 12 rue des Lilas</span><span class="s">3 visites</span></div>
         <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Petit · T2 place Bellecour</span><span class="s">2 visites</span></div>
         <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Henry · T4 Croix-Rousse</span><span class="s">4 visites</span></div>
@@ -478,7 +485,7 @@
     <div class="ui recu" id="recu2">
       <span class="recu-ico"><svg class="i"><use href="#i-mail"/></svg></span>
       <div><div class="recu-l1"><b>M. Garnier · vendeur</b><span>E-mail</span></div>
-        <div class="recu-l2">« Votre point de la semaine : 3 visites, dont un couple qui souhaite revenir avec un artisan. »</div></div>
+        <div class="recu-l2">« Votre bilan de commercialisation : 3 visites cette semaine, dont un couple qui souhaite revenir avec un artisan. »</div></div>
     </div>
     <div class="ui recu" id="recu3">
       <span class="recu-ico"><svg class="i"><use href="#i-mail"/></svg></span>
@@ -507,8 +514,8 @@
       <span class="ra"><span class="ra-stack"><img src="assets/agents/zoe.webp" alt=""></span></span>
       <span class="ra"><span class="ra-stack"><img src="assets/agents/raphael.webp" alt=""></span></span>
     </div>
-    <h1>Ton équipe travaille.<br>Toi, tu es avec tes clients.</h1>
-    <p class="fin-ligne">Jusqu'à 15 h par semaine rendues. <span>Plus rien d'oublié.</span></p>
+    <h1>Une équipe d'agents IA <br>qui travaille vraiment pour toi.</h1>
+    <p class="fin-ligne"><span class="fin-15h">Jusqu'à 15 h par semaine rendues. </span><span>Plus rien d'oublié.</span></p>
     <div class="fin-btns"><span class="p">Essayer 7 jours</span><span class="g">Réserver une démo</span></div>
     <p class="fin-note">Jusqu'à 15 h : le détail du calcul, tâche par tâche, est sur revaly.io</p>
   </div>
@@ -520,6 +527,7 @@
   <div id="doigt"></div><div id="onde"></div>
   <p id="st" class="sous-titre"></p>
 </div>
+<div id="code"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
 <script>
 // Deux ouvertures (film.html#A, film.html#B) ; la suite est la même.
@@ -564,8 +572,8 @@ const ST = [
   [4, 8.2, VARIANTE === "B" ? "Emma prépare la suite." : "Tu fais visiter. Emma prépare la suite."],
   [8.2, 12, "Un tap. Camille reçoit son rappel."],
   [12, 16, "Au café, Lucas chiffre le bien."],
-  [16, 18.35, "17 h : Emma prépare le point vendeurs."],
-  [18.35, 20, "Le point vendeurs est prêt."],
+  [16, 18.35, "17 h : Emma prépare les bilans."],
+  [18.35, 20, "Les bilans du vendredi sont prêts."],
   [20, 23, "Un vocal entre deux portes."],
   [23, 26, "Max transmet. Emma rédige le mail."],
   [26, 29.4, "Le soir, Zoé prépare le post « Vendu »."],
@@ -772,7 +780,7 @@ function construire() {
   piste("#courbe", "strokeDashoffset", [[12.9, 100, "cubic-bezier(.45,0,.2,1)"], [14.0, 0]]);
   $$("#art-lucas .pt").forEach((p, i) => piste(p, "opacity", [[12.95 + i * 0.14, 0], [13.08 + i * 0.14, 1]], "linear"));
   pan("#art-lucas");
-  // 17 h : la routine du vendredi tourne à son heure ; Emma prépare le point de
+  // 17 h : la routine du vendredi tourne à son heure ; Emma prépare le bilan de commercialisation de
   // chaque vendeur (dont M. Garnier, dont on visite la maison à 0:04).
   agent("#ag-emma3", 16.05, 19.75, { travail: [16.25, 18.3], pret: 18.35, fini: 18.35, statuts: [[".s1", 16.1, 18.35], [".s2", 18.35, null]] });
   vie("#art-routine", 16.35, 19.75, { dy: 40, dIn: 0.4 });
@@ -811,7 +819,7 @@ function construire() {
   pan("#art-christine");
 
   // ===================== 0:34-0:40 · ce que voient tes clients, puis la main serrée =====================
-  // Exactement ce qu'on a vu préparer : le rappel validé à 0:08, le point du
+  // Exactement ce qu'on a vu préparer : le rappel validé à 0:08, le bilan de commercialisation du
   // vendredi, la relance du notaire dictée à 0:20. Une carte toutes les 0,3 s.
   vie("#clients-titre", 34.05, null, { dy: 20, dIn: 0.3 });
   vie("#recu1", 34.3, null, { dy: 30, dIn: 0.3 });
@@ -860,7 +868,10 @@ const BOUCLES = $$("video.boucle");
 const MI_IMAGE = 1 / 60; // viser le milieu d'une image à 30 i/s
 let pret = false;
 
+const CASES = [...document.querySelectorAll("#code i")];
 window.__seek = (t) => {
+  const n = Math.round(t * 30);
+  CASES.forEach((c, b) => (c.style.background = (n >> (15 - b)) & 1 ? "#fff" : "#000"));
   if (pret) document.getAnimations().forEach((a) => (a.currentTime = t * 1000));
   for (const [id, d, f, dec] of RUSHES) {
     const v = document.getElementById(id), on = t >= d && t < f;
