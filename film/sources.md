@@ -70,3 +70,4 @@ Choix d'ensemble : les plans 1, 2 et 6 viennent du même tournage (même agent, 
 
 ## Usage dans la page (tâche 17, 13/10/2026)
 - `assets/accueil/post-vendu.webp` (800 × 320) : la même image que `film/assets/post-vendu.jpg` (plan 6, licence Pexels), en WebP, pour le post « Vendu » de Zoé dans « La solution ».
+- `assets/accueil/retouche-apres.webp` et `assets/accueil/retouche-avant.webp` (640 × 400, carte de Raphaël dans « L'équipe ») : image du plan 2 à 0,3 s (pièce vide, avant l'entrée de l'agent ; licence Pexels), bord droit recadré. « Après » = l'image du plan ; « avant » = la même image volontairement assombrie, refroidie et désaturée pour illustrer ce que la retouche corrige (ce n'est pas une photo d'origine d'un client).

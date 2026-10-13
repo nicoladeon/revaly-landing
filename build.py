@@ -106,19 +106,67 @@ def _equipe_accueil():
 def _typo(s):  # espaces insécables de la typographie française (« Vendu » ne se coupe pas, « : » reste collé)
     return s.replace("« ", "«\u00a0").replace(" »", "\u00a0»").replace(" :", "\u00a0:")
 
+# ── L'équipe (tâche 17) : six onglets (visage, prénom, métier) et un carrousel ; la carte au centre montre ce que l'agent
+# vient de préparer (data/equipe-accueil.json, champ « prepare », source prod notée), puis qui il est. Les voisines dépassent.
+_TYPES_PREPARE = {"message", "fourchette", "pieces", "posts", "avant-apres"}
+
+def _prepare(e):
+    p = e["prepare"]
+    if p["type"] not in _TYPES_PREPARE:
+        raise SystemExit(f"equipe-accueil.json : type « prepare » inconnu pour {e['slug']}")
+    pastille = f'<span class="pr-pastille">{_esc(p["pastille"])}</span>' if p.get("pastille") else ""
+    tete = f'<div class="pr-tete"><p class="pr-titre">{_esc(_typo(p["titre"]))}</p>{pastille}</div>'
+    texte = f'<p class="pr-texte">{_esc(_typo(p["texte"]))}</p>' if p.get("texte") else ""
+    if p["type"] == "message":
+        corps = f'<p class="pr-message">{_mots(p["texte"])}</p>'
+        texte = ""
+    elif p["type"] == "fourchette":
+        points = "".join(f'<i style="--d:{d}"></i>' for d in (8, 17, 26, 31, 38, 44, 52, 57, 63, 71, 80, 90))
+        corps = (f'<p class="pr-prix"><span>{_esc(p["bas"])}</span><span class="pr-tiret">–</span><span>{_esc(p["haut"])}</span></p>'
+                 f'<div class="pr-echelle" aria-hidden="true"><span class="pr-plage"></span>{points}</div>')
+    elif p["type"] == "pieces":
+        n, deja = len(p["pieces"]), p["deja"]
+        lis = "".join(f'<li class="{"pr-ok" if i < deja else "pr-vient"}" style="--v:{max(0, i - deja)}">{_ico("circle-check")}{_ico("circle", "pr-vide")}'
+                      f'<span>{_esc(p_)}</span></li>' for i, p_ in enumerate(p["pieces"]))
+        compte = "".join(f'<b style="--v:{k}">{deja + k}/{n}</b>' for k in range(n - deja + 1))
+        tete = f'<div class="pr-tete"><p class="pr-titre">{_esc(_typo(p["titre"]))}</p><span class="pr-pastille pr-compte">{compte}</span></div>'
+        corps = f'<ul class="pr-pieces">{lis}</ul>'
+        texte = f'<p class="pr-texte pr-fin">{_ico("check")}{_esc(_typo(p["texte"]))}</p>'
+    elif p["type"] == "posts":
+        corps = '<ul class="pr-posts">' + "".join(
+            f'<li style="--v:{i}"><span class="pr-ico">{_ico(x["icone"])}</span><span class="pr-post">{_esc(_typo(x["titre"]))}</span>'
+            f'<span class="pr-quand">{_esc(x["quand"])}</span></li>' for i, x in enumerate(p["posts"])) + "</ul>"
+    else:  # avant-apres
+        corps = (f'<div class="pr-aa"><img src="/{_esc(p["avant"])}" width="640" height="400" alt="" loading="lazy">'
+                 f'<div class="pr-apres"><img src="/{_esc(p["apres"])}" width="640" height="400" alt="Photo retouchée par Raphaël : pièce lumineuse, couleurs justes." loading="lazy"></div>'
+                 '<span class="pr-ligne" aria-hidden="true"></span><span class="pr-label pr-l-avant">Avant</span><span class="pr-label pr-l-apres">Après</span></div>')
+    return f'<div class="eq-prepare"><p class="pr-qui">{_esc(e["nom"])} vient de préparer</p><div class="pr-carte pr-t-{p["type"]}">{tete}{corps}{texte}</div></div>'
+
+def equipe_onglets():
+    out = []
+    for i, e in enumerate(_equipe_accueil()):
+        sel = "true" if i == 0 else "false"
+        out.append(f'<button type="button" role="tab" class="eq-onglet" id="eq-onglet-{e["slug"]}" aria-controls="agent-{e["slug"]}" '
+                   f'aria-selected="{sel}" tabindex="{0 if i == 0 else -1}">'
+                   f'<img src="/assets/equipe/boucles/{e["slug"]}@256.webp" width="36" height="36" alt="" loading="lazy">'
+                   f'<span class="eq-o-txt"><b>{_esc(e["nom"])}</b><span>{_esc(e["metier"])}</span></span>'
+                   '<span class="eq-o-barre" aria-hidden="true"><i></i></span></button>')
+    return "".join(out)
+
 def equipe_cartes():
     cartes = []
-    for e in _equipe_accueil():
+    for i, e in enumerate(_equipe_accueil()):
         nom = _esc(e["nom"])
         de = "d'" if e["nom"][0].lower() in "aeéiou" else "de "
         taches = "".join(f"<li>{_CHECK}<span>{_esc(_typo(x))}</span></li>" for x in e["taches"])
         cartes.append(
-            f'<article class="eq" id="agent-{e["slug"]}">'
-            f'<div class="eq-tete"><span class="eq-photo">{_boucle(e["slug"], 168)}</span>'
-            f'<div><h3 class="eq-nom">{nom}</h3><p class="eq-metier">{_esc(e["metier"])}</p></div></div>'
-            f'<p class="eq-pour">{_esc(e["pour_toi"])}</p>'
+            f'<article class="eq{" actif" if i == 0 else ""}" id="agent-{e["slug"]}" role="tabpanel" aria-labelledby="eq-onglet-{e["slug"]}" style="--k:{i}"{"" if i == 0 else " inert"}>'
+            f'{_prepare(e)}'
+            f'<div class="eq-qui"><div class="eq-tete"><span class="eq-photo">{_boucle(e["slug"], 168)}</span>'
+            f'<div><h3 class="eq-nom">{nom}</h3><p class="eq-metier">{_esc(e["metier"])}</p>'
+            f'<p class="eq-pour">{_esc(e["pour_toi"])}</p></div></div>'
             f'<ul class="eq-taches">{taches}</ul>'
-            f'<a class="eq-lien" href="/agents/{e["slug"]}/">Voir la fiche {de}{nom}</a></article>')
+            f'<a class="eq-lien" href="/agents/{e["slug"]}/">Voir la fiche {de}{nom}</a></div></article>')
     return "".join(cartes)
 
 
@@ -196,6 +244,13 @@ LUCIDE = {
     "paperclip": '<path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551" />',
     "printer": '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" /><rect x="6" y="14" width="12" height="8" rx="1" />',
     "check": '<path d="M20 6 9 17l-5-5" />',
+    "circle-check": '<circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" />',
+    "circle": '<circle cx="12" cy="12" r="10" />',
+    "house": '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />',
+    "star": '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />',
+    "chart-column": '<path d="M3 3v16a2 2 0 0 0 2 2h16" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" />',
+    "chevron-left": '<path d="m15 18-6-6 6-6" />',
+    "chevron-right": '<path d="m9 18 6-6-6-6" />',
     "bell": '<path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />',
 }
 
@@ -548,6 +603,7 @@ body_home = render("home-body.html", {
     "CALCUL_STATIQUE": calculateur_statique(),
     "CALCUL_DEFAUT_M": str(CALCUL_DEFAUT[0]), "CALCUL_DEFAUT_V": str(CALCUL_DEFAUT[1]),
     "EQUIPE_CARTES": equipe_cartes(),
+    "EQUIPE_ONGLETS": equipe_onglets(),
     "PREUVE": preuve_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
     "OUTILS_BRANCHEMENT": outils_branchement(json.loads((ROOT / "data" / "outils.json").read_text())),
     **post_vendu(),

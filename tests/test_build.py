@@ -529,7 +529,9 @@ for page in sorted(dist.rglob("*.html")):
 must("--font-display: var(--font-sans)" in idx, "titres en Geist")
 # Poids : pas d'image en base64 sur l'accueil, images et vidéos par URL
 must(not re.search(r"data:image/(?!svg)[\w+.-]+;base64,", idx), "aucune image base64 sur l'accueil")
-must(len(idx.encode()) < 200_000, f"accueil < 200 Ko de HTML ({len(idx.encode())} o)")
+# Tâche 17 : les démos vivantes (pile, étapes, onglets) ajoutent du balisage ; le poids qui compte est celui transféré (gzip)
+import gzip
+must(len(idx.encode()) < 230_000 and len(gzip.compress(idx.encode())) < 52_000, f"accueil < 230 Ko de HTML, < 52 Ko compressé ({len(idx.encode())} o, {len(gzip.compress(idx.encode()))} o)")
 # Métadonnées : H1 et sous-titre
 must("<title>Revaly — Une équipe d'agents IA qui travaille vraiment pour toi</title>" in idx, "title = H1")
 must('property="og:title" content="Une équipe d&#x27;agents IA qui travaille vraiment pour toi."' in idx
@@ -697,3 +699,21 @@ must(re.sub(r"\s+", " ", _zoe["message"]) in re.sub(r"\s+", " ", _so_txt), "le p
 must(sum(1 for o in json.loads((ROOT / "data" / "outils.json").read_text()) if o["nom"] in _build.OUTILS_BRANCHES_EXEMPLE) == _so.count("data-branche"), "les outils branchés de l'exemple")
 must((dist / "assets" / "accueil" / "post-vendu.webp").is_file() and "post-vendu" in (ROOT / "film" / "sources.md").read_text(), "photo du post publiée, origine notée")
 print("OK la solution")
+
+# ── L'équipe (tâche 17) : six onglets accessibles et un carrousel ; la carte montre ce que l'agent vient de préparer ──
+_eqs = idx.split('id="equipe"', 1)[1].split("</section>", 1)[0]
+_tabs = re.findall(r'<button type="button" role="tab"[^>]*>', _eqs)
+must('role="tablist"' in _eqs and len(_tabs) == 6 and sum('aria-selected="true"' in x for x in _tabs) == 1
+     and all(f'aria-controls="agent-{e["slug"]}"' in _eqs for e in _ea), "six onglets role=tab, un sélectionné, chacun relié à sa carte")
+_panels = re.findall(r'<article class="eq[^"]*" id="agent-[\w]+" role="tabpanel" aria-labelledby="eq-onglet-[\w]+"[^>]*>', _eqs)
+must(len(_panels) == 6 and sum(" inert" in x for x in _panels) == 5, "six cartes role=tabpanel, les voisines inertes")
+must("ArrowRight: 1, ArrowLeft: -1" in idx and "animation: barre 6s linear forwards" in idx and ".eq-bloc:hover .eq-o-barre i, .eq-bloc:focus-within .eq-o-barre i, .rv-pause .eq-o-barre i" in idx
+     and "'touchstart'" in idx and 'aria-label="Agent suivant"' in _eqs, "clavier, rotation 6 s figée au survol/focus/pause, balayage et flèches")
+for e in _ea:
+    _p = e["prepare"]
+    must(_p["type"] in _build._TYPES_PREPARE and _p.get("source") and f'pr-t-{_p["type"]}' in _eqs, f"{e['slug']} : ce qu'il vient de préparer, source prod notée")
+_eq_txt = html.unescape(re.sub(r"<[^>]+>", " ", _eqs)).replace("\u00a0", " ")
+for frag in ["Le point du matin", "Confirmation de visite", "242 000 €", "Pièces du compromis", "Tes posts de la semaine", "photos retouchées"]:
+    must(frag in _eq_txt, f"carte de l'équipe : {frag}")
+must("ce n'est pas une photo d'origine d'un client" in (ROOT / "film" / "sources.md").read_text(), "avant / après de Raphaël : illustration déclarée")
+print("OK l'équipe en onglets")
