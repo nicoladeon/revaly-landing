@@ -386,8 +386,11 @@ must("89 % de réussite sur 53 situations réelles" in _t10n and "mesure interne
 must("89&nbsp;%" in idx and "89 %" not in idx, "espace insécable avant % (chiffre qualité)")
 must(idx.find('id="controle"') < idx.find('id="tarif"') < idx.find('id="faq"'), "ordre confiance → tarif → FAQ")
 _conf = idx.split('id="controle"', 1)[1].split("</section>", 1)[0]
-_pf = idx.split('id="preuve-fondateur"', 1)[1].split("</section>", 1)[0]
-must("Créé par un agent immobilier" in html.unescape(_pf), "fondateur dans la preuve sous le haut de page")
+# Retour de Julien (12/10) : le fondateur et le 89 % rejoignent « Rien ne part sans toi » (« Pourquoi nous faire confiance »)
+_pf = idx.split('id="controle"', 1)[1].split("</section>", 1)[0]
+must('id="preuve-fondateur"' not in idx, "plus de bloc de preuve séparé sous le haut de page")
+must("Créé par un agent immobilier" in html.unescape(_pf) and "Le mot du fondateur" in _pf, "le mot du fondateur dans « Pourquoi nous faire confiance »")
+must("« Revaly n'est pas né" not in html.unescape(_pf), "mot du fondateur sans guillemets décoratifs (pas de doublon avec la citation)")
 must("Rien à migrer : Modelo reste ton CRM." in html.unescape(idx) and any("CRM" in q["question"] for q in faq), "Modelo reste le CRM : étape 1 et FAQ")
 must('class="fondateur"' in _pf and ('class="fondateur-photo"' in _pf or 'class="fondateur-mono"' in _pf), "carte fondateur : photo ou monogramme")
 must("89&nbsp;%" in _pf and "mesure interne, octobre 2026" in _pf, "chiffre qualité en grand, sourcé, à côté du fondateur")
@@ -470,7 +473,7 @@ must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 # Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
 # Ronde Julien 1 (playbook des références) : preuve juste après le haut, les collègues avant « Rien ne part sans toi »,
 # « Ce que voient tes clients » dans le même bloc que « Plus rien d'oublié ».
-_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="preuve-fondateur"', 'id="probleme"', 'id="comment"', 'id="bande-outils"',
+_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="probleme"', 'id="comment"', 'id="bande-outils"',
           'id="equipe"', 'id="controle"', 'id="calculateur"',
           'id="tarif"', 'id="faq"', 'id="demo"']
 _pos = [idx.find(x) for x in _ordre]
@@ -605,3 +608,32 @@ must(_suivi == "" and "film/out/" in _gi and "film/maquette-*.mp4" in _gi, "pubs
 must(not (ROOT / "netlify.toml").exists() and not (ROOT / "netlify").exists() and (ROOT / "functions" / "_middleware.ts").exists(),
      "plus de configuration Netlify ; le masquage Polynésie reste dans functions/ (Cloudflare)")
 print("OK revue finale")
+
+# ── Aucune image cassée : chaque fichier demandé par une page publiée existe dans dist/ (attributs et chemins du script) ──
+for page in sorted(dist.rglob("*.html")):
+    h = page.read_text()
+    chemins = set(re.findall(r'(?:src|srcset|poster|href|data-poster)="(/[^"#?]+\.(?:webp|svg|png|jpe?g|webm|mp4|woff2|js|css))"', h))
+    chemins |= {base + ext for base in re.findall(r"'(/assets/film/[\w@.-]+?)'", h) for ext in (".webm", ".mp4")
+                if not re.search(r"\.(webp|jpe?g)$", base)}
+    chemins |= set(re.findall(r"'(/assets/film/[\w@.-]+\.(?:webp|jpe?g))'", h))
+    manquants = [c for c in sorted(chemins) if not (dist / c.lstrip("/")).is_file()]
+    must(not manquants, f"aucune image ni vidéo cassée ({page.relative_to(dist)}) : {manquants}")
+must(not (ROOT / ".dist-construction").exists(), "dossier de construction temporaire retiré")
+print("OK aucune image cassée")
+
+# ── L'enchaînement comme une histoire (retour de Julien, 12/10) ──
+_sections = re.findall(r'<section class="([^"]*)" id="([\w-]+)"', idx.split("<main", 1)[1].split("</main>", 1)[0])
+must([s[1] for s in _sections] == ["hero", "probleme", "comment", "equipe", "controle", "calculateur", "tarif", "faq", "demo"],
+     "ordre : héros, problème, solution, équipe, confiance, calculateur, prix, FAQ, démo")
+_fonds = ["blanc" if "fond-blanc" in s[0] else "porcelaine" for s in _sections]
+must(all(a != b for a, b in zip(_fonds, _fonds[1:])), f"fonds porcelaine / blanc en alternance : {_fonds}")
+_sur = {sid: re.search(r'<p class="sur-titre">([^<]+)</p>', idx.split(f'id="{sid}"', 1)[1].split("</section>", 1)[0]) for _, sid in _sections[1:]}
+must({k: (v.group(1) if v else None) for k, v in _sur.items()} == {"probleme": "Le problème", "comment": "La solution", "equipe": "L'équipe",
+     "controle": "Pourquoi nous faire confiance", "calculateur": "Ton temps", "tarif": "Le prix", "faq": "Questions", "demo": "Essai 7 jours"},
+     "un sur-titre court par section")
+_pbh = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
+must(_pbh.find('class="sur-titre"') < _pbh.find('class="pb-citation"') < _pbh.find("<h2"), "problème : sur-titre, puis la citation, puis le titre")
+must("Confirmer, relancer, rendre compte, publier : ton équipe le prépare à ta place." in idx.split('id="comment"', 1)[1].split("</section>", 1)[0],
+     "phrase de transition du problème à la solution")
+must("--carte: var(--bg); --champ: var(--raised);" in idx, "les cartes prennent la couleur opposée au fond")
+print("OK enchaînement")

@@ -334,17 +334,18 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
     # Pages de tunnel (ex. /bienvenue) : noindex + hors sitemap.
     if noindex:
         shell = shell.replace("</head>", '<meta name="robots" content="noindex,nofollow" />\n</head>', 1)
-    out = ROOT / "dist" / rel
+    out = OUT / rel
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(shell)
     if not noindex:
         PAGES.append(path)
 
-# dist/ repart de zéro à chaque construction : aucun fichier retiré (ancienne vidéo, police) ne reste publié.
-# On vide son contenu sans supprimer le dossier lui-même (un serveur local peut y être lancé).
-(ROOT / "dist").mkdir(exist_ok=True)
-for _vieux in (ROOT / "dist").iterdir():
-    shutil.rmtree(_vieux) if _vieux.is_dir() else _vieux.unlink()
+# La construction écrit dans un dossier neuf (.dist-construction), puis le synchronise dans dist/ à la fin :
+# dist/ n'est jamais vide ni incomplet pendant une construction (un serveur local peut y être lancé et servir la
+# page au même moment), et aucun fichier retiré (ancienne vidéo, police) n'y reste.
+OUT = ROOT / ".dist-construction"
+shutil.rmtree(OUT, ignore_errors=True)
+OUT.mkdir()
 
 # ── Home ──
 # L'accueil n'affiche (et ne décrit en JSON-LD) que les questions marquées « accueil » ; les autres restent
@@ -584,13 +585,13 @@ for _a in _agents:
     )
 
 # ── Assets statiques servis à côté des pages (URL absolues : image de partage, logo). ──
-(ROOT / "dist" / "assets").mkdir(exist_ok=True)
-shutil.copy(ROOT / "assets" / "calcul.js", ROOT / "dist" / "assets" / "calcul.js")
+(OUT / "assets").mkdir(exist_ok=True)
+shutil.copy(ROOT / "assets" / "calcul.js", OUT / "assets" / "calcul.js")
 for static in ["og.jpg", "logo.png"]:
     src = ROOT / "assets" / static
     if src.exists():
-        shutil.copy(src, ROOT / "dist" / static)
-(ROOT / "dist" / "assets" / "film").mkdir(parents=True, exist_ok=True)
+        shutil.copy(src, OUT / static)
+(OUT / "assets" / "film").mkdir(parents=True, exist_ok=True)
 # Image fixe du haut = première image de la boucle (le passage à la vidéo ne se voit pas). Refaite à chaque
 # construction quand ffmpeg et Pillow sont là (les fichiers du film peuvent être remplacés, mêmes noms) ;
 # sinon, les WebP du dépôt servent telles quelles.
@@ -608,12 +609,12 @@ except (ImportError, subprocess.CalledProcessError):
     pass
 for f in (ROOT / "assets" / "film").glob("*"):
     if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
-        shutil.copy(f, ROOT / "dist" / "assets" / "film" / f.name)
-shutil.copytree(ROOT / "assets" / "equipe" / "boucles", ROOT / "dist" / "assets" / "equipe" / "boucles", dirs_exist_ok=True)
-shutil.copytree(ROOT / "assets" / "logos", ROOT / "dist" / "assets" / "logos", dirs_exist_ok=True)
-(ROOT / "dist" / "fonts").mkdir(exist_ok=True)
+        shutil.copy(f, OUT / "assets" / "film" / f.name)
+shutil.copytree(ROOT / "assets" / "equipe" / "boucles", OUT / "assets" / "equipe" / "boucles", dirs_exist_ok=True)
+shutil.copytree(ROOT / "assets" / "logos", OUT / "assets" / "logos", dirs_exist_ok=True)
+(OUT / "fonts").mkdir(exist_ok=True)
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
-    shutil.copy(f, ROOT / "dist" / "fonts" / f.name)
+    shutil.copy(f, OUT / "fonts" / f.name)
 
 # ── 404.html : sa seule présence désactive le fallback SPA de CF Pages (qui
 # répondait 200/index.html sur N'IMPORTE quel chemin → chaque scanner gonflait
@@ -641,20 +642,36 @@ _AI_BOTS = ["GPTBot", "ChatGPT-User", "OAI-SearchBot", "CCBot", "ClaudeBot", "Cl
             "anthropic-ai", "Google-Extended", "Applebot-Extended", "Bytespider",
             "Amazonbot", "PerplexityBot", "meta-externalagent", "FacebookBot",
             "Diffbot", "omgili", "ImagesiftBot", "Timpibot"]
-(ROOT / "dist" / "robots.txt").write_text(
+(OUT / "robots.txt").write_text(
     "".join(f"User-agent: {b}\n" for b in _AI_BOTS) + "Disallow: /\n\n"
     "User-agent: *\nAllow: /\n\nSitemap: https://revaly.io/sitemap.xml\n")
 urls = "".join(f"<url><loc>https://revaly.io{p}</loc></url>" for p in PAGES)
-(ROOT / "dist" / "sitemap.xml").write_text(
+(OUT / "sitemap.xml").write_text(
     '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls + "</urlset>")
 
 # ── Contrôle final : tokens base64 non résolus + fautes de frappe __HUGO*__ + {{...}} orphelins,
 # sur TOUTES les pages générées (home + /integrations/). ──
 for rel in ["index.html", "integrations/index.html"]:
-    page_html = (ROOT / "dist" / rel).read_text()
+    page_html = (OUT / rel).read_text()
     leftover = [t for t in repl if t in page_html]
     unknown = [t for t in ("__HUGO128__", "__HUGO512__") if t in page_html]
     orphan_tpl = "{{" in page_html
     print("build ok →", ROOT / "dist" / rel, f"({len(page_html)//1024} KB)",
           "| tokens restants:", (leftover + unknown) or "aucun",
           "| tokens {{}} non résolus:", orphan_tpl)
+
+# ── Synchronisation de la construction dans dist/ : fichiers nouveaux ou changés copiés, fichiers disparus retirés,
+# le dossier dist/ lui-même gardé (un serveur peut y tourner). ──
+import filecmp
+DIST = ROOT / "dist"
+DIST.mkdir(exist_ok=True)
+for _src in sorted(OUT.rglob("*")):
+    _dst = DIST / _src.relative_to(OUT)
+    if _src.is_dir():
+        _dst.mkdir(exist_ok=True)
+    elif not _dst.exists() or not filecmp.cmp(_src, _dst, shallow=False):
+        shutil.copy2(_src, _dst)
+for _vieux in sorted(DIST.rglob("*"), reverse=True):
+    if not (OUT / _vieux.relative_to(DIST)).exists():
+        shutil.rmtree(_vieux) if _vieux.is_dir() else _vieux.unlink()
+shutil.rmtree(OUT)

@@ -2,14 +2,17 @@
   /* ── Accueil (refonte du 12/10/2026) : styles propres à la page. Le socle (couleurs, Geist,
        boutons, navigation, fenêtre d'essai, pied de page) vit dans _shell.html. ── */
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-  .hp-sec { padding-top: clamp(64px, 10vw, 136px); }
+  /* Chaque section est une bande pleine largeur ; porcelaine et blanc alternent (problème, équipe, calculateur, FAQ
+     en blanc). Les cartes prennent toujours l'autre couleur (--carte), les champs aussi (--champ) : rien ne se fond. */
+  main { --carte: var(--raised); --champ: var(--bg); }
+  .hp-s { padding: clamp(72px, 9vw, 120px) 0; }
+  .fond-blanc { --carte: var(--bg); --champ: var(--raised); background: var(--raised); border-top: 0.5px solid var(--line); border-bottom: 0.5px solid var(--line); }
+  /* Sur-titre de section : court, en minuscules, iris ; il annonce l'étape de l'histoire (problème, solution…) */
+  .sur-titre { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 14px; font-size: 14px; font-weight: 600; letter-spacing: -0.005em; color: var(--iris-ink); }
+  .sur-titre::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   .hp-wide { max-width: 1160px; }
   .hp-centre { text-align: center; }
   .hp-centre p.sub { margin-left: auto; margin-right: auto; }
-  .hp-band {
-    margin-top: clamp(72px, 10vw, 136px); padding: clamp(60px, 8vw, 112px) 0;
-    background: var(--raised); border-top: 0.5px solid var(--line); border-bottom: 0.5px solid var(--line);
-  }
   h2.title { margin-top: 0; font-weight: 560; letter-spacing: -0.04em; }
   @media (max-width: 640px) { .wrap { padding-left: 16px; padding-right: 16px; } }
 
@@ -179,14 +182,13 @@
   .film-close:hover { background: rgba(18, 21, 28, .9); }
   .film-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   /* ── 2. La preuve : le fondateur et le chiffre qualité, côte à côte ── */
-  .pf-grille { display: grid; gap: 20px; align-items: stretch; }
-  @media (min-width: 900px) { .pf-grille { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; } }
-  .preuve-fond .fondateur { margin: 0; max-width: none; height: 100%; }
-  .pf-chiffre { display: flex; flex-direction: column; justify-content: center; padding: 24px 26px; border-radius: 22px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
+  .confiance-preuve { display: grid; gap: 16px; margin-top: clamp(36px, 4vw, 48px); align-items: stretch; text-align: left; }
+  @media (min-width: 900px) { .confiance-preuve { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 20px; } }
+  .confiance-preuve .fondateur { margin: 0; max-width: none; height: 100%; }
+  .pf-chiffre { display: flex; flex-direction: column; justify-content: center; padding: 24px 26px; border-radius: 22px; background: var(--carte); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
   .pf-nombre { margin: 0; font-size: clamp(56px, 7vw, 84px); font-weight: 560; line-height: 1; letter-spacing: -0.05em; color: var(--iris-ink); font-variant-numeric: tabular-nums; }
   .pf-legende { margin: 10px 0 0; font-size: 17px; font-weight: 500; line-height: 1.4; color: var(--ink); }
   .pf-legende em { display: block; margin-top: 2px; font-style: normal; font-size: 13.5px; font-weight: 400; color: var(--muted); }
-  .pf-detail { margin: 14px 0 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
 
   /* ── Rangées à faire glisser sur mobile (équipe, automatismes) : la page raccourcit, le bureau garde ses grilles ── */
   @media (max-width: 699px) {
@@ -212,17 +214,16 @@
   /* ── 3. Le problème ── */
   .pb { display: grid; gap: 32px; align-items: center; }
   @media (min-width: 900px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 64px; } }
-  .pb-liste { list-style: none; margin: 0; padding: 4px 0; background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); }
+  .pb-liste { list-style: none; margin: 0; padding: 4px 0; background: var(--carte); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); }
   .pb-liste li { display: flex; align-items: center; gap: 14px; padding: 16px 20px; font-size: 16.5px; line-height: 1.45; color: var(--ink); }
   .pb-liste li + li { border-top: 0.5px solid var(--line); }
   .pb-ico { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--bg-soft); color: var(--muted); }
   .pb-ico svg { width: 20px; height: 20px; }
 
-  .pb-citation { margin: 0 0 clamp(44px, 6vw, 72px); max-width: 860px; }
-  .pb-citation > svg { width: 28px; height: 28px; color: var(--iris-ink); }
-  .pb-citation blockquote { margin: 12px 0 0; }
-  .pb-citation blockquote p { margin: 0; font-size: clamp(23px, 3vw, 34px); font-weight: 400; line-height: 1.22; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
-  .pb-citation figcaption { margin-top: 12px; font-size: 14px; color: var(--muted); }
+  .pb-citation { margin: 0 0 22px; max-width: 640px; padding-left: 14px; border-left: 2px solid var(--iris); }
+  .pb-citation blockquote { margin: 0; }
+  .pb-citation blockquote p { margin: 0; font-size: 16.5px; font-style: italic; line-height: 1.5; color: var(--ink); }
+  .pb-citation figcaption { margin-top: 4px; font-size: 13.5px; color: var(--muted); }
 
   /* ── Relances d'essai entre les sections : même bouton, même ligne de risque ── */
   .cta-relance { margin-top: clamp(36px, 4.4vw, 52px); display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
@@ -250,7 +251,7 @@
   /* ── 4. Comment ça marche ── */
   .etapes { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 14px; align-items: start; }
   @media (min-width: 900px) { .etapes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
-  .etape { display: flex; flex-direction: column; padding: 24px 22px 22px; background: var(--bg); border: 0.5px solid var(--line); border-radius: 22px; }
+  .etape { display: flex; flex-direction: column; padding: 24px 22px 22px; background: var(--carte); border: 0.5px solid var(--line); border-radius: 22px; }
   .etape-n {
     width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
     background: var(--iris-deep); color: #fff; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums;
@@ -259,7 +260,7 @@
   .etape > p { margin: 8px 0 0; font-size: 15.5px; line-height: 1.55; color: var(--muted); }
   .etape-visuel { padding-top: 20px; }
   .et-logos { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-  .et-logos li { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; border-radius: 12px; background: var(--raised); border: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--muted); }
+  .et-logos li { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; border-radius: 12px; background: var(--champ); border: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--muted); }
   .et-logos img { display: block; filter: grayscale(1); opacity: .7; }
   .et-logos .bande-nom { font-size: 13.5px; font-weight: 500; }
   .et-portails { margin: 12px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
@@ -285,7 +286,7 @@
   .eq-grille { margin-top: 40px; display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
   @media (min-width: 700px) { .eq-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1040px) { .eq-grille { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
-  .eq { display: flex; flex-direction: column; padding: 16px 16px 18px; background: var(--raised); border: 0.5px solid var(--line); border-radius: 26px; box-shadow: var(--shadow-sm); }
+  .eq { display: flex; flex-direction: column; padding: 16px 16px 18px; background: var(--carte); border: 0.5px solid var(--line); border-radius: 26px; box-shadow: var(--shadow-sm); }
   .eq-tete { display: flex; align-items: flex-end; gap: 16px; }
   .eq-photo { flex: none; width: 160px; height: 160px; border-radius: 20px; overflow: hidden; background: #F1F2F7; box-shadow: inset 0 0 0 0.5px rgba(23, 26, 33, .08); }
   .eq-photo video { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -336,7 +337,7 @@
 
   /* ── 9. Calculateur de temps rendu ── */
   .calc { display: grid; gap: 32px; grid-template-columns: 1fr; }
-  .calc-carte, .calc-statique { background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-md); padding: 24px; }
+  .calc-carte, .calc-statique { background: var(--carte); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-md); padding: 24px; }
   .calc-carte { display: none; gap: 28px; grid-template-columns: 1fr; }
   .calc-actif .calc-carte { display: grid; }
   .calc-actif .calc-statique { display: none; }
@@ -352,7 +353,7 @@
   @media (max-width: 340px) { .calc-champs { grid-template-columns: 1fr; } }
   .calc-champ { display: flex; flex-direction: column; justify-content: flex-end; }
   .calc-champ label { display: block; font-size: 13.5px; font-weight: 500; color: var(--muted); margin-bottom: 7px; }
-  .calc-champ input { width: 100%; font: inherit; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); background: var(--bg); border: 0.5px solid var(--line-strong); border-radius: 12px; padding: 12px 14px; min-height: 48px; }
+  .calc-champ input { width: 100%; font: inherit; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); background: var(--champ); border: 0.5px solid var(--line-strong); border-radius: 12px; padding: 12px 14px; min-height: 48px; }
   .calc-champ input:focus-visible { outline: 2px solid var(--iris); outline-offset: 1px; border-color: transparent; }
   .calc-resultat { margin: 24px 0 0; padding-top: 22px; border-top: 0.5px solid var(--line); font-size: 21px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.35; color: var(--ink); }
   .calc-resultat b { color: var(--iris-ink); font-size: 1.5em; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -369,7 +370,7 @@
   .ap-label { margin: 0 0 10px; text-align: center; font-size: 13px; font-weight: 500; color: var(--muted); }
   .ap-card {
     flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center; gap: 12px;
-    background: var(--raised); border: 0.5px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-md); padding: 18px;
+    background: var(--carte); border: 0.5px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-md); padding: 18px;
   }
   .ap-arrow { display: grid; place-items: center; padding-top: 28px; color: var(--subtle); }
   .ap-arrow svg { width: 20px; height: 20px; }
@@ -437,8 +438,9 @@
   .confiance em { font-style: normal; color: var(--subtle); font-size: 13px; display: block; margin-top: 2px; }
   .fondateur {
     display: flex; align-items: flex-start; gap: 20px; max-width: 760px; margin: 28px auto 0; padding: 24px 26px;
-    background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); text-align: left;
+    background: var(--carte); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); text-align: left;
   }
+  .fondateur-label { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
   .fondateur-mono, .fondateur-photo { flex: none; width: 72px; height: 72px; border-radius: 50%; }
   .fondateur-photo { object-fit: cover; }
   .fondateur-mono { display: inline-flex; align-items: center; justify-content: center; background: var(--iris-soft); color: var(--iris-ink); font-size: 32px; font-weight: 500; box-shadow: inset 0 0 0 1px var(--line); }
@@ -452,7 +454,7 @@
   /* ── 11. Prix : 3 offres, bascule Mensuel/Annuel sans saut de mise en page ── */
   .bill-toggle {
     display: flex; width: fit-content; margin: 32px auto 0; padding: 4px; gap: 4px;
-    border-radius: 999px; background: var(--bg); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm);
+    border-radius: 999px; background: var(--carte); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm);
   }
   html:not(.js) .bill-toggle { display: none; } /* sans JS : Mensuel statique, pas de contrôle mort */
   .bt-opt {
@@ -470,7 +472,7 @@
   .plans { display: grid; gap: 16px; margin-top: 36px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
   .plan {
     position: relative; display: flex; flex-direction: column; text-align: left;
-    background: var(--bg); border-radius: 22px; padding: 28px 26px;
+    background: var(--carte); border-radius: 22px; padding: 28px 26px;
     border: 0.5px solid var(--line); box-shadow: var(--shadow-sm);
   }
   .plan.featured { background: var(--raised); border: 1.5px solid var(--iris); box-shadow: var(--shadow-md); }
@@ -565,15 +567,13 @@
     .foot > div:first-child { grid-column: 1 / -1; margin-bottom: 8px; }
     .foot a { padding: 4px 0; min-height: 44px; display: flex; align-items: center; font-size: 13.5px; line-height: 1.3; }
     footer { margin-top: 56px; }
-    .hp-sec { padding-top: 48px; }
-    .hp-band { margin-top: 48px; padding: 44px 0; }
+    .hp-s { padding: 52px 0; }
     #tarif .garanties { display: none; }
-    .pf-detail { display: none; }
     #faq .faq-grid > div:first-child .btn { display: none; }
     .faq-grid { gap: 20px; }
     .calc { gap: 20px; }
     .calc-detail li { padding: 7px 0; font-size: 14px; }
-    .pb-citation { margin-bottom: 36px; }
+    .pb-citation { margin-bottom: 18px; }
     .cta-relance { margin-top: 28px; }
     .etapes.glisse { align-items: flex-start; }
     .etape { padding: 20px 18px; }
@@ -657,31 +657,13 @@
     </dialog>
   </section>
 
-  <!-- ═══════════════ 2. LA PREUVE : le fondateur est du métier, la qualité est mesurée ═══════════════ -->
-  <section class="wrap hp-sec preuve-fond" id="preuve-fondateur" aria-label="Pourquoi nous faire confiance">
-    <div class="pf-grille">
-    <figure class="fondateur">
-      {{FONDATEUR_VISUEL}}
-      <div class="fondateur-txt">
-        <h3>Créé par un agent immobilier, pour les agents immobiliers</h3>
-        <blockquote><p>« Revaly n'est pas né dans une boîte de tech. Il est né un dimanche soir, entre un post Facebook en retard et trois relances jamais parties. Je l'ai construit pour mon agence. Maintenant, il travaille aussi pour la tienne. »</p></blockquote>
-        <figcaption class="fondateur-sig"><b>Julien</b> · Agent immobilier</figcaption>
-      </div>
-    </figure>
-      <div class="pf-chiffre">
-        <p class="pf-nombre">89&nbsp;%</p>
-        <p class="pf-legende">de réussite sur 53 situations réelles <em>(mesure interne, octobre 2026)</em></p>
-        <p class="pf-detail">Et chaque envoi t'attend quand même en brouillon : tu relis avant que quoi que ce soit parte.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════ 3. LE PROBLÈME ═══════════════ -->
-  <section class="wrap hp-sec" id="probleme">
+  <!-- ═══════════════ 2. LE PROBLÈME (fond blanc) ═══════════════ -->
+  <section class="hp-s fond-blanc" id="probleme">
+    <div class="wrap">
+    <p class="sur-titre">Le problème</p>
     <figure class="pb-citation">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z" /><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z" /></svg>
-      <blockquote><p>« Après chaque visite, le silence est souvent la pire expérience possible pour un vendeur. »</p></blockquote>
-      <figcaption>Journal de l'Agence, mai 2026</figcaption>
+      <blockquote><p>«&nbsp;Après chaque visite, le silence est souvent la pire expérience possible pour un vendeur.&nbsp;»</p></blockquote>
+      <figcaption>— Journal de l'Agence, mai 2026</figcaption>
     </figure>
     <div class="pb">
       <div>
@@ -694,12 +676,15 @@
         <li><span class="pb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="2" x2="22" y1="2" y2="22" /><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83" /><line x1="13.5" x2="6" y1="13.5" y2="21" /><line x1="18" x2="21" y1="12" y2="15" /><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59" /><path d="M21 15V5a2 2 0 0 0-2-2H9" /></svg></span>Le post du «&nbsp;Vendu&nbsp;» que tu n'as jamais publié.</li>
       </ul>
     </div>
+    </div>
   </section>
 
-  <!-- ═══════════════ 4. COMMENT ÇA MARCHE ═══════════════ -->
-  <section class="hp-band" id="comment">
+  <!-- ═══════════════ 3. LA SOLUTION : comment ça marche ═══════════════ -->
+  <section class="hp-s" id="comment">
     <div class="wrap">
+      <p class="sur-titre">La solution</p>
       <h2 class="title">On installe ton équipe avec toi.</h2>
+      <p class="sub">Confirmer, relancer, rendre compte, publier : ton équipe le prépare à ta place. Il reste à la brancher sur tes outils, et on le fait avec toi.</p>
       <ol class="etapes glisse" tabindex="0" role="region" aria-label="Les trois étapes, à faire défiler">
         <li class="etape">
           <span class="etape-n" aria-hidden="true">1</span>
@@ -748,17 +733,24 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 5. L'ÉQUIPE ═══════════════ -->
-  <section class="wrap hp-sec" id="equipe">
+  <!-- ═══════════════ 4. L'ÉQUIPE (fond blanc) ═══════════════ -->
+  <section class="hp-s fond-blanc" id="equipe">
+    <div class="wrap">
+    <p class="sur-titre">L'équipe</p>
     <h2 class="title">Six spécialistes. Un seul abonnement.</h2>
     <p class="sub">Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.</p>
     <div class="eq-grille glisse" tabindex="0" role="region" aria-label="Les six agents, à faire défiler">{{EQUIPE_CARTES}}</div>
+    </div>
   </section>
 
-  <!-- ═══════════════ 6. RIEN NE PART SANS TOI : le mode supervisé, en vrai ═══════════════ -->
-  <section class="wrap hp-sec hp-centre" id="controle">
+  <!-- ═══════════════ 5. POURQUOI NOUS FAIRE CONFIANCE : la validation en vrai, la qualité mesurée, le fondateur ═══════════════ -->
+  <section class="hp-s" id="controle">
+    <div class="wrap">
+    <div class="hp-centre">
+    <p class="sur-titre">Pourquoi nous faire confiance</p>
     <h2 class="title">Rien ne part sans toi.</h2>
     <p class="sub">Chaque message, post ou document t'attend en brouillon : tu relis, tu corriges si besoin, tu valides. Et tes e-mails, c'est toi qui les envoies, depuis ta boîte.</p>
+    </div>
     <div class="ap-flow glisse" tabindex="0" role="region" aria-label="Comment une validation se passe, à faire défiler">
       <div class="ap-step ap-s1">
         <p class="ap-label">1 · Emma rédige</p>
@@ -800,13 +792,31 @@
     </div>
 
 
+    <div class="confiance-preuve">
+      <div class="pf-chiffre">
+        <p class="pf-nombre">89&nbsp;%</p>
+        <p class="pf-legende">de réussite sur 53 situations réelles <em>(mesure interne, octobre 2026)</em></p>
+      </div>
+    <figure class="fondateur">
+      {{FONDATEUR_VISUEL}}
+      <div class="fondateur-txt">
+        <p class="fondateur-label">Le mot du fondateur</p>
+        <h3>Créé par un agent immobilier, pour les agents immobiliers</h3>
+        <blockquote><p>Revaly n'est pas né dans une boîte de tech. Il est né un dimanche soir, entre un post Facebook en retard et trois relances jamais parties. Je l'ai construit pour mon agence. Maintenant, il travaille aussi pour la tienne.</p></blockquote>
+        <figcaption class="fondateur-sig"><b>Julien</b> · Agent immobilier</figcaption>
+      </div>
+    </figure>
+    </div>
     <div class="cta-relance"><button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button><p>0 € aujourd'hui · Annulable en 2 clics</p></div>
+    </div>
   </section>
 
-  <!-- ═══════════════ 7. CALCULATEUR : TEMPS RENDU ═══════════════ -->
-  <section class="wrap hp-sec" id="calculateur">
+  <!-- ═══════════════ 6. CALCULATEUR : TEMPS RENDU (fond blanc) ═══════════════ -->
+  <section class="hp-s fond-blanc" id="calculateur">
+    <div class="wrap">
     <div class="calc">
       <div class="calc-intro">
+        <p class="sur-titre">Ton temps</p>
         <h2 class="title">Combien d'heures te rend ton équipe ?</h2>
         <p class="sub">Mets ton rythme du mois : on compte ce que ton équipe prépare à ta place, tâche par tâche.</p>
       </div>
@@ -840,11 +850,13 @@
     <div class="cta-relance"><button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button><p>0 € aujourd'hui · Annulable en 2 clics</p></div>
     <script type="application/json" id="calcul-cfg">__CALCUL_JSON__</script>
     <script type="module" src="/assets/calcul.js"></script>
+    </div>
   </section>
 
-  <!-- ═══════════════ 8. PRIX ═══════════════ -->
-  <section class="hp-band hp-centre" id="tarif" data-billing="monthly">
+  <!-- ═══════════════ 7. PRIX ═══════════════ -->
+  <section class="hp-s hp-centre" id="tarif" data-billing="monthly">
     <div class="wrap">
+      <p class="sur-titre">Le prix</p>
       <h2 class="title">Une équipe entière pour moins qu'une demi-journée d'assistante par mois.</h2>
       <p class="sub">Une assistante à mi-temps, c'est ~1&nbsp;200&nbsp;€/mois. Ici, les six agents sont inclus. Essai 7 jours avec carte, sans engagement. Pas de frais de mise en place.</p>
       <p class="installation installation-prix"><span class="installation-txt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation faite avec toi, offerte.</span></span></p>
@@ -928,21 +940,25 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 9. FAQ ═══════════════ -->
-  <section class="wrap hp-sec" id="faq">
+  <!-- ═══════════════ 8. FAQ (fond blanc) ═══════════════ -->
+  <section class="hp-s fond-blanc" id="faq">
+    <div class="wrap">
     <div class="faq-grid">
       <div>
+        <p class="sur-titre">Questions</p>
         <h2 class="title">Les questions qu'on nous pose</h2>
         <p class="sub">Et si tu préfères en parler, écris-nous : un humain répond.</p>
         <a class="btn ghost" href="mailto:support@revaly.io" style="margin-top: 20px;">Écrire à l'équipe</a>
       </div>
       <div id="faq-list">{{FAQ_ITEMS}}</div>
     </div>
+    </div>
     <noscript><style>.faq-body { grid-template-rows: 1fr; } .faq-item .chev { display: none; }</style></noscript>
   </section>
 
-  <!-- ═══════════════ 10. APPEL FINAL + DÉMO INTÉGRÉE ═══════════════ -->
-  <section class="wrap hp-sec" id="demo">
+  <!-- ═══════════════ 9. APPEL FINAL ═══════════════ -->
+  <section class="hp-s" id="demo">
+    <div class="wrap">
     <div class="final">
       <span class="faces" aria-hidden="true">
         <img src="/assets/equipe/boucles/max@256.webp" width="56" height="56" alt="" loading="lazy" />
@@ -952,6 +968,7 @@
         <img src="/assets/equipe/boucles/zoe@256.webp" width="56" height="56" alt="" loading="lazy" />
         <img src="/assets/equipe/boucles/raphael@256.webp" width="56" height="56" alt="" loading="lazy" />
       </span>
+      <p class="sur-titre">Essai 7 jours</p>
       <h2 class="title">Ton équipe peut commencer ce soir.</h2>
       <p class="sub" style="margin-left: auto; margin-right: auto;">
         Chaque semaine sans équipe, ce sont des relances oubliées et des mandats qui
@@ -963,6 +980,7 @@
         <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
       </div>
       <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
+    </div>
     </div>
   </section>
 </main>

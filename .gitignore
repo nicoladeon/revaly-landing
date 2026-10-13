@@ -16,3 +16,4 @@ film/out/
 film/maquette-*.mp4
 film/music/*.wav
 film/pub-segs/
+.dist-construction/
