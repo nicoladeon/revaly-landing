@@ -312,10 +312,10 @@
   .fond-prix { margin: 4px 0 10px; font-size: 14.5px; font-weight: 500; line-height: 1.4; color: var(--ink); }
   .fond-carte .btn { min-height: 44px; font-size: 15px; }
 
-  /* ── 4. La solution : l'accordéon des trois étapes (il avance seul, la barre iris montre le temps qui reste ; survol,
-       focus ou pause générale l'arrêtent ; un clic choisit l'étape et coupe l'avance) et le panneau synchronisé.
-       Les trois vues du panneau partagent la même case : sa hauteur ne bouge jamais. Sans script : tout est ouvert,
-       chaque vue dans son état final. ── */
+  /* ── 4. La solution : les trois étapes, toujours lisibles, avancent seules (la barre iris de l'étape en cours montre le
+       temps qui reste ; survol, focus ou pause générale l'arrêtent ; un clic choisit l'étape et coupe l'avance) ; le panneau
+       suit. Rien ne se replie et les trois vues du panneau partagent la même case : aucune hauteur ne bouge jamais.
+       Sans script : la première étape en avant, chaque vue dans son état final. ── */
   .etapes-bloc { display: grid; gap: 28px; margin-top: var(--tete-visuel); align-items: center; }
   @media (min-width: 960px) { .etapes-bloc { grid-template-columns: minmax(0, 1fr) minmax(0, 560px); gap: clamp(40px, 5vw, 80px); } }
   @media (max-width: 959px) { .etapes-bloc { max-width: 600px; margin-left: auto; margin-right: auto; } }
@@ -334,11 +334,11 @@
   .etape-t { font-size: 19px; font-weight: 550; line-height: 1.3; letter-spacing: -0.015em; transition: color .3s; }
   .etape button:hover .etape-t, .etape[data-ouvert="true"] .etape-t { color: var(--ink); }
   .etape[data-ouvert="true"] .etape-n { background: var(--iris-deep); border-color: var(--iris-deep); color: #fff; }
-  .etape-corps { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s var(--ap); }
-  .etape[data-ouvert="true"] .etape-corps, html:not(.js) .etape-corps { grid-template-rows: 1fr; }
-  .etape-corps > div { overflow: hidden; padding-left: 46px; }
-  .etape-corps p { margin: 0 0 10px; max-width: 46ch; font-size: 16px; line-height: 1.55; color: var(--muted); }
-  .etape-corps > div > :last-child { margin-bottom: 22px; }
+  .etape-corps { padding-left: 46px; }
+  .etape-corps p { margin: 0 0 10px; max-width: 46ch; font-size: 16px; line-height: 1.55; color: var(--muted); transition: color .4s var(--ap); }
+  .etape[data-ouvert="true"] .etape-corps p:not(.etape-offert) { color: var(--ink); }
+  .etape-corps > :last-child { margin-bottom: 22px; }
+  .etape button { padding-bottom: 10px; }
   .etape-offert { display: inline-flex !important; align-items: center; gap: 8px; padding: 7px 13px; border-radius: 999px; background: var(--iris-soft); font-size: 14.5px !important; font-weight: 500; color: var(--ink) !important; }
   .etape-offert svg { width: 17px; height: 17px; flex: none; color: var(--iris-ink); }
   .etape-barre { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; overflow: hidden; border-radius: 2px; pointer-events: none; }
@@ -386,6 +386,8 @@
   .et-portails { margin: 12px 2px 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .br-logo img, :root:not([data-theme="light"]) .br-nom img { filter: grayscale(1) invert(1); } }
   :root[data-theme="dark"] .br-logo img, :root[data-theme="dark"] .br-nom img { filter: grayscale(1) invert(1); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .demo-vue.joue [data-branche] .br-logo img, :root:not([data-theme="light"]) .demo-vue.joue [data-branche] .br-nom img, :root:not(.js):not([data-theme="light"]) .br img { filter: grayscale(1) invert(1); } }
+  :root[data-theme="dark"] .demo-vue.joue [data-branche] .br-logo img, :root[data-theme="dark"] .demo-vue.joue [data-branche] .br-nom img { filter: grayscale(1) invert(1); }
   /* vue 2 : le brouillon de Zoé s'écrit mot par mot (la place du texte est réservée dès le départ) */
   .dv-post { border-radius: 18px; overflow: hidden; background: var(--bg); border: 0.5px solid var(--line); }
   .dv-photo { display: block; width: 100%; height: auto; aspect-ratio: 5 / 2; object-fit: cover; background: var(--bg-soft); }
@@ -420,7 +422,6 @@
   @media (max-width: 520px) {
     .demo { padding: 14px; border-radius: 22px; }
     .etape-t { font-size: 17px; }
-    .etape-corps > div { padding-left: 46px; }
     .br { min-height: 42px; }
   }
 
@@ -762,7 +763,8 @@
   .faq-encore > div:first-child { flex: 1 1 260px; }
   .faq-encore-b { display: flex; flex-wrap: wrap; gap: 10px; }
   .faq-encore .btn { min-height: 46px; padding: 11px 20px; font-size: 15px; justify-content: center; }
-  @media (max-width: 520px) { .faq-encore-b { width: 100%; flex-wrap: nowrap; } .faq-encore .btn { flex: 1 1 0; min-width: 0; padding: 11px 8px; } }
+  .faq-encore .btn { white-space: nowrap; }
+  @media (max-width: 520px) { .faq-encore { padding: 18px; } .faq-encore-b { width: 100%; flex-wrap: nowrap; } .faq-encore .btn { flex: 1 1 0; min-width: 0; padding: 11px 6px; font-size: 14.5px; } }
   .faq-item { border-bottom: 0.5px solid var(--line); }
   .faq-item > button {
     width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px;
@@ -901,36 +903,36 @@
       <div class="etapes-bloc auto" id="etapes" data-ap>
         <ol class="etapes">
           <li class="etape" data-ouvert="true">
-            <h3><button type="button" id="etape-b0" aria-expanded="true" aria-controls="etape-c0"><span class="etape-n" aria-hidden="true">1</span><span class="etape-t">On branche Modelo, ta boîte mail et ton agenda avec toi.</span></button></h3>
-            <div class="etape-corps" id="etape-c0"><div>
+            <h3><button type="button" id="etape-b0" aria-controls="demo-vue-0" aria-current="step"><span class="etape-n" aria-hidden="true">1</span><span class="etape-t">On branche Modelo, ta boîte mail et ton agenda avec toi.</span></button></h3>
+            <div class="etape-corps" id="etape-c0">
               <p>Rien à migrer : Modelo reste ton CRM.</p>
               <p class="etape-offert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation faite avec toi, offerte.</span></p>
-            </div></div>
+            </div>
             <span class="etape-barre" aria-hidden="true"><i></i></span>
           </li>
           <li class="etape" data-ouvert="false">
-            <h3><button type="button" id="etape-b1" aria-expanded="false" aria-controls="etape-c1"><span class="etape-n" aria-hidden="true">2</span><span class="etape-t">Ton équipe prépare, jour et nuit.</span></button></h3>
-            <div class="etape-corps" id="etape-c1"><div>
+            <h3><button type="button" id="etape-b1" aria-controls="demo-vue-1"><span class="etape-n" aria-hidden="true">2</span><span class="etape-t">Ton équipe prépare, jour et nuit.</span></button></h3>
+            <div class="etape-corps" id="etape-c1">
               <p>Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.</p>
-            </div></div>
+            </div>
             <span class="etape-barre" aria-hidden="true"><i></i></span>
           </li>
           <li class="etape" data-ouvert="false">
-            <h3><button type="button" id="etape-b2" aria-expanded="false" aria-controls="etape-c2"><span class="etape-n" aria-hidden="true">3</span><span class="etape-t">Tu valides d'un geste.</span></button></h3>
-            <div class="etape-corps" id="etape-c2"><div>
+            <h3><button type="button" id="etape-b2" aria-controls="demo-vue-2"><span class="etape-n" aria-hidden="true">3</span><span class="etape-t">Tu valides d'un geste.</span></button></h3>
+            <div class="etape-corps" id="etape-c2">
               <p>Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.</p>
               <p>Un vocal depuis ta voiture suffit : Max confie la tâche au bon équipier.</p>
-            </div></div>
+            </div>
             <span class="etape-barre" aria-hidden="true"><i></i></span>
           </li>
         </ol>
         <div class="demo-zone halo">
           <div class="demo">
-            <div class="demo-vue active" data-vue="0" role="group" aria-label="Étape 1 en exemple : tes outils branchés">
+            <div class="demo-vue active" id="demo-vue-0" data-vue="0" role="group" aria-label="Étape 1 en exemple : tes outils branchés">
               <div class="dv-tete"><span class="dv-r" aria-hidden="true">R.</span><b>Ton installation</b><span class="dv-note">avec toi, offerte</span></div>
               {{OUTILS_BRANCHEMENT}}
             </div>
-            <div class="demo-vue" data-vue="1" role="group" aria-label="Étape 2 en exemple : Zoé rédige le post « Vendu »">
+            <div class="demo-vue" id="demo-vue-1" data-vue="1" role="group" aria-label="Étape 2 en exemple : Zoé rédige le post « Vendu »">
               <div class="dv-tete"><img src="/assets/equipe/boucles/zoe@256.webp" width="32" height="32" alt="" loading="lazy" /><b>Zoé rédige</b><span class="dv-pill">Brouillon</span><time class="dv-heure">23 h 40</time></div>
               <div class="dv-post">
                 <img class="dv-photo" src="/assets/accueil/post-vendu.webp" width="800" height="320" alt="La photo du post : la remise des clés aux nouveaux propriétaires." loading="lazy" />
@@ -938,7 +940,7 @@
                 <p class="dv-canaux">Instagram · Facebook</p>
               </div>
             </div>
-            <div class="demo-vue" data-vue="2" role="group" aria-label="Étape 3 en exemple : tu valides le post, il part">
+            <div class="demo-vue" id="demo-vue-2" data-vue="2" role="group" aria-label="Étape 3 en exemple : tu valides le post, il part">
               <div class="dv-carte">
                 <div class="carte-tete"><img src="/assets/equipe/boucles/zoe@256.webp" width="36" height="36" alt="" loading="lazy" /><p><b>Zoé</b> a préparé</p><span class="dv-pill">À valider</span></div>
                 <p class="carte-objet">{{VENDU_OBJET}}</p>
@@ -1509,35 +1511,25 @@
     }, 4000);
   })();
 
-  // ── La solution : l'accordéon des trois étapes avance seul toutes les 5 s (la barre iris de l'étape ouverte mène la
-  //    danse : à la fin de son animation, on passe à la suivante ; survol, focus et pause générale la figent). Un clic choisit
-  //    l'étape et coupe l'avance. La vue du panneau se rejoue à chaque étape. La liste garde la hauteur de sa plus longue
-  //    étape ouverte : rien ne bouge en dessous. Mouvement réduit : pas d'avance, chaque vue dans son état final. ──
+  // ── La solution : les trois étapes avancent seules toutes les 5 s (la barre iris de l'étape en cours mène la danse : à la
+  //    fin de son animation, on passe à la suivante ; survol, focus et pause générale la figent). Un clic choisit l'étape et
+  //    coupe l'avance. La vue du panneau se rejoue à chaque étape. Mouvement réduit : pas d'avance, chaque vue dans son état final. ──
   (() => {
     const bloc = document.getElementById('etapes');
     if (!bloc) return;
-    const liste = bloc.querySelector('.etapes'), etapes = Array.from(bloc.querySelectorAll('.etape'));
+    const etapes = Array.from(bloc.querySelectorAll('.etape'));
     const vues = Array.from(bloc.querySelectorAll('.demo-vue'));
     let actif = 0, enVue = false;
     const montre = (k) => {
       actif = k;
-      etapes.forEach((e, i) => { e.dataset.ouvert = String(i === k); e.querySelector('button').setAttribute('aria-expanded', String(i === k)); });
+      etapes.forEach((e, i) => { e.dataset.ouvert = String(i === k); const b = e.querySelector('button'); if (i === k) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
       vues.forEach((v, i) => { v.classList.toggle('active', i === k); if (!REDUCED) v.classList.remove('joue'); });
       void bloc.offsetWidth;
       if (enVue || REDUCED) vues[k].classList.add('joue');
     };
-    const hauteur = () => {
-      liste.style.minHeight = '';
-      const corps = etapes.map((e) => e.querySelector('.etape-corps > div'));
-      const ouvert = corps[actif].offsetHeight, plus = Math.max(...corps.map((c) => c.scrollHeight));
-      liste.style.minHeight = (liste.offsetHeight - ouvert + plus) + 'px';
-    };
     etapes.forEach((e, i) => e.querySelector('button').addEventListener('click', () => { bloc.classList.remove('auto'); montre(i); }));
     bloc.addEventListener('animationend', (ev) => { if (ev.target.matches('.etape-barre i') && bloc.classList.contains('auto')) montre((actif + 1) % etapes.length); });
     if (REDUCED) { bloc.classList.remove('auto'); vues.forEach((v) => v.classList.add('joue')); }
-    hauteur();
-    if (document.fonts) document.fonts.ready.then(hauteur);
-    let r = null; addEventListener('resize', () => { clearTimeout(r); r = setTimeout(hauteur, 150); });
     if (!('IntersectionObserver' in window)) { enVue = true; vues[actif].classList.add('joue'); bloc.classList.add('en-vue'); return; }
     new IntersectionObserver((en) => {
       enVue = en[0].isIntersecting;

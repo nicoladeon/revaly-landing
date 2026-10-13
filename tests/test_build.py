@@ -687,12 +687,13 @@ print("OK une page qui s'enchaîne")
 
 # ── La solution (tâche 17) : accordéon des trois étapes qui avance seul, panneau synchronisé, le post « Vendu » de Zoé ──
 _so = idx.split('id="comment"', 1)[1].split("</section>", 1)[0]
-must(_so.count('<li class="etape"') == 3 and _so.count('aria-expanded="true"') == 1 and _so.count('aria-expanded="false"') == 2
-     and all(f'aria-controls="etape-c{i}"' in _so and f'id="etape-c{i}"' in _so for i in range(3)), "trois étapes en accordéon accessible, la première ouverte")
+must(_so.count('<li class="etape"') == 3 and _so.count('aria-current="step"') == 1
+     and all(f'aria-controls="demo-vue-{i}"' in _so and f'id="demo-vue-{i}"' in _so for i in range(3)), "trois étapes, l'étape en cours annoncée (aria-current), chacune reliée à sa vue")
+must("grid-template-rows" not in idx.split("── 4. La solution", 1)[1].split("── 5.", 1)[0], "rien ne se replie : aucune hauteur ne bouge pendant l'avance")
 must(_so.count('class="demo-vue') == 3 and _so.count('class="demo-vue active"') == 1 and _so.count('role="group"') == 3, "un panneau, trois vues synchronisées")
 must("animation: barre 5s linear forwards" in idx and "animationend" in idx and ".etapes-bloc:hover .etape-barre i, .etapes-bloc:focus-within .etape-barre i, .rv-pause .etape-barre i" in idx,
      "avance seule toutes les 5 s, figée au survol, au focus et en pause générale")
-must("bloc.classList.remove('auto'); montre(i);" in idx and "liste.style.minHeight" in idx, "un clic choisit l'étape et coupe l'avance ; la hauteur ne bouge pas")
+must("bloc.classList.remove('auto'); montre(i);" in idx, "un clic choisit l'étape et coupe l'avance")
 _zoe = next(c for c in json.loads((ROOT / "data" / "cartes-accueil.json").read_text()) if c["slug"] == "zoe")
 _so_txt = html.unescape(re.sub(r"<[^>]+>", "", _so)).replace("\u00a0", " ")
 must(re.sub(r"\s+", " ", _zoe["message"]) in re.sub(r"\s+", " ", _so_txt), "le post « Vendu » de Zoé, texte des cartes du haut")
