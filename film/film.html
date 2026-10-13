@@ -32,7 +32,7 @@
     --st-x: 480px; --st-bas: 96px; --st-taille: 40px; --st-large: 880px;
     --accroche-x: 72px; --accroche-bas: 132px; --accroche-taille: 76px; --parole-x: 72px; --parole-y: 118px; --parole-taille: 46px;
     --fin-bas: 90px; --fin-titre: 84px; --fin-ligne: 36px; --fin-visage: 76px; --fin-btn-h: 76px; --fin-btn: 30px;
-    --fin-logo-top: 66px; --fin-note-bas: 104px; --fin-note: 21px;
+    --fin-logo-top: 66px;
     --horloge-taille: 24px; --horloge-h: 44px;
     --notif-titre: 36px; --notif-corps: 34px; --notif-ico: 96px; --notif-heure: 24px; --rail-top: 0px;
   }
@@ -47,7 +47,7 @@
     --st-x: 540px; --st-bas: 1244px; --st-taille: 56px; --st-large: 980px;
     --accroche-x: 64px; --accroche-bas: 1262px; --accroche-taille: 88px; --parole-x: 64px; --parole-y: 300px; --parole-taille: 56px;
     --fin-bas: 370px; --fin-titre: 76px; --fin-ligne: 40px; --fin-visage: 92px; --fin-btn-h: 92px; --fin-btn: 36px;
-    --fin-logo-top: 300px; --fin-note-bas: 200px; --fin-note: 25px;
+    --fin-logo-top: 300px;
     --horloge-taille: 40px; --horloge-h: 64px;
     --notif-titre: 40px; --notif-corps: 38px; --notif-ico: 96px; --notif-heure: 25px; --rail-top: 450px;
   }
@@ -60,15 +60,14 @@
     --st-x: 540px; --st-bas: 580px; --st-taille: 56px; --st-large: 980px;
     --accroche-x: 56px; --accroche-bas: 590px; --accroche-taille: 68px; --parole-x: 56px; --parole-y: 70px; --parole-taille: 48px;
     --fin-bas: 110px; --fin-titre: 62px; --fin-ligne: 30px; --fin-visage: 64px; --fin-btn-h: 72px; --fin-btn: 28px;
-    --fin-logo-top: 44px; --fin-note-bas: 100px; --fin-note: 19px;
+    --fin-logo-top: 44px;
     --horloge-taille: 36px; --horloge-h: 58px;
     --notif-titre: 38px; --notif-corps: 35px; --notif-ico: 88px; --notif-heure: 24px; --rail-top: 336px;
   }
   html[data-format="portrait"] #st, html[data-format="carre"] #st { white-space: normal; text-wrap: balance; }
   html[data-format="carre"] .fin-equipe { margin-bottom: 26px; }
-  html[data-format="portrait"] .fin-ligne span { display: block; }
   html[data-format="carre"] .fin-btns { margin-top: 34px; }
-  html[data-pub] .fin-note, html[data-pub] .fin-ligne .fin-15h { display: none !important; }
+  #fin h1 em { font-style: normal; color: var(--color-fg-brand); }
   html[data-format="portrait"] #fin h1 br, html[data-format="carre"] #fin h1 br { display: none; }
   html[data-format="portrait"] #fin h1, html[data-format="carre"] #fin h1 { text-wrap: balance; max-width: 940px; }
   /* Rangée de l'agent : nom et métier sur une ligne, l'état dessous. */
@@ -244,7 +243,6 @@
   .fin-btns .g { background: var(--color-bg-raised); color: var(--color-fg); box-shadow: var(--shadow-md); }
   .fin-logo { position: absolute; left: 0; right: 0; top: var(--fin-logo-top); font-size: 40px; font-weight: 500; letter-spacing: -0.025em; color: var(--color-fg); }
   .fin-logo i { font-style: normal; color: var(--brand-500); }
-  .fin-note { position: absolute; left: 48px; right: 48px; bottom: var(--fin-note-bas); font-size: var(--fin-note); color: var(--color-fg-subtle); }
 
   /* Les mots du vocal, dits à gauche (le bot ne les réécrit pas dans Telegram). */
   #parole {
@@ -514,10 +512,9 @@
       <span class="ra"><span class="ra-stack"><img src="assets/agents/zoe.webp" alt=""></span></span>
       <span class="ra"><span class="ra-stack"><img src="assets/agents/raphael.webp" alt=""></span></span>
     </div>
-    <h1>Une équipe d'agents IA <br>qui travaille vraiment pour toi.</h1>
-    <p class="fin-ligne"><span class="fin-15h">Jusqu'à 15 h par semaine rendues. </span><span>Plus rien d'oublié.</span></p>
+    <h1>Une équipe d'agents IA <br>qui travaille <em>vraiment</em> pour toi.</h1>
+    <p class="fin-ligne">Plus rien d'oublié.</p>
     <div class="fin-btns"><span class="p">Essayer 7 jours</span><span class="g">Réserver une démo</span></div>
-    <p class="fin-note">Jusqu'à 15 h : le détail du calcul, tâche par tâche, est sur revaly.io</p>
   </div>
 
   <div id="accroche-voile"></div>
@@ -854,7 +851,6 @@ function construire() {
   vie("#fin h1", T[2], null, { dy: 26, dIn: 0.4 });
   vie(".fin-ligne", T[3], null, { dy: 16 });
   vie(".fin-btns", T[4], null, { dy: 16 });
-  if (!PUB) vie(".fin-note", 41.9, null, { dy: 8 });
 }
 
 // Barres de l'onde du vocal (hauteurs fixes : même image à chaque rendu).
