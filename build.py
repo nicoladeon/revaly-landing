@@ -184,6 +184,73 @@ def _cycle_moments():
         out.append(m)
     return out
 
+# ── Brouillon à porter dans build.py : les scènes du cycle (R42). Chaque moment montre son vrai livrable.
+#    data/visuels.json décrit la scène (type + données) ; les documents sont de vrais rendus des générateurs de
+#    l'appli (assets/accueil/docs/*.webp, voir docs/visuels-sources.md) ; la carte est un SVG des vraies rues
+#    (assets/accueil/carte-secteur.svg, OpenStreetMap/ODbL).
+_VISUELS = json.loads((ROOT / "data" / "visuels.json").read_text())
+_COCHE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'  # trait réglé en CSS (.sc svg)
+
+def _doc(nom, cls, alt):
+    return (f'<div class="sc-obj sc-a4 {cls}"><img src="/assets/accueil/docs/{nom}.webp" width="960" height="1358" '
+            f'alt="{html.escape(alt, quote=True)}" loading="lazy" decoding="async"></div>')
+
+def _appel(a):
+    tete = (f'<img class="av" src="{_visage(a["agent"])}" width="24" height="24" alt="" loading="lazy">' if a.get("agent")
+            else _COCHE if a.get("ok") else "")
+    note = f' <small>· {_esc(_typo(a["note"]))}</small>' if a.get("note") else ""
+    return f'<span class="sc-call {a["place"]}{" ok" if a.get("ok") else ""}">{tete}{_esc(_typo(a["texte"]))}{note}</span>'
+
+def _mail(m, cls=""):
+    pj = (f'<span class="sc-pj">{_ico("file-pen-line")}{_esc(m["piece"])}</span>' if m.get("piece")
+          else f'<span class="sc-avis">{_ico("star")}{_esc(m["avis"])}</span>' if m.get("avis") else "")
+    return (f'<div class="sc-obj sc-mail{cls}"><div class="sc-mail-t"><div><span>À</span><b>{_esc(m["a"])}</b></div>'
+            f'<div><span>Objet</span><b>{_esc(_typo(m["objet"]))}</b></div></div>'
+            f'<div class="sc-mail-c"><p>{_esc(_typo(m["texte"]))}</p>{pj}</div>'
+            f'<div class="sc-mail-pied"><span>{_esc(_typo(m["pied"]))}</span><b>À valider</b></div></div>')
+
+def scene_html(ident):
+    v = _VISUELS[ident]
+    t = v["type"]
+    if t == "carte":
+        pins = "".join(f'<span class="sc-pin" style="--k:{k};left:{p["x"]}%;top:{p["y"]}%"><b class="{p["classe"]}">{p["classe"]}</b>'
+                       f'{_esc(_typo(p["texte"]))} <small>· {_esc(p["note"])}</small></span>' for k, p in enumerate(v["pastilles"]))
+        corps = (f'<div class="sc-obj sc-carte" role="img" aria-label="La carte du secteur autour de l\'agence, avec les DPE reçus ce matin.">'
+                 f'<svg aria-hidden="true"><use href="/assets/accueil/carte-secteur.svg#carte"/></svg><span class="sc-moi"></span>{pins}'
+                 f'<span class="sc-osm">© OpenStreetMap</span></div>' + _appel(v["appel"]))
+    elif t == "agenda":
+        heures = "".join(f"<i>{h}</i><s></s>" for h in v["heures"])
+        corps = (_doc(v["document"], "sc-visite-bon", v["alt"]) +
+                 f'<div class="sc-obj sc-agenda"><div class="sc-agenda-t"><b>{_esc(v["jour"])}</b><span>{_esc(v["outil"])}</span></div>'
+                 f'<div class="sc-heures">{heures}<div class="sc-ev"><b>{_esc(_typo(v["evenement"]["titre"]))}</b>'
+                 f'<span>{_esc(_typo(v["evenement"]["detail"]))}</span></div></div></div>' + "".join(map(_appel, v["appels"])))
+    elif t == "documents":
+        corps = _doc(v["gauche"], "sc-doc-g", v["alt_gauche"]) + _doc(v["droite"], "sc-doc-d", v["alt_droite"]) + "".join(map(_appel, v["appels"]))
+    elif t == "dossier":
+        lis = "".join(f'<li>{_COCHE}{_esc(_typo(p))}</li>' for p in v["pieces"])
+        lis += "".join(f'<li class="att" style="--k:{k}">{_COCHE}{_esc(_typo(p["texte"]))}<em>{_esc(p["note"])}</em></li>'
+                       for k, p in enumerate(v["attendues"]))
+        corps = (f'<div class="sc-obj sc-dossier"><div class="sc-dossier-t"><div><b>{_esc(_typo(v["titre"]))}</b><span>{_esc(_typo(v["sous"]))}</span></div>'
+                 f'<div class="sc-ring" style="--p:{v["pct"]}"><span>{v["avant"]}</span><span>{v["apres"]}</span></div></div>'
+                 f'<ul class="sc-pieces">{lis}</ul></div>' + "".join(map(_appel, v["appels"])))
+    elif t == "frise":
+        lis = "".join(f'<li class="{e.get("etat", "")}"><i>{_COCHE if e.get("etat") == "fait" else ""}</i>'
+                      f'{"<b>" if e.get("etat") == "now" else "<em>"}{_esc(_typo(e["texte"]))}{"</b>" if e.get("etat") == "now" else "</em>"}'
+                      f'<span>{_esc(e["date"])}</span></li>' for e in v["etapes"])
+        corps = (f'<div class="sc-obj sc-frise"><div class="sc-frise-t"><b>{_esc(_typo(v["titre"]))}</b></div><ul class="sc-etapes">{lis}</ul></div>'
+                 + "".join(map(_appel, v["appels"])))
+    elif t == "mail":
+        corps = _doc(v["document"], "sc-acte-facture", v["alt"]) + _mail(v["mail"]) + "".join(map(_appel, v["appels"]))
+    elif t == "post":
+        corps = (f'<div class="sc-obj sc-post"><div class="sc-post-t"><i>{v["compte"][:1].upper()}{v["compte"][-4:-3].upper()}</i><div><b>{_esc(v["compte"])}</b>'
+                 f'<span> · {_esc(v["lieu"])}</span></div></div><div class="sc-post-ph"><img src="/assets/accueil/post-vendu.webp" width="800" height="320" '
+                 f'alt="La photo du post : la remise des clés aux nouveaux propriétaires." loading="lazy"><b>{_esc(v["badge"])}</b>'
+                 f'<span>{_esc(_typo(v["legende"]))}</span><u></u></div><p class="sc-post-c"><b>{_esc(v["compte"])}</b> {_esc(_typo(v["texte"]))}</p></div>'
+                 + _mail(v["mail"], " sc-apres-mail") + "".join(map(_appel, v["appels"])))
+    else:
+        raise SystemExit(f"visuels.json : type inconnu {t}")
+    return f'<div class="sc"><div class="sc-fond"></div><div class="sc-scene">{corps}</div></div>'
+
 def cycle_vente():
     noms = {a["slug"]: a["name"] for a in AGENTS}
     moments = _cycle_moments()
@@ -197,12 +264,14 @@ def cycle_vente():
                         f'<span>{_esc(_typo(p["texte"]))} <em>{_esc(noms[p["agent"]])}</em></span>{_ico("check", "cy-coche")}</li>'
                         for j, p in enumerate(m["prets"]))
         chute = f'<p class="cy-chute">{_esc(_typo(m["chute"]))}</p>' if m.get("chute") else ""
+        # R42 : le vrai livrable en grand (scene_html), la conversation plus courte et « ce qui est prêt » à côté
         panneaux.append(
             f'<div class="cy-panneau{" actif" if sel else ""}" id="cy-{m["id"]}" role="tabpanel" aria-labelledby="cy-o-{m["id"]}">'
+            f'{scene_html(m["id"])}<div class="cy-cote">'
             f'<div class="cy-conv"><p class="cy-q"><span class="cy-toi">Toi</span>{_esc(_typo(m["question"]))}</p>'
             f'<div class="cy-r"><img src="{_visage(m["agent"])}" width="40" height="40" alt="" loading="lazy">'
             f'<div><b>{_esc(noms[m["agent"]])}</b><p>{_mots(m["reponse"])}</p></div></div></div>'
-            f'<div class="cy-prets"><p class="cy-prets-t">Ce qui est prêt</p><ul>{prets}</ul>{chute}</div></div>')
+            f'<div class="cy-prets"><p class="cy-prets-t">Ce qui est prêt</p><ul>{prets}</ul>{chute}</div></div></div>')
     return {"CYCLE_ONGLETS": "".join(onglets), "CYCLE_FRISE": "".join(frise), "CYCLE_PANNEAUX": "".join(panneaux)}
 
 # ── Tu ne changes pas d'outil (révision du 13/10, à la manière des intégrations de Limova) : les tuiles des outils, Modelo

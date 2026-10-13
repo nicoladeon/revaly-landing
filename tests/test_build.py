@@ -553,7 +553,8 @@ must("--font-display: var(--font-sans)" in idx, "titres en Geist")
 must(not re.search(r"data:image/(?!svg)[\w+.-]+;base64,", idx), "aucune image base64 sur l'accueil")
 # Tâche 17 : les démos vivantes (pile, étapes, onglets) ajoutent du balisage ; le poids qui compte est celui transféré (gzip)
 import gzip
-must(len(idx.encode()) < 240_000 and len(gzip.compress(idx.encode())) < 52_000, f"accueil < 240 Ko de HTML, < 52 Ko compressé ({len(idx.encode())} o, {len(gzip.compress(idx.encode()))} o)")
+# R42 : les sept scènes du cycle (visuels dans la page) ajoutent ~20 Ko bruts, ~2 Ko compressés
+must(len(idx.encode()) < 262_000 and len(gzip.compress(idx.encode())) < 56_000, f"accueil < 262 Ko de HTML, < 56 Ko compressé ({len(idx.encode())} o, {len(gzip.compress(idx.encode()))} o)")
 # Métadonnées : H1 et sous-titre
 must("<title>Revaly — Une équipe d'agents IA qui travaille vraiment pour toi</title>" in idx, "title = H1")
 must('property="og:title" content="Une équipe d&#x27;agents IA qui travaille vraiment pour toi."' in idx
@@ -786,6 +787,23 @@ must('id="ot-voir" aria-expanded="false" aria-controls="ot-liste"' in _ot and "h
 # Page plus courte (retour du contrôleur, 13/10 : ≤ 9 000 px au bureau, ≤ 9 500 px sur téléphone, mesurés au navigateur)
 must(_pb.count(" data-bureau") == 2 and "--rang-m:" in _pb and ".notif[data-bureau] { display: none; }" in idx, "pile : quatre notifications sur téléphone, six au bureau")
 must("    .paire-fin { display: none; }" in idx and 'class="sticky-cta"' in idx, "téléphone : la barre collante remplace les paires de fin de bloc")
+# R42 (13/10) : chaque moment montre en grand son vrai livrable (data/visuels.json ; rendus des générateurs de l'appli)
+_visuels = json.loads((ROOT / "data" / "visuels.json").read_text())
+must(set(_visuels) == {m["id"] for m in _moments} and [_visuels[m["id"]]["type"] for m in _moments] == ["carte", "agenda", "documents", "dossier", "frise", "mail", "post"],
+     "un visuel par moment : carte, agenda, documents, dossier, frise, mail, post")
+for m in _moments:
+    _pn = _cy.split(f'id="cy-{m["id"]}"', 1)[1].split('class="cy-panneau', 1)[0]
+    must(_pn.count('<div class="sc">') == 1 and _pn.find('<div class="sc">') < _pn.find('class="cy-cote"') and 'class="sc-scene"' in _pn, f"moment {m['id']} : la scène avant la conversation")
+    must(len(m["reponse"]) <= 150, f"moment {m['id']} : réponse courte ({len(m['reponse'])} car.)")
+for _d in ["bon-de-visite", "facture", "bilan", "avis-couverture"]:
+    must((dist / "assets" / "accueil" / "docs" / f"{_d}.webp").is_file() and (dist / "assets" / "accueil" / "docs" / f"{_d}@520.webp").is_file() and f"/assets/accueil/docs/{_d}.webp" in _cy, f"document {_d} : vrai rendu publié et affiché")
+must((dist / "assets" / "accueil" / "carte-secteur.svg").is_file() and 'href="/assets/accueil/carte-secteur.svg#carte"' in _cy and "© OpenStreetMap" in _cy, "carte du secteur : vraies rues, attribution OpenStreetMap")
+must('class="sc-pin"' in _cy and 'class="sc-ev"' in _cy and 'class="sc-ring"' in _cy and 'class="sc-etapes"' in _cy and 'class="sc-pj"' in _cy and 'class="sc-post-ph"' in _cy and 'class="sc-avis"' in _cy,
+     "pastilles DPE, événement d'agenda, dossier 5/7, frise des échéances, pièce jointe, post Vendu, avis Google")
+must(not re.search(r"\d{3} ?\d{3} ?€", html.unescape(_cy.split('id="cy-apres"', 1)[1].split('class="cy-cote"', 1)[0])), "post « Vendu » : jamais de prix")
+must(".cy-prets li:nth-child(n+4) { display: none; }" in idx and "    .cy-prets li:nth-child(n+3) { display: none; }" in idx, "« ce qui est prêt » : trois lignes au bureau, deux sur téléphone")
+must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in idx and re.search(r"\.cy-prets li \{[^}]*font-size: 15px", idx), "mobile : onglets aimantés, texte des cartes ≥ 15 px")
+must((ROOT / "docs" / "visuels" / "documents.ts").is_file() and (ROOT / "docs" / "visuels" / "carte.py").is_file() and (ROOT / "docs" / "visuels" / "README.md").is_file(), "générateurs et sources des visuels notés dans docs/visuels/")
 print("OK la vente moment par moment, les outils")
 
 # ── Interrupteurs : éteints, rien de Hugo ni de la fiche Google ; allumés (construction à part), Hugo à la place de Raphaël ──
