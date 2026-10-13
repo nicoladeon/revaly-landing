@@ -152,8 +152,8 @@
     .hp-lede { margin-left: 0; font-size: 18px; max-width: 34em; }
     .hp-cta { justify-content: flex-start; }
     .hp-film { grid-area: film; margin-top: 0; }
-    .hp-grille > .preuve { grid-area: preuve; margin-top: clamp(32px, 3.4vw, 44px); }
-    .flux-zone { grid-area: flux; width: 100%; margin-top: clamp(28px, 3vw, 40px); }
+    .hp-grille > .preuve { grid-area: preuve; margin-top: clamp(28px, 2.8vw, 36px); }
+    .flux-zone { grid-area: flux; width: 100%; margin-top: clamp(22px, 2.4vw, 30px); }
     .flux { --h: 150px; height: calc(var(--h) + 32px); margin: -16px -16px 0; padding: 16px; overflow: hidden; }
     .carte { top: 16px; left: 16px; right: auto; width: calc((100% - 32px - 2 * var(--g)) / 3); transform: translateX(calc(var(--slot) * (100% + var(--g)))); }
     .carte-objet { -webkit-line-clamp: 1; }
@@ -177,10 +177,10 @@
   .film-close:hover { background: rgba(18, 21, 28, .9); }
   .film-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   /* ── 2. La preuve : le fondateur et le chiffre qualité, côte à côte ── */
-  .confiance-preuve { display: grid; gap: 16px; margin-top: clamp(36px, 4vw, 48px); align-items: stretch; text-align: left; }
+  .confiance-preuve { display: grid; gap: 16px; margin-top: 20px; align-items: stretch; text-align: left; }
   @media (min-width: 900px) { .confiance-preuve { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 20px; } }
   .confiance-preuve .fondateur { margin: 0; max-width: none; height: 100%; }
-  .pf-chiffre { display: flex; flex-direction: column; justify-content: center; padding: 24px 26px; border-radius: 22px; background: var(--carte); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
+  .pf-chiffre { display: flex; flex-direction: column; justify-content: center; padding: 20px 24px; border-radius: 22px; background: var(--carte); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
   .pf-nombre { margin: 0; font-size: clamp(56px, 7vw, 84px); font-weight: 560; line-height: 1; letter-spacing: -0.05em; color: var(--iris-ink); font-variant-numeric: tabular-nums; }
   .pf-legende { margin: 10px 0 0; font-size: 17px; font-weight: 500; line-height: 1.4; color: var(--ink); }
   .pf-legende em { display: block; margin-top: 2px; font-style: normal; font-size: 13.5px; font-weight: 400; color: var(--muted); }
@@ -205,7 +205,7 @@
        Sans script ou en mouvement réduit : la pile complète, immobile (état final). ── */
   .pb { display: grid; gap: 40px; align-items: center; }
   @media (min-width: 960px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: clamp(48px, 6vw, 88px); } }
-  .pile { --h: 68px; --g: 10px; padding: 16px; border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); }
+  .pile { --h: 62px; --g: 8px; padding: 14px; border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); }
   .pile-zone::before { inset: -20% -16%; }
   .pile-tete { display: flex; align-items: center; gap: 8px; padding: 2px 4px 0; font-size: 14px; font-weight: 600; color: var(--ink); }
   .pile-tete svg { width: 17px; height: 17px; color: var(--muted); }
@@ -245,7 +245,7 @@
   }
   .installation-txt { flex: 1 1 280px; min-width: 0; display: flex; align-items: flex-start; gap: 10px; }
   .installation svg { width: 20px; height: 20px; flex: none; margin-top: 1px; color: var(--iris-ink); }
-  .installation-prix { max-width: 760px; margin: 28px auto 0; justify-content: center; }
+  .installation-prix { max-width: 760px; margin: 20px auto 0; padding: 12px 18px; justify-content: center; }
   .installation-prix .installation-txt { flex: 0 1 auto; }
 
   /* ── Offre fondateurs dans la carte Solo (absente tant que l'offre est éteinte) ── */
@@ -266,7 +266,7 @@
   .etape:last-child { border-bottom-color: transparent; }
   .etape h3 { margin: 0; }
   .etape button {
-    width: 100%; min-height: 64px; display: flex; align-items: center; gap: 14px; padding: 18px 0;
+    width: 100%; min-height: 56px; display: flex; align-items: center; gap: 14px; padding: 14px 0;
     background: none; border: 0; border-radius: 0; cursor: pointer; font: inherit; text-align: left; color: var(--muted);
   }
   .etape-n {
@@ -279,7 +279,7 @@
   .etape-corps { padding-left: 46px; }
   .etape-corps p { margin: 0 0 10px; max-width: 46ch; font-size: 16px; line-height: 1.55; color: var(--muted); transition: color .4s var(--ap); }
   .etape[data-ouvert="true"] .etape-corps p:not(.etape-offert) { color: var(--ink); }
-  .etape-corps > :last-child { margin-bottom: 22px; }
+  .etape-corps > :last-child { margin-bottom: 16px; }
   .etape button { padding-bottom: 10px; }
   .etape-offert { display: inline-flex !important; align-items: center; gap: 8px; padding: 7px 13px; border-radius: 999px; background: var(--iris-soft); font-size: 14.5px !important; font-weight: 500; color: var(--ink) !important; }
   .etape-offert svg { width: 17px; height: 17px; flex: none; color: var(--iris-ink); }
@@ -290,7 +290,7 @@
   @keyframes barre { to { transform: scaleX(1); } }
 
   .demo-zone::before { inset: -14% -10%; }
-  .demo { display: grid; padding: 22px; border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
+  .demo { display: grid; padding: 18px; border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
   .demo-vue {
     grid-area: 1 / 1; display: flex; flex-direction: column; justify-content: center; min-width: 0;
     opacity: 0; visibility: hidden; transform: translateY(10px) scale(.985); filter: blur(4px);
@@ -304,8 +304,8 @@
   .dv-note, .dv-heure { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .dv-pill { flex: none; padding: 3px 10px; border-radius: 999px; background: var(--iris-soft); color: var(--iris-ink); font-size: 12px; font-weight: 600; }
   /* vue 1 : les outils qui se branchent, un par un */
-  .branche { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .br { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 46px; padding: 0 14px 0 12px; border-radius: 12px; background: var(--bg); border: 0.5px solid var(--line); }
+  .branche { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .br { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 36px; padding: 0 14px 0 12px; border-radius: 12px; background: var(--bg); border: 0.5px solid var(--line); }
   .br-logo { display: grid; place-items: center; }
   .br-logo img { display: block; width: auto; max-width: 24px; height: 22px; object-fit: contain; filter: grayscale(1); opacity: .75; }
   .br-nom { min-width: 0; font-size: 14.5px; font-weight: 500; color: var(--ink); }
@@ -381,27 +381,27 @@
   .cy-onglet:hover { color: var(--ink); border-color: var(--line-strong); }
   .cy-onglet[aria-selected="true"] { background: var(--iris-deep); border-color: var(--iris-deep); color: #fff; }
   .cy-onglet:focus-visible { border-radius: 999px; }
-  .cy-frise { --n: 7; list-style: none; margin: 18px auto 0; padding: 0; max-width: 720px; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px; }
+  .cy-frise { --n: 7; list-style: none; margin: 14px auto 0; padding: 0; max-width: 720px; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px; }
   .cy-frise li { position: relative; height: 4px; border-radius: 4px; overflow: hidden; background: var(--line-strong); }
   .cy-frise li i { position: absolute; inset: 0; border-radius: 4px; background: var(--iris); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ap); }
   .cy-frise li.passe i, .cy-bloc:not(.auto) .cy-frise li.actif i, html:not(.js) .cy-frise li i { transform: none; }
   .cy-bloc.auto.en-vue .cy-frise li.actif i { transition: none; animation: barre 7s linear forwards; }
   .cy-bloc:hover .cy-frise li i, .cy-bloc:focus-within .cy-frise li i, .rv-pause .cy-frise li i { animation-play-state: paused !important; }
-  .cy-zone { margin-top: 26px; }
+  .cy-zone { margin-top: 20px; }
   .cy-zone::before { inset: -12% -8%; }
   .cy-panneaux { display: grid; }
   .cy-panneau {
-    grid-area: 1 / 1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 22px; padding: 22px; border-radius: 28px;
+    grid-area: 1 / 1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; padding: 18px; border-radius: 28px;
     background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left;
     opacity: 0; visibility: hidden; transform: translateY(10px); filter: blur(4px);
     transition: opacity .45s var(--ap), transform .45s var(--ap), filter .45s var(--ap), visibility 0s .45s;
   }
   .cy-panneau.actif { opacity: 1; visibility: visible; transform: none; filter: none; transition-delay: 0s; }
-  .cy-conv { display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 22px; border-radius: 20px; background: var(--bg); }
+  .cy-conv { display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 18px; border-radius: 20px; background: var(--bg); }
   .cy-prets { display: flex; flex-direction: column; justify-content: center; padding: 6px 4px; }
   .cy-prets-t { margin: 0 0 12px; font: 500 12.5px/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
   .cy-prets ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .cy-prets li { display: grid; grid-template-columns: 24px minmax(0, 1fr) 18px; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--bg); font-size: 14.5px; line-height: 1.4; color: var(--ink); }
+  .cy-prets li { display: grid; grid-template-columns: 24px minmax(0, 1fr) 18px; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 14px; background: var(--bg); font-size: 14.5px; line-height: 1.4; color: var(--ink); }
   .cy-prets li img { width: 24px; height: 24px; border-radius: 50%; background: #F1F2F7; }
   .cy-prets em { display: block; margin-top: 1px; font-style: normal; font-size: 12.5px; color: var(--muted); }
   .cy-coche { width: 18px; height: 18px; color: var(--iris-ink); }
@@ -441,23 +441,29 @@
   .ot { display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 18px 0 14px; border-radius: 16px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); font-size: 15px; font-weight: 500; color: var(--ink); }
   .ot img { display: block; width: auto; height: 26px; }
   .ot-modelo { padding: 0 20px; border-color: color-mix(in srgb, var(--iris) 55%, transparent); box-shadow: 0 0 0 3px var(--iris-soft), var(--shadow-sm); }
-  .ot-modelo-bloc { max-width: 880px; margin: 28px auto 0; padding: 26px 28px; border-radius: 24px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
+  .ot-modelo-bloc { max-width: 880px; margin: 22px auto 0; padding: 22px 26px 16px; border-radius: 24px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
   .ot-modelo-t { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 16px; font-size: 16.5px; font-weight: 600; color: var(--ink); }
   .ot-modelo-t img { display: block; }
-  .ot-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 32px; }
+  .ot-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
+  html.js .ot-liste:not(.ouvert) li:nth-child(n+5) { display: none; }
+  .ot-pied { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 20px; margin-top: 10px; padding-top: 6px; border-top: 0.5px solid var(--line); }
+  .ot-pied .calc-plus[aria-expanded="true"] svg { transform: rotate(180deg); }
+  html:not(.js) .ot-pied .calc-plus { display: none; }
   .ot-liste li { display: flex; align-items: flex-start; gap: 10px; font-size: 14.5px; line-height: 1.45; color: var(--muted); }
   .ot-liste svg { width: 16px; height: 16px; flex: none; margin-top: 2.5px; color: var(--iris-ink); }
-  .ot-note { margin: 18px 0 0; padding-top: 16px; border-top: 0.5px solid var(--line); font-size: 14.5px; font-weight: 500; color: var(--ink); }
+  .ot-note { margin: 0; font-size: 14px; font-weight: 500; color: var(--ink); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ot img, :root:not([data-theme="light"]) .ot-modelo-t img { filter: grayscale(1) invert(1); } }
   :root[data-theme="dark"] .ot img, :root[data-theme="dark"] .ot-modelo-t img { filter: grayscale(1) invert(1); }
   @media (max-width: 640px) {
-    .ot-tuiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-    .ot { flex-direction: column; justify-content: center; gap: 6px; height: 72px; padding: 6px 4px; border-radius: 14px; font-size: 12.5px; text-align: center; line-height: 1.2; }
+    .ot-tuiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+    .ot { flex-direction: column; justify-content: center; gap: 5px; height: 62px; padding: 6px 2px; border-radius: 14px; font-size: 11.5px; text-align: center; line-height: 1.15; }
+    .ot img { height: 20px !important; }
     .ot-modelo { padding: 6px 4px; }
     .ot img { height: 22px; }
     .ot-liste li { font-size: 14px; }
     .ot-modelo-bloc { padding: 20px 18px; }
     .ot-liste { grid-template-columns: minmax(0, 1fr); }
+    html.js .ot-liste:not(.ouvert) li:nth-child(n+4) { display: none; }
   }
 
   /* ── 5. L'équipe : six onglets et un carrousel. La carte du centre montre ce que l'agent vient de préparer, puis qui il
@@ -482,7 +488,7 @@
   .eq-bloc.auto.en-vue .eq-onglet[aria-selected="true"] .eq-o-barre i { animation: barre 6s linear forwards; }
   .eq-bloc:hover .eq-o-barre i, .eq-bloc:focus-within .eq-o-barre i, .rv-pause .eq-o-barre i { animation-play-state: paused !important; }
 
-  .eq-scene { --eq-w: min(760px, calc(100vw - 120px)); --eq-g: 20px; width: 100vw; margin-left: calc(50% - 50vw); margin-top: 4px; padding: 24px 0 44px; overflow: hidden; touch-action: pan-y; }
+  .eq-scene { --eq-w: min(760px, calc(100vw - 120px)); --eq-g: 20px; width: 100vw; margin-left: calc(50% - 50vw); margin-top: 0; padding: 20px 0 40px; overflow: hidden; touch-action: pan-y; }
   /* la scène coupe ce qui dépasse : sa marge intérieure laisse toute la place à l'ombre des cartes */
   .eq-bloc + .paire-fin { margin-top: 16px; }
   @media (max-width: 860px) { .eq-bloc + .paire-fin { margin-top: 32px; } }
@@ -665,7 +671,7 @@
   .fondateur-photo { object-fit: cover; }
   .fondateur-mono { display: inline-flex; align-items: center; justify-content: center; background: var(--iris-soft); color: var(--iris-ink); font-size: 32px; font-weight: 500; box-shadow: inset 0 0 0 1px var(--line); }
   .fondateur h3 { margin: 0; font-size: clamp(18px, 2.4vw, 21px); font-weight: 550; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); text-wrap: balance; }
-  .fondateur blockquote { margin: 12px 0 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
+  .fondateur blockquote { margin: 10px 0 0; font-size: 15.5px; line-height: 1.55; color: var(--ink); }
   .fondateur blockquote p { margin: 0; }
   .fondateur-sig { margin: 12px 0 0; font-size: 14.5px; color: var(--muted); }
   .fondateur-sig b { color: var(--ink); font-weight: 600; }
@@ -673,7 +679,7 @@
 
   /* ── 11. Prix : 3 offres, bascule Mensuel/Annuel sans saut de mise en page ── */
   .bill-toggle {
-    display: flex; width: fit-content; margin: 32px auto 0; padding: 4px; gap: 4px;
+    display: flex; width: fit-content; margin: 18px auto 0; padding: 4px; gap: 4px;
     border-radius: 999px; background: var(--carte); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm);
   }
   html:not(.js) .bill-toggle { display: none; } /* sans JS : Mensuel statique, pas de contrôle mort */
@@ -689,10 +695,10 @@
   .bt-opt:has(input:focus-visible) { outline: 2px solid var(--iris); outline-offset: 3px; }
   .bt-badge { padding: 3px 9px; border-radius: 999px; white-space: nowrap; font-size: 11px; font-weight: 650; background: var(--iris-soft); color: var(--iris-ink); }
   .bt-opt:has(input:checked) .bt-badge { background: rgba(255,255,255,.16); color: #fff; }
-  .plans { display: grid; gap: 16px; margin-top: 36px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
+  .plans { display: grid; gap: 16px; margin-top: 22px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
   .plan {
     position: relative; display: flex; flex-direction: column; text-align: left;
-    background: var(--carte); border-radius: 22px; padding: 28px 26px;
+    background: var(--carte); border-radius: 22px; padding: 24px 24px 22px;
     border: 0.5px solid var(--line); box-shadow: var(--shadow-sm);
   }
   .plan.featured { background: var(--raised); border: 1.5px solid var(--iris); box-shadow: var(--shadow-md); }
@@ -704,10 +710,10 @@
   }
   .plan h3 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
   .plan .for { margin: 4px 0 0; font-size: 13.5px; color: var(--muted); }
-  .plan .amount { font-weight: 500; letter-spacing: -0.035em; font-size: 42px; line-height: 1; margin: 20px 0 0; font-variant-numeric: tabular-nums; }
+  .plan .amount { font-weight: 500; letter-spacing: -0.035em; font-size: 40px; line-height: 1; margin: 16px 0 0; font-variant-numeric: tabular-nums; }
   .plan .amount .unit { font-size: 14px; letter-spacing: 0; color: var(--muted); }
   .plan .bill-note { margin: 8px 0 0; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .checklist { list-style: none; padding: 0; margin: 20px 0 24px; display: grid; gap: 10px; flex: 1; }
+  .checklist { list-style: none; padding: 0; margin: 16px 0 20px; display: grid; gap: 8px; flex: 1; }
   .checklist li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); }
   .checklist svg { width: 17px; height: 17px; color: var(--iris-ink); flex: none; margin-top: 2px; }
   .plan .btn { width: 100%; justify-content: center; }
@@ -723,8 +729,8 @@
   #tarif[data-billing="monthly"] .swap > .sw-m,
   #tarif[data-billing="yearly"] .swap > .sw-y { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; }
   @media (prefers-reduced-motion: reduce) { .swap > span, .bt-opt { transition: none; } }
-  .ht-note { text-align: center; margin: 18px 0 0; font-size: 13px; color: var(--muted); }
-  .garanties { list-style: none; margin: 24px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; }
+  .ht-note { text-align: center; margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+  .garanties { list-style: none; margin: 16px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; }
   .garanties li { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
   .garanties svg { width: 15px; height: 15px; color: var(--iris-ink); flex: none; }
 
@@ -751,6 +757,31 @@
     #tarif .garanties { display: none; }
   }
   @media (max-width: 760px) { .sticky-cta { display: flex; } }
+
+  /* ── Téléphone (≤ 760 px) : la barre collante porte toujours « Essayer 7 jours » et « Démo » ; les paires de fin de bloc
+       s'effacent, la pile, les moments et l'équipe se resserrent (page visée ≤ 9 500 px) ── */
+  @media (max-width: 760px) {
+    .paire-fin { display: none; }
+    .pile { --n: 4 !important; }
+    .notif[data-bureau] { display: none; }
+    .notif { transform: translateY(calc(var(--rang-m) * (var(--h) + var(--g)))); }
+    html.js .pile.anime .notif:not(.arrive) { transform: translateY(calc(var(--rang-m) * (var(--h) + var(--g)) - 22px)) scale(.97); }
+    .cy-prets li:nth-child(n+4) { display: none; }
+    .cy-quotidien { display: none; }
+    .eq-fleches { display: none !important; }
+    .hp-film { width: min(100%, 270px); }
+    .flux-zone { display: none; }
+    .faq-encore-s { display: none; }
+    html.js .ot-liste:not(.ouvert) li:nth-child(n+3) { display: none; }
+    #comment .etape-corps p + p:not(.etape-offert) { display: none; }
+    .confiance-preuve { gap: 12px; margin-top: 16px; }
+    .fondateur blockquote { font-size: 14.5px; }
+    .calc-carte .calc-detail:not(.ouvert) li:nth-child(n+3) { display: none; }
+  }
+  @media (max-width: 520px) {
+    .eq-taches { display: none; }
+    .eq-lien { padding-top: 10px; }
+  }
 </style>
 
 <!-- ═══════════════ NAV ═══════════════ -->
@@ -870,10 +901,10 @@
       <div data-ap>{{OUTILS_TUILES}}</div>
       <div class="ot-modelo-bloc" data-ap>
         <p class="ot-modelo-t"><img src="/assets/logos/modelo.svg" width="86" height="22" alt="Modelo" loading="lazy"><span>Ce que ton équipe fait dans Modelo</span></p>
-        <ul class="ot-liste">{{DANS_MODELO}}</ul>
-        <p class="ot-note">Toute écriture dans Modelo passe par une carte à valider. Rien à migrer.</p>
+        <ul class="ot-liste" id="ot-liste">{{DANS_MODELO}}</ul>
+        <div class="ot-pied"><button type="button" class="calc-plus" id="ot-voir" aria-expanded="false" aria-controls="ot-liste"><span>Voir tout ce que l'équipe fait dans Modelo</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <p class="ot-note">Toute écriture dans Modelo passe par une carte à valider. Rien à migrer.</p></div>
       </div>
-      {{PAIRE_CTA}}
     </div>
   </section>
 
@@ -981,7 +1012,6 @@
   <section class="hp-s" id="tarif" data-billing="monthly" aria-labelledby="t-tarif">
     <div class="wrap">
       {{TETE_TARIF}}
-      <p class="installation installation-prix" data-ap><span class="installation-txt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation faite avec toi, offerte.</span></span></p>
       <div class="bill-toggle" role="radiogroup" aria-label="Rythme de facturation">
         <label class="bt-opt">
           <input type="radio" name="billing" value="monthly" checked />
@@ -1054,6 +1084,7 @@
       </div>
       <p class="ht-note">Tous les prix sont indiqués hors taxes (HT), TVA en sus. Annuel : −10 % sur 12 mois.</p>
       <ul class="garanties">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Installation faite avec toi, offerte.</li>
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Essai 7 jours avec carte, 0 € aujourd'hui</li>
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Annulable en 2 clics</li>
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Sans engagement</li>
@@ -1122,7 +1153,6 @@
           </div>
         </div>
       </div>
-      {{PAIRE_CTA}}
     </div>
   </section>
 
@@ -1318,9 +1348,12 @@
   (() => {
     const pile = document.getElementById('pile');
     if (!pile || REDUCED || !('IntersectionObserver' in window)) return;
-    const items = Array.from(pile.querySelectorAll('.notif')), n = items.length, compte = document.getElementById('pile-n');
-    const depart = Math.min(3, n);
-    let arrives = depart, enVue = false, minuteur = null;
+    const tous = Array.from(pile.querySelectorAll('.notif')), compte = document.getElementById('pile-n');
+    let items = tous, n = items.length;
+    let depart = Math.min(3, n), arrives = depart, enVue = false, minuteur = null;
+    const visibles = () => { items = tous.filter((li) => getComputedStyle(li).display !== 'none'); n = items.length; depart = Math.min(3, n); arrives = Math.min(arrives, n); };
+    visibles();
+    matchMedia('(max-width: 760px)').addEventListener('change', () => { visibles(); pose(); });
     const pose = () => {
       items.forEach((li, i) => li.classList.toggle('arrive', i >= n - arrives));
       compte.textContent = String(arrives);
@@ -1512,6 +1545,23 @@
       bloc.classList.toggle('en-vue', enVue);
       if (enVue && !panneaux[actif].classList.contains('joue')) panneaux[actif].classList.add('joue');
     }, { threshold: 0.4 }).observe(zone);
+  })();
+
+  // ── FAQ : sur téléphone, toutes les questions commencent fermées (la page reste courte) ──
+  if (matchMedia('(max-width: 760px)').matches) document.querySelectorAll('#faq-list .faq-item[data-open="true"]').forEach((it) => {
+    it.dataset.open = 'false'; it.querySelector('button').setAttribute('aria-expanded', 'false');
+  });
+
+  // ── « Tu ne changes pas d'outil » : la liste de ce que l'équipe fait dans Modelo se déplie (quatre points d'abord) ──
+  (() => {
+    const b = document.getElementById('ot-voir'), l = document.getElementById('ot-liste');
+    if (!b || !l) return;
+    b.addEventListener('click', () => {
+      const ouvert = b.getAttribute('aria-expanded') !== 'true';
+      b.setAttribute('aria-expanded', String(ouvert));
+      l.classList.toggle('ouvert', ouvert);
+      b.firstElementChild.textContent = ouvert ? 'Masquer' : "Voir tout ce que l'équipe fait dans Modelo";
+    });
   })();
 
   // ── L'équipe : onglets (flèches gauche/droite, Début, Fin) et carrousel. Rotation toutes les 6 s menée par la barre de

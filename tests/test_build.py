@@ -771,6 +771,10 @@ must(all(html.escape(x, quote=False).replace(" :", "\u00a0:") in _ot for x in _b
      "ce que l'équipe fait dans Modelo, toute écriture validée")
 for f in ["googledrive.svg", "facebook.svg", "instagram.svg", "linkedin.svg"]:
     must((dist / "assets" / "logos" / f).is_file() and f in lic, f"logo {f} publié, licence notée")
+must('id="ot-voir" aria-expanded="false" aria-controls="ot-liste"' in _ot and "html.js .ot-liste:not(.ouvert) li:nth-child(n+5) { display: none; }" in idx, "liste Modelo : quatre points, le reste dépliable")
+# Page plus courte (retour du contrôleur, 13/10 : ≤ 9 000 px au bureau, ≤ 9 500 px sur téléphone, mesurés au navigateur)
+must(_pb.count(" data-bureau") == 2 and "--rang-m:" in _pb and ".notif[data-bureau] { display: none; }" in idx, "pile : quatre notifications sur téléphone, six au bureau")
+must("    .paire-fin { display: none; }" in idx and 'class="sticky-cta"' in idx, "téléphone : la barre collante remplace les paires de fin de bloc")
 print("OK la vente moment par moment, les outils")
 
 # ── Interrupteurs : éteints, rien de Hugo ni de la fiche Google ; allumés (construction à part), Hugo à la place de Raphaël ──

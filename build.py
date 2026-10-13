@@ -357,10 +357,17 @@ def _ico(nom, cls=""):
 def pile_probleme(items):
     """Le problème, en vrai : la pile de ce qui attend. Dans la page, la liste est dans l'ordre de lecture (le vendeur
     sans nouvelles en haut) ; le script la fait arriver par le bas, une notification après l'autre, compteur compris."""
+    # sur téléphone, la pile garde quatre notifications (« bureau » : réservées aux grands écrans) ; --rang-m = leur place
+    rang_m, lis = 0, []
+    for i, it in enumerate(items):
+        if it.get("bureau"):
+            lis.append((i, None))
+        else:
+            lis.append((i, rang_m)); rang_m += 1
     lis = "".join(
-        f'<li class="notif" style="--rang:{i}"><span class="notif-ico">{_ico(it["icone"])}</span>'
-        f'<span class="notif-txt">{_esc(_typo(it["texte"]))}</span><span class="notif-quand">{_esc(it["quand"])}</span></li>'
-        for i, it in enumerate(items))
+        f'<li class="notif" style="--rang:{i};--rang-m:{0 if m is None else m}"{" data-bureau" if m is None else ""}><span class="notif-ico">{_ico(items[i]["icone"])}</span>'
+        f'<span class="notif-txt">{_esc(_typo(items[i]["texte"]))}</span><span class="notif-quand">{_esc(items[i]["quand"])}</span></li>'
+        for i, m in lis)
     return (f'<div class="pile-zone halo" data-ap><div class="pile" id="pile" style="--n:{len(items)}">'
             f'<div class="pile-tete">{_ico("bell")}<span>À faire aujourd\'hui</span>'
             f'<span class="pile-compte" aria-hidden="true"><b id="pile-n">{len(items)}</b> en attente</span></div>'
