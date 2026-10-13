@@ -1,5 +1,5 @@
 # tests/test_build.py — exécuter avec: python3 tests/test_build.py
-import html, json, pathlib, re, subprocess, sys
+import html, json, pathlib, re, shutil, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 subprocess.run([sys.executable, str(ROOT / "build.py")], check=True)
 dist = ROOT / "dist"
@@ -15,9 +15,12 @@ must("<urlset" in (dist / "sitemap.xml").read_text(), "sitemap.xml")
 # ── data/agents.json (Task 2) : source unique des 6 agents, vérifiée contre l'annexe A ──
 agents_path = ROOT / "data" / "agents.json"
 must(agents_path.exists(), "data/agents.json existe")
-agents = json.loads(agents_path.read_text())
-must([a["slug"] for a in agents] == ["max", "emma", "christine", "zoe", "raphael", "lucas"],
+must([a["slug"] for a in json.loads(agents_path.read_text())] == ["max", "emma", "christine", "zoe", "raphael", "lucas"],
      "agents.json : ordre des 6 slugs")
+sys.path.insert(0, str(ROOT))
+import build as _build  # l'équipe livrée (EQUIPE_V2 allumé le 13/10 : Hugo à la place de Raphaël, Zoé « réseaux et visuels »)
+agents = _build.AGENTS
+must([a["slug"] for a in agents] == ["max", "emma", "christine", "zoe", "hugo", "lucas"], "équipe livrée : Hugo à la place de Raphaël")
 for a in agents:
     must(bool(re.search(r"\d", a["reponse"])), f"{a['slug']} : reponse contient un chiffre/heure")
     must(bool(a.get("role")), f"{a['slug']} : role non vide")
@@ -30,10 +33,10 @@ for a in agents:
         must(bool(e.get("source")), f"{a['slug']} : entrée fiche '{e.get('titre')}' a un champ source")
         must(bool(e.get("titre")) and bool(e.get("pitch")), f"{a['slug']} : entrée fiche complète (titre+pitch)")
 
-# ── Section #equipe : carrousel façon Limova (6 slides + onglets) + pages agents ──
-must('class="crsl-tabs' in idx and 'crsl-arrow next' in idx, "carrousel équipe présent (onglets + flèches)")
+# ── Section #equipe : six cartes (plus de carrousel) + pages agents ──
+must('id="crsl"' not in idx and "crsl-tabs" not in idx, "ancien carrousel #crsl retiré")
 for a in agents:
-    must(f'id="agent-{a["slug"]}"' in idx, f"slide #{a['slug']} générée dans index.html")
+    must(f'id="agent-{a["slug"]}"' in idx, f"carte #{a['slug']} générée dans index.html")
     must(f'href="/agents/{a["slug"]}/"' in idx, f"lien fiche /agents/{a['slug']}/ depuis la home")
 must((dist / "agents" / "index.html").exists(), "/agents/ (index équipe) généré")
 for a in agents:
@@ -42,37 +45,33 @@ for a in agents:
     page = ap.read_text()
     must(html.escape(a["name"], quote=False) in page, f"{a['slug']} : nom présent sur sa page")
     must(f'https://revaly.io/agents/{a["slug"]}/' in page, f"{a['slug']} : canonical propre")
-    entries = a.get("fiche", {}).get("automatisations", []) + a.get("fiche", {}).get("outils", [])
-    shown = sum(1 for e in entries if html.escape(e["pitch"], quote=False) in page)
-    must(shown >= 4, f"{a['slug']} : au moins 4 pitchs sur sa page (trouvés: {shown})")
-    must(f'Discuter avec {a["name"]}' in idx, f"{a['slug']} : nom + bouton « Discuter avec » présents")
-    must(html.escape(a["question"], quote=False) in idx, f"{a['slug']} : question verbatim")
-    fiche = a.get("fiche", {})
-    entries = fiche.get("automatisations", []) + fiche.get("outils", [])
-    pass  # fiches désormais sur /agents/{slug}/ — vérifiées ci-dessus
-must("<strong>" in idx, "réponses : chiffres en <strong>")
+    # Révision du 13/10 : la page agent sur le modèle de Limova (data/fiches.json), à notre charte, sans note ni témoignage
+    _fi = _build._fiche(a["slug"])  # la fiche livrée (relève comprise)
+    _pg = html.unescape(re.sub(r"<[^>]+>", "", page)).replace("\u00a0", " ")
+    must(f"Découvrez {a['name']}" in _pg and page.count("<h1") == 1 and 'class="hp-pill"' in page, f"{a['slug']} : héros « Découvrez {a['name']} », pastille métier")
+    must(f'/assets/equipe/portraits/{a["slug"]}@512.webp' in page and (dist / "assets" / "equipe" / "portraits" / f"{a['slug']}@512.webp").is_file(), f"{a['slug']} : grand portrait equipe-v6")
+    must(len(_fi["capacites"]) == 4 and all(c in _pg for c in _fi["capacites"]) and page.count('class="paire') >= 3, f"{a['slug']} : quatre capacités, la paire de boutons")
+    must(len(_fi["scenarios"]) == 3 and all(x["question"] in _pg and x["reponse"] in _pg for x in _fi["scenarios"]) and page.count('<article class="sc">') == 3,
+         f"{a['slug']} : trois scénarios en conversation")
+    must(len(_fi["moments"]) == 3 and all(m["titre"] in _pg and all(x["titre"] in _pg and x["texte"] in _pg for x in m["items"]) for m in _fi["moments"]),
+         f"{a['slug']} : les capacités en trois colonnes, par moment du travail")
+    must(_fi["promesse"]["titre"] in _pg and 'id="faq"' in page and 'id="demo"' in page and "Ton équipe peut commencer ce soir." in _pg, f"{a['slug']} : promesse, FAQ et fin comme l'accueil")
+    must(not re.search(r"trustpilot|★|témoignage|note de \d", _pg, re.I), f"{a['slug']} : ni note ni témoignage inventés")
+    must(("Une fois ta boîte mail et ton agenda branchés avec toi." in _pg) == bool(_fi.get("boite")), f"{a['slug']} : boîte et agenda présentés comme branchés avec toi")
 must("{{" not in idx, "aucun token {{...}} orphelin dans index.html")
 
 # ── Section #controle (Task 5) : storyboard d'approbation ──
 must('id="controle"' in idx, "section #controle présente")
 must("Rien ne part sans toi" in idx, "titre « Rien ne part sans toi »")
 
-# ── Section #modelo « Formés à ton métier » (Task 6) : CRM vivant + radar DPE ──
-must("Formés à ton métier" in idx, "titre « Formés à ton métier »")
-must("la saisie, c'est fini" in idx, "copy « la saisie, c'est fini »")
-must("tu le sais avant qu'il arrive sur le marché" in idx, "copy radar DPE (spec §3.4)")
-must("3 200+ outils" in idx, "ligne largeur « 3 200+ outils connectés » → /integrations/")
-must(idx.find('id="controle"') < idx.find('id="modelo"') < idx.find('id="preuve"'),
-     "ordre de page : #controle → #modelo (Formés à ton métier) → #preuve")
-
-# ── Section #preuve (Task 7) : pile de valeur + bande de preuve fusionnée ──
-must("ça coûte combien" in idx, "titre « Recruter cette équipe, en vrai, ça coûte combien ? »")
+# ── Refonte du 12/10 : les sections héritées sont supprimées (balisage, CSS et JS) ──
+must('id="modelo"' not in idx and "Formés à ton métier" not in idx and "cmd-result" not in idx and "dpe-card" not in idx,
+     "section #modelo « Formés à ton métier » supprimée")
+must('id="preuve"' not in idx and "Recruter cette équipe" not in idx and "ça coûte combien" not in idx
+     and "vs-row" not in idx and "vzone" not in idx, "section #preuve « Recruter cette équipe » supprimée")
+must("21:37" not in idx and "Une journée avec ton équipe" not in idx, "bloc « Une journée avec ton équipe » absent")
+must("hero.mp4" not in idx and "hero-poster" not in idx, "ancienne vidéo du haut de page retirée (remplacée par la boucle du film)")
 text = re.sub(r"<[^>]+>", "", idx)  # copy contiguë hors balises (spans typographiques)
-must("129 € HT/mois" in text, "chute « Ton équipe : 129 € HT/mois »")
-must("plus de 2 000 €" in text, "total « plus de 2 000 €/mois » (état final statique)")
-# bande de preuve supprimée (retour Julien 16/07)
-must(idx.count('class="vs-row"') == 6, "pile de valeur : 6 lignes de postes")
-must("Tarifs marché sourcés" in idx, "sources des tarifs marché en commentaire HTML")
 
 # ── Section #tarif : offre v3 (07/10/2026) 129/249 HT, conseiller ajouté 79, annuel −10 % ──
 text = text.replace("&nbsp;", " ").replace(" ", " ")  # espaces insécables → espaces
@@ -95,19 +94,27 @@ must("199" not in text, "ancien prix 199 absent du texte")
 must("169 €" not in text, "ancien prix 169 € absent du texte")
 must("count-price" not in idx, "mécanisme count-price supprimé")
 must("limité" not in text.lower(), "jamais le mot « limité »")
-must(text.count("0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics") >= 3,
-     "micro-texte de désamorçage sous les CTA tarifs + modal")
+must(text.count("0 € aujourd'hui · Annulable en 2 clics") >= 7,
+     "ligne de risque vérifiée sous les boutons d'essai (haut, relances, offres, appel final, fenêtre)")
 
-# ── data/faq.json (Task 2) : 8 Q/R, alimente aussi le schema.org FAQPage ──
+# ── data/faq.json (Task 2, task 10) : 10 Q/R, alimente aussi le schema.org FAQPage ──
 faq_path = ROOT / "data" / "faq.json"
 must(faq_path.exists(), "data/faq.json existe")
 faq = json.loads(faq_path.read_text())
-must(len(faq) == 8, "faq.json : 8 questions")
+must(len(faq) == 10, "faq.json : 10 questions")
 for item in faq:
     must(bool(item.get("question")) and bool(item.get("reponse")), "faq : question+reponse non vides")
     must(item.get("schema") is True, f"faq '{item.get('question')}' : schema=true")
 
-# ── Section #faq (Task 9) : accordéons générés par build.py depuis faq.json ──
+# ── Section #faq (Task 9) : accordéons générés par build.py depuis faq.json ; l'accueil n'affiche que les questions « accueil »
+#    (6, choisies le 12/10 au soir), les autres restent dans les données pour une future page FAQ ──
+faq_tout = faq
+faq = [f for f in faq_tout if f.get("accueil") is True]
+must(len(faq) == 6 and all(f.get("accueil") is False for f in faq_tout if f not in faq), "faq.json : 6 questions marquées « accueil », les autres gardées")
+must([f["question"] for f in faq] == ["J'ai déjà un CRM : je dois en changer ?", "Et si l'IA se trompe ?", "Où sont mes données ?",
+     "Je ne suis pas technique, c'est compliqué à installer ?", "Comment j'annule ?", "Pourquoi demander ma carte pour l'essai ?"], "FAQ de l'accueil : les 6 questions demandées")
+for f in faq_tout:
+    if f not in faq: must(html.escape(f["question"], quote=False) not in idx, f"question hors accueil absente : {f['question'][:30]}")
 for item in faq:
     must(html.escape(item["question"], quote=False) in idx,
          f"FAQ générée : question « {item['question'][:40]}… » dans index.html")
@@ -172,7 +179,7 @@ for req in ["Gmail", "Google Calendar", "Google Drive", "Google Sheets", "Instag
     must(any(a["name"] == req for a in apps), f"incontournable présent : {req}")
 n_tiles = integ.count('class="it-tile"')
 must(n_tiles >= 80, f"/integrations/ : ≥80 tuiles (trouvées: {n_tiles})")
-must(n_tiles == len(apps), "toutes les entrées du JSON rendues en tuiles")
+must(n_tiles == len([a for a in apps if a["name"] != "Google Business Profile"]), "toutes les entrées du JSON rendues en tuiles (sauf la fiche Google, éteinte)")
 must("<title>Intégrations — 3 200+ outils connectés | Revaly</title>" in integ, "title /integrations/")
 must('rel="canonical" href="https://revaly.io/integrations/"' in integ, "canonical /integrations/")
 must("3 200" in integ, "« 3 200 » présent sur /integrations/")
@@ -187,7 +194,7 @@ must('href="/agents/"' in integ and 'href="/#tarif"' in integ and 'href="/#faq"'
      "nav/footer : Agents + ancres absolues vers la home (/#tarif, /#faq)")
 must("cloudflareinsights.com/beacon" in integ, "beacon analytics présent sur /integrations/")
 must("cloudflareinsights.com/beacon" in idx, "beacon analytics présent sur la home")
-must("0 € aujourd'hui · rappel avant la fin de l'essai · annulation en 2 clics" in integ,
+must("0 € aujourd'hui · Annulable en 2 clics" in integ,
      "micro-texte habituel sous le CTA essai de /integrations/")
 must("{{" not in integ, "aucun token {{...}} orphelin dans integrations/index.html")
 _sm = (dist / "sitemap.xml").read_text()
@@ -214,3 +221,655 @@ must("lien de connexion par email" in bt, "/bienvenue/ : message « va voir tes 
 must("https://revaly.io/bienvenue/" not in _sm, "/bienvenue/ absente du sitemap (noindex)")
 
 print("OK")
+
+# ── v3 : données des nouveaux blocs et règles de texte ──
+INTERDITS = ["agentique", "IA autonome", "Unipile", "Composio", "Anthropic", "Claude", "OpenAI", "GPT", "Pipedream",
+             # promesses des concurrents à ne jamais reprendre (recherche concurrents.md du 12/10) et engagements non vérifiés
+             "24 h/24", "24h/24", "pilote automatique", "autonome", "rappel avant la fin de l'essai", "annoncé par email", "obligation légale"]
+for nom in ["outils", "reseaux", "clients-voient", "calculateur"]:
+    must((ROOT / "data" / f"{nom}.json").exists(), f"data/{nom}.json existe")
+outils = json.loads((ROOT / "data" / "outils.json").read_text())
+must([o["nom"] for o in outils] == ["Modelo", "Google Agenda", "Gmail", "Outlook", "WhatsApp", "Telegram", "Canva"], "outils : liste exacte de la spec")
+cv = json.loads((ROOT / "data" / "clients-voient.json").read_text())
+must([c["qui"] for c in cv] == ["acquereur", "vendeur", "notaire"], "clients-voient : 3 points de vue")
+calc = json.loads((ROOT / "data" / "calculateur.json").read_text())
+must(calc["plafond_heures_semaine"] == 15, "calculateur : plafond 15 h")
+must(all(t["minutes"] > 0 for t in calc["taches"]), "calculateur : minutes positives")
+RESEAUX_NOMS = ["Century 21", "Orpi", "Laforêt", "IAD", "Guy Hoquet", "ERA Immobilier", "Nestenn", "L'Adresse", "Arthurimmo.com",
+                "Cimm Immobilier", "Solvimo", "RE/MAX France", "Coldwell Banker France", "Square Habitat", "Citya", "Nexity", "SAFTI",
+                "Capifrance", "Optimhome", "Propriétés-privées.com", "efficity", "BSK Immobilier", "Dr House Immo", "3G Immo",
+                "Sextant Properties", "AXO & Actifs"]
+must([r["nom"] for r in json.loads((ROOT / "data" / "reseaux.json").read_text())] == RESEAUX_NOMS, "reseaux : les 26 réseaux, dans l'ordre demandé")
+for nom in ["outils", "reseaux"]:
+    for e in json.loads((ROOT / "data" / f"{nom}.json").read_text()):
+        must(not e["logo"] or (ROOT / e["logo"]).is_file(), f"{nom} : logo existe ({e['logo']})")
+# scripts retirés sauf JSON-LD (lu par les moteurs) ; images inline base64 retirées
+_NOISE = re.compile(r"<script(?![^>]*ld\+json)[^>]*>.*?</script>|<style.*?</style>|data:[\w/+.-]+;base64,[A-Za-z0-9+/=]+", re.S)
+for page in sorted(dist.rglob("*.html")):
+    visible = _NOISE.sub("", page.read_text())
+    for mot in INTERDITS:
+        must(mot.lower() not in visible.lower(), f"mot interdit visible : {mot} ({page.relative_to(dist)})")
+# ── Task 2 : mesure et consentement ──
+must("window.rvTrack" in idx, "rvTrack présent")
+for page in sorted(dist.rglob("*.html")):
+    h = page.read_text(); nom = str(page.relative_to(dist))
+    must("__META_PIXEL_ID__" not in h, f"identifiant pixel substitué ({nom})")
+    must(h.count("fbq('init'") == 1, f"un seul fbq('init' ({nom})")
+    d = h.index("function loadPixel(){"); f = h.index("var c=null;", d)
+    must(d < h.index("fbq('init'") < f, f"fbq('init' seulement dans loadPixel ({nom})")
+    ap = h[f:].split("loadPixel()")
+    must(len(ap) == 3 and ap[0].rstrip().endswith('if(c==="1")') and ap[1].rstrip().endswith('if(v==="1")'),
+         f"loadPixel() appelé seulement sur consentement stocké ou clic Accepter ({nom})")
+    must('PIXEL=""' in h and "hidden" in h.split('id="rv-consent"')[1].split(">")[0], f"pixel vide (livré) et bandeau hidden ({nom})")
+must('id="rv-consent"' in idx and "Refuser" in idx and "Accepter" in idx, "bandeau de consentement")
+must(idx.count('data-track="essai"') >= 2 and idx.count('data-track="demo"') >= 2, "CTA suivis")
+bienv = (dist / "bienvenue" / "index.html").read_text()
+must("rvTrack('essai_demarre')" in bienv, "essai démarré mesuré au retour de Stripe")
+print("OK v3 données et texte")
+# ── Task 3 : haut de page v3 ──
+_txt = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
+must("Ton équipe travaille. Toi, tu es avec tes clients." not in _txt and "Ton équipe travaille. " not in idx, "ancien titre absent")
+_micro = html.unescape(re.sub(r"<[^>]+>", "", idx.split('class="hp-micro"', 1)[1].split("</p>", 1)[0]))
+must(all(x in _micro for x in ("0 € aujourd'hui", "Annulable en 2 clics", "Rien ne part sans toi")), "ligne de risque : 0 €, annulable, rien ne part sans toi")
+must('id="voir-film"' in idx and 'id="film-dialog"' in idx, "lecteur du film")
+must('data-track="film"' in idx and "Regarder avec le son (1 min)" in idx, "« Regarder avec le son (1 min) » mesuré")
+must("assistants IA" not in idx and "Autonome, 24 h/24" not in idx, "ancienne promesse retirée")
+for f in ["poster.jpg", "poster-vertical.jpg", "poster@1280.webp", "poster-vertical@720.webp", "boucle.webm", "boucle.mp4",
+          "boucle-vertical.webm", "boucle-vertical.mp4", "revaly-45s.webm", "revaly-45s.mp4", "revaly-45s-vertical.webm", "revaly-45s-vertical.mp4"]:
+    must((dist / "assets" / "film" / f).is_file(), f"dist/assets/film/{f} copié")
+print("OK v3 haut de page")
+
+# ── Logos (Task 4, revus le 12/10 au soir : une seule bande de preuve en haut, les outils en petit dans l'étape 1) ──
+must('id="bande-outils"' in idx and "Fonctionne avec tes outils" in idx, "outils branchés")
+must(idx.find('id="bande-outils"') > idx.find('id="outils"') > idx.find('id="equipe"'), "les outils dans « Tu ne changes pas d'outil », après l'équipe (révision du 13/10)")
+must("Tes contacts SeLoger, Leboncoin et Bien'ici arrivent directement chez Emma" in idx.replace("&#x27;", "'"), "ligne portails")
+reseaux = json.loads((ROOT / "data" / "reseaux.json").read_text())
+sys.path.insert(0, str(ROOT))
+import build as _build  # (construction idempotente ; même module réutilisé plus bas)
+if reseaux:
+    # Décision de Julien (12/10 au soir) : UNE bande de logos qui défile, titre et mention tenus dans des constantes
+    must(_build.RESEAUX_LOGOS is True, "réseaux : bande de logos allumée")
+    _pr = idx.split('id="bande-reseaux"', 1)[1].split('<div class="hp-film">', 1)[0]
+    must(f'<p class="preuve-titre">{_build.RESEAUX_TITRE}</p>' in _pr and _build.RESEAUX_TITRE == "Pensé pour les agents de tous les réseaux",
+         "titre au-dessus de la bande : « Pensé pour les agents de tous les réseaux »")
+    must(_pr.count('class="marquee"') == 1 and idx.count('class="marquee"') == 1 and _pr.count('class="marquee-liste"') == 2,
+         "une seule bande (la 2e liste n'est que la copie qui boucle)")
+    _l1, _l2 = re.findall(r'<ul class="marquee-liste"( aria-hidden="true")?>(.*?)</ul>', _pr, re.S)
+    must(_l1[0] == "" and _l2[0] == ' aria-hidden="true"', "la copie qui boucle est masquée aux lecteurs d'écran")
+    must(re.findall(r'alt="([^"]*)"', html.unescape(_l1[1])) == RESEAUX_NOMS, "26 logos dans l'ordre, alt = nom du réseau")
+    must(set(re.findall(r'alt="([^"]*)"', _l2[1])) == {""} and _l2[1].count("<img") == len(reseaux), "copie : mêmes logos, alt vide")
+    must(all(re.search(r'width="\d+" height="\d+"', i) for i in re.findall(r"<img[^>]*>", _pr)), "taille réservée sur chaque logo (aucun décalage)")
+    for r in reseaux:
+        f = ROOT / r["logo"]
+        must(f.is_file() and (dist / r["logo"]).is_file(), f"logo présent et copié : {r['logo']}")
+        must(f.suffix in (".svg", ".webp") and f.stat().st_size <= 6000, f"logo léger (SVG ou WebP ≤ 6 Ko) : {r['logo']}")
+        must(r["rendu"] in ("mono", "gris") and isinstance(r["couleur"], bool) and 14 <= r["hauteur"] <= 48, f"réglage du logo : {r['nom']}")
+        if f.suffix == ".svg":
+            must(not re.search(r"<script|href|<image|<use|foreignObject|\son\w+=", f.read_text(), re.I), f"SVG sans script ni lien : {r['logo']}")
+    must("Les marques citées appartiennent à leurs propriétaires." in _pr, "mention marques sous la bande")
+    must("<a " not in _pr, "aucun lien vers un réseau")
+    must("@keyframes defile" in idx and "animation-play-state: paused" in idx, "défilement continu, pause au survol")
+    _rm = idx.split("@media (prefers-reduced-motion: reduce) {\n    .marquee {", 1)
+    must(len(_rm) == 2 and "animation: none" in _rm[1].split("}\n  }", 1)[0] and "flex-wrap: wrap" in _rm[1].split("}\n  }", 1)[0],
+         "mouvement réduit : bande immobile, sur plusieurs lignes")
+    _txt_r = _build.preuve_reseaux(reseaux, logos=False)
+    must("<img" not in _txt_r and all(_build._esc(r["nom"]) in _txt_r for r in reseaux), "repli en texte (RESEAUX_LOGOS = False) : les noms, sans logo")
+else:
+    must('id="bande-reseaux"' not in idx, "bande réseaux masquée si liste vide")
+outils = json.loads((ROOT / "data" / "outils.json").read_text())
+for band, items in (("bande-outils", outils),):
+    if not items: continue
+    sec = idx.split(f'id="{band}"', 1)[1].split("</ul>", 1)[0]
+    must(sec.count("<li") == len(_build.OUTILS_TUILES) + 1 and sec.count('class="ot ot-bientot"') == 1, f"{band} : une seule liste, une tuile par outil + « Ton CRM · bientôt » (plus de copie défilante)")
+    must(re.findall(r'<li class="ot([^"]*)"', sec)[0] == " ot-modelo" and 'alt="Modelo"' in sec.split("</li>", 1)[0], "Modelo en tête des outils")
+    for i in items:
+        must(i["logo"] and (ROOT / i["logo"]).exists(), f"{band} : logo présent pour {i['nom']}")
+        must((dist / i["logo"]).exists(), f"{band} : logo copié dans dist pour {i['nom']}")
+        must(i["nom"] in sec, f"{band} : nom {i['nom']}")
+must("bande-defile" not in idx, "plus d'ancienne bande défilante des outils")
+must(idx.find('id="bande-reseaux"') < idx.find('id="film-cadre"') and idx.find('id="bande-reseaux"') > idx.find('class="hp-cta"'), "preuve sociale juste sous le titre et le bouton")
+must(not re.search(r'id="bande-outils".{0,40}id="bande-reseaux"|id="bande-reseaux".{0,400}id="bande-outils"', idx, re.S), "jamais deux bandes de logos qui se suivent")
+for f in (ROOT / "assets" / "logos").rglob("*.svg"):
+    t = f.read_text().lower()
+    must(not re.search(r"<script|<image|foreignobject|\son[a-z]+\s*=|href\s*=", t), f"{f.name} : SVG sans script/href/image")
+lic = (ROOT / "assets" / "logos" / "LICENSES.md").read_text()
+for n in ("orpi.svg", "laforet.svg", "iad.svg", "modelo.svg"):
+    must(n in lic, f"LICENSES.md cite {n}")
+
+# ── « Plus rien d'oublié » (Task 5) et « Ce que voient tes clients » (Task 6) : retirés le 12/10 au soir (ils répétaient les
+#    cartes du haut) ; leurs exemples propres (pièces du compromis, échéance du prêt) sont devenus des cartes du haut ──
+must('id="plus-rien-oublie"' not in idx and 'class="auto-tuile' not in idx and 'id="clients-voient"' not in idx, "blocs répétés retirés")
+_hc = html.unescape(idx.split('id="flux"', 1)[1].split("</div>\n", 1)[0])
+must("Relance des pièces du compromis" in _hc and "Échéance du prêt" in _hc and "Bilan de commercialisation" in _hc and "Rappel de visite" in _hc,
+     "les automatismes vivent dans les cartes du haut")
+print("OK v3 plus rien d'oublié")
+print("OK v3 ce que voient tes clients")
+
+# ── Conversation « Tu peux aussi leur parler » (Task 8), fusionnée le 12/10 au soir dans l'étape 3 de « Comment ça marche » ──
+_com = idx.split('id="comment"', 1)[1].split("</section>", 1)[0]
+# Tâche 17 : l'étape 3 montre la validation en vrai (carte « À valider » puis publiée) ; le vocal reste dit dans l'étape
+must('id="parler"' not in idx and "Un vocal depuis ta voiture suffit : Max confie la tâche au bon équipier." in html.unescape(_com).replace("\u00a0", " "), "le vocal à Max, dit dans l'étape 3")
+print("OK v3 tu peux aussi leur parler")
+
+# ── Ronde de correction 1 (blocs 5, 6, 8) ──
+must('id="connecteurs"' not in idx and "#connecteurs" not in idx, "section #connecteurs retirée de l'accueil")
+print("OK v3 correction 1")
+
+# ── Ronde de correction 2 : plus de script ni de CSS pour la grille de connecteurs retirée ──
+must("document.querySelector('.connectors')" not in idx and ".conn-marquee" not in idx and "@keyframes mq" not in idx, "script et CSS de l'ancien marquee retirés")
+print("OK v3 correction 2")
+
+# ── Équipe : personnages 3D validés, boucles animées (Task 7) ──
+for k in ["max", "emma", "lucas", "christine", "zoe", "hugo"]:
+    for ext in ("mp4", "webm", "webp"):
+        must((dist / "assets" / "equipe" / "boucles" / f"{k}@256.{ext}").exists(), f"boucle {k}@256.{ext}")
+    must(f'poster="/assets/equipe/boucles/{k}@256.webp"' in idx, f"poster {k}")
+eq = idx.split('id="equipe"', 1)[1].split("</section>", 1)[0]
+must("hugo" in eq.lower() and "rapha" not in eq.lower(), "Hugo dans l'équipe, plus de Raphaël")
+must((dist / "assets" / "equipe" / "portraits" / "hugo@512.webp").is_file() and (dist / "assets" / "equipe" / "boucles" / "hugo@256.webp").is_file() and "data:image/svg+xml" not in eq, "vrai portrait et boucle de Hugo publiés (plus de monogramme)")
+must(eq.count("<video") == 6 and " autoplay" not in eq and 'preload="none"' in eq, "6 vidéos, pas d'autoplay, preload none")
+must(eq.count('width="168" height="168"') == 6, "dimensions posées (pas de décalage)")
+must(re.search(r"\.eq-photo \{[^}]*width: 1[6-9]\dpx; height: 1[6-9]\dpx", idx), "visages des cartes en grand (≥ 160 px)")
+must("matchMedia('(prefers-reduced-motion: reduce)')" in idx and "data-loop" in idx, "boucles lancées par script, jamais en mouvement réduit")
+must("addEventListener('load', demarre" in idx, "boucles lancées seulement après le chargement de la page")
+must(not (ROOT / "assets" / "portraits").exists(), "anciens portraits retirés")
+print("OK v3 équipe 3D animée")
+
+for a in agents:
+    must(bool(a.get("pour_toi")) and len(a["pour_toi"]) <= 90 and html.escape(a["pour_toi"], quote=False) in eq, f"phrase pour_toi {a['slug']}")
+print("OK v3 équipe : une phrase chacun")
+
+# ── Calculateur de temps rendu (task 9) ──
+subprocess.run(["node", str(ROOT / "tests" / "test_calcul.mjs")], check=True)
+must('id="calculateur"' in idx, "calculateur")
+must('id="calcul-cfg"' in idx and "__CALCUL_JSON__" not in idx and re.search(r'type="module" src="/assets/calcul\.js\?v=[0-9a-f]{10}"', idx), "config injectée + module chargé (empreinte du contenu)")
+must((dist / "assets" / "calcul.js").exists(), "calcul.js copié dans dist")
+calc = idx.split('id="calculateur"', 1)[1].split("</section>", 1)[0]
+for t in ["Mandats signés par mois", "Visites par mois", 'aria-live="polite"', 'inputmode="numeric"',
+          "Calcul indicatif à partir de durées moyennes par tâche."]:
+    must(t.lower() in html.unescape(calc).lower(), f"calculateur : {t}")
+_cfg = json.loads((ROOT / "data" / "calculateur.json").read_text())
+stat = calc.split('class="calc-statique"', 1)[1].split('class="calc-carte"', 1)[0]
+must("{{" not in calc and "undefined" not in calc and "NaN" not in calc, "repli sans JavaScript rendu")
+must(all(html.escape(t["libelle"], quote=False) in stat for t in _cfg["taches"]) and stat.count("<li>") == len(_cfg["taches"]),
+     "bloc statique : les 8 tâches avec leur détail")
+must("jusqu'à 15 h" not in html.unescape(calc.split('class="calc-statique"', 1)[0]).lower(), "intro sans chiffre plafond seul")
+must(f"Au-delà de {_cfg['plafond_heures_semaine']} h par semaine, on arrête de compter." in html.unescape(calc), "phrase de plafond (page)")
+must("Total arrondi à la demi-heure." in calc, "note d'arrondi")
+# La formule Python (phrase sans JS) et la formule JS donnent le même résultat.
+sys.path.insert(0, str(ROOT))
+import build as _build  # relance la construction (idempotente, sans réseau) ; évite d'extraire du texte
+_cas = [(8, 40), (0, 0), (1, 1), (3, 17), (25, 120), (60, 300), (200, 400), (10000, 10000), (-5, 12), (7, 0)]
+_js = subprocess.run(["node", "--input-type=module", "-e",
+    f"import {{heuresRendues}} from '{ROOT}/assets/calcul.js';import cfg from '{ROOT}/data/calculateur.json' with {{type:'json'}};"
+    f"console.log(JSON.stringify({json.dumps(_cas)}.map(([m,v])=>heuresRendues(m,v,cfg))))"],
+    check=True, capture_output=True, text=True).stdout
+for (m, v), jsr in zip(_cas, json.loads(_js)):
+    must(_build.heures_rendues(m, v, _cfg) == jsr, f"formule Python == JS pour ({m},{v})")
+
+# ── Task 10 : confiance, fondateur, FAQ des objections, démo intégrée ──
+_t10 = html.unescape(idx).replace("\u00a0", " ")
+must("Créé par un agent immobilier, pour les agents immobiliers" in _t10, "bloc fondateur")
+_t10n = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", idx)).replace("\u00a0", " "))
+must("89 % de réussite sur 53 situations réelles" in _t10n and "mesure interne, octobre 2026" in _t10n, "chiffre qualité sourcé")
+must("89&nbsp;%" in idx and "89 %" not in idx, "espace insécable avant % (chiffre qualité)")
+must(idx.find('id="controle"') < idx.find('id="tarif"') < idx.find('id="faq"'), "ordre confiance → tarif → FAQ")
+_conf = idx.split('id="controle"', 1)[1].split("</section>", 1)[0]
+# Retour de Julien (12/10) : le fondateur et le 89 % rejoignent « Rien ne part sans toi » (« Pourquoi nous faire confiance »)
+_pf = idx.split('id="controle"', 1)[1].split("</section>", 1)[0]
+must('id="preuve-fondateur"' not in idx, "plus de bloc de preuve séparé sous le haut de page")
+must("Créé par un agent immobilier" in html.unescape(_pf) and "Le mot du fondateur" in _pf, "le mot du fondateur dans « Pourquoi nous faire confiance »")
+must("« Revaly n'est pas né" not in html.unescape(_pf), "mot du fondateur sans guillemets décoratifs (pas de doublon avec la citation)")
+must("Rien à migrer : ton CRM reste le tien (Modelo aujourd'hui, d'autres arrivent)." in html.unescape(idx) and any("CRM" in q["question"] for q in faq), "ton CRM reste le tien : étape 1 et FAQ")
+must('class="fondateur"' in _pf and ('class="fondateur-photo"' in _pf or 'class="fondateur-mono"' in _pf), "carte fondateur : photo ou monogramme")
+must("89&nbsp;%" in _pf and "mesure interne, octobre 2026" in _pf, "chiffre qualité en grand, sourcé, à côté du fondateur")
+faqq = [q["question"] for q in json.loads((ROOT / "data" / "faq.json").read_text())]
+for k in ["CRM", "se trompe", "données", "technique", "annule"]:
+    must(any(k.lower() in q.lower() for q in faqq), f"FAQ couvre : {k}")
+must("~10 h" not in idx and "10 h de paperasse" not in idx, "ancien chiffre de 10 h retiré")
+must(any("15 h par semaine" in q for q in faqq), "FAQ : jusqu'à 15 h par semaine")
+_jl = " ".join(re.findall(r'<script type="application/ld\+json">(.*?)</script>', idx, re.S))
+must("se trompe" in _jl and "10 h" not in _jl, "JSON-LD FAQ synchronisé")
+# Calendly (12/10 au soir) : plus de widget en ligne ; fenêtre Calendly par-dessus la page au clic, sinon nouvel onglet
+must('calendly-inline-widget' not in idx and 'demo-cal' not in idx, "plus d'agenda Calendly dans la page")
+must("calendly.event_scheduled" in idx and "rvTrack('demo_reservee')" in idx, "démo réservée mesurée")
+must("e.origin === 'https://calendly.com'" in idx, "origine Calendly vérifiée")
+must("https://assets.calendly.com/assets/external/widget.js" in idx and "https://assets.calendly.com/assets/external/widget.css" in idx
+     and idx.count("assets.calendly.com") == 2, "widget.js et sa feuille de style, d'une seule origine")
+must(not re.search(r'<script[^>]+src="https://assets\.calendly\.com', idx) and not re.search(r'<link[^>]+assets\.calendly\.com', idx), "rien de Calendly chargé au chargement de la page")
+must("['pointerenter', 'focus', 'touchstart']" in idx and "Calendly.initPopupWidget({ url })" in idx
+     and "if (!(window.Calendly && Calendly.initPopupWidget)) return;" in idx, "popup au clic quand le script est là, sinon le lien s'ouvre (nouvel onglet)")
+for _a in re.findall(r'<a [^>]*data-track="demo"[^>]*>', idx):
+    must('href="https://calendly.com/contact-chiclick/30min"' in _a and 'target="_blank"' in _a and 'rel="noopener"' in _a, "chaque lien démo : Calendly, nouvel onglet en repli")
+_fin = idx.split('id="demo"', 1)[1] if 'id="demo"' in idx else ""
+must('data-track="essai"' in _fin and 'data-track="demo"' in _fin, "appel final : deux boutons mesurés")
+must('href="https://calendly.com/contact-chiclick/30min"' in _fin, "repli sans JS : lien vers Calendly")
+for old in ("97 €", "229 €"):
+    must(old not in _t10, f"ancien prix {old} absent")
+must("primary_color=6366f1&hide_gdpr_banner=1" in idx and "background_color=141822&text_color=f2f3f7" in idx, "paramètres Calendly (couleur, bandeau, sombre)")
+print("OK v3 task 10")
+
+# ── Vocabulaire : le rapport du vendredi s'appelle « bilan de commercialisation » ──
+must("point vendeurs" not in idx.lower() and "bilan de la semaine" not in idx.lower() and "point de la semaine" not in idx.lower(), "ancien nom du rapport vendeur absent")
+# Correction de Julien (13/10) : le bilan de commercialisation est prêt AVANT le rendez-vous avec le vendeur (Lucas), jamais « du vendredi »
+for page in sorted(dist.rglob("*.html")):
+    _v = html.unescape(_NOISE.sub("", page.read_text())).lower()
+    must(not re.search(r"bilans? de commercialisation[^.]{0,60}(vendredi|chaque semaine|de la semaine)", _v), f"bilan sans « vendredi » ni « chaque semaine » ({page.relative_to(dist)})")
+for _f in ["data/equipe-accueil.json", "data/cartes-accueil.json", "data/cycle.json", "data/agents.json", "data/faq.json"]:
+    must("vendredi" not in (ROOT / _f).read_text().lower(), f"aucun « vendredi » dans {_f}")
+must("bilan de commercialisation prêt avant le rendez-vous" in idx.lower(), "bilan de commercialisation prêt avant le rendez-vous (Lucas)")
+print("OK v3 vocabulaire bilan")
+
+# ── Refonte de l'accueil (tâche 15, 12/10) ──
+_hero = idx.split('id="hero"', 1)[1].split("</section>", 1)[0]
+_hero_txt = html.unescape(re.sub(r"<[^>]+>", "", _hero)).replace("\u00a0", " ").replace("\u00ad", "")
+must("Une équipe d'agents IA qui travaille vraiment pour toi." in _hero_txt, "H1 exact")
+must(re.search(r'<h1[^>]*>Une équipe d\'agents IA qui travaille <span class="iris">vraiment</span> pour toi\.</h1>', idx), "« vraiment » en iris")
+must(idx.count("<h1") == 1, "un seul H1")
+must("6 agents IA spécialistes de l'immobilier" in _hero_txt, "sur-titre")
+must("Visites confirmées, vendeurs informés, mandats suivis, annonces prêtes. Avec tes outils et tes documents, rien à remplacer. Pendant que tu es sur le terrain, ton équipe avance. Toi, tu valides d'un geste." in _hero_txt, "sous-titre exact")
+must('data-track="essai"' in _hero and 'data-track="demo"' in _hero and ">Essayer 7 jours<" in _hero and ">Réserver une démo<" in _hero, "deux boutons du haut mesurés")
+must(re.search(r'<a class="hp-demo"[^>]*data-track="demo">Réserver une démo</a>', _hero), "la démo en lien secondaire, l'essai seul bouton principal")
+must("0 € aujourd'hui · Annulable en 2 clics" in _hero_txt, "ligne de risque sous le bouton principal")
+must("Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides." in _hero_txt, "mode supervisé visible sous les cartes")
+must("En ce moment chez toi :" in _hero_txt, "ligne « En ce moment chez toi : »")
+# Le film qui se lance seul (ronde Julien 1) : image fixe d'abord, vidéo muette en boucle demandée après le chargement
+_cadre = _hero.split('id="film-cadre"', 1)[1].split("</figure>", 1)[0]
+must('srcset="/assets/film/poster-vertical@720.webp"' in _cadre and 'src="/assets/film/poster@1280.webp"' in _cadre and 'fetchpriority="high"' in _cadre, "image fixe du film : verticale sur mobile, 16:9 au bureau")
+must(re.search(r'<video id="film-boucle" muted loop playsinline preload="none"', _cadre), "boucle muette, en boucle, dans la page, rien de chargé avant le script")
+must("'/assets/film/boucle-vertical' : '/assets/film/boucle'" in idx and "window.addEventListener('load', lance" in idx, "boucle verticale sur mobile, 16:9 au bureau, lancée après le chargement")
+must("mobile.addEventListener('change'" in idx and "object-fit: contain" in idx, "la boucle suit le format de l'écran et n'est jamais recadrée")
+must('id="voir-film"' in _cadre and 'data-track="film"' in _cadre, "« Regarder avec le son » sur le film")
+must("'/assets/film/revaly-45s-vertical' : '/assets/film/revaly-45s'" in idx, "film complet vertical sur mobile")
+must(idx.count('rel="preload" as="image"') == 2 and 'media="(max-width: 699px)"' in idx, "image fixe du film préchargée (une par format)")
+must(not re.search(r'<video[^>]*\sautoplay', idx), "aucune lecture automatique sans script (mouvement réduit respecté)")
+# Les cartes de travail : au format des cartes « À valider » du produit, 3 au plus, une nouvelle toutes les 4 s
+_cartes = json.loads((ROOT / "data" / "cartes-accueil.json").read_text())
+_flux = _hero.split('id="flux"', 1)[1].split("</div>\n", 1)[0]
+must(_flux.count('<article class="carte"') == len(_cartes) >= 3, "cartes de travail rendues depuis data/cartes-accueil.json")
+must(all(c.get("source") for c in _cartes), "chaque carte cite son origine dans le produit")
+must(_flux.count(" a préparé</p>") == len(_cartes) and _flux.count('<span class="carte-ok" aria-hidden="true">Valider</span>') == len(_cartes), "« X a préparé » + bouton « Valider » visuel")
+for c in _cartes:
+    must(html.escape(c["objet"], quote=False).replace(" :", "\u00a0:").replace("« ", "«\u00a0").replace(" »", "\u00a0»") in _flux, f"objet de la carte : {c['objet']}")
+must(".carte[data-slot=\"0\"]" in idx and '.carte[data-slot="1"], .carte[data-slot="2"]' in idx and "}, 4000);" in idx, "1 carte sur mobile, 3 au bureau, une nouvelle toutes les 4 s")
+must('id="anim-pause"' in _cadre and 'aria-pressed="false"' in _cadre, "bouton pause des animations (AA 2.2.2)")
+must('grid-template-areas: "texte film"' not in idx and ".hp-hero { padding-top: clamp(20px, 2.6vw, 36px); text-align: center; }" in idx
+     and ".hp-film { position: relative; margin-top: clamp(28px, 3vw, 40px); width: min(100%, 900px); }" in idx,
+     "ronde du 13/10 : haut de page centré à toutes les largeurs, le film en grand (900 px au bureau)")
+# L'échelle des titres (une seule source : --h1 / --h2) : H1 ≥ 1,55 × H2 à 1440, ≥ 1,4 × H2 à 390
+def _clamp(nom):
+    m = re.search(nom + r": clamp\((\d+(?:\.\d+)?)px, (\d+(?:\.\d+)?)vw, (\d+(?:\.\d+)?)px\)", idx)
+    must(m, f"token {nom} en clamp(px, vw, px)")
+    lo, vw, hi = map(float, m.groups())
+    return lambda largeur: min(max(lo, vw * largeur / 100), hi)
+_h1, _h2 = _clamp("--h1"), _clamp("--h2")
+must(_h1(1440) / _h2(1440) >= 1.55 and _h1(390) / _h2(390) >= 1.4, f"H1/H2 : {_h1(1440):.0f}/{_h2(1440):.0f} à 1440, {_h1(390):.0f}/{_h2(390):.0f} à 390")
+must(86 <= _h1(1440) <= 92 and 44 <= _h1(390) <= 46 and 54 <= _h2(1440) <= 56 and 30 <= _h2(390) <= 32, "tailles visées : H1 88-92 / 44-46, H2 56 / 30-32")
+must(re.search(r"\.hp-hero h1 \{[^}]*font-size: var\(--h1\)", idx) and re.search(r"\.tete-titre \{[^}]*font-size: var\(--h2\)", idx), "H1 et H2 lisent les tokens")
+must(_hero.find('class="hp-texte"') < _hero.find('id="bande-reseaux"') < _hero.find('id="film-cadre"') < _hero.find('id="flux"'),
+     "mobile : texte, preuve, film, cartes (ordre du balisage)")
+_ea = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
+must([e["slug"] for e in _ea] == ["max", "emma", "lucas", "christine", "zoe", "raphael"] and [e["slug"] for e in _build._equipe_accueil()] == ["max", "emma", "lucas", "christine", "zoe", "hugo"],
+     "équipe : six agents dans l'ordre du brief, Hugo à la place de Raphaël dans la page")
+# Tâche 17 : la rangée des six visages sous le haut de page est retirée (doublon des onglets de l'équipe)
+must('class="rangee"' not in idx and "<video data-loop" not in _hero, "plus de rangée de visages sous le haut de page")
+# Ordre des sections du brief
+# Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
+# Ronde Julien 1 (playbook des références) : preuve juste après le haut, les collègues avant « Rien ne part sans toi »,
+# « Ce que voient tes clients » dans le même bloc que « Plus rien d'oublié ».
+_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="probleme"', 'id="cycle"', 'id="max"', 'id="equipe"', 'id="outils"',
+          'id="bande-outils"', 'id="controle"', 'id="calculateur"', 'id="tarif"', 'id="comment"', 'id="faq"', 'id="demo"']
+_pos = [idx.find(x) for x in _ordre]
+must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
+_t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
+must("Pas secrétaire" not in _t, "plus de « Pas secrétaire » (demande de Julien)")
+for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "De la prospection à l'acte. Et même après.",
+              "Tes outils. Tes documents. Ton équipe travaille avec.", "Ton équipe en place en 3 étapes",
+              "Six spécialistes. Un seul abonnement.",
+              "Combien d'heures te rend ton équipe ?", "Rien ne part sans toi.",
+              "Une équipe entière pour moins qu'une demi-journée d'assistante par mois.", "Ton équipe peut commencer ce soir."]:
+    must(titre in _t, f"titre : {titre}")
+for phrase in ["Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, publier, classer. Et ce qu'on oublie finit par coûter un mandat.",
+               "La relance que tu voulais faire hier soir.", "Le vendeur sans nouvelles depuis dix jours.", "Le post du « Vendu » que tu n'as jamais publié.",
+               "On branche ton CRM, ta boîte mail et ton agenda avec toi.", "Rien à migrer : ton CRM reste le tien (Modelo aujourd'hui, d'autres arrivent).",
+               "Ton équipe prépare, jour et nuit.", "Confirmations, bons de visite, bilans de commercialisation, relances, annonces et publications, avis de valeur.",
+               "Tu valides d'un geste.", "Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.",
+               "Essai 7 jours avec carte"]:
+    must(phrase in _t, f"texte du brief : {phrase[:50]}")
+_eq = idx.split('id="equipe"', 1)[1].split("</section>", 1)[0]
+for e in _build._equipe_accueil():  # l'équipe livrée (relève)
+    for x in e["taches"]:
+        must(html.escape(x, quote=False).replace(" :", "\u00a0:") in _eq or html.escape(x, quote=False) in _eq, f"tâche de {e['slug']} : {x}")
+    must(f'href="/agents/{e["slug"]}/"' in _eq, f"fiche de {e['slug']} reliée")
+_pb = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
+_pile = json.loads((ROOT / "data" / "probleme.json").read_text())
+must(_pb.count('<li class="notif"') == len(_pile) == 6 and all(it["appli"] in _build.APPLIS for it in _pile) and [it["appli"] for it in _pile] == ["modelo", "gmail", "instagram", "whatsapp", "gmail", "google-agenda"],
+     "la pile du problème : six notifications, chacune avec l'appli d'où vient la tâche (Julien, 13/10)")
+must(_pb.count('class="notif-app"') == 6 and 'aria-label="Gmail"' in _pb and 'src="/assets/logos/modelo.svg"' in _pb and "--logo:url(/assets/logos/instagram.svg)" in _pb
+     and all((dist / "assets" / "logos" / _build.APPLIS[a]["fichier"]).is_file() for a in _build.APPLIS), "notifications de téléphone : logo officiel + nom de l'appli + heure")
+must('class="sticky-cta"' in idx and ">Démo<" in idx.split('class="sticky-cta"', 1)[1][:600], "barre collante : Essayer 7 jours + Démo")
+# Police : Geist partout, aucune police à empattements chargée
+for page in sorted(dist.rglob("*.html")):
+    h = page.read_text()
+    must("fraunces" not in h.lower() and "Georgia" not in h and not re.search(r"font-family:[^;\"}]*\bserif", h.replace("sans-serif", "")),
+         f"aucune police à empattements ({page.relative_to(dist)})")
+must("--font-display: var(--font-sans)" in idx, "titres en Geist")
+# Poids : pas d'image en base64 sur l'accueil, images et vidéos par URL
+must(not re.search(r"data:image/(?!svg)[\w+.-]+;base64,", idx), "aucune image base64 sur l'accueil")
+# Tâche 17 : les démos vivantes (pile, étapes, onglets) ajoutent du balisage ; le poids qui compte est celui transféré (gzip)
+import gzip
+# R42 : les sept scènes du cycle (visuels dans la page) ajoutent ~20 Ko bruts, ~2 Ko compressés
+must(len(idx.encode()) < 280_000 and len(gzip.compress(idx.encode())) < 58_000, f"accueil < 280 Ko de HTML, < 58 Ko compressé ({len(idx.encode())} o, {len(gzip.compress(idx.encode()))} o)")
+# Métadonnées : H1 et sous-titre
+must("<title>Revaly — Une équipe d'agents IA qui travaille vraiment pour toi</title>" in idx, "title = H1")
+must('property="og:title" content="Une équipe d&#x27;agents IA qui travaille vraiment pour toi."' in idx
+     or "property=\"og:title\" content=\"Une équipe d'agents IA qui travaille vraiment pour toi.\"" in idx, "og:title = H1")
+must('name="description" content="Visites confirmées, vendeurs informés, mandats suivis, annonces prêtes.' in idx, "description = sous-titre")
+must('name="twitter:description" content="Visites confirmées' in idx, "twitter:description = sous-titre")
+print("OK refonte accueil")
+
+# ── Nettoyage : fichiers de l'ancienne page retirés du dépôt et de la publication ──
+for f in ["template.html", "assets/hero.mp4", "assets/hero-poster.jpg", "assets/villa_hero.jpg", "assets/villa_post.jpg", "assets/fonts/fraunces-var.woff2"]:
+    must(not (ROOT / f).exists(), f"fichier hérité supprimé : {f}")
+for f in ["hero.mp4", "hero-poster.jpg", "fonts/fraunces-var.woff2"]:
+    must(not (dist / f).exists(), f"plus publié : {f}")
+must(sorted(f.name for f in (dist / "fonts").iterdir()) == ["geist-mono-var.woff2", "geist-var.woff2"], "polices publiées : Geist et Geist Mono (pastilles)")
+must('<video id="film-lecteur" controls playsinline preload="none"></video>' in idx, "film complet : rien demandé avant le clic (ni image ni vidéo)")
+must(re.findall(r"<h([1-6])", idx.split("<footer", 1)[1])[:1] == ["2"], "pied de page : titres de niveau 2 (pas de saut h2 → h4)")
+print("OK nettoyage")
+
+# ── Offre fondateurs : absente tant que le lien et l'API ne sont pas posés ; sinon compteur réel, 2 s max ──
+must(_build.FONDATEURS_LINK == "" and _build.FONDATEURS_API == "", "offre fondateurs livrée éteinte")
+_sans_css = re.sub(r"<style.*?</style>", "", idx, flags=re.S)
+must("data-fondateurs" not in _sans_css and "Offre fondateurs" not in _sans_css and "99 €" not in _sans_css and "offre-fondateurs" not in _sans_css,
+     "aucune trace de l'offre fondateurs dans la page quand elle est éteinte (balisage et script)")
+_f = _build.fondateurs_blocs("https://buy.stripe.com/test_fondateurs", "https://api.revaly.io/fondateurs")
+must(_f["FONDATEURS_HERO"].count("data-fondateurs hidden") == 1 and _f["FONDATEURS_TARIF"].count("data-fondateurs hidden") == 1, "blocs masqués tant que le compteur n'a pas répondu")
+must("Solo à 99 € HT/mois à vie pour les 100 premiers" in _f["FONDATEURS_HERO"] and "99 € HT/mois à vie pour les 100 premiers" in _f["FONDATEURS_TARIF"], "texte de l'offre")
+must('href="https://buy.stripe.com/test_fondateurs"' in _f["FONDATEURS_TARIF"] and 'data-track="fondateurs"' in _f["FONDATEURS_TARIF"], "lien de l'offre mesuré")
+_js = _f["FONDATEURS_JS"]
+must("setTimeout(() => ctl.abort(), 2000)" in _js and "d.ouvert === true" in _js and "Number.isInteger(d.places_restantes)" in _js
+     and "d.places_restantes > 0" in _js and ".catch(() => {})" in _js, "compteur réel : 2 s max, ouvert, nombre entier > 0, sinon rien")
+must(not re.search(r"\b\d{2,3}\b", re.sub(r"2000|99|100", "", _js)), "aucun nombre de places écrit en dur")
+must(".hp-fond { margin: 8px 0 0; min-height: 1.6em;" in idx, "place réservée dans le haut (aucun décalage à l'affichage du compteur)")
+print("OK offre fondateurs")
+
+# ── Ronde conversion (12/10, recherches besoins/concurrents/conversion + décisions de Julien) ──
+_pb2 = html.unescape(re.sub(r"<[^>]+>", "", idx.split('id="probleme"', 1)[1].split("</section>", 1)[0])).replace("\u00a0", " ")
+must("« Après chaque visite, le silence est souvent la pire expérience possible pour un vendeur. »" in _pb2 and "Journal de l'Agence, mai 2026" in _pb2, "citation sourcée en tête du problème")
+must(_pb2.find("Le vendeur sans nouvelles depuis dix jours.") < _pb2.find("La relance que tu voulais faire hier soir."), "le vendeur sans nouvelles en premier")
+_inst = "Installation faite avec toi, offerte."
+must(_t.count(_inst) >= 2 and _inst in idx.split('id="comment"', 1)[1].split("</section>", 1)[0] and _inst in idx.split('id="tarif"', 1)[1].split("</section>", 1)[0],
+     "installation offerte dans la mise en route et dans les prix")
+must("Pas de frais de mise en place." in html.unescape(idx.split('id="tarif"', 1)[1].split("</section>", 1)[0]), "prix : pas de frais de mise en place")
+must(idx.count('class="paire paire-fin"') >= 3, "une paire de boutons referme les blocs (tâche 17)")
+must(idx.count('class="') and all(f'aria-label="{x}' in idx for x in ("Les trois offres",)), "rangées à faire glisser sur mobile (page plus courte)")
+_ctl = html.unescape(idx.split('id="controle"', 1)[1].split("</section>", 1)[0])
+must("t'attend en brouillon" in _ctl and "24 h" not in _ctl, "« Rien ne part sans toi » : brouillon, sans « 24 h/24 »")
+_emma = next(e for e in json.loads((ROOT / "data" / "equipe-accueil.json").read_text()) if e["slug"] == "emma")
+_lucas = next(e for e in json.loads((ROOT / "data" / "equipe-accueil.json").read_text()) if e["slug"] == "lucas")
+must(_emma["taches"][0].startswith("Compte rendu de visite") and not any("bilan" in x.lower() for x in _emma["taches"])
+     and any(x.startswith("Bilan de commercialisation prêt avant") for x in _lucas["taches"]), "le bilan de commercialisation est chez Lucas, prêt avant le rendez-vous")
+for _q in json.loads((ROOT / "data" / "faq.json").read_text()):
+    must("rappel par email" not in _q["reponse"].lower() and "avant la fin de l'essai" not in _q["reponse"].lower(),
+         f"FAQ sans rappel de fin d'essai non vérifié : {_q['question'][:30]}")
+_bv = (dist / "bienvenue" / "index.html").read_text()
+must(re.search(r'<a class="btn" href="https://calendly\.com/contact-chiclick/30min"[^>]*data-track="installation"[^>]*>Réserver mon installation</a>', _bv), "/bienvenue/ : réserver mon installation")
+print("OK ronde conversion")
+
+# ── Page plus courte (12/10 au soir) : FAQ à 5 questions visibles, le reste replié ; aucune question perdue ──
+_faqh = idx.split('id="faq-list"', 1)[1].split("</section>", 1)[0]
+must(_faqh.count('class="faq-item"') == 6 and "faq-plus" not in idx, "FAQ : 6 questions, rien de replié")
+_fp = next(p for p in parsed if p["@type"] == "FAQPage")
+must([q["name"] for q in _fp["mainEntity"]] == [f["question"] for f in faq], "JSON-LD de l'accueil = les 6 questions affichées")
+must('<ul class="confiance">' not in idx, "tuiles de confiance retirées (89 % dans la preuve, données et CRM dans la FAQ)")
+print("OK page plus courte")
+
+# ── T13b : film final intégré (contrôles du brief T13, step 4) ──
+for f in ["revaly-45s.mp4", "revaly-45s.webm", "revaly-45s-vertical.mp4", "revaly-45s-vertical.webm", "boucle.mp4", "boucle.webm",
+          "boucle-vertical.mp4", "boucle-vertical.webm", "poster.jpg", "poster-vertical.jpg"]:
+    must((dist / "assets" / "film" / f).exists(), f"film : {f}")
+for f in ["boucle.mp4", "boucle.webm", "boucle-vertical.mp4", "boucle-vertical.webm"]:
+    must((dist / "assets" / "film" / f).stat().st_size < 2_500_000, f"boucle < 2,5 Mo : {f}")
+must(not (dist / "film").exists(), "plus de copie du film hors de dist/assets/film")
+# Vidéo du haut sans chargement lourd : preload="none" (plus léger que "metadata"), rien demandé avant le chargement de la page,
+# et l'image fixe d'abord (<picture> préchargée, la vidéo ne devient visible qu'une fois en lecture)
+_v = re.search(r'<video id="film-boucle"[^>]*>', idx).group(0)
+must('preload="none"' in _v and "autoplay" not in _v and "<source" not in idx.split('<video id="film-boucle"', 1)[1].split("</video>", 1)[0],
+     "vidéo du haut : aucun préchargement, sources posées par le script après le chargement")
+must(_cadre.find("<picture>") < _cadre.find('<video id="film-boucle"') and ".film-cadre video { opacity: 0;" in idx and ".film-cadre.joue video { opacity: 1; }" in idx,
+     "image fixe d'abord, la vidéo apparaît en lecture")
+must("vid.poster = vertical ? '/assets/film/poster-vertical.jpg' : '/assets/film/poster.jpg';" in idx, "film complet : image fixe de l'équipe en attente")
+must(not (ROOT / "video").exists() and "hero.mp4" not in idx and not (ROOT / "assets" / "hero.mp4").exists(), "ancien film et sa source retirés")
+_gi = (ROOT / ".gitignore").read_text()
+must("film/rushes/" in _gi and "film/frames*/" in _gi, "rushes et images de rendu du film ignorés")
+_suivis = subprocess.run(["git", "-C", str(ROOT), "ls-files", "film/rushes", "film/frames"], capture_output=True, text=True).stdout.strip()
+must(_suivis == "", "aucun rush ni image de rendu suivi par git")
+must(".film-dialog.vertical { width: min(92vw, calc(min(92vh, 900px) * 9 / 16));" in idx, "lecteur vertical jamais plus large que l'écran")
+print("OK T13b film final")
+
+# ── Revue finale (12/10) : la mise en route est faite AVEC le client ; pas de promesse de durée ou de « clics » ──
+for page in sorted(dist.rglob("*.html")):
+    _vis = html.unescape(_NOISE.sub("", page.read_text()))
+    for mot in ("dix minutes", "quelques minutes", "quelques clics", "deux clics", "se branche en"):
+        must(mot not in _vis.lower(), f"mise en route sans « {mot} » ({page.relative_to(dist)})")
+    must("pendant le lancement" not in _vis.lower(), f"plus de « pendant le lancement » à côté de « pas de frais de mise en place » ({page.relative_to(dist)})")
+_tech = next(f for f in faq if f["question"].startswith("Je ne suis pas technique"))
+must(_tech["reponse"] == "Non. L'installation est faite avec toi : on branche ton CRM (Modelo aujourd'hui), ta boîte mail et ton agenda ensemble, puis tu parles à Max par écrit ou en vocal, sur WhatsApp, Telegram ou dans l'application.", "FAQ « pas technique » : installation faite avec toi")
+must(html.unescape(idx).count("Installation faite avec toi, offerte.") == 2, "installation : une seule formulation, sous les étapes et dans les prix")
+_suivi = subprocess.run(["git", "-C", str(ROOT), "ls-files", "film/out", "film/maquette-10s-A.mp4", "film/maquette-10s-B.mp4"], capture_output=True, text=True).stdout.strip()
+must(_suivi == "" and "film/out/" in _gi and "film/maquette-*.mp4" in _gi, "pubs et maquettes du film hors du suivi Git")
+must(not (ROOT / "netlify.toml").exists() and not (ROOT / "netlify").exists() and (ROOT / "functions" / "_middleware.ts").exists(),
+     "plus de configuration Netlify ; le masquage Polynésie reste dans functions/ (Cloudflare)")
+print("OK revue finale")
+
+# ── Aucune image cassée : chaque fichier demandé par une page publiée existe dans dist/ (attributs et chemins du script) ──
+for page in sorted(dist.rglob("*.html")):
+    h = page.read_text()
+    chemins = set(re.findall(r'(?:src|srcset|poster|href|data-poster)="(/[^"#?]+\.(?:webp|svg|png|jpe?g|webm|mp4|woff2|js|css))"', h))
+    chemins |= {base + ext for base in re.findall(r"'(/assets/film/[\w@.-]+?)'", h) for ext in (".webm", ".mp4")
+                if not re.search(r"\.(webp|jpe?g)$", base)}
+    chemins |= set(re.findall(r"'(/assets/film/[\w@.-]+\.(?:webp|jpe?g))'", h))
+    manquants = [c for c in sorted(chemins) if not (dist / c.lstrip("/")).is_file()]
+    must(not manquants, f"aucune image ni vidéo cassée ({page.relative_to(dist)}) : {manquants}")
+must(not (ROOT / ".dist-construction").exists(), "dossier de construction temporaire retiré")
+print("OK aucune image cassée")
+
+# ── L'enchaînement comme une histoire (retour de Julien, 12/10) ──
+_sections = re.findall(r'<section class="([^"]*)" id="([\w-]+)"', idx.split("<main", 1)[1].split("</main>", 1)[0])
+must([s[1] for s in _sections] == ["hero", "probleme", "cycle", "max", "equipe", "outils", "controle", "calculateur", "tarif", "comment", "faq", "demo"],
+     "ordre (révision du 13/10) : héros, problème, la vente moment par moment, Max, équipe, outils, confiance, temps, prix, mise en route, FAQ, fin")
+_sur = {sid: re.search(r'<p class="tete-sur" data-ap>([^<]+)</p>', idx.split(f'id="{sid}"', 1)[1].split("</section>", 1)[0]) for _, sid in _sections[1:]}
+must({k: (v.group(1) if v else None) for k, v in _sur.items()} == {"probleme": "Le problème", "cycle": "La solution", "max": "Max, ton coordinateur", "equipe": "L'équipe",
+     "outils": "Tes outils, tes documents", "controle": "Pourquoi nous faire confiance", "calculateur": "Ton temps", "tarif": "Le prix",
+     "comment": "Mise en route", "faq": "Questions", "demo": "Essai 7 jours"},
+     "un sur-titre court par section")
+_pbh = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
+must(_pbh.find('class="tete-sur"') < _pbh.find("<h2") < _pbh.find('class="pb-citation"'), "problème : sur-titre, titre, puis la citation en petit sous le texte (tâche 17)")
+must("À chaque moment de la vente, ton équipe a déjà préparé la suite. Toi, tu valides." in html.unescape(idx.split('id="cycle"', 1)[1].split("</section>", 1)[0]).replace("\u00a0", " "),
+     "le problème appelle la réponse : la vente, moment par moment")
+print("OK enchaînement")
+
+# ── Une page qui s'enchaîne (tâche 17, référence Limova) : un seul fond, un seul gabarit de tête, des apparitions ──
+_main = idx.split("<main", 1)[1].split("</main>", 1)[0]
+must("fond-blanc" not in idx, "plus de bande de fond blanc")
+# styles de l'accueil (dans <body>) ; le socle n'en pose aucun sur les sections, et son trait du pied de page est annulé ici
+_css = " ".join(re.findall(r"<style>(.*?)</style>", idx.split("<body>", 1)[1], re.S))
+must("footer { border-top: 0;" in _css, "pas de trait au-dessus du pied de page")
+_sel_sections = {"section", ".hp-s", ".hp-hero", "main", "footer"} | {f"#{s[1]}" for s in _sections}
+for _sel, _decl in re.findall(r"([^{}]+)\{([^{}]*)\}", re.sub(r"/\*.*?\*/", "", _css, flags=re.S)):
+    for _s in _sel.split(","):
+        _dernier = _s.strip().split()[-1] if _s.strip() else ""
+        if any(_dernier == x or _dernier.startswith(x + "[") or _dernier.startswith(x + ":") or _dernier.startswith(x + ".") for x in _sel_sections):
+            _decl_sans_zero = re.sub(r"border(-top|-bottom)?\s*:\s*0(?![.\d])\s*;?", "", _decl.strip())
+            must(not re.search(r"(^|;)\s*(background|border(-top|-bottom)?)\s*:", _decl_sans_zero),
+                 f"aucune section ne change de fond ni n'a de trait : {_s.strip()} {{{_decl.strip()[:60]}}}")
+must(re.search(r'body \{\s*margin: 0;\s*background:', idx), "le fond est porté par body seul")
+_h2 = re.findall(r"<h2([^>]*)>", _main)
+must(len(_h2) == len(_sections) - 1 and all('class="tete-titre"' in a for a in _h2), f"chaque H2 de section utilise le gabarit unique (.tete-titre) : {_h2}")
+for _, _sid in _sections[1:]:
+    _s = _main.split(f'id="{_sid}"', 1)[1].split("</section>", 1)[0]
+    must(_s.count('<header class="tete') == 1 and _s.count("<h2") == 1, f"une tête de section unique dans #{_sid}")
+must(re.search(r"\.tete-titre \{[^}]*font-size: var\(--h2\)", idx) and len(re.findall(r"\.tete-titre[^{]*\{[^}]*font-size", idx)) == 1, "tous les H2 de section à la même taille (un seul token)")
+must("Geist Mono" in idx and (dist / "fonts" / "geist-mono-var.woff2").is_file() and (ROOT / "assets" / "fonts" / "OFL-Geist.txt").is_file(), "pastilles en Geist Mono (licence OFL jointe)")
+must(_main.split('id="probleme"', 1)[1].count("data-ap") >= 10, "apparitions au défilement posées sur les blocs")
+must('[data-ap]:not(.vu) { opacity: 0; transform: translateY(24px); filter: blur(8px); }' in idx and "70ms" in idx, "apparition flou → net, montée de 24 px, décalage entre frères")
+must("data-ap" not in idx.split('id="hero"', 1)[1].split("</section>", 1)[0], "le haut de page n'attend aucune apparition (LCP)")
+print("OK une page qui s'enchaîne")
+
+# ── La solution (tâche 17) : accordéon des trois étapes qui avance seul, panneau synchronisé, le post « Vendu » de Zoé ──
+_so = idx.split('id="comment"', 1)[1].split("</section>", 1)[0]
+must(_so.count('<li class="etape"') == 3 and _so.count('aria-current="step"') == 1
+     and all(f'aria-controls="demo-vue-{i}"' in _so and f'id="demo-vue-{i}"' in _so for i in range(3)), "trois étapes, l'étape en cours annoncée (aria-current), chacune reliée à sa vue")
+must("grid-template-rows" not in idx.split("── 4. La solution", 1)[1].split("── 5.", 1)[0], "rien ne se replie : aucune hauteur ne bouge pendant l'avance")
+must(_so.count('class="demo-vue') == 3 and _so.count('class="demo-vue active"') == 1 and _so.count('role="group"') == 3, "un panneau, trois vues synchronisées")
+must("animation: barre 5s linear forwards" in idx and "animationend" in idx and ".etapes-bloc:hover .etape-barre i, .etapes-bloc:focus-within .etape-barre i, .rv-pause .etape-barre i" in idx,
+     "avance seule toutes les 5 s, figée au survol, au focus et en pause générale")
+must("bloc.classList.remove('auto'); montre(i);" in idx, "un clic choisit l'étape et coupe l'avance")
+_zoe = next(c for c in json.loads((ROOT / "data" / "cartes-accueil.json").read_text()) if c["slug"] == "zoe")
+_so_txt = html.unescape(re.sub(r"<[^>]+>", "", _so)).replace("\u00a0", " ")
+must(re.sub(r"\s+", " ", _zoe["message"]) in re.sub(r"\s+", " ", _so_txt), "le post « Vendu » de Zoé, texte des cartes du haut")
+must(sum(1 for o in json.loads((ROOT / "data" / "outils.json").read_text()) if o["nom"] in _build.OUTILS_BRANCHES_EXEMPLE) == _so.count("data-branche"), "les outils branchés de l'exemple")
+must((dist / "assets" / "accueil" / "post-vendu.webp").is_file() and "post-vendu" in (ROOT / "film" / "sources.md").read_text(), "photo du post publiée, origine notée")
+print("OK la solution")
+
+# ── L'équipe (tâche 17) : six onglets accessibles et un carrousel ; la carte montre ce que l'agent vient de préparer ──
+_eqs = idx.split('id="equipe"', 1)[1].split("</section>", 1)[0]
+_tabs = re.findall(r'<button type="button" role="tab"[^>]*>', _eqs)
+must('role="tablist"' in _eqs and len(_tabs) == 6 and sum('aria-selected="true"' in x for x in _tabs) == 1
+     and all(f'aria-controls="agent-{e["slug"]}"' in _eqs for e in _build._equipe_accueil()), "six onglets role=tab, un sélectionné, chacun relié à sa carte")
+_panels = re.findall(r'<article class="eq[^"]*" id="agent-[\w]+" role="tabpanel" aria-labelledby="eq-onglet-[\w]+"[^>]*>', _eqs)
+must(len(_panels) == 6 and "cartes.forEach((c, i) => { c.inert = i !== 0; });" in idx and "html:not(.js) .eq-scene { overflow-x: auto;" in idx,
+     "six cartes role=tabpanel ; les voisines rendues inertes par le script (sans script : défilement à la main)")
+must("ArrowRight: 1, ArrowLeft: -1" in idx and "animation: barre 6s linear forwards" in idx and ".eq-bloc:hover .eq-o-barre i, .eq-bloc:focus-within .eq-o-barre i, .rv-pause .eq-o-barre i" in idx
+     and "'touchstart'" in idx and 'aria-label="Agent suivant"' in _eqs, "clavier, rotation 6 s figée au survol/focus/pause, balayage et flèches")
+must("eq-prepare" not in _eqs and _eqs.count('class="eq-tete"') == 6, "équipe en version légère : qui il est, ce qu'il sait faire (le travail concret est montré moment par moment)")
+print("OK l'équipe en onglets")
+
+# ── Ton temps compacté, le prix, la FAQ centrée et la fin (tâche 17) ──
+_calc = idx.split('id="calculateur"', 1)[1].split("</section>", 1)[0]
+must('id="calc-plus" aria-expanded="false" aria-controls="calc-detail"' in _calc and ".calc-carte .calc-detail:not(.ouvert) li:nth-child(n+5) { display: none; }" in idx,
+     "calculateur : quatre tâches visibles, le détail complet dépliable")
+_cjs = (ROOT / "assets" / "calcul.js").read_text()
+must("sort((x, y) => y.minutes - x.minutes)" in _cjs and 'liste.classList.toggle("ouvert", ouvert)' in _cjs, "les tâches qui pèsent le plus d'abord ; le bouton déplie la liste")
+must(idx.find('id="calculateur"') < idx.find('id="tarif"') and idx.split('id="calculateur"', 1)[1].split('id="tarif"', 1)[0].count("<section") == 1, "le prix suit directement le calculateur")
+_faqs = idx.split('id="faq"', 1)[1].split("</section>", 1)[0]
+must("Encore une question ?" in _faqs and "mailto:support@revaly.io" in _faqs and 'data-track="demo"' in _faqs, "FAQ : carte « Encore une question ? » (écrire, démo)")
+_fin2 = idx.split('id="demo"', 1)[1].split("</section>", 1)[0]
+must('class="final halo"' in _fin2 and _fin2.count("<img") == 6 and 'class="paire"' in _fin2, "fin : les six visages, le titre, la paire de boutons")
+_pi = idx.split('id="pile"', 1)[1].split("</ol>", 1)[0]
+must("html.js .pile.anime .notif:not(.arrive)" in idx and "pile.classList.add('anime')" in idx and "if (!pile || REDUCED" in idx, "pile : animée seulement avec le script et sans mouvement réduit (sinon complète)")
+must(".halo::before" in idx and idx.count(" halo") >= 4, "profondeur par des halos (au moins quatre visuels)")
+print("OK ton temps, prix, FAQ, fin")
+
+# ── Révision du 13/10 : la vente moment par moment, « Tu ne changes pas d'outil » ──
+_cy = idx.split('id="cycle"', 1)[1].split("</section>", 1)[0]
+_moments = [dict(m, **m["v2"]) if m.get("v2") else m for m in json.loads((ROOT / "data" / "cycle.json").read_text())]  # la relève (EQUIPE_V2)
+_ong = re.findall(r'<button type="button" role="tab" class="cy-onglet"[^>]*>([^<]+)</button>', _cy)
+must(_ong == ["Prospection", "Visite", "Vendeur", "Mandat", "Compromis", "Acte", "Après la vente"] == [m["onglet"] for m in _moments],
+     "onglets dans l'ordre de la vente : Prospection → Après la vente")
+must('role="tablist"' in _cy and _cy.count('role="tabpanel"') == 7 and _cy.count("<li class=") >= 7 and 'class="cy-frise"' in _cy, "sept panneaux, une frise de sept étapes")
+must("animation: barre 7s linear forwards" in idx and ".cy-bloc:hover .cy-frise li i, .cy-bloc:focus-within .cy-frise li i, .rv-pause .cy-frise li i" in idx,
+     "la frise mène la rotation (7 s), figée au survol, au focus, en pause générale")
+_noms = {a["slug"]: a["name"] for a in agents}
+for m in _moments:
+    _pn = _cy.split(f'id="cy-{m["id"]}"', 1)[1].split('class="cy-panneau', 1)[0]
+    _pt = html.unescape(re.sub(r"<[^>]+>", " ", _pn)).replace("\u00a0", " ")
+    must(all(p["chip"] in _pt and html.escape(p["texte"], quote=True) in _pn for p in m["prets"]) and m.get("source"), f"moment {m['id']} : les pastilles « prêt », source notée")
+_vis = next(m for m in _moments if m["id"] == "visite")
+must(any(p["agent"] == "christine" and "bon de visite" in p["texte"].lower() for p in _vis["prets"]), "le bon de visite est préparé par Christine")
+_vend = next(m for m in _moments if m["id"] == "vendeur")
+must(_vend["agent"] == "lucas" and "bilan de commercialisation" in _vend["reponse"].lower(), "le bilan de commercialisation est chez Lucas")
+must("démarch" not in html.unescape(_cy).lower(), "pas de démarchage automatique")
+_ot = idx.split('id="outils"', 1)[1].split("</section>", 1)[0]
+must([n for n, _ in _build.OUTILS_TUILES][0] == "Modelo" and all(html.escape(n, quote=False) in _ot for n, _ in _build.OUTILS_TUILES), "les tuiles des outils, Modelo en tête")
+must(all(html.escape(x, quote=False).replace(" :", "\u00a0:") in _ot for x in _build.DANS_MODELO) and "Toute écriture dans ton CRM passe par une carte à valider." in _ot and 'class="ot ot-bientot"' in _ot and "mailto:support@revaly.io" in _ot and "dans Modelo aujourd'hui" in _ot and "Modelo est branché aujourd'hui, d'autres CRM arrivent." in html.unescape(idx),
+     "ce que l'équipe fait dans ton CRM (Modelo aujourd'hui), tuile « Ton CRM · bientôt », lien support, FAQ (décision Julien 13/10)")
+_txt_crm = html.unescape(re.sub(r"<[^>]+>", " ", idx))
+must(not re.search(r"(Netty|Hektor|Apimo|Ubiflow|Pericles|Immofacile)\b", _txt_crm), "jamais la promesse qu'un autre CRM précis est déjà branché")
+for f in ["googledrive.svg", "facebook.svg", "instagram.svg", "linkedin.svg"]:
+    must((dist / "assets" / "logos" / f).is_file() and f in lic, f"logo {f} publié, licence notée")
+must('id="ot-voir" aria-expanded="false" aria-controls="ot-liste"' in _ot and "html.js .ot-liste:not(.ouvert) li:nth-child(n+4) { display: none; }" in idx, "liste Modelo : trois points, le reste dépliable (dans la page)")
+# Page plus courte (retour du contrôleur, 13/10 : ≤ 9 000 px au bureau, ≤ 9 500 px sur téléphone, mesurés au navigateur)
+must(_pb.count(" data-bureau") == 2 and "--rang-m:" in _pb and ".notif[data-bureau] { display: none; }" in idx, "pile : quatre notifications sur téléphone, six au bureau")
+must("    .paire-fin { display: none; }" in idx and 'class="sticky-cta"' in idx, "téléphone : la barre collante remplace les paires de fin de bloc")
+# R50 / R49 (13/10) : une photo par moment, UNE carte de notification agentique (l'agent vient vers toi), les documents en vignette + lightbox
+_visuels = json.loads((ROOT / "data" / "visuels.json").read_text())
+must(set(_visuels) - {"_note"} == {m["id"] for m in _moments}, "un visuel par moment")
+for m in _moments:
+    _pn = _cy.split(f'id="cy-{m["id"]}"', 1)[1].split('class="cy-panneau', 1)[0]
+    _pt = html.unescape(re.sub(r"<[^>]+>", " ", _pn)).replace("\u00a0", " ")
+    _v = _visuels[m["id"]]; _c = _v["carte"]
+    must(_pn.count('<div class="sc">') == 1 and _pn.count('<picture class="sc-photo">') == 1 and _pn.count('<article class="nc"') == 1 and "cy-conv" not in _pn and "cy-cote" not in _pn,
+         f"moment {m['id']} : une photo plein cadre, une seule carte, plus aucune bulle")
+    for _w in (f"/assets/accueil/scenes/{m['id']}@1536.webp", f"/assets/accueil/scenes/{m['id']}@960.webp", f"/assets/accueil/scenes/{m['id']}-m@820.webp", f"/assets/accueil/scenes/{m['id']}-m@520.webp"):
+        must(_w in _pn and (dist / _w.lstrip("/")).is_file(), f"moment {m['id']} : photo {_w} publiée (3:2 et 4:5)")
+    must(_c["declencheur"] in _pt and _c["action"] in _pt and all(x in _pt for x in _c["coches"][:3]) and _c["bouton"] in _pt and _c["fait"] in _pt and f"<b>{_noms[_c['agent']]}</b>" in _pn,
+         f"moment {m['id']} : déclencheur, action, 2-3 coches, bouton → fait, prénom de l'agent")
+    must(not re.search(r"<p class=\"cy-q\"|\bToi\b", _pn) and len(_c["coches"]) <= 3, f"moment {m['id']} : agentique (aucune question du conseiller), 3 coches au plus")
+    if _c.get("vignette"):
+        must(_pn.count('class="nc-vignette"') == (2 if _c.get("vignette2") else 1) and f'data-lightbox="lb-{m["id"]}"' in _pn and f'<template id="lb-{m["id"]}">' in _pn, f"moment {m['id']} : vignette reliée à sa lightbox")
+        if _c["vignette"]["type"] == "document":
+            for _f in (_c["vignette"]["src"], _c["vignette"]["grand"]):
+                must((dist / "assets" / "accueil" / "docs" / _f).is_file() and f"/assets/accueil/docs/{_f}" in _pn, f"moment {m['id']} : document {_f} publié (vrai rendu)")
+    else:
+        must('class="nc-vignette"' not in _pn, f"moment {m['id']} : pas de vignette")
+    must(len(re.findall(r"<li style=\"--v:", _pn.split('class="cy-prets"', 1)[1])) <= 4 and ".cy-prets li:nth-child(n+4) { display: none; }" in idx, f"moment {m['id']} : rangée « prêt » à 3 pastilles au plus")
+must("Google Agenda · ven. 16 oct. · 17:15 – 18:00 · Visite 12 rue des Lilas" in html.unescape(_cy).replace("\u00a0", " ") and 'class="nc-puce"' in _cy and "sc-heures" not in _cy, "carte d'Emma : la puce d'agenda impossible à rater (plus de mini-agenda)")
+_cy_txt = html.unescape(re.sub(r"<[^>]+>", " ", _cy)).replace("\u00a0", " ")
+for _x in ["12 rue des Lilas", "Camille Durand", "Perrin", "Me Marchand", "15/01/2027", "1029"]:
+    must(_x in _cy_txt, f"une seule vente dans les cartes : {_x}")
+for _x in ["Lefèvre", "Martin", "Tilleuls", "Bihorel", "Lambert", "rue Verte", "Jeanne-d'Arc"]:
+    must(_x not in _cy_txt, f"plus d'autre vente dans les cartes : {_x}")
+must("✓" not in _cy_txt, "« Envoyé » : l'icône seule, pas de caractère coche")
+must("threshold: 0 }" in idx and "setTimeout(filet, 1500)" in idx, "apparitions : seuil 0 et filet de sécurité à 1,5 s (rien ne reste flou sur téléphone)")
+must("Bon de visite, mandat et facture d'honoraires ;" in html.unescape(_ot) and "compte rendu, mandat" not in _ot, "la promesse « tes documents » ne cite que ce que l'import accepte")
+must('<dialog class="lb" id="lb"' in _cy and "lb.showModal()" in idx and "lb.close()" in idx and 'id="lb-fermer"' in _cy, "lightbox : une boîte de dialogue native (Échap ferme), bouton Fermer")
+must('href="/assets/accueil/carte-secteur.svg#carte"' in _cy and "© OpenStreetMap" in _cy and (dist / "assets" / "accueil" / "carte-secteur.svg").is_file(), "carte du secteur (vignette et lightbox de Hugo) : vraies rues, attribution")
+must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in idx and re.search(r"\.cy-prets li \{[^}]*font-size: 15px", idx), "mobile : onglets aimantés, pastilles à 15 px")
+must("    .nc { position: static;" in idx and ".sc-photo img { aspect-ratio: 4 / 5; }" in idx, "téléphone : la carte sous la photo (4:5), jamais dessus")
+must((ROOT / "docs" / "visuels" / "documents.ts").is_file() and (ROOT / "docs" / "visuels" / "carte.py").is_file() and (ROOT / "docs" / "visuels" / "README.md").is_file(), "générateurs et sources des visuels notés dans docs/visuels/")
+must('aria-label="Google Agenda"' in _cy, "le logo de l'agenda dans la carte d'Emma")
+# Section Max (13/10) : un vocal depuis le terrain, Max répartit, deux cartes à valider ; notre maquette, pas celle de Limova
+_mx = idx.split('id="max"', 1)[1].split("</section>", 1)[0]
+_mxt = html.unescape(re.sub(r"<[^>]+>", "", _mx)).replace("\u00a0", " ")
+must("Un vocal depuis ta voiture. Max s'occupe du reste." in _mxt and _build.MAX_SCENE["vocal"]["texte"] in _mxt and _build.MAX_SCENE["reponse"] in _mxt, "Max : titre à nous, le vocal et sa réponse")
+must(_mx.count('class="mx-carte"') == 2 and _mx.count('>Valider<') == 2 and 'aria-label="Telegram"' in _mx and "0:12" in _mx and _mx.count("<li data-ap") == 3, "Max : deux cartes à valider, Telegram, vocal de 0:12, trois points")
+must("Pilotez" not in _mxt and "Charly" not in _mxt and "WhatsApp" in _mxt and not re.search(r'<h2[^>]*>[^<]*<img', _mx), "anti-copie : ni leur formule, ni avatar dans le titre ; WhatsApp et Telegram sont réels en prod")
+# R51 (Julien) : « on travaille avec LEURS outils et LEURS documents, ils ne remplacent rien » — l'avant/après d'un vrai modèle
+must("Elle ne remplace rien : elle se branche sur ce que tu utilises déjà, et elle remplit tes propres modèles." in html.unescape(_ot).replace("\u00a0", " ")
+     and 'class="ot-docs"' in _ot and _ot.count("<figure>") == 2 and 'data-lightbox="lb-doc-bon"' in _ot and '<template id="lb-doc-bon">' in _ot, "« Tes documents » : avant (modèle vide) → après (rempli), lightbox")
+for _f in ["bon-de-visite-vide@600.webp", "bon-de-visite-rempli@600.webp", "bon-de-visite-plat.webp"]:
+    must((dist / "assets" / "accueil" / "docs" / _f).is_file() and f"/assets/accueil/docs/{_f}" in _ot, f"document {_f} publié")
+must("Exemple fictif" in _ot, "l'agence des documents est présentée comme fictive")
+_txt_pages = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<(style|script)[^>]*>[\s\S]*?</\1>", " ", idx))).replace("\u00a0", " ")
+# le mot du fondateur (« un post Facebook en retard ») est un texte validé : hors contrôle
+_posts = [m.group(0) for m in re.finditer(r".{30}\bposts?\b.{30}", _txt_pages, re.I)
+          if not re.search(r"post (Instagram )?(du )?« Vendu »|Post « Vendu »|post Facebook en retard", m.group(0))]
+must(not _posts, f"le mot « post » seul remplacé par ce qu'il désigne : {_posts[:3]}")
+print("OK la vente moment par moment, les outils")
+
+# ── Interrupteurs : EQUIPE_V2 allumé (13/10), GOOGLE_FICHE éteint ; la variante Raphaël (REVALY_EQUIPE_V2=0) et la fiche Google
+#    allumée se construisent à part ──
+must(_build.EQUIPE_V2 is True and _build.GOOGLE_FICHE is False, "livré : la relève allumée, la fiche Google éteinte")
+for page in sorted(dist.rglob("*.html")):
+    if page.relative_to(dist).as_posix() != "agents/raphael/index.html":
+        must(not re.search(r"rapha[eë]l", page.read_text(), re.I), f"plus aucune mention de Raphaël ({page.relative_to(dist)})")
+    must(not re.search(r"fiche google|google business|googlemybusiness", page.read_text(), re.I), f"rien de la fiche Google ({page.relative_to(dist)})")
+must('http-equiv="refresh" content="0; url=/agents/zoe/"' in (dist / "agents" / "raphael" / "index.html").read_text() and "/agents/raphael/ /agents/zoe/ 301" in (dist / "_redirects").read_text(),
+     "/agents/raphael/ renvoie vers /agents/zoe/")
+must((dist / "agents" / "hugo" / "index.html").is_file() and 'id="agent-hugo"' in idx and idx.count('<article class="eq') == 6, "Hugo dans l'équipe, six agents")
+must("réseaux et visuels" in idx and "six" in idx.lower() and "sept" not in html.unescape(re.sub(r"<[^>]+>", "", idx)).lower(), "Zoé « réseaux et visuels », toujours six agents")
+_p2 = idx.split('id="cy-prospection"', 1)[1].split('class="cy-panneau', 1)[0]
+must("<b>Hugo</b>" in _p2 and "DPE" in _p2 and "/assets/equipe/boucles/hugo@256.webp" in _p2, "le Radar DPE passe à Hugo : sa carte agentique porte son visage")
+must(not list(dist.rglob("googlemybusiness*")), "aucun fichier de la fiche Google publié")
+import tempfile
+_v2 = pathlib.Path(tempfile.mkdtemp()) / "dist-v1"
+subprocess.run([sys.executable, str(ROOT / "build.py")], check=True, capture_output=True,
+               env={**__import__("os").environ, "REVALY_EQUIPE_V2": "0", "REVALY_GOOGLE_FICHE": "1", "REVALY_DIST": str(_v2)})
+_i2 = (_v2 / "index.html").read_text()
+must("hugo" not in _i2.lower() and 'id="agent-raphael"' in _i2 and not list((_v2 / "assets" / "equipe").rglob("hugo*")), "variante éteinte : Raphaël, rien de Hugo")
+must("Ta fiche Google vit" in _i2 and (_v2 / "assets" / "logos" / "googlemybusiness.svg").is_file() and "Fiche Google" in _i2.split('id="outils"', 1)[1].split("</section>", 1)[0],
+     "fiche Google allumée : dans « Après la vente » et dans les outils")
+shutil.rmtree(_v2.parent, ignore_errors=True)
+print("OK interrupteurs (équipe v2, fiche Google)")

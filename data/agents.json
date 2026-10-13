@@ -3,6 +3,7 @@
     "slug": "max",
     "name": "Max",
     "role": "coordinateur",
+    "pour_toi": "Il répartit le travail entre tes agents et te fait le point chaque matin.",
     "question": "Max, ma journée ?",
     "reponse": "Brief de 7 h : deux visites (10 h Bihorel, 15 h rive droite), trois emails importants triés, l'anniversaire de Mme Lefèvre — et deux DPE tout frais dans ton secteur. Je te refais le point ce soir à 19 h.",
     "capacites": [
@@ -67,11 +68,12 @@
     "slug": "emma",
     "name": "Emma",
     "role": "assistante admin",
+    "pour_toi": "Elle prépare tes réponses aux emails, tes relances et tes confirmations de visite.",
     "question": "Emma, quoi de neuf ?",
-    "reponse": "Trois emails importants ce matin, brouillons de réponse prêts. La visite de 15 h est confirmée. Et la fiche de Mme Dubois est dans Modelo — budget 280 000 €, 3 chambres : elle recevra les biens correspondants automatiquement.",
+    "reponse": "Trois emails importants ce matin, brouillons de réponse prêts. La visite de 15 h est confirmée. Et la fiche de Mme Dubois est dans ton CRM — budget 280 000 €, 3 chambres : elle recevra les biens correspondants automatiquement.",
     "capacites": [
       "Un brouillon prêt pour chaque email qui compte",
-      "Écrit les fiches contact ET les fiches recherche acquéreur dans Modelo (le rapprochement, c'est Modelo qui l'envoie — on ne réinvente pas ton CRM)",
+      "Écrit les fiches contact ET les fiches recherche acquéreur dans ton CRM (le rapprochement, c'est lui qui l'envoie — on ne le réinvente pas)",
       "Compte-rendu de visite rédigé depuis ta note vocale",
       "Relances des prospects inactifs : TU les actives, tu règles le délai, le ton et le canal"
     ],
@@ -89,7 +91,7 @@
         },
         {
           "titre": "Offre acceptée → félicitations prêtes",
-          "pitch": "Une offre passe « acceptée » dans Modelo ? Elle te prépare le message de félicitations au client et te prévient — le moment que tes clients retiennent.",
+          "pitch": "Une offre passe « acceptée » dans ton CRM ? Elle te prépare le message de félicitations au client et te prévient — le moment que tes clients retiennent.",
           "source": "cron-modelo-offers"
         }
       ],
@@ -100,8 +102,8 @@
           "source": "read-inbox, draft-email"
         },
         {
-          "titre": "Fiches Modelo à jour",
-          "pitch": "Elle écrit les fiches contact et les fiches recherche acquéreur dans Modelo — le rapprochement avec les biens, c'est Modelo qui s'en charge.",
+          "titre": "Fiches CRM à jour",
+          "pitch": "Elle écrit les fiches contact et les fiches recherche acquéreur dans ton CRM — le rapprochement avec les biens, c'est lui qui s'en charge.",
           "source": "create-modelo-contact, create-modelo-search"
         },
         {
@@ -131,6 +133,7 @@
     "slug": "christine",
     "name": "Christine",
     "role": "juridique & mandats",
+    "pour_toi": "Elle prépare tes bons de visite et vérifie tes mandats et compromis.",
     "question": "Christine, le dossier Perrin ?",
     "reponse": "Compromis complet sauf l'assainissement — je te l'ai mis en tâche. Délai de rétractation : J+7, il expire mardi. Et deux mandats arrivent à échéance ce mois-ci, renouvellements à préparer.",
     "capacites": [
@@ -174,7 +177,7 @@
           "source": "verify-mandat"
         },
         {
-          "titre": "Ton dernier mandat vérifié depuis Modelo",
+          "titre": "Ton dernier mandat vérifié depuis ton CRM",
           "pitch": "Elle va chercher ton dernier mandat signé dans ton CRM : durée, exclusivité, honoraires, échéances — recommandations et points d'attention à la clé.",
           "source": "check-modelo-mandate"
         },
@@ -210,35 +213,36 @@
     "slug": "zoe",
     "name": "Zoé",
     "role": "community manager",
+    "pour_toi": "Elle prépare tes annonces et tes publications Instagram et Facebook, à ta charte.",
     "question": "Zoé, qu'est-ce qui part cette semaine ?",
-    "reponse": "Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
+    "reponse": "Trois publications prêtes : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
     "capacites": [
-      "Posts Instagram & Facebook, visuels générés à ta charte",
+      "Publications Instagram et Facebook, visuels générés à ta charte",
       "Calendrier éditorial + publication programmée",
-      "Nouveau mandat = post proposé tout seul",
+      "Nouveau mandat = l'annonce du bien proposée toute seule",
       "Stats sociales chaque semaine"
     ],
     "fiche": {
       "automatisations": [
         {
-          "titre": "Nouveau mandat → post proposé",
-          "pitch": "Tu rentres un mandat, elle te propose le post — visuel à ta charte compris. Tu valides, il part.",
+          "titre": "Nouveau mandat → l'annonce du bien proposée",
+          "pitch": "Tu rentres un mandat, elle te propose l'annonce du bien et sa publication — visuel à ta charte compris. Tu valides, il part.",
           "source": "cron-mandat-social-posts"
         },
         {
           "titre": "Publication au bon créneau",
-          "pitch": "Tes posts programmés partent à l'heure prévue, même si tu es en visite.",
+          "pitch": "Tes publications programmées partent à l'heure prévue, même si tu es en visite.",
           "source": "cron-publish-scheduled"
         },
         {
           "titre": "Stats sociales — chaque semaine",
-          "pitch": "Portée, réactions, meilleurs posts : ton point réseaux tombe chaque semaine, tu sais ce qui marche.",
+          "pitch": "Portée, réactions, meilleures publications : ton point réseaux tombe chaque semaine, tu sais ce qui marche.",
           "source": "cron-social-stats"
         }
       ],
       "outils": [
         {
-          "titre": "Posts Instagram & Facebook",
+          "titre": "Publications Instagram et Facebook",
           "pitch": "Texte + visuel généré à ta charte (logo, couleurs) — prêts à relire, publiés quand tu valides.",
           "source": "generate-image, publish-social"
         },
@@ -274,6 +278,7 @@
     "slug": "raphael",
     "name": "Raphaël",
     "role": "photographe",
+    "pour_toi": "Il retouche tes photos et en tire des vidéos et des visuels.",
     "question": "Raphaël, les photos du pavillon ?",
     "reponse": "18 photos retouchées : ciel dégagé, verticales redressées, lumière studio. Le salon vide est meublé en home staging virtuel, ton logo est posé en filigrane — et la vidéo du bien est prête.",
     "capacites": [
@@ -338,6 +343,7 @@
     "slug": "lucas",
     "name": "Lucas",
     "role": "estimation & marché",
+    "pour_toi": "Il estime tes biens sur les ventes réelles et te sort ton rapport de marché.",
     "question": "Lucas, l'appartement rue Verte, il vaut quoi ?",
     "reponse": "Entre 242 000 et 255 000 € — douze ventes notariées comparables dans le quartier. Ton rapport de marché à ta marque est prêt pour le rendez-vous de 16 h. Au passage : quatre DPE tout frais cette semaine sur ta commune.",
     "capacites": [

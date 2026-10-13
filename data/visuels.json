@@ -1,0 +1,172 @@
+{
+  "_note": "R50/R49 (13/10) : une PHOTO par moment (gpt-image-2, assets/accueil/scenes/<id>@1536|960.webp, 3:2 ; <id>-m@820|520.webp, 4:5 pour mobile) et UNE carte de notification agentique : l'agent vient vers toi, déclenché par l'agenda, le CRM ou un DPE ; tu valides. UNE seule vente du début à la fin (sauf Prospection) : l'appartement T3 de M. et Mme Perrin, 12 rue des Lilas, 76230 Bois-Guillaume, 68 m², mandat n° 1029, 249 000 € ; avis de valeur 242 000 – 255 000 € (28/09/2026) ; mandat signé le 02/10 ; visite de Camille Durand le vendredi 16/10/2026 à 17 h 15 ; bilan le 06/11 ; compromis le 20/11 ; acte le 15/01/2027 chez Me Hélène Marchand ; facture 12 000 € TTC. Documents = vrais rendus (docs-agence, docs/visuels/README.md), identité fictive « Agence du Parc » (vert #1F3A2E, conseillère Claire Vasseur).",
+  "prospection": {
+    "photo_alt": "Une rue résidentielle française au petit matin, maisons de ville aux volets clairs.",
+    "carte": {
+      "agent": "hugo",
+      "quand": "il y a 12 min",
+      "declencheur": "3 nouveaux DPE ce matin autour de l'agence",
+      "action": "Une maison classée F rue des Écoles : l'approche par courrier est prête.",
+      "coches": [
+        "Adresse absente du fichier de l'agence : vérifié",
+        "Courrier « Au propriétaire », dans les règles",
+        "Les deux autres DPE, notés pour toi"
+      ],
+      "vignette": {
+        "type": "carte",
+        "label": "Carte du secteur · 3 DPE",
+        "alt": "La carte du secteur avec les trois DPE reçus ce matin."
+      },
+      "bouton": "Voir",
+      "fait": "Vu"
+    },
+    "v2": {},
+    "v1": {
+      "carte": {
+        "agent": "lucas"
+      }
+    }
+  },
+  "visite": {
+    "photo_alt": "L'entrée d'un appartement lumineux : une console, un trousseau de clés et une feuille imprimée.",
+    "carte": {
+      "agent": "emma",
+      "quand": "hier, 18 h",
+      "declencheur": "Visite demain 17 h 15 · Camille Durand, dans ton agenda",
+      "action": "La confirmation WhatsApp et le rappel du jour J sont prêts.",
+      "coches": [
+        "Confirmation à Camille Durand, au vouvoiement",
+        "Rappel du jour J, programmé",
+        "Bon de visite fait par Christine, au format de l'agence"
+      ],
+      "vignette": {
+        "type": "document",
+        "src": "bon-de-visite-mockup@480.webp",
+        "grand": "bon-de-visite-plat.webp",
+        "label": "Bon de visite · PDF",
+        "alt": "Le bon de visite de l'Agence du Parc, rempli par ton équipe : Camille Durand, appartement T3, 12 rue des Lilas, vendredi 16 octobre 2026 à 17h15."
+      },
+      "bouton": "Envoyer",
+      "fait": "Envoyé",
+      "puce": {
+        "appli": "google-agenda",
+        "texte": "Google Agenda · ven. 16 oct. · 17:15 – 18:00 · Visite 12 rue des Lilas"
+      }
+    }
+  },
+  "vendeur": {
+    "photo_alt": "Une table de cuisine : deux tasses, une chemise cartonnée fermée et un stylo.",
+    "carte": {
+      "agent": "lucas",
+      "quand": "il y a 1 h",
+      "declencheur": "Rendez-vous vendeur vendredi 6/11 · M. et Mme Perrin, 12 rue des Lilas",
+      "action": "Ton bilan de commercialisation est prêt : 5 visites, 3 acquéreurs, 1 offre.",
+      "coches": [
+        "Visites et offres lues dans ton CRM",
+        "Le document pour M. et Mme Perrin, au logo de l'agence",
+        "Ta note de préparation, pour toi seul"
+      ],
+      "vignette": {
+        "type": "document",
+        "src": "bilan-mockup@480.webp",
+        "grand": "bilan-plat.webp",
+        "label": "Bilan de commercialisation · PDF",
+        "alt": "La première page du bilan de commercialisation de l'Agence du Parc : « Ce que le marché nous dit », 5 visites, 1 offre, pour l'appartement des Perrin."
+      },
+      "bouton": "Ouvrir",
+      "fait": "Ouvert"
+    }
+  },
+  "mandat": {
+    "photo_alt": "Un bureau rangé : un classeur ouvert à intercalaires, une tablette, un stylo-plume.",
+    "carte": {
+      "agent": "christine",
+      "quand": "il y a 2 h",
+      "declencheur": "Rendu d'estimation demain · M. et Mme Perrin, dans ton agenda",
+      "action": "L'avis de valeur et le mandat pré-rempli sur ton modèle sont prêts.",
+      "coches": [
+        "Avis de valeur : 242 000 – 255 000 €, cinq ventes comparables (Lucas)",
+        "Mandat exclusif pré-rempli, à faire valider par ton juriste",
+        "Pièces à réunir listées, relance prête (Emma)"
+      ],
+      "vignette": {
+        "type": "document",
+        "src": "avis-mockup@480.webp",
+        "grand": "avis-plat.webp",
+        "label": "Avis de valeur · PDF",
+        "alt": "La couverture de l'avis de valeur de l'Agence du Parc pour l'appartement T3 des Perrin, 12 rue des Lilas."
+      },
+      "bouton": "Ouvrir",
+      "fait": "Ouvert",
+      "vignette2": {
+        "type": "document",
+        "src": "mandat-mockup@480.webp",
+        "grand": "mandat-plat.webp",
+        "label": "Mandat de vente · PDF",
+        "alt": "La première page du mandat de vente exclusif de l'Agence du Parc, pré-remplie : M. et Mme Perrin, 12 rue des Lilas, 249 000 €."
+      }
+    }
+  },
+  "compromis": {
+    "photo_alt": "Une main qui signe un document au stylo-plume, feuilles floues.",
+    "carte": {
+      "agent": "christine",
+      "quand": "il y a 20 min",
+      "declencheur": "Compromis signé le 20/11 · vente Perrin → Durand, étape franchie dans ton CRM",
+      "action": "Fin de rétractation le 1er décembre. Il manque 2 pièces, la relance est prête.",
+      "coches": [
+        "Échéances : rétractation 01/12 · prêt 20/12 · acte 15/01/2027",
+        "Diagnostic amiante et PV d'AG : à demander au vendeur",
+        "Félicitations à Camille Durand prêtes (Emma)"
+      ],
+      "vignette": null,
+      "bouton": "Envoyer",
+      "fait": "Envoyé"
+    }
+  },
+  "acte": {
+    "photo_alt": "Le bureau en bois d'un notaire : un trousseau de clés passe d'une main à l'autre.",
+    "carte": {
+      "agent": "emma",
+      "quand": "il y a 5 min",
+      "declencheur": "Signature jeudi 15/01/2027 chez Me Marchand, dans ton agenda",
+      "action": "Facture d'honoraires prête, e-mail au notaire avec la facture jointe.",
+      "coches": [
+        "12 000 € TTC (10 000 € HT), d'après le mandat n° 1029 et la vente dans ton CRM",
+        "E-mail à Me Hélène Marchand, notaire à Rouen, en brouillon dans ta boîte",
+        "À apporter : pièce d'identité, mandat, bon de visite"
+      ],
+      "vignette": {
+        "type": "document",
+        "src": "facture-mockup@480.webp",
+        "grand": "facture-plat.webp",
+        "label": "Facture d'honoraires · PDF",
+        "alt": "La facture d'honoraires de l'Agence du Parc, remplie par ton équipe : vente Perrin → Durand, 12 000 € TTC."
+      },
+      "bouton": "Envoyer",
+      "fait": "Envoyé"
+    }
+  },
+  "apres": {
+    "photo_alt": "Le portail d'une maison avec un panneau « Vendu » et un bouquet de fleurs.",
+    "carte": {
+      "agent": "zoe",
+      "quand": "il y a 30 min",
+      "declencheur": "Vente signée · 12 rue des Lilas, étape franchie dans ton CRM",
+      "action": "Le post Instagram du « Vendu » est prêt, sans le prix.",
+      "coches": [
+        "Publication Instagram et Facebook, à ta charte",
+        "Demande d'avis Google à M. et Mme Perrin, prête (Emma)",
+        "Anniversaire d'achat de Camille Durand noté pour l'an prochain (Max)"
+      ],
+      "vignette": {
+        "type": "post",
+        "src": "apres",
+        "label": "Post « Vendu » · Instagram",
+        "alt": "Le post Instagram du « Vendu » : le portail de la maison et le panneau."
+      },
+      "bouton": "Publier",
+      "fait": "Publié"
+    }
+  }
+}

@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Revaly · film 45 s</title>
+<!-- Film de la page de vente v3 (12/10/2026), 1920×1080, 30 i/s, 45 s.
+     Rendu image par image : window.__seek(t) pose l'état exact à t secondes,
+     window.__frame(t) attend en plus que les vidéos soient positionnées ;
+     window.__ready passe à true quand polices et vidéos sont chargées.
+     Gauche : plans de banque d'images étalonnés (film/graded, voir grade.sh).
+     Droite : composants de l'appli recopiés (film/ui), personnages v6. -->
+<link rel="stylesheet" href="ui/tokens.css">
+<link rel="stylesheet" href="ui/ui.css">
+<style>
+  html, body { margin: 0; background: #000; }
+  body { width: var(--W); height: var(--H); overflow: hidden; }
+  /* Contrôle du rendu : sous l'image (hors cadre, rognée à l'encodage), une
+     bande de 16 cases noires ou blanches porte le numéro de l'image. render.sh
+     la relit sur chaque capture : une image dans le désordre est refaite. */
+  #code { position: fixed; left: 0; top: var(--H); width: var(--W); height: 8px; display: flex; background: #000; }
+  #code i { flex: 1; height: 100%; background: #000; }
+  /* Trois formats, une seule mise en scène (film.html#B, #B-portrait, #B-carre).
+     Paysage 16:9 : la vie à gauche, l'équipe à droite. Portrait 9:16 : la vie
+     en haut, l'équipe en bas, l'interface à 2×. Carré 1:1 : la même pile, pour
+     l'accroche, la révélation et la fin. Le bas de l'image reste libre pour
+     les contrôles du lecteur (8 % de la hauteur). */
+  html {
+    --W: 1920px; --H: 1080px; --vie-w: 960px; --vie-h: 1080px; --eq-x: 960px; --eq-y: 0px; --eq-w: 960px; --eq-h: 1080px;
+    --col: 88px; --col-w: 784px; --eyebrow-top: 66px; --agent-top: 136px; --art-top: 296px; --vocal-top: 300px;
+    --z: 1.95; --z-christine: 1.62; --z-vocal: 1.62; --z-zoe: 1.8; --z-routine: 1.66;
+    --clients-top: 140px; --clients-size: 56px;
+    --st-x: 480px; --st-bas: 96px; --st-taille: 40px; --st-large: 880px;
+    --accroche-x: 72px; --accroche-bas: 132px; --accroche-taille: 76px; --parole-x: 72px; --parole-y: 118px; --parole-taille: 46px;
+    --fin-bas: 90px; --fin-titre: 84px; --fin-ligne: 36px; --fin-visage: 76px; --fin-btn-h: 76px; --fin-btn: 30px;
+    --fin-logo-top: 66px;
+    --horloge-taille: 24px; --horloge-h: 44px;
+    --notif-titre: 36px; --notif-corps: 34px; --notif-ico: 96px; --notif-heure: 24px; --rail-top: 0px;
+  }
+  /* Portrait 9:16 : la vie en haut (700 px), l'équipe dessous à 2,35×. Tout ce qui
+     compte reste entre y = 270 et y = 1250 (zone sûre des Reels) : en-tête et
+     horloge à 40 px, cartes recadrées sur leur ligne utile (voir pan()). */
+  html[data-format="portrait"] {
+    --W: 1080px; --H: 1920px; --vie-w: 1080px; --vie-h: 700px; --eq-x: 0px; --eq-y: 700px; --eq-w: 1080px; --eq-h: 1400px;
+    --col: 64px; --col-w: 952px; --eyebrow-top: 22px; --agent-top: 92px; --art-top: 226px; --vocal-top: 226px;
+    --z: 2.35; --z-christine: 2.35; --z-vocal: 2.35; --z-zoe: 2.35; --z-routine: 2.35;
+    --clients-top: 24px; --clients-size: 52px;
+    --st-x: 540px; --st-bas: 1244px; --st-taille: 56px; --st-large: 980px;
+    --accroche-x: 64px; --accroche-bas: 1262px; --accroche-taille: 88px; --parole-x: 64px; --parole-y: 300px; --parole-taille: 56px;
+    --fin-bas: 370px; --fin-titre: 76px; --fin-ligne: 40px; --fin-visage: 92px; --fin-btn-h: 92px; --fin-btn: 36px;
+    --fin-logo-top: 300px;
+    --horloge-taille: 40px; --horloge-h: 64px;
+    --notif-titre: 40px; --notif-corps: 38px; --notif-ico: 96px; --notif-heure: 25px; --rail-top: 450px;
+  }
+  /* Carré 1:1 : la même pile, plus serrée ; rien d'utile sous y = 972. */
+  html[data-format="carre"] {
+    --W: 1080px; --H: 1080px; --vie-w: 1080px; --vie-h: 520px; --eq-x: 0px; --eq-y: 520px; --eq-w: 1080px; --eq-h: 640px;
+    --col: 64px; --col-w: 952px; --eyebrow-top: 16px; --agent-top: 76px; --art-top: 186px; --vocal-top: 186px;
+    --z: 2; --z-christine: 2; --z-vocal: 2; --z-zoe: 2; --z-routine: 2;
+    --clients-top: 18px; --clients-size: 42px;
+    --st-x: 540px; --st-bas: 580px; --st-taille: 56px; --st-large: 980px;
+    --accroche-x: 56px; --accroche-bas: 590px; --accroche-taille: 68px; --parole-x: 56px; --parole-y: 70px; --parole-taille: 48px;
+    --fin-bas: 110px; --fin-titre: 62px; --fin-ligne: 30px; --fin-visage: 64px; --fin-btn-h: 72px; --fin-btn: 28px;
+    --fin-logo-top: 44px;
+    --horloge-taille: 36px; --horloge-h: 58px;
+    --notif-titre: 38px; --notif-corps: 35px; --notif-ico: 88px; --notif-heure: 24px; --rail-top: 336px;
+  }
+  html[data-format="portrait"] #st, html[data-format="carre"] #st { white-space: normal; text-wrap: balance; }
+  html[data-format="carre"] .fin-equipe { margin-bottom: 26px; }
+  html[data-format="carre"] .fin-btns { margin-top: 34px; }
+  #fin h1 em { font-style: normal; color: var(--color-fg-brand); }
+  html[data-format="portrait"] #fin h1 br, html[data-format="carre"] #fin h1 br { display: none; }
+  html[data-format="portrait"] #fin h1, html[data-format="carre"] #fin h1 { text-wrap: balance; max-width: 940px; }
+  /* Rangée de l'agent : nom et métier sur une ligne, l'état dessous. */
+  html[data-format="portrait"] .agent, html[data-format="carre"] .agent { gap: 22px; }
+  html[data-format="portrait"] .agent .ra { --ra-s: 96px; }
+  html[data-format="carre"] .agent .ra { --ra-s: 76px; }
+  html[data-format="portrait"] .agent .ra-badge, html[data-format="carre"] .agent .ra-badge { width: 30px; height: 30px; border-width: 3px; }
+  html[data-format="portrait"] .agent-txt, html[data-format="carre"] .agent-txt { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; row-gap: 4px; align-items: baseline; }
+  html[data-format="portrait"] .agent-txt b { font-size: 46px; }
+  html[data-format="portrait"] .agent-txt .role { font-size: 28px; }
+  html[data-format="portrait"] .status { grid-column: 1 / -1; margin-top: 0; font-size: 32px; }
+  html[data-format="carre"] .agent-txt b { font-size: 38px; }
+  html[data-format="carre"] .agent-txt .role { font-size: 23px; }
+  html[data-format="carre"] .status { grid-column: 1 / -1; margin-top: 0; font-size: 27px; }
+  html[data-format="portrait"] .status .i, html[data-format="carre"] .status .i { font-size: 1em; }
+  /* Les cartes défilent dans leur cadre (fondu en haut) : la ligne utile reste visible. */
+  html[data-format="portrait"] .artefact, html[data-format="carre"] .artefact {
+    padding: 30px 48px 90px; margin: -30px 0 0 -48px;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 14px, #000 34px); mask-image: linear-gradient(180deg, transparent 0, transparent 14px, #000 34px);
+  }
+  html[data-format="portrait"] .artefact .z, html[data-format="carre"] .artefact .z { width: 400px !important; }
+  html[data-format="portrait"] .artefact .card, html[data-format="carre"] .artefact .card { width: auto !important; }
+  html[data-format="portrait"] #zoe-photo { height: 104px !important; }
+  html[data-format="carre"] #zoe-photo { height: 96px !important; }
+  /* L'équipe sous la notification, à l'ouverture (portrait et carré). */
+  #rail-equipe { display: none; position: absolute; left: var(--col); top: var(--rail-top); width: var(--col-w); opacity: 0; }
+  #rail-equipe span { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
+  #rail-equipe img { border-radius: 50%; background: var(--color-avatar-bg); box-shadow: 0 0 0 1px var(--color-avatar-line), var(--shadow-sm); }
+  #rail-equipe b { font-weight: 600; color: var(--color-fg); }
+  #rail-equipe i { font-style: normal; color: var(--color-fg-muted); }
+  html[data-format="portrait"] #rail-equipe { display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 34px; }
+  html[data-format="portrait"] #rail-equipe img { width: 112px; height: 112px; }
+  html[data-format="portrait"] #rail-equipe b { font-size: 34px; }
+  html[data-format="portrait"] #rail-equipe i { font-size: 25px; }
+  html[data-format="carre"] #rail-equipe { display: grid; grid-template-columns: repeat(6, 1fr); }
+  html[data-format="carre"] #rail-equipe img { width: 76px; height: 76px; }
+  html[data-format="carre"] #rail-equipe b { font-size: 22px; }
+  html[data-format="carre"] #rail-equipe i { display: none; }
+  /* Ce que voient tes clients : tailles par format (empilés par le script). */
+  html[data-format="portrait"] .recu { padding: 20px 26px; grid-template-columns: 56px 1fr; column-gap: 18px; border-radius: 26px; }
+  html[data-format="portrait"] .recu-ico { width: 56px; height: 56px; border-radius: 16px; }
+  html[data-format="portrait"] .recu-l1 { font-size: 32px; }
+  html[data-format="portrait"] .recu-l1 span { font-size: 26px; }
+  html[data-format="portrait"] .recu-l2 { font-size: 31px; line-height: 1.32; }
+  html[data-format="carre"] .recu { padding: 12px 18px; grid-template-columns: 44px 1fr; column-gap: 14px; border-radius: 20px; }
+  html[data-format="carre"] .recu-ico { width: 44px; height: 44px; border-radius: 13px; }
+  html[data-format="carre"] .recu-ico .i { font-size: 24px; }
+  html[data-format="carre"] .recu-l1 { font-size: 24px; }
+  html[data-format="carre"] .recu-l1 span { font-size: 20px; }
+  html[data-format="carre"] .recu-l2 { font-size: 23px; line-height: 1.3; margin-top: 2px; }
+  #stage {
+    width: var(--W); height: var(--H); position: relative; overflow: hidden;
+    background: var(--ink-950); font-family: var(--font-sans);
+    font-feature-settings: var(--font-feature-default); -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Gauche : la vraie vie ---------- */
+  #gauche { position: absolute; left: 0; top: 0; width: var(--vie-w); height: var(--vie-h); overflow: hidden; z-index: 1; background: var(--ink-950); }
+  .rush { position: absolute; inset: 0; overflow: hidden; visibility: hidden; }
+  .rush video { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  /* Fin du film : flou et voile porcelaine sous l'écran de fin */
+  #voile { position: absolute; inset: 0; background: var(--color-bg); opacity: 0; z-index: 3; }
+
+  /* ---------- Droite : l'équipe au même instant ---------- */
+  #droite {
+    position: absolute; left: var(--eq-x); top: var(--eq-y); width: var(--eq-w); height: var(--eq-h); overflow: hidden; z-index: 2;
+    background: var(--gradient-ambient), var(--color-bg);
+    clip-path: inset(0 100% 0 0);
+  }
+  #droite .ui { position: absolute; }
+  #pendant {
+    left: var(--col); top: var(--eyebrow-top); margin: 0; transform-origin: 0 0;
+    font-size: 68px; font-weight: 400; letter-spacing: -0.025em; line-height: 1.15; color: var(--color-fg);
+    white-space: nowrap;
+  }
+  #horloge {
+    top: 66px; display: inline-flex; align-items: center; gap: 0.42em; height: var(--horloge-h); padding: 0 0.66em;
+    border-radius: var(--radius-full); background: var(--color-bg-raised); box-shadow: var(--shadow-sm);
+    font-size: var(--horloge-taille); font-weight: 400; color: var(--color-fg); white-space: nowrap;
+  }
+  #horloge .i { font-size: 0.92em; color: var(--color-fg-muted); }
+
+  .agent { left: var(--col); top: var(--agent-top); display: flex; align-items: center; gap: 28px; }
+  .agent .ra { --ra-s: 116px; --ra-cutout: var(--color-bg); }
+  .agent .ra-badge { width: 36px; height: 36px; border-width: 4px; transform: scale(0); }
+  .agent-txt { display: flex; flex-direction: column; gap: 2px; }
+  .agent-txt b { font-size: 44px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+  .agent-txt .role { font-size: 25px; color: var(--color-fg-muted); }
+  .status { display: grid; margin-top: 8px; font-size: 25px; font-weight: 400; }
+  .status > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 12px; opacity: 0; white-space: nowrap; }
+  .status .brand { color: var(--color-fg-brand); }
+  .status .ok { color: var(--color-success-text); }
+  .status .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--brand-500); }
+  .status .i { font-size: 26px; stroke-width: 2.25; }
+
+  .z { zoom: var(--z); }
+  .artefact { left: var(--col); top: var(--art-top); }
+  #art-vocal { top: var(--vocal-top); }
+
+  /* Porte-voix : le tap du conseiller */
+  /* Le tap : un anneau autour du bouton (jamais un disque sur le mot), puis
+     une onde qui s'élargit. Rien ne bouge ensuite. */
+  #doigt, #onde {
+    position: absolute; z-index: 30; left: 0; top: 0; width: 116px; height: 116px; margin: -58px 0 0 -58px;
+    border-radius: 50%; opacity: 0; pointer-events: none;
+  }
+  #doigt { box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.75), 0 0 0 7px rgba(255, 255, 255, 0.85), 0 8px 22px rgba(16, 22, 38, 0.16); }
+  #onde { box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4); }
+
+  /* ---------- Ouverture : la notification dans le noir ---------- */
+  #ouverture { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+  #halo {
+    position: absolute; left: 960px; top: 470px; width: 2800px; height: 1900px; margin: -950px 0 0 -1400px;
+    background: radial-gradient(closest-side, rgba(99, 102, 241, 0.17), rgba(99, 102, 241, 0.105) 22%, rgba(99, 102, 241, 0.055) 45%,
+      rgba(99, 102, 241, 0.022) 68%, rgba(99, 102, 241, 0.006) 86%, rgba(99, 102, 241, 0) 100%);
+    opacity: 0;
+  }
+  #grain { position: absolute; inset: 0; background: url("assets/grain.png") repeat; mix-blend-mode: overlay; opacity: 0; }
+  /* La notification réelle (sw.js : icône de l'appli, titre, corps ; titre et
+     corps d'agent-worker/handler.ts). Sombre sur le noir (A), claire sur la
+     porcelaine (B). */
+  #notif { position: absolute; left: 450px; top: 380px; width: 1020px; height: 180px; box-sizing: border-box; transform-origin: 50% 50%;
+    display: grid; grid-template-columns: var(--notif-ico) 1fr; column-gap: 24px; align-items: center; padding: 0 30px;
+    border-radius: 38px; color: #fff; background: rgb(36, 38, 48);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset, 0 30px 80px rgba(0, 0, 0, 0.55); opacity: 0; }
+  #notif img { width: var(--notif-ico); height: var(--notif-ico); border-radius: 23%; display: block; }
+  .notif-l1 { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; font-size: var(--notif-titre); letter-spacing: -0.01em; white-space: nowrap; }
+  .notif-l1 b { font-weight: 600; }
+  .notif-l1 .heure { font-size: var(--notif-heure); color: rgba(255, 255, 255, 0.55); }
+  .notif-l2 { font-size: var(--notif-corps); color: rgba(255, 255, 255, 0.86); margin-top: 4px; letter-spacing: -0.005em; white-space: nowrap; }
+  #notif.clair { color: var(--color-fg); background: rgba(255, 255, 255, 0.94); box-shadow: var(--shadow-xl); }
+  #notif.clair .notif-l1 .heure { color: var(--color-fg-subtle); }
+  #notif.clair .notif-l2 { color: var(--color-fg-muted); }
+  /* Ouverture B : la grande ligne sur la vie, dès la première demi-seconde. */
+  #accroche {
+    position: absolute; z-index: 4; left: var(--accroche-x); bottom: var(--accroche-bas); width: calc(var(--vie-w) - 140px); margin: 0; opacity: 0;
+    font-size: var(--accroche-taille); font-weight: 400; letter-spacing: -0.03em; line-height: 1.08; color: #fff;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  #accroche-voile { position: absolute; z-index: 4; left: 0; bottom: calc(var(--H) - var(--vie-h)); width: var(--vie-w); height: calc(var(--vie-h) * 0.5); opacity: 0;
+    background: linear-gradient(0deg, rgba(9, 11, 15, 0.55), rgba(9, 11, 15, 0.22) 55%, transparent); }
+
+  /* ---------- Lucas : avis de valeur ---------- */
+  .chart { display: block; width: 100%; height: auto; }
+  .prix { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .prix b { font-size: 26px; font-weight: 400; letter-spacing: -0.02em; }
+
+  /* ---------- Révélation : ce que voient tes clients ---------- */
+  #clients-titre { left: var(--col); top: var(--clients-top); margin: 0; font-size: var(--clients-size); font-weight: 400; letter-spacing: -0.03em; line-height: 1.1; }
+  .recu {
+    left: var(--col); width: var(--col-w); display: grid; grid-template-columns: 64px 1fr; column-gap: 20px; align-items: start;
+    padding: 22px 26px; border-radius: 24px; background: var(--color-bg-raised); box-shadow: var(--shadow-lg);
+  }
+  .recu-ico { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; background: var(--color-bg-subtle); color: var(--color-fg-muted); }
+  .recu-ico .i { font-size: 30px; }
+  .recu-l1 { display: flex; justify-content: space-between; align-items: baseline; font-size: 26px; }
+  .recu-l1 b { font-weight: 600; }
+  .recu-l1 span { font-size: 22px; color: var(--color-fg-muted); }
+  .recu-l2 { font-size: 25px; line-height: 1.4; color: var(--color-fg); margin-top: 4px; }
+  .recu-l3 { font-size: 21px; color: var(--color-fg-muted); margin-top: 6px; }
+
+  /* ---------- Fin ---------- */
+  #fin { position: absolute; inset: 0; z-index: 6; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 48px var(--fin-bas); }
+  #fin > * { opacity: 0; }
+  .fin-equipe { display: flex; margin-bottom: 40px; }
+  .fin-equipe .ra { --ra-s: var(--fin-visage); margin-left: -12px; box-shadow: 0 0 0 4px var(--color-bg); border-radius: 50%; }
+  .fin-equipe .ra:first-child { margin-left: 0; }
+  #fin h1 { margin: 0; font-size: var(--fin-titre); font-weight: 400; letter-spacing: -0.035em; line-height: 1.04; color: var(--color-fg); }
+  #fin .fin-ligne { margin: 30px 0 0; max-width: 900px; font-size: var(--fin-ligne); color: var(--color-fg-muted); letter-spacing: -0.01em; }
+  .fin-btns { display: flex; gap: 18px; margin-top: 48px; }
+  .fin-btns span { display: inline-flex; align-items: center; height: var(--fin-btn-h); padding: 0 calc(var(--fin-btn-h) / 2); border-radius: 16px; font-size: var(--fin-btn); font-weight: 400; }
+  .fin-btns .p { background: var(--color-action); color: #fff; box-shadow: 0 12px 30px rgba(79, 70, 229, 0.28); }
+  .fin-btns .g { background: var(--color-bg-raised); color: var(--color-fg); box-shadow: var(--shadow-md); }
+  .fin-logo { position: absolute; left: 0; right: 0; top: var(--fin-logo-top); font-size: 40px; font-weight: 500; letter-spacing: -0.025em; color: var(--color-fg); }
+  .fin-logo i { font-style: normal; color: var(--brand-500); }
+
+  /* Les mots du vocal, dits à gauche (le bot ne les réécrit pas dans Telegram). */
+  #parole {
+    position: absolute; z-index: 4; left: var(--parole-x); top: var(--parole-y); width: calc(var(--vie-w) - 140px); margin: 0; opacity: 0;
+    font-size: var(--parole-taille); font-weight: 400; letter-spacing: -0.015em; line-height: 1.2; color: #fff;
+    text-shadow: 0 2px 22px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.35);
+  }
+  #parole-voile { position: absolute; z-index: 4; left: 0; top: 0; width: var(--vie-w); height: 420px; opacity: 0;
+    background: linear-gradient(180deg, rgba(9, 11, 15, 0.55), rgba(9, 11, 15, 0.25) 55%, transparent); }
+  .parole-mic { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 24px; font-weight: 400; color: rgba(255, 255, 255, 0.86); letter-spacing: 0; }
+  .parole-mic .i { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Sous-titres incrustés ---------- */
+  #st {
+    position: absolute; z-index: 10; left: var(--st-x); bottom: var(--st-bas); transform: translateX(-50%);
+    margin: 0; width: max-content; max-width: var(--st-large); padding: 14px 32px 16px; border-radius: 20px; text-align: center;
+    background: rgba(244, 245, 248, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(16, 22, 38, 0.14), 0 0 0 1px rgba(12, 15, 22, 0.06);
+    font-size: var(--st-taille); font-weight: 400; letter-spacing: -0.01em; line-height: 1.22; color: var(--color-fg);
+    white-space: nowrap; opacity: 0;
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Icônes Lucide (lucide-react 0.344, licence ISC), tracés recopiés tels quels. -->
+  <symbol id="i-check-check" viewBox="0 0 24 24"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chevron-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+  <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+  <symbol id="i-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16.5 12"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+  <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+  <symbol id="i-file-chart" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 18v-2"/><path d="M12 18v-4"/><path d="M16 18v-6"/></symbol>
+  <symbol id="i-list-checks" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m2 9 3-3 3 3"/><path d="M13 18H7a2 2 0 0 1-2-2V6"/><path d="m22 15-3 3-3-3"/><path d="M11 6h6a2 2 0 0 1 2 2v10"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+  <symbol id="i-calendar-check" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+</svg>
+
+<div id="stage" style="width:1920px;height:1080px;position:relative;overflow:hidden">
+
+  <section id="gauche">
+    <div class="rush" id="w1"><video id="rush1" src="graded/1.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w2"><video id="rush2" src="graded/2.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w3"><video id="rush3" src="graded/3.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w4"><video id="rush4" src="graded/4.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w5"><video id="rush5" src="graded/5.mp4" muted preload="auto" playsinline></video></div>
+    <div class="rush" id="w6"><video id="rush6" src="graded/6.mp4" muted preload="auto" playsinline></video></div>
+    <div id="voile"></div>
+  </section>
+
+  <section id="droite">
+    <p class="ui" id="pendant">Pendant ce temps…</p>
+    <span class="ui" id="horloge"><svg class="i"><use href="#i-clock"/></svg><span class="tnum" id="horloge-t">Vendredi 15 h 15</span></span>
+
+    <div class="ui" id="rail-equipe">
+      <span><img src="assets/agents/max.webp" alt=""><b>Max</b><i>Directeur d'agence</i></span>
+      <span><img src="assets/agents/emma.webp" alt=""><b>Emma</b><i>Assistante de direction</i></span>
+      <span><img src="assets/agents/lucas.webp" alt=""><b>Lucas</b><i>Analyste de marché</i></span>
+      <span><img src="assets/agents/christine.webp" alt=""><b>Christine</b><i>Conseillère juridique</i></span>
+      <span><img src="assets/agents/zoe.webp" alt=""><b>Zoé</b><i>Community manager</i></span>
+      <span><img src="assets/agents/raphael.webp" alt=""><b>Raphaël</b><i>Photos et visuels</i></span>
+    </div>
+
+    <!-- ===== 0:04-0:12 · Emma : rappel de la visite suivante (ui/carte-a-valider.html) ===== -->
+    <div class="ui agent" id="ag-emma1">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="4" data-a="12.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Emma</b><span class="role">Assistante de direction</span>
+        <span class="status"><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Rappel prêt, à valider</span><span class="ok s3"><svg class="i"><use href="#i-check"/></svg>Envoyé à Camille sur WhatsApp</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-rappel"><div class="z">
+      <div class="sheet">
+        <div class="sheet-head"><svg class="i"><use href="#i-check-check"/></svg><span>À valider</span><span class="count tnum"><span id="c4">4</span><span id="c3">3</span></span><span class="grow"></span><svg class="i"><use href="#i-chevron-up"/></svg></div>
+        <ul style="margin:0;padding:0;list-style:none"><li class="card" id="carte-rappel">
+          <div class="card-top">
+            <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/emma.webp" alt=""></span><span class="ra-badge" id="carte-badge"><svg><use href="#i-check"/></svg></span></span>
+            <p class="card-title">Rappel de visite · <span class="moment">ven. 16 oct. 17h15</span></p>
+            <span class="pill pill-warn"><svg class="i"><use href="#i-check-check"/></svg>expire dans 2 h</span>
+            <p class="card-to">À Camille Durand · WhatsApp</p>
+          </div>
+          <div class="paper">Bonjour Camille, je vous rappelle notre visite aujourd'hui à 17h15 au 12 rue des Lilas. À tout à l'heure ! — Denis Moreau, Agence du Parc</div>
+          <div class="actions">
+            <div class="btns" id="btns"><span class="btn btn-tint" id="valider">Valider</span><span class="btn btn-quiet">Refuser</span></div>
+            <span class="wait" id="validation"><svg class="i" id="spin"><use href="#i-loader"/></svg>Validation…</span>
+            <span class="done" id="valide">✓ Validé</span>
+          </div>
+          <div class="card-foot"><span><svg class="i"><use href="#i-chevron-right"/></svg>Détails</span><span class="end">Voir dans le fil<svg class="i"><use href="#i-arrow-up-right"/></svg></span></div>
+        </li></ul>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:12-0:16 · Lucas : avis de valeur ===== -->
+    <div class="ui agent" id="ag-lucas">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/lucas.mp4" muted preload="auto" playsinline data-de="11.6" data-a="16.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Lucas</b><span class="role">Analyste de marché</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Analyse les ventes du quartier</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Avis de valeur prêt</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-lucas"><div class="z">
+      <div class="card" style="width:400px">
+        <div class="card-top">
+          <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/lucas.webp" alt=""></span></span>
+          <p class="card-title">Avis de valeur · 27 avenue Jean-Jaurès</p>
+          <span class="pill pill-quiet"><svg class="i"><use href="#i-file-chart"/></svg>PDF</span>
+          <p class="card-to">Pour Mme Bernard · prix au m² du quartier, ventes DVF</p>
+        </div>
+        <svg class="chart" viewBox="0 0 376 132" aria-hidden="true">
+          <g stroke="rgba(12,15,22,0.08)" stroke-width="1"><line x1="0" y1="18" x2="376" y2="18"/><line x1="0" y1="58" x2="376" y2="58"/><line x1="0" y1="98" x2="376" y2="98"/></g>
+          <g font-size="10" fill="#687080" font-family="Geist Variable"><text x="0" y="128">2019</text><text x="104" y="128">2021</text><text x="208" y="128">2023</text><text x="340" y="128">2026</text></g>
+          <path id="courbe" d="M6 96 L58 90 L110 74 L162 66 L214 70 L266 56 L318 44 L370 34" fill="none" stroke="#4F46E5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+          <g fill="#FFFFFF" stroke="#4F46E5" stroke-width="2"><circle class="pt" cx="6" cy="96" r="3.5"/><circle class="pt" cx="58" cy="90" r="3.5"/><circle class="pt" cx="110" cy="74" r="3.5"/><circle class="pt" cx="162" cy="66" r="3.5"/><circle class="pt" cx="214" cy="70" r="3.5"/><circle class="pt" cx="266" cy="56" r="3.5"/><circle class="pt" cx="318" cy="44" r="3.5"/><circle class="pt" cx="370" cy="34" r="4.5"/></g>
+        </svg>
+        <div class="prix"><span class="t-caption">Prix recommandé</span><b class="tnum" id="prix">332 000 €</b></div>
+        <p class="t-caption" style="margin:-6px 0 0">Fourchette 318 000 – 346 000 € · 14 ventes comparables à moins de 500 m</p>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:30-0:34 · Christine : pièces du compromis, le soir ===== -->
+    <div class="ui agent" id="ag-christine">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/christine.mp4" muted preload="auto" playsinline data-de="29.2" data-a="34.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Christine</b><span class="role">Conseillère juridique</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Vérifie les pièces du compromis</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Relance prête, à valider</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-christine"><div class="z" style="zoom:var(--z-christine);width:440px;display:flex;flex-direction:column;gap:8px">
+      <div class="steps">
+        <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>Compromis de M. et Mme Roche · 5 pièces sur 7</div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Titre de propriété</span><span class="s">reçu</span></div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Diagnostics (DPE, amiante, électricité)</span><span class="s">reçus</span></div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Dernière taxe foncière</span><span class="s">reçue</span></div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Pièces d'identité des vendeurs</span><span class="s">reçues</span></div>
+        <div class="step"><span class="slot"><span class="todo"></span><svg class="i ck"><use href="#i-check"/></svg></span><span>Règlement de copropriété</span><span class="s">reçu</span></div>
+        <div class="step manque"><span class="slot"><span class="todo"></span></span><span>Procès-verbaux des 3 dernières AG</span><span class="s" style="color:var(--color-warning-text)">manquent</span></div>
+        <div class="step manque"><span class="slot"><span class="todo"></span></span><span>Carnet d'entretien de l'immeuble</span><span class="s" style="color:var(--color-warning-text)">manque</span></div>
+      </div>
+      <div class="card" id="carte-relance">
+        <div class="card-top">
+          <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/christine.webp" alt=""></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+          <p class="card-title">Relance des pièces du compromis</p>
+          <span class="pill pill-quiet"><svg class="i"><use href="#i-mail"/></svg>e-mail</span>
+          <p class="card-to">À M. et Mme Roche · E-mail</p>
+        </div>
+        <div class="btns"><span class="btn btn-tint">Valider</span><span class="btn btn-quiet">Refuser</span></div>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:20-0:26 · le vocal : Max transmet, Emma prépare (ui/bulle-vocale.html) ===== -->
+    <div class="ui agent" id="ag-max">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/max.mp4" muted preload="auto" playsinline data-de="19.6" data-a="23.2"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Max</b><span class="role">Directeur d'agence</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Écoute ton vocal</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Confie la relance à Emma</span></span>
+      </div>
+    </div>
+    <div class="ui agent" id="ag-emma2">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="22.4" data-a="26.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Emma</b><span class="role">Assistante de direction</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Écrit au notaire</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Mail prêt, à valider</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-vocal"><div class="z" style="zoom:var(--z-vocal)">
+      <div class="tg">
+        <div class="tg-head"><img src="../assets/logo.png" alt=""><div><b>Revaly</b><span>ton équipe</span></div></div>
+        <div class="tg-body">
+          <div class="tg-out" id="tg-vocal">
+            <div class="tg-voice"><span class="tg-play"><svg><use href="#i-play"/></svg></span>
+              <div><div class="tg-wave" id="onde-vocale"></div><div class="tg-dur tnum">0:04</div></div></div>
+          </div>
+          <div class="tg-in" id="tg-max"><div class="tg-who">Max</div>C'est noté. Emma prépare le mail pour Maître Lefèvre.<span class="tg-time tnum">17:55</span></div>
+          <div class="tg-msg" id="tg-emma"><div class="tg-in"><div class="tg-who">Emma</div>Mail à valider : relance de Maître Lefèvre pour la signature de jeudi.<span class="tg-time tnum">17:56</span></div>
+            <div class="tg-btns"><span>✅ Valider</span><span>❌ Refuser</span></div></div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:26-0:30 · Zoé : le post « Vendu » ===== -->
+    <div class="ui agent" id="ag-zoe">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/zoe.mp4" muted preload="auto" playsinline data-de="25.6" data-a="30.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Zoé</b><span class="role">Community manager</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Prépare le post « Vendu »</span><span class="brand s2"><svg class="i"><use href="#i-check-check"/></svg>Post prêt, à valider</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-zoe"><div class="z" style="zoom:var(--z-zoe)">
+      <div class="card" style="width:432px">
+        <div class="card-top">
+          <span class="ra" style="--ra-s:28px"><span class="ra-stack"><img src="assets/agents/zoe.webp" alt=""></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+          <p class="card-title">Publication · Instagram et Facebook</p>
+          <span class="pill pill-quiet"><svg class="i"><use href="#i-image"/></svg>1 photo</span>
+        </div>
+        <div id="zoe-photo" style="position:relative;border-radius:8px;overflow:hidden;height:132px;background:#ddd">
+          <img src="assets/post-vendu.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+          <span style="position:absolute;left:10px;top:10px;padding:3px 10px;border-radius:6px;background:#fff;font-size:12px;font-weight:600;letter-spacing:.06em">VENDU</span>
+        </div>
+        <div class="paper">Vendu en 12 jours. Merci à M. Lambert pour sa confiance : cette maison de Tassin a trouvé ses nouveaux propriétaires.</div>
+        <div class="btns"><span class="btn btn-tint">Valider</span><span class="btn btn-quiet">Refuser</span></div>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:16-0:20 · Emma : la routine du vendredi 17 h, à 17 h (ui/routines.html) ===== -->
+    <div class="ui agent" id="ag-emma3">
+      <span class="ra"><span class="ra-ring"></span><span class="ra-stack"><video class="boucle" src="assets/agents/emma.mp4" muted preload="auto" playsinline data-de="15.6" data-a="20.4"></video></span><span class="ra-badge"><svg><use href="#i-check"/></svg></span></span>
+      <div class="agent-txt"><b>Emma</b><span class="role">Assistante de direction</span>
+        <span class="status"><span class="brand s1"><i class="dot"></i>Routine du vendredi 17 h</span><span class="ok s2"><svg class="i"><use href="#i-check"/></svg>Bilans de commercialisation prêts (6)</span></span>
+      </div>
+    </div>
+    <div class="ui artefact" id="art-routine"><div class="z" style="zoom:var(--z-routine);width:458px;display:flex;flex-direction:column;gap:8px">
+      <div class="routine">
+        <span class="ra" style="--ra-s:32px"><span class="ra-stack"><img src="assets/agents/emma.webp" alt=""></span></span>
+        <div><div class="routine-title">Bilan de commercialisation du vendredi</div></div>
+        <p class="routine-line"><b>Le vendredi à 17 h</b> → <b>Emma</b> prépare pour chaque vendeur son bilan de commercialisation de la semaine → sur Telegram</p>
+      </div>
+      <div class="steps">
+        <div class="steps-head"><svg class="i"><use href="#i-list-checks"/></svg>6 bilans de commercialisation préparés</div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. et Mme Garnier · 12 rue des Lilas</span><span class="s">3 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Petit · T2 place Bellecour</span><span class="s">2 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Henry · T4 Croix-Rousse</span><span class="s">4 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Faure · studio rue Duguesclin</span><span class="s">1 visite</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>Mme Morel · maison d'Écully</span><span class="s">2 visites</span></div>
+        <div class="step v"><svg class="i"><use href="#i-check"/></svg><span>M. Blanc · T3 Monplaisir</span><span class="s">3 visites</span></div>
+      </div>
+    </div></div>
+
+    <!-- ===== 0:34-0:38,6 · ce que voient tes clients : exactement ce qu'on a vu préparer ===== -->
+    <p class="ui" id="clients-titre">Ce que voient tes clients</p>
+    <div class="ui recu" id="recu1">
+      <span class="recu-ico"><svg class="i"><use href="#i-message"/></svg></span>
+      <div><div class="recu-l1"><b>Camille Durand · acquéreuse</b><span>WhatsApp</span></div>
+        <div class="recu-l2">« Bonjour Camille, je vous rappelle notre visite aujourd'hui à 17h15 au 12 rue des Lilas. À tout à l'heure ! »</div></div>
+    </div>
+    <div class="ui recu" id="recu2">
+      <span class="recu-ico"><svg class="i"><use href="#i-mail"/></svg></span>
+      <div><div class="recu-l1"><b>M. Garnier · vendeur</b><span>E-mail</span></div>
+        <div class="recu-l2">« Votre bilan de commercialisation : 3 visites cette semaine, dont un couple qui souhaite revenir avec un artisan. »</div></div>
+    </div>
+    <div class="ui recu" id="recu3">
+      <span class="recu-ico"><svg class="i"><use href="#i-mail"/></svg></span>
+      <div><div class="recu-l1"><b>Maître Lefèvre · notaire</b><span>E-mail</span></div>
+        <div class="recu-l2">« Maître, je reviens vers vous pour la signature de jeudi : pouvez-vous me confirmer l'heure ? »</div></div>
+    </div>
+  </section>
+
+  <div id="ouverture">
+    <div id="halo"></div>
+    <div id="grain"></div>
+    <div id="notif">
+      <img src="assets/icon-192.png" alt="">
+      <div><div class="notif-l1"><span><b>Emma</b> · Rappel de visite à valider</span><span class="heure">maintenant</span></div>
+        <div class="notif-l2">Camille Durand · ven. 16 oct. 17h15</div></div>
+    </div>
+  </div>
+
+  <div id="fin" class="ui" style="position:absolute">
+    <div class="fin-logo">Revaly<i>.</i></div>
+    <div class="fin-equipe">
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/max.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/emma.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/lucas.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/christine.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/zoe.webp" alt=""></span></span>
+      <span class="ra"><span class="ra-stack"><img src="assets/agents/raphael.webp" alt=""></span></span>
+    </div>
+    <h1>Une équipe d'agents IA <br>qui travaille <em>vraiment</em> pour toi.</h1>
+    <p class="fin-ligne">Plus rien d'oublié.</p>
+    <div class="fin-btns"><span class="p">Essayer 7 jours</span><span class="g">Réserver une démo</span></div>
+  </div>
+
+  <div id="accroche-voile"></div>
+  <p id="accroche">15 h 15.<br>Tu fais visiter.</p>
+  <div id="parole-voile"></div>
+  <p id="parole"><span class="parole-mic"><svg class="i"><use href="#i-mic"/></svg>vocal · 0:04</span>« Max, relance le notaire pour jeudi »</p>
+  <div id="doigt"></div><div id="onde"></div>
+  <p id="st" class="sous-titre"></p>
+</div>
+<div id="code"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<script>
+// Deux ouvertures (film.html#A, film.html#B) ; la suite est la même.
+//  A : noir → la notification → l'écran se coupe en deux (storyboard §3).
+//  B : l'écran est déjà coupé ; sa vie à gauche dès l'image 0, la notification à droite.
+// Ancre : #B (défaut, choisie par Julien le 12/10) ou #A, puis le format
+// (#B-portrait 9:16, #B-carre 1:1), puis -pub pour les publicités : image 0
+// complète (rien n'entre sur la 1re image), écran de fin plus court, sans la
+// ligne de détail des 15 h (illisible dans un fil). L'ouverture A n'existe qu'en paysage.
+const ANCRE = location.hash.replace("#", "").split("-");
+const VARIANTE = (ANCRE[0] || "B").toUpperCase() === "A" ? "A" : "B";
+const FORMAT = ["portrait", "carre"].includes(ANCRE[1]) ? ANCRE[1] : "paysage";
+const PUB = ANCRE.includes("pub");
+document.documentElement.dataset.format = FORMAT;
+if (PUB) document.documentElement.dataset.pub = "";
+// Géométrie de chaque format (les mêmes valeurs que les variables CSS) :
+//  vie [l, h] ; notif [x, y, échelle] et taille [nw, nh] de la notification posée ;
+//  pendant = écart de « Pendant ce temps… » en grand, ech = son échelle en titre de
+//  colonne ; revel = de combien la vie se resserre pour les messages des clients ;
+//  centre = cadrage de la poignée de main plein écran ; yCle = limite basse de ce
+//  qui compte (zone sûre) ; stFin = bas du sous-titre une fois la vie plein écran.
+const GEO = {
+  paysage: { W: 1920, H: 1080, vie: [960, 1080], notif: [1440, 590, 0.76], nw: 1020, nh: 180, pendant: 324, ech: 0.382, revel: 0, centre: 0.5, yCle: Infinity, stFin: 96 },
+  portrait: { W: 1080, H: 1920, vie: [1080, 700], notif: [540, 960, 1], nw: 952, nh: 196, pendant: 40, ech: 0.6, revel: 180, centre: 0.68, yCle: 1236, stFin: 700 },
+  carre: { W: 1080, H: 1080, vie: [1080, 520], notif: [540, 730, 1], nw: 952, nh: 168, pendant: 18, ech: 0.6, revel: 80, centre: 0.6, yCle: 972, stFin: 140 },
+}[FORMAT];
+// L'ossature imposée fixe #stage à 1920×1080 en style en ligne : on l'ajuste au format.
+document.getElementById("stage").style.width = GEO.W + "px";
+document.getElementById("stage").style.height = GEO.H + "px";
+// [id, début, fin, décalage] en secondes de film. Chaque fichier étalonné
+// commence à l'entrée de la fenêtre de sources.md (grade.sh) :
+// currentTime = t − début + décalage.
+const RUSHES = [
+  ...(VARIANTE === "B" ? [["rush1", 0, 4.6, 0], ["rush2", 4.6, 12, 0]] : [["rush1", 3.85, 7.6, 0], ["rush2", 7.6, 12, 0]]),
+  ["rush3", 12, 20, 0], ["rush4", 20, 26, 0], ["rush5", 26, 34, 0], ["rush6", 34, 45, 0],
+];
+if (VARIANTE === "B") { document.getElementById("rush1").src = "graded/1b.mp4"; document.getElementById("rush2").src = "graded/2b.mp4"; }
+// Sous-titres incrustés : 40 caractères au plus, une idée chacun, rien que le
+// produit ne fasse pas, posés au moment de ce qu'ils disent. Pas de sous-titre
+// sur l'ouverture : la notification se lit seule.
+const ST = [
+  [4, 8.2, VARIANTE === "B" ? "Emma prépare la suite." : "Tu fais visiter. Emma prépare la suite."],
+  [8.2, 12, "Un tap. Camille reçoit son rappel."],
+  [12, 16, "Au café, Lucas chiffre le bien."],
+  [16, 18.35, "17 h : Emma prépare les bilans."],
+  [18.35, 20, "Les bilans du vendredi sont prêts."],
+  [20, 23, "Un vocal entre deux portes."],
+  [23, 26, "Max transmet. Emma rédige le mail."],
+  [26, 29.4, "Le soir, Zoé prépare le post « Vendu »."],
+  [29.4, 34, "Christine prépare la relance des pièces."],
+  [34, 40, "Tes clients reçoivent ce que tu valides."],
+];
+// L'heure affichée à droite, « au même instant » que la scène de gauche ; la
+// routine du vendredi 17 h tourne à 17 h.
+const HORLOGE = [[0, "Vendredi 15 h 15"], [12, "Vendredi 16 h 40"], [16, "Vendredi 17 h 00"], [20, "Vendredi 17 h 55"], [26, "Vendredi 20 h 30"]];
+
+const EASE = "cubic-bezier(.2,.7,.2,1)";
+const OUT = "cubic-bezier(.22,1,.36,1)";
+const INOUT = "cubic-bezier(.65,0,.35,1)";
+const SPRING = "cubic-bezier(.34,1.3,.64,1)";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const el = (x) => (typeof x === "string" ? $(x) : x);
+
+function anim(e, frames, debut, duree, easing = EASE) {
+  return el(e).animate(frames, { delay: debut * 1000, duration: duree * 1000, fill: "both", easing });
+}
+// Une seule animation par propriété et par élément (deux animations sur la même
+// propriété se battent, fill:'both' oblige) : chaque piste porte toutes ses clés,
+// en temps absolu. Clé = [t, valeur, courbe du segment qui suit].
+function piste(e, prop, cles, courbe = EASE) {
+  const t0 = cles[0][0], t1 = cles[cles.length - 1][0], d = Math.max(t1 - t0, 0.001);
+  const frames = cles.map(([t, v, c]) => ({ offset: Math.min(1, Math.max(0, (t - t0) / d)), [prop]: v, easing: c || courbe }));
+  return el(e).animate(frames, { delay: t0 * 1000, duration: d * 1000, fill: "both" });
+}
+// Entrée (montée + fondu) puis sortie, sur deux pistes (opacité, transformation).
+// Toutes les transitions durent de 200 à 400 ms (spec §4).
+function vie(e, tIn, tOut, { dy = 28, dIn = 0.35, dyOut = -20, dOut = 0.3, x = 0 } = {}) {
+  const tr = (y) => `translate(${x}px, ${y}px)`;
+  const o = [[tIn, 0], [tIn + dIn, 1]], t = [[tIn, tr(dy)], [tIn + dIn, tr(0), OUT]];
+  if (tOut != null) { o.push([tOut, 1], [tOut + dOut, 0]); t.push([tOut, tr(0), INOUT], [tOut + dOut, tr(dyOut)]); }
+  piste(e, "opacity", o, OUT); piste(e, "transform", t, OUT);
+}
+// Bascule nette d'une couche à l'autre (états d'un bouton, d'un statut).
+function couche(e, tIn, tOut, d = 0.2) {
+  const k = [[0, 0]];
+  if (tIn > 0) k.push([tIn, 0]);
+  k.push([tIn + d, 1]);
+  if (tOut != null) k.push([tOut, 1], [tOut + d, 0]);
+  piste(e, "opacity", k, "linear");
+}
+
+// ---------- Bloc d'un agent : portrait animé, anneau au travail, statuts ----------
+function agent(id, tIn, tOut, { travail, pret, fini, statuts }) {
+  const b = el(id);
+  vie(b, tIn, tOut, { dy: 24 });
+  const ring = $(".ra-ring", b), badge = $(".ra-badge", b);
+  if (travail) {
+    piste(ring, "opacity", [[travail[0], 0], [travail[0] + 0.2, 1], [travail[1], 1], [travail[1] + 0.25, 0]], "linear");
+    const tours = Math.round((travail[1] - travail[0]) / 1.3);
+    piste(ring, "transform", [[travail[0], "rotate(0deg)", "linear"], [travail[1] + 0.25, `rotate(${tours * 360}deg)`]]);
+  }
+  const k = [[0, "scale(0)"]];
+  if (pret != null) k.push([pret, "scale(0)", SPRING], [pret + 0.26, "scale(1)"]);
+  if (k.length > 1) piste(badge, "transform", k);
+  if (fini != null) piste(badge, "backgroundColor", [[fini, "rgb(79, 70, 229)"], [fini + 0.2, "rgb(18, 183, 106)"]], "linear");
+  // Un statut a fini de sortir quand le suivant entre : jamais deux lignes l'une sur l'autre.
+  statuts.forEach(([sel, a, z]) => couche($(sel, b), a, z == null ? null : z - 0.22, 0.22));
+  $$(".status .dot", b).forEach((d) => {
+    const ks = []; for (let t = tIn; t <= (tOut ?? 45); t += 0.8) ks.push([t, "scale(1)", "ease-in-out"], [t + 0.4, "scale(0.7)", "ease-in-out"]);
+    piste(d, "transform", ks);
+  });
+}
+
+// ---------- Plans de la vie : recadrage mobile dans leur fenêtre ----------
+// [t, centre, rapproché, ancrage vertical, largeur, hauteur] : la vidéo
+// 1920×1080 couvre la fenêtre de la vie (moitié gauche en paysage, haut de
+// l'écran en portrait et en carré) et glisse derrière elle pour garder les
+// visages au centre (centre = abscisse du sujet, de 0 à 1 ; ancrage 0 = garder
+// le haut, 0,5 = centré) en se rapprochant doucement. Plein écran au repli.
+function cadre(id, cles) {
+  piste("#" + id, "transform", cles.map(([t, c, s, ay = 0.5, w = GEO.vie[0], h = GEO.vie[1]]) => {
+    const S = Math.max(w / 1920, h / 1080) * s;
+    const x = Math.min(0, Math.max(w - 1920 * S, w / 2 - c * 1920 * S));
+    return [t, `translate(${x}px, ${-(1080 * S - h) * ay}px) scale(${S})`, INOUT];
+  }));
+}
+
+// Portrait et carré : chaque carte défile dans son cadre pour que sa ligne
+// utile reste au-dessus de GEO.yCle. Les décalages se mesurent sur la mise en
+// page au repos ; pan() les joue ensuite (0,3 s chacun).
+const DEFILE = {};
+function mesure(art, cles) {
+  DEFILE[art] = cles.map(([t, sel]) => [t, Number.isFinite(GEO.yCle)
+    ? Math.max(0, Math.round($(sel, $(art)).getBoundingClientRect().bottom - GEO.yCle)) : 0]);
+}
+function decalage(art, t) {
+  let d = 0;
+  for (const [t0, sh] of DEFILE[art] || []) if (t >= t0) d = sh;
+  return d;
+}
+function pan(art) {
+  const cles = DEFILE[art] || [];
+  if (!cles.some(([, sh]) => sh > 0)) return;
+  const k = [[0, "translateY(0px)"]];
+  let avant = 0;
+  for (const [t, sh] of cles) { k.push([t, `translateY(${-avant}px)`, INOUT], [t + 0.3, `translateY(${-sh}px)`]); avant = sh; }
+  piste($(".pan", $(art)), "transform", k);
+}
+
+function construire() {
+  // Chaque carte dans un cadre qui défile (.pan), avant toute mesure.
+  $$(".artefact").forEach((a) => { const p = document.createElement("div"); p.className = "pan"; while (a.firstChild) p.appendChild(a.firstChild); a.appendChild(p); });
+  // Les messages des clients s'empilent sous leur titre.
+  const ct = $("#clients-titre");
+  let yr = ct.offsetTop + ct.offsetHeight + { paysage: 58, portrait: 26, carre: 14 }[FORMAT];
+  ["#recu1", "#recu2", "#recu3"].forEach((id) => { const e = $(id); e.style.top = yr + "px"; yr += e.offsetHeight + { paysage: 30, portrait: 18, carre: 10 }[FORMAT]; });
+  // Mesures prises sur la mise en page au repos, avant toute animation.
+  mesure("#art-rappel", [[7.75, "#btns"]]);
+  mesure("#art-lucas", [[13.3, ".prix"]]);
+  mesure("#art-routine", [[17.55, ".step.v:nth-child(4)"]]);
+  mesure("#art-vocal", [[21.6, "#tg-max"], [24.0, "#tg-emma"]]);
+  mesure("#art-zoe", [[27.5, ".paper"]]);
+  mesure("#art-christine", [[31.6, "#carte-relance"]]);
+  const v = $("#valider").getBoundingClientRect(), x = v.left + v.width / 2, y = v.top + v.height / 2 - decalage("#art-rappel", 8);
+  const pd = $("#pendant"), hz = $("#horloge");
+  hz.style.left = pd.offsetLeft + pd.offsetWidth * GEO.ech + 22 + "px";
+  hz.style.top = pd.offsetTop + (pd.offsetHeight * GEO.ech - hz.offsetHeight) / 2 + "px";
+  // La notification part du centre de l'écran (ouverture A) ; en B elle se pose
+  // dans la colonne de l'équipe (GEO.notif).
+  const nt = $("#notif");
+  nt.style.width = GEO.nw + "px"; nt.style.height = GEO.nh + "px";
+  nt.style.left = (GEO.W - GEO.nw) / 2 + "px";
+  nt.style.top = GEO.H * 0.435 - GEO.nh / 2 + "px";
+  const [nx, ny, ns] = GEO.notif, ndx = nx - GEO.W / 2, ndy = ny - GEO.H * 0.435;
+  const nPose = (dy) => `translate(${ndx}px, ${ndy + dy}px) scale(${ns})`;
+  const P = GEO.pendant, pGrand = (dy) => `translate(0px, ${P + dy}px) scale(1)`, pPetit = `translate(0px, 0px) scale(${GEO.ech})`;
+
+  // ===================== 0:00-0:04 · ouverture =====================
+  if (VARIANTE === "A") {
+    // Le noir, un halo iris à peine (grain léger contre les bandes), la notification.
+    piste("#halo", "opacity", [[0.25, 0], [0.65, 1], [2.2, 1], [2.6, 0]], "ease-in-out");
+    piste("#grain", "opacity", [[0.25, 0], [0.65, 0.07], [2.2, 0.07], [2.6, 0]], "linear");
+    piste("#notif", "opacity", [[0.3, 0], [0.65, 1], [3.8, 1], [4.1, 0]], OUT);
+    piste("#notif", "filter", [[0.3, "blur(10px)"], [0.65, "blur(0px)"]], OUT);
+    // L'écran se coupe en deux : la notification reste du côté de sa vie.
+    piste("#notif", "transform", [[0.3, "translate(0px, -30px) scale(0.97)", OUT], [0.65, "translate(0px, 0px) scale(1)", "linear"],
+      [2.2, "translate(0px, 0px) scale(1)", INOUT], [2.6, "translate(-480px, 0px) scale(0.78)"]]);
+    piste("#droite", "clipPath", [[2.2, "inset(0px 100% 0px 0px)", "cubic-bezier(.7,0,.2,1)"], [2.6, "inset(0px 0% 0px 0px)"]]);
+    piste("#pendant", "opacity", [[2.55, 0], [2.9, 1], [33.75, 1], [34.05, 0]], OUT);
+    piste("#pendant", "transform", [[2.55, pGrand(28), OUT], [2.9, pGrand(0), "linear"],
+      [4.0, pGrand(0), "cubic-bezier(.7,0,.2,1)"], [4.4, pPetit]]);
+    piste("#w1", "opacity", [[3.85, 0], [4.15, 1]], "linear");
+    cadre("rush1", [[3.85, 0.5, 1.0, 0], [5.0, 0.49, 1.015, 0], [6.0, 0.43, 1.03, 0], [7.6, 0.42, 1.05, 0]]);
+    cadre("rush2", [[7.6, 0.78, 1.03, 0.3], [8.5, 0.72, 1.035, 0.3], [9.6, 0.64, 1.04, 0.3], [10.8, 0.6, 1.045, 0.3], [12.0, 0.56, 1.05, 0.3]]);
+  } else {
+    // L'écran est déjà coupé : la porte s'ouvre sur la vie, la grande ligne (sous
+    // les visages) arrive dans la première demi-seconde, la notification à côté.
+    // Pour une pub, tout est déjà en place à l'image 0.
+    $("#notif").classList.add("clair");
+    piste("#droite", "clipPath", [[0, "inset(0px 0% 0px 0px)"], [0.001, "inset(0px 0% 0px 0px)"]]);
+    const e = (t) => (PUB ? 0 : t);          // entrée : à l'image 0 pour une pub
+    piste("#accroche", "opacity", [...(PUB ? [] : [[0.05, 0]]), [e(0.4), 1], [3.55, 1], [3.85, 0]], OUT);
+    piste("#accroche", "transform", [...(PUB ? [] : [[0.05, "translateY(18px)", OUT]]), [e(0.4), "translateY(0px)", "linear"], [3.55, "translateY(0px)", INOUT], [3.85, "translateY(-14px)"]]);
+    piste("#accroche-voile", "opacity", [...(PUB ? [] : [[0, 0.6]]), [e(0.35), 1], [3.6, 1], [3.95, 0]], "ease-in-out");
+    piste("#notif", "opacity", [...(PUB ? [] : [[0.55, 0]]), [e(0.9), 1], [4.0, 1], [4.3, 0]], OUT);
+    piste("#notif", "transform", [...(PUB ? [] : [[0.55, nPose(-36), OUT]]), [e(0.9), nPose(0), "linear"], [4.0, nPose(0), INOUT], [4.3, nPose(-24)]]);
+    piste("#pendant", "opacity", [...(PUB ? [] : [[1.15, 0]]), [e(1.5), 1], [33.75, 1], [34.05, 0]], OUT);
+    piste("#pendant", "transform", [...(PUB ? [] : [[1.15, pGrand(28), OUT]]), [e(1.5), pGrand(0), "linear"],
+      [4.0, pGrand(0), "cubic-bezier(.7,0,.2,1)"], [4.4, pPetit]]);
+    // L'équipe, sous la notification (portrait et carré).
+    piste("#rail-equipe", "opacity", [...(PUB ? [] : [[1.35, 0]]), [e(1.7), 1], [3.95, 1], [4.25, 0]], OUT);
+    piste("#rail-equipe", "transform", [...(PUB ? [] : [[1.35, "translateY(22px)", OUT]]), [e(1.7), "translateY(0px)", "linear"], [3.95, "translateY(0px)", INOUT], [4.25, "translateY(-16px)"]]);
+    piste("#w1", "opacity", [[0, 1], [0.001, 1]], "linear");
+    // Ralentis : t de film → source 1,0 + 0,75 t (plan 1), 1,5 + 0,6 (t − 4,6) (plan 2).
+    cadre("rush1", [[0, 0.5, 1.0, 0], [1.33, 0.49, 1.015, 0], [2.67, 0.43, 1.03, 0], [4.6, 0.42, 1.04, 0]]);
+    cadre("rush2", [[4.6, 0.78, 1.03, 0.3], [6.1, 0.72, 1.035, 0.3], [7.93, 0.64, 1.04, 0.3], [9.93, 0.6, 1.045, 0.3], [12.0, 0.56, 1.05, 0.3]]);
+  }
+  // « Pendant ce temps… » se range en titre de colonne, l'heure arrive à côté.
+  piste("#pendant", "color", [[4.0, "rgb(12, 15, 22)"], [4.4, "rgb(88, 97, 112)"]], "linear");
+  vie("#horloge", 4.3, 33.75, { dy: 0, x: 0, dyOut: 0 });
+
+  // ===================== 0:04-0:12 · la visite / Emma (identique en A et B) =====================
+  // La notification l'a dit : le rappel est prêt. Emma l'a préparé, il attend le tap.
+  agent("#ag-emma1", 4.4, 11.75, { pret: 4.55, fini: 9.3, statuts: [[".s2", 4.45, 9.3], [".s3", 9.3, null]] });
+  vie("#art-rappel", 4.75, 11.75, { dy: 40, dIn: 0.4 });
+  // Le tap, après la coupe : un anneau autour de « Valider », l'onde, rien ne
+  // dérive. Puis une étape à la fois : la sortie finit avant l'entrée.
+  const ici = (sc) => `translate(${x}px, ${y}px) scale(${sc})`;
+  piste("#doigt", "opacity", [[8.1, 0], [8.3, 1], [8.42, 1], [8.62, 0]], "linear");
+  piste("#doigt", "transform", [[8.1, ici(1.12), OUT], [8.3, ici(1), "ease-in"], [8.36, ici(0.94), "ease-out"], [8.48, ici(1)]]);
+  piste("#onde", "opacity", [[8.33, 0], [8.36, 1], [8.62, 0]], "ease-out");
+  piste("#onde", "transform", [[8.33, ici(1), OUT], [8.62, ici(1.4)]]);
+  piste("#valider", "backgroundColor", [[8.3, "rgb(238, 242, 255)"], [8.36, "rgb(199, 210, 254)"], [8.45, "rgb(199, 210, 254)"]], "linear");
+  piste("#btns", "opacity", [[8.45, 1], [8.65, 0]], "linear");
+  piste("#validation", "opacity", [[8.65, 0], [8.85, 1], [9.05, 1], [9.25, 0]], "linear");
+  piste("#spin", "transform", [[8.65, "rotate(0deg)", "linear"], [9.25, "rotate(430deg)"]]);
+  piste("#valide", "opacity", [[9.25, 0], [9.45, 1]], "linear");
+  piste("#valide", "transform", [[9.25, "scale(0.88)", SPRING], [9.5, "scale(1)"]]);
+  piste("#carte-badge", "backgroundColor", [[9.25, "rgb(79, 70, 229)"], [9.45, "rgb(18, 183, 106)"]], "linear");
+  piste("#c4", "transform", [[9.4, "translateY(0px)", INOUT], [9.75, "translateY(-22px)"]]);
+  piste("#c3", "transform", [[9.4, "translateY(22px)", INOUT], [9.75, "translateY(0px)"]]);
+  pan("#art-rappel");
+
+  // ===================== 0:12-0:20 · le café : Lucas, puis la routine de 17 h =====================
+  cadre("rush3", [[12.0, 0.55, 1.0], [16.0, 0.56, 1.03], [20.0, 0.57, 1.06]]);
+  // Lucas chiffre le bien de Mme Bernard, la vendeuse du café.
+  agent("#ag-lucas", 12.05, 15.75, { travail: [12.25, 14.15], pret: 14.2, statuts: [[".s1", 12.1, 14.2], [".s2", 14.2, null]] });
+  vie("#art-lucas", 12.4, 15.75, { dy: 40, dIn: 0.4 });
+  piste("#courbe", "strokeDashoffset", [[12.9, 100, "cubic-bezier(.45,0,.2,1)"], [14.0, 0]]);
+  $$("#art-lucas .pt").forEach((p, i) => piste(p, "opacity", [[12.95 + i * 0.14, 0], [13.08 + i * 0.14, 1]], "linear"));
+  pan("#art-lucas");
+  // 17 h : la routine du vendredi tourne à son heure ; Emma prépare le bilan de commercialisation de
+  // chaque vendeur (dont M. Garnier, dont on visite la maison à 0:04).
+  agent("#ag-emma3", 16.05, 19.75, { travail: [16.25, 18.3], pret: 18.35, fini: 18.35, statuts: [[".s1", 16.1, 18.35], [".s2", 18.35, null]] });
+  vie("#art-routine", 16.35, 19.75, { dy: 40, dIn: 0.4 });
+  $$("#art-routine .step.v").forEach((s, i) => piste(s, "opacity", [[17.2 + i * 0.18, 0], [17.35 + i * 0.18, 1]], "linear"));
+  pan("#art-routine");
+
+  // ===================== 0:20-0:26 · le vocal : Max transmet, Emma écrit au notaire =====================
+  cadre("rush4", [[20.0, 0.43, 1.02], [26.0, 0.52, 1.05]]);
+  agent("#ag-max", 20.05, 22.55, { travail: [20.3, 21.9], pret: 21.95, statuts: [[".s1", 20.1, 21.95], [".s2", 21.95, null]] });
+  agent("#ag-emma2", 22.75, 25.75, { travail: [22.9, 24.3], pret: 24.35, statuts: [[".s1", 22.8, 24.35], [".s2", 24.35, null]] });
+  vie("#art-vocal", 20.2, 25.75, { dy: 40, dIn: 0.4 });
+  vie("#tg-vocal", 20.45, null, { dy: 16, dIn: 0.35 });
+  $$("#onde-vocale i").forEach((b, i, all) => piste(b, "backgroundColor",
+    [[20.8 + (i / all.length) * 1.2, "rgb(166, 214, 150)"], [20.86 + (i / all.length) * 1.2, "rgb(94, 176, 68)"]], "linear"));
+  vie("#parole", 20.6, 23.4, { dy: 14, dIn: 0.4 });
+  piste("#parole-voile", "opacity", [[20.5, 0], [20.85, 1], [23.4, 1], [23.75, 0]], "ease-in-out");
+  vie("#tg-max", 21.95, null, { dy: 16, dIn: 0.35 });
+  vie("#tg-emma", 24.35, null, { dy: 16, dIn: 0.35 });
+  pan("#art-vocal");
+
+  // ===================== 0:26-0:34 · le soir : Zoé, puis Christine =====================
+  cadre("rush5", [[26.0, 0.43, 1.0], [34.0, 0.45, 1.05]]);
+  // Zoé : la maison de Tassin de M. Lambert, vendue.
+  agent("#ag-zoe", 26.05, 29.1, { travail: [26.25, 27.7], pret: 27.75, statuts: [[".s1", 26.1, 27.75], [".s2", 27.75, null]] });
+  vie("#art-zoe", 26.35, 29.1, { dy: 40, dIn: 0.4 });
+  pan("#art-zoe");
+  // Christine : les pièces du compromis de M. et Mme Roche, et la relance.
+  agent("#ag-christine", 29.4, 33.75, { travail: [29.6, 31.95], pret: 32.0, statuts: [[".s1", 29.45, 32.0], [".s2", 32.0, null]] });
+  vie("#art-christine", 29.55, 33.75, { dy: 40, dIn: 0.4 });
+  $$("#art-christine .step").forEach((s, i) => {
+    // La liste arrive entière avec la carte (jamais vide à 0:30), puis les pièces se cochent.
+    const ck = $(".ck", s);
+    if (ck) piste(ck, "transform", [[30.4 + i * 0.22, "scale(0)", SPRING], [30.65 + i * 0.22, "scale(1)"]]);
+  });
+  vie("#carte-relance", 31.95, null, { dy: 18, dIn: 0.35 });
+  pan("#art-christine");
+
+  // ===================== 0:34-0:40 · ce que voient tes clients, puis la main serrée =====================
+  // Exactement ce qu'on a vu préparer : le rappel validé à 0:08, le bilan de commercialisation du
+  // vendredi, la relance du notaire dictée à 0:20. Une carte toutes les 0,3 s.
+  vie("#clients-titre", 34.05, null, { dy: 20, dIn: 0.3 });
+  vie("#recu1", 34.3, null, { dy: 30, dIn: 0.3 });
+  vie("#recu2", 34.6, null, { dy: 30, dIn: 0.3 });
+  vie("#recu3", 34.9, null, { dy: 30, dIn: 0.3 });
+  // Puis le côté de l'équipe se replie (38,6 → 39,0) : il ne reste qu'une
+  // personne et son client, la poignée de main tenue jusqu'à 40 s. En portrait
+  // et en carré, la vie se resserre d'abord pour laisser lire les messages, et
+  // le sous-titre la suit.
+  const R = GEO.revel, F0 = 38.6, F1 = 39.0, C = "cubic-bezier(.7,0,.25,1)", [vw, vh] = GEO.vie;
+  if (FORMAT === "paysage") {
+    piste("#droite", "transform", [[F0, "translateX(0px)", C], [F1, "translateX(960px)"]]);
+    piste("#gauche", "width", [[F0, "960px", C], [F1, "1920px"]]);
+    piste("#st", "left", [[F0, "480px", C], [F1, "960px"]]);
+    cadre("rush6", [[34.0, 0.56, 1.0], [F0, 0.56, 1.02], [F1, GEO.centre, 1.0, 0.5, GEO.W, GEO.H], [45.0, GEO.centre, 1.0, 0.5, GEO.W, GEO.H]]);
+  } else {
+    const b0 = parseFloat(getComputedStyle($("#st")).bottom);
+    piste("#droite", "transform", [[34.0, "translateY(0px)", INOUT], [34.3, `translateY(${-R}px)`], [F0, `translateY(${-R}px)`, C], [F1, `translateY(${GEO.H}px)`]]);
+    piste("#gauche", "height", [[34.0, vh + "px", INOUT], [34.3, vh - R + "px"], [F0, vh - R + "px", C], [F1, GEO.H + "px"]]);
+    piste("#st", "bottom", [[34.0, b0 + "px", INOUT], [34.3, b0 + R + "px"], [F0, b0 + R + "px", C], [F1, GEO.stFin + "px"]]);
+    cadre("rush6", [[34.0, 0.56, 1.0, 0.5, vw, vh], [34.3, 0.56, 1.0, 0.5, vw, vh - R], [F0, 0.56, 1.02, 0.5, vw, vh - R],
+      [F1, GEO.centre, 1.0, 0.5, GEO.W, GEO.H], [45.0, GEO.centre, 1.0, 0.5, GEO.W, GEO.H]]);
+  }
+
+  // ===================== 0:40-0:45 · la promesse =====================
+  piste("#voile", "opacity", [[40.0, 0], [40.4, 0.94]], OUT);
+  piste("#rush6", "filter", [[40.0, "blur(0px)"], [40.4, "blur(14px)"]], OUT);
+  // Pub : l'écran de fin est complet dès 40,8 s (environ 3 s lisibles).
+  const T = PUB ? [40.1, 40.15, 40.2, 40.35, 40.45] : [40.3, 40.45, 40.6, 41.2, 41.6];
+  vie(".fin-logo", T[0], null, { dy: 12 });
+  vie(".fin-equipe", T[1], null, { dy: 16 });
+  vie("#fin h1", T[2], null, { dy: 26, dIn: 0.4 });
+  vie(".fin-ligne", T[3], null, { dy: 16 });
+  vie(".fin-btns", T[4], null, { dy: 16 });
+}
+
+// Barres de l'onde du vocal (hauteurs fixes : même image à chaque rendu).
+(function onde() {
+  const h = [6, 10, 16, 12, 20, 24, 14, 9, 18, 22, 26, 17, 11, 15, 21, 25, 19, 12, 8, 14, 20, 16, 10, 7, 12, 18, 14, 9, 6, 10, 13, 8];
+  $("#onde-vocale").innerHTML = h.map((x) => `<i style="height:${x}px;background:rgb(166,214,150)"></i>`).join("");
+})();
+
+const VIDEOS = $$("video");
+const BOUCLES = $$("video.boucle");
+const MI_IMAGE = 1 / 60; // viser le milieu d'une image à 30 i/s
+let pret = false;
+
+const CASES = [...document.querySelectorAll("#code i")];
+window.__seek = (t) => {
+  const n = Math.round(t * 30);
+  CASES.forEach((c, b) => (c.style.background = (n >> (15 - b)) & 1 ? "#fff" : "#000"));
+  if (pret) document.getAnimations().forEach((a) => (a.currentTime = t * 1000));
+  for (const [id, d, f, dec] of RUSHES) {
+    const v = document.getElementById(id), on = t >= d && t < f;
+    v.parentElement.style.visibility = on ? "visible" : "hidden";
+    if (on) {
+      // Un fichier ralenti peut finir 1 à 3 images avant la scène : on l'étire
+      // d'autant (moins de 1 %) plutôt que de figer ses dernières images.
+      const k = v.duration ? Math.min(1, (v.duration - 0.04) / (f - d + dec)) : 1;
+      const ct = Math.min((t - d) * k + dec + MI_IMAGE, (v.duration || 99) - 0.02);
+      if (Math.abs(v.currentTime - ct) > 0.001) v.currentTime = ct;
+    }
+  }
+  for (const v of BOUCLES) {
+    const de = +v.dataset.de, a = +v.dataset.a;
+    if (t < de - 0.2 || t > a + 0.2 || !v.duration) continue;
+    const ct = ((t - de) % v.duration) + MI_IMAGE;
+    if (Math.abs(v.currentTime - ct) > 0.001) v.currentTime = ct;
+  }
+  // Sous-titre : fondu court seulement à l'entrée et à la sortie d'une suite.
+  const st = document.getElementById("st"), s = ST.find(([d, f]) => t >= d && t < f);
+  st.textContent = s ? s[2] : "";
+  if (s) {
+    const avant = ST.some(([, f]) => Math.abs(f - s[0]) < 1e-6), apres = ST.some(([d]) => Math.abs(d - s[1]) < 1e-6);
+    const a = Math.min(avant ? 1 : (t - s[0]) / 0.2, apres ? 1 : (s[1] - t) / 0.2, 1);
+    st.style.opacity = Math.max(0, a);
+  } else st.style.opacity = 0;
+  const h = HORLOGE.filter(([d]) => t >= d).pop();
+  document.getElementById("horloge-t").textContent = h[1];
+  // Le prix se calcule sous nos yeux (13,4 → 14,2 s).
+  const p = Math.min(1, Math.max(0, (t - 13.4) / 0.8)), e = 1 - Math.pow(1 - p, 3);
+  document.getElementById("prix").textContent = (Math.round((296000 + e * 36000) / 1000) * 1000).toLocaleString("fr-FR").replace(/ /g, " ") + " €";
+};
+
+// Pour la capture : pose l'état, puis attend que chaque vidéo soit à sa place.
+window.__frame = async (t) => {
+  window.__seek(t);
+  await Promise.all(VIDEOS.filter((v) => v.seeking).map((v) => new Promise((r) => v.addEventListener("seeked", r, { once: true }))));
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  return t;
+};
+
+// __ready ne passe à true que si tout est chargé ; une vidéo ou une image en
+// erreur laisse __ready à false et l'écrit dans window.__erreur (render.sh s'arrête).
+window.__ready = false;
+window.__erreur = null;
+const charge = (m, ok, ko) => new Promise((r, x) => { m.addEventListener(ok, r, { once: true }); m.addEventListener(ko, () => x(new Error(`${m.currentSrc || m.src} : échec du chargement`)), { once: true }); });
+Promise.all([
+  document.fonts.ready,
+  ...VIDEOS.map((v) => (v.error ? Promise.reject(new Error(`${v.currentSrc || v.src} : échec du chargement`)) : v.readyState >= 2 ? 0 : charge(v, "loadeddata", "error"))),
+  ...$$("img").map((i) => (i.complete ? (i.naturalWidth ? 0 : Promise.reject(new Error(`${i.src} : image absente`))) : charge(i, "load", "error"))),
+]).then(() => {
+  construire();
+  document.getAnimations().forEach((a) => a.pause());
+  pret = true;
+  window.__seek(0);
+  window.__ready = true;
+}).catch((e) => { window.__erreur = e.message; });
+</script>
+</body>
+</html>

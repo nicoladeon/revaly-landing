@@ -3,4 +3,18 @@ dist/
 .gstack/
 .wrangler/
 .superpowers/
-video/node_modules/
+film/rushes/
+film/frames*/
+film/graded/
+film/maquette-images/
+film/.gstack*/
+# rendus intermédiaires (régénérés par render.sh, mux.sh, assemble.sh)
+film/*-muet.mp4
+film/revaly-45s.mp4
+film/revaly-45s-vertical.mp4
+film/out/
+film/maquette-*.mp4
+film/music/*.wav
+film/pub-segs/
+.dist-construction/
+__pycache__/

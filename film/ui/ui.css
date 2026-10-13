@@ -1,0 +1,212 @@
+/* Composants de l'appli Revaly recopiés pour le film (12/10/2026), en pixels
+   CSS de l'appli : le film les agrandit d'un bloc (zoom), sans changer leurs
+   proportions. Sources lues :
+   - carte « À valider »   : components/team/ApprovalsPanel.tsx + lib/cardFormat.ts
+   - boutons, pastilles    : components/team/ui.tsx, team.css
+   - portrait animé        : components/agents/RevalyCharacterAvatar.tsx + animatedAgentAvatar.css
+   - fil d'un agent        : components/chat (message, étapes de travail, bulle du conseiller)
+   - page Routines         : pages/RoutinesPage (ligne de routine)
+   Tokens : ui/tokens.css (copie de styles/tokens.css). */
+
+.ui, .ui * { box-sizing: border-box; }
+.ui {
+  font-family: var(--font-sans);
+  font-feature-settings: var(--font-feature-default);
+  color: var(--color-fg);
+  -webkit-font-smoothing: antialiased;
+  line-height: var(--line-height-normal);
+}
+.ui svg.i {
+  width: 1em; height: 1em; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.75;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.tnum { font-variant-numeric: tabular-nums; font-feature-settings: var(--font-feature-tabular); }
+.t-body-sm { font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+.t-caption { font-size: var(--font-size-xs); line-height: var(--line-height-normal); color: var(--color-fg-muted); }
+.muted { color: var(--color-fg-muted); }
+
+/* ---------- Portrait animé (RevalyCharacterAvatar) ---------- */
+.ra {
+  --ra-s: 40px;
+  position: relative; display: inline-block; flex: none;
+  width: var(--ra-s); height: var(--ra-s); border-radius: 50%;
+}
+.ra-stack {
+  position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+  background: var(--color-avatar-bg);
+  box-shadow: inset 0 0 0 1px var(--color-avatar-line);
+}
+.ra-stack > img, .ra-stack > video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+/* Anneau iris qui tourne au travail (conic + masque, comme l'appli). */
+.ra-ring {
+  position: absolute; inset: calc(var(--ra-s) * -0.06); border-radius: 50%;
+  opacity: 0;
+  background: conic-gradient(from 0deg, var(--brand-500) 0 22%, color-mix(in srgb, var(--brand-500) 18%, transparent) 22% 100%);
+  --ra-ring-w: max(2px, calc(var(--ra-s) * 0.035));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ra-ring-w)), black calc(100% - var(--ra-ring-w) + 0.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - var(--ra-ring-w)), black calc(100% - var(--ra-ring-w) + 0.5px));
+}
+/* Pastille : iris « à valider », vert « terminé ». */
+.ra-badge {
+  position: absolute; z-index: 5;
+  right: calc(var(--ra-s) * -0.04); bottom: calc(var(--ra-s) * -0.04);
+  width: clamp(12px, calc(var(--ra-s) * 0.34), 30px); height: clamp(12px, calc(var(--ra-s) * 0.34), 30px);
+  border-radius: 50%; display: grid; place-items: center;
+  color: var(--color-fg-on-brand);
+  border: max(1.5px, calc(var(--ra-s) * 0.03)) solid var(--ra-cutout, var(--color-bg-raised));
+  background: var(--color-action);
+}
+.ra-badge.ok { background: var(--color-success); }
+.ra-badge svg { width: 62%; height: 62%; stroke-width: 3; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Panneau « À valider » ---------- */
+.sheet {
+  width: 400px; border-radius: var(--radius-sheet);
+  background: var(--color-bg-subtle);
+  box-shadow: var(--shadow-lg), var(--hairline-hi);
+  padding: 10px 10px 10px;
+}
+.sheet-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 2px 6px 10px; font-size: 14px; color: var(--color-fg);
+}
+.sheet-head .i { font-size: 15px; color: var(--color-fg-muted); }
+.sheet-head .grow { flex: 1; }
+.count {
+  position: relative; overflow: hidden;
+  display: inline-grid; height: 20px; min-width: 20px; padding: 0 6px; place-items: center;
+  border-radius: var(--radius-full); background: var(--color-action); color: var(--color-action-fg);
+  font-size: var(--font-size-xs); font-weight: 500;
+}
+.count > span { grid-area: 1 / 1; }
+
+.card {
+  border-radius: var(--radius-card); padding: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--color-bg-raised); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm);
+  --ra-cutout: var(--color-bg-raised);
+}
+.card-top { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; column-gap: 10px; align-items: start; }
+.card-title { margin: 0; align-self: center; font-size: var(--font-size-sm); font-weight: 500; line-height: var(--line-height-snug); }
+.card-title .moment { white-space: nowrap; }
+.card-to { grid-column: 2 / span 2; margin: 2px 0 0; font-size: var(--font-size-xs); line-height: var(--line-height-snug); color: var(--color-fg-muted); }
+.pill {
+  display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  border-radius: var(--radius-full); padding: 2px 8px;
+  font-size: var(--font-size-xs); line-height: var(--line-height-normal);
+}
+.pill .i { font-size: 12px; }
+.pill-warn { background: var(--color-warning-bg); color: var(--color-warning-text); }
+.pill-quiet { background: var(--color-bg-subtle); color: var(--color-fg-muted); border: 1px solid var(--color-border); }
+.paper {
+  font-size: var(--font-size-sm); line-height: var(--line-height-relaxed);
+  border-radius: var(--radius-control); padding: 8px 10px;
+  white-space: pre-wrap; background: var(--color-bg-subtle); border: 1px solid var(--color-border); color: var(--color-fg);
+}
+.fields { display: grid; grid-template-columns: minmax(56px, auto) 1fr; column-gap: 10px; row-gap: 3px; font-size: var(--font-size-sm); }
+.fields dt { white-space: nowrap; color: var(--color-fg-muted); }
+.fields dd { margin: 0; }
+.actions { display: grid; align-items: center; min-height: 32px; }
+.actions > * { grid-area: 1 / 1; }
+.btns { display: flex; align-items: center; gap: 6px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px;
+  border-radius: var(--radius-control); font-size: var(--font-size-sm); font-weight: 500; border: 1px solid transparent;
+}
+.btn-tint { background: var(--color-action-subtle); color: var(--color-fg-brand); }
+.btn-quiet { background: transparent; color: var(--color-fg-muted); }
+.btn-primary { background: var(--color-action); color: var(--color-action-fg); border-color: var(--color-action); }
+.btn-ghost { background: var(--color-bg-raised); color: var(--color-fg); border-color: var(--color-border-strong); }
+.btn .i { font-size: 14px; }
+.wait { display: inline-flex; align-items: center; gap: 6px; font-size: var(--font-size-sm); color: var(--color-fg-muted); }
+.wait .i { font-size: 14px; }
+.done {
+  justify-self: start; display: inline-flex; align-items: center; gap: 4px;
+  border-radius: var(--radius-full); padding: 2px 10px; font-size: var(--font-size-sm); font-weight: 500;
+  background: var(--color-success-bg); color: var(--color-success-text);
+}
+.card-foot { display: flex; align-items: center; gap: 6px; margin: -4px 0; height: 32px; font-size: var(--font-size-xs); color: var(--color-fg-muted); }
+.card-foot span { display: inline-flex; align-items: center; gap: 4px; }
+.card-foot .end { margin-left: auto; }
+.card-foot .i { font-size: 13px; }
+
+/* ---------- Fil d'un agent ---------- */
+.msg { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 12px; }
+.msg-head { display: flex; align-items: baseline; gap: 8px; font-size: 14px; }
+.msg-head b { font-weight: 500; }
+.msg-head .muted { font-size: var(--font-size-sm); }
+.msg-body { grid-column: 2; font-size: var(--font-size-base); line-height: var(--line-height-normal); margin-top: 6px; }
+.msg-body p { margin: 0 0 8px; }
+.msg-body strong { font-weight: 600; }
+.bubble-user {
+  justify-self: end; max-width: 86%;
+  border-radius: 16px; padding: 8px 14px; font-size: var(--font-size-base);
+  background: var(--color-bubble-user); color: var(--color-fg);
+}
+.bubble-user .mention { color: var(--color-fg-brand); }
+/* Étapes de travail (WorkCard) */
+.steps { border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-bg-raised); padding: 6px 12px 8px; }
+.steps-head { display: flex; align-items: center; gap: 8px; height: 30px; font-size: var(--font-size-sm); color: var(--color-fg-muted); }
+.steps-head .i { font-size: 14px; }
+.step { display: grid; grid-template-columns: 16px 1fr auto; column-gap: 10px; align-items: center; height: 27px; font-size: var(--font-size-sm); }
+.step .i { font-size: 15px; color: var(--color-success); stroke-width: 2; }
+.step .s { font-size: var(--font-size-xs); color: var(--color-fg-muted); }
+.step .slot { position: relative; width: 16px; height: 16px; display: grid; place-items: center; }
+.step .slot > * { grid-area: 1 / 1; }
+.step .todo { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--color-border-strong); }
+
+/* ---------- Page Routines : une ligne ---------- */
+.routine {
+  display: grid; grid-template-columns: 32px 1fr; column-gap: 12px;
+  padding: 16px 18px; border-radius: var(--radius-card);
+  background: var(--color-bg-raised); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm);
+}
+.routine-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+.routine-line { grid-column: 2; margin-top: 8px; font-size: 14px; line-height: 1.45; color: var(--color-fg-muted); }
+.routine-line b { color: var(--color-fg); font-weight: 400; }
+.tag {
+  display: inline-flex; align-items: center; gap: 4px; border-radius: var(--radius-full);
+  padding: 1px 8px; font-size: var(--font-size-xs); font-weight: 400;
+}
+.tag-brand { background: var(--color-action-subtle); color: var(--color-fg-brand); }
+.tag-line { border: 1px solid var(--color-border-strong); color: var(--color-fg-muted); }
+.tag-ok { background: var(--color-success-bg); color: var(--color-success-text); }
+
+/* ---------- Conversation Telegram (bot Revaly) ---------- */
+.tg {
+  width: 400px; border-radius: 28px; overflow: hidden;
+  background: #DCE3EA; box-shadow: var(--shadow-xl);
+  font-family: var(--font-sans);
+}
+.tg-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #FFFFFF; border-bottom: 1px solid var(--color-border); }
+.tg-head img { width: 34px; height: 34px; border-radius: 50%; }
+.tg-head b { display: block; font-size: 15px; font-weight: 600; }
+.tg-head span { font-size: 12px; color: var(--color-fg-muted); }
+.tg-body { padding: 14px 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+.tg-in, .tg-out {
+  max-width: 82%; border-radius: 16px; padding: 7px 11px 6px; font-size: 14px; line-height: 1.4;
+  box-shadow: 0 1px 1px rgba(16, 22, 38, 0.08);
+}
+.tg-out { align-self: flex-end; background: #E1FFC7; border-bottom-right-radius: 4px; }
+.tg-in { align-self: flex-start; background: #FFFFFF; border-bottom-left-radius: 4px; }
+.tg-time { float: right; margin: 6px 0 -2px 10px; font-size: 11px; color: rgba(12, 15, 22, 0.45); }
+.tg-voice { display: grid; grid-template-columns: 38px 1fr; column-gap: 10px; align-items: center; min-width: 236px; }
+.tg-play { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: #5EB044; color: #FFFFFF; }
+.tg-play svg { width: 16px; height: 16px; fill: currentColor; stroke: none; margin-left: 2px; }
+.tg-wave { display: flex; align-items: center; gap: 2px; height: 26px; }
+.tg-wave i { display: block; width: 3px; border-radius: 2px; background: #5EB044; }
+.tg-dur { font-size: 11px; color: #4C8F35; margin-top: 2px; }
+.tg-transcript { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(76, 143, 53, 0.25); font-size: 14px; }
+.tg-who { font-size: 13px; font-weight: 600; color: var(--brand-600); margin-bottom: 2px; }
+/* Message du bot suivi de ses boutons : sous la bulle, comme le clavier en
+   ligne de Telegram (✅ / ❌ des cartes à valider, telegram-webhook). */
+.tg-msg { align-self: flex-start; max-width: 82%; display: flex; flex-direction: column; gap: 4px; }
+.tg-msg .tg-in { max-width: 100%; }
+.tg-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.tg-btns span {
+  display: grid; place-items: center; height: 36px; border-radius: 10px;
+  background: rgba(52, 74, 96, 0.34); font-size: 14px; color: #FFFFFF; font-weight: 500;
+}

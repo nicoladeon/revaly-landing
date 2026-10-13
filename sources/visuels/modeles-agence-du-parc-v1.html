@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Agence du Parc — modèles de documents (fictifs)</title>
+<style>
+/* Identité fictive « Agence du Parc » : vert forêt profond + or discret, Geist pour les titres, Georgia pour le corps.
+   Chaque page est un modèle VIDE avec des blancs pointillés après les libellés : exactement ce qu'un client importe. */
+@font-face { font-family: Geist; src: url("../assets/fonts/geist-var.woff2") format("woff2"); font-weight: 100 900; }
+:root { --vert: #1C4B3B; --or: #B9975B; --encre: #1E2A26; --gris: #6B736F; --filet: #D8DDD9; }
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+body { margin: 0; font-family: Georgia, "Times New Roman", serif; color: var(--encre); font-size: 10.5pt; line-height: 1.45; }
+.page { width: 210mm; height: 297mm; padding: 16mm 18mm 14mm; position: relative; page-break-after: always; overflow: hidden; background: #fff; }
+.page:last-child { page-break-after: auto; }
+.tete { display: flex; align-items: flex-start; justify-content: space-between; padding-bottom: 6mm; border-bottom: 1.2pt solid var(--vert); }
+.logo { display: flex; align-items: center; gap: 4mm; }
+.logo .mono { width: 13mm; height: 13mm; border-radius: 2.5mm; background: var(--vert); color: #fff; display: grid; place-items: center; font: 600 15pt Geist, sans-serif; letter-spacing: -.02em; }
+.logo .mono span { position: relative; top: -.5pt; }
+.logo .mono::after { content: ""; position: absolute; }
+.logo b { display: block; font: 600 15pt/1.05 Geist, sans-serif; letter-spacing: -.02em; color: var(--vert); }
+.logo small { display: block; margin-top: 1.2mm; font: 500 7.5pt/1.3 Geist, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--or); }
+.coord { text-align: right; font: 400 8.5pt/1.5 Geist, sans-serif; color: var(--gris); }
+h1 { margin: 10mm 0 2mm; font: 600 22pt/1.1 Geist, sans-serif; letter-spacing: -.02em; color: var(--encre); }
+.sous { margin: 0 0 7mm; font: 400 9.5pt Geist, sans-serif; color: var(--gris); }
+h2 { margin: 6mm 0 2.5mm; padding-bottom: 1.2mm; border-bottom: .6pt solid var(--filet); font: 600 8.5pt Geist, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--vert); }
+.l { display: flex; align-items: baseline; gap: 2mm; margin: 2.1mm 0; white-space: nowrap; min-width: 0; overflow: hidden; }
+.l span.k { flex: none; min-width: 34mm; font: 500 9pt Geist, sans-serif; color: var(--gris); }
+.l span.b { flex: 1 1 auto; min-width: 0; overflow: hidden; letter-spacing: 1px; color: #8B938F; }
+.l.courte span.b { flex: 0 0 60mm; }
+.deux { display: grid; grid-template-columns: 1fr 1fr; column-gap: 10mm; }
+p.clause { margin: 2mm 0; font-size: 9pt; text-align: justify; }
+ul.clauses { margin: 1.5mm 0 0; padding-left: 5mm; font-size: 9pt; } ul.clauses li { margin: 1mm 0; }
+.sign { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8mm; margin-top: 10mm; }
+.sign div { border-top: .6pt solid var(--encre); padding-top: 2mm; font: 500 8.5pt Geist, sans-serif; color: var(--gris); }
+.sign div small { display: block; font-weight: 400; font-size: 7.5pt; margin-top: 1mm; }
+.pied { position: absolute; left: 18mm; right: 18mm; bottom: 9mm; padding-top: 2.5mm; border-top: .6pt solid var(--filet); display: flex; justify-content: space-between; font: 400 7.2pt/1.4 Geist, sans-serif; color: var(--gris); }
+.pied i { font-style: normal; color: var(--or); }
+table.fact { width: 100%; border-collapse: collapse; margin-top: 3mm; font-family: Geist, sans-serif; font-size: 9.5pt; }
+table.fact th { text-align: left; padding: 2.4mm 2mm; border-bottom: 1pt solid var(--vert); font-weight: 600; font-size: 8pt; letter-spacing: .1em; text-transform: uppercase; color: var(--vert); }
+table.fact td { padding: 2.6mm 2mm; border-bottom: .5pt solid var(--filet); }
+table.fact td:last-child, table.fact th:last-child { text-align: right; white-space: nowrap; }
+table.fact tr.total td { font-weight: 600; border-bottom: 0; border-top: 1pt solid var(--vert); font-size: 11pt; }
+.encadre { margin-top: 4mm; padding: 3.5mm 4mm; border: .6pt solid var(--or); border-radius: 1.5mm; font-size: 9pt; }
+/* couverture de l'avis de valeur */
+.couv { background: var(--vert); color: #fff; padding: 0; }
+.couv .haut { padding: 16mm 18mm 0; display: flex; justify-content: space-between; align-items: flex-start; }
+.couv .haut .logo b { color: #fff; } .couv .haut .logo .mono { background: #fff; color: var(--vert); } .couv .haut .logo small { color: var(--or); }
+.couv .titre { position: absolute; left: 18mm; right: 18mm; top: 88mm; }
+.couv .titre small { display: block; font: 500 9pt Geist, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--or); }
+.couv .titre h1 { margin: 5mm 0 0; font-size: 36pt; color: #fff; }
+.couv .titre .filet { width: 22mm; height: 1.2pt; background: var(--or); margin: 8mm 0; }
+.couv .l span.k { color: rgba(255,255,255,.72); } .couv .l span.b { color: rgba(255,255,255,.55); }
+.couv .carte { position: absolute; left: 18mm; right: 18mm; bottom: 30mm; background: #fff; color: var(--encre); border-radius: 2mm; padding: 7mm 8mm; }
+.couv .carte .l span.k { color: var(--gris); } .couv .carte .l span.b { color: #8B938F; }
+.couv .pied { border-top-color: rgba(255,255,255,.25); color: rgba(255,255,255,.7); }
+</style></head><body>
+
+<!-- 1. BON DE VISITE -->
+<section class="page" id="bon-de-visite">
+  <div class="tete"><div class="logo"><div class="mono"><span>P</span></div><div><b>Agence du Parc</b><small>Immobilier · Bois-Guillaume</small></div></div>
+    <div class="coord">14 rue du Parc · 76230 Bois-Guillaume<br>02 35 00 00 00 · contact@agenceduparc.fr</div></div>
+  <h1>Bon de visite</h1>
+  <p class="sous">Document remis au visiteur avant la visite · à signer en un exemplaire conservé par l'agence</p>
+  <h2>Le bien visité</h2>
+  <div class="deux">
+    <div class="l"><span class="k">Mandat n°</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">Prix affiché</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <div class="l"><span class="k">Désignation</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="l"><span class="k">Date de la visite</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <h2>Le visiteur</h2>
+  <div class="l"><span class="k">Nom et prénom</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="l"><span class="k">Adresse</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="deux">
+    <div class="l"><span class="k">Téléphone</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">E-mail</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <h2>Votre conseiller</h2>
+  <div class="deux">
+    <div class="l"><span class="k">Nom</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">Téléphone</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <h2>Engagements du visiteur</h2>
+  <p class="clause">Le visiteur reconnaît avoir visité le bien désigné ci-dessus par l'intermédiaire de l'Agence du Parc, et déclare ne pas l'avoir visité auparavant. Il s'engage à :</p>
+  <ul class="clauses">
+    <li>ne pas communiquer à des tiers les renseignements transmis à titre confidentiel concernant ce bien ;</li>
+    <li>ne pas se rendre chez le propriétaire en l'absence d'un représentant de l'agence ;</li>
+    <li>informer toute autre agence qui lui présenterait ce bien qu'une visite a déjà eu lieu par l'intermédiaire de l'Agence du Parc ;</li>
+    <li>ne pas acquérir ce bien sans l'intervention de l'agence.</li>
+  </ul>
+  <p class="clause">Ces engagements s'appliquent pendant vingt-quatre mois à compter de la signature. En cas de manquement, le visiteur sera tenu de réparer le préjudice subi par l'agence par le versement d'une indemnité égale aux honoraires auxquels elle aurait pu prétendre.</p>
+  <div class="l"><span class="k">Fait à</span><span class="b courte">………………………………………</span><span class="k" style="min-width:auto">le</span><span class="b">………………………………………</span></div>
+  <div class="sign"><div>L'agence</div><div>Le visiteur<small>« lu et approuvé »</small></div><div>L'accompagnateur</div></div>
+  <div class="pied"><span>Agence du Parc · SAS au capital de 10 000 € · RCS Rouen 123 456 789 · Carte professionnelle CPI 7601 2024 000 012 345 délivrée par la CCI Rouen Métropole</span><span><i>Bon de visite</i></span></div>
+</section>
+
+<!-- 2. MANDAT (première page) -->
+<section class="page" id="mandat">
+  <div class="tete"><div class="logo"><div class="mono"><span>P</span></div><div><b>Agence du Parc</b><small>Immobilier · Bois-Guillaume</small></div></div>
+    <div class="coord">14 rue du Parc · 76230 Bois-Guillaume<br>02 35 00 00 00 · contact@agenceduparc.fr</div></div>
+  <h1>Mandat de vente</h1>
+  <p class="sous">Mandat exclusif · n° <span style="letter-spacing:1px;color:#8B938F">…………………</span> inscrit au registre des mandats</p>
+  <h2>Le mandant</h2>
+  <div class="l"><span class="k">Nom et prénom</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="l"><span class="k">Adresse</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="deux">
+    <div class="l"><span class="k">Téléphone</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">E-mail</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <h2>Le bien</h2>
+  <div class="l"><span class="k">Désignation</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="l"><span class="k">Adresse du bien</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="deux">
+    <div class="l"><span class="k">Surface habitable</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">Nombre de pièces</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <h2>Conditions de la vente</h2>
+  <div class="deux">
+    <div class="l"><span class="k">Prix de présentation</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">Honoraires</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <div class="deux">
+    <div class="l"><span class="k">Durée du mandat</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">À compter du</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <h2>Pièces remises par le mandant</h2>
+  <div class="l"><span class="b">……………………………………………………………………………………………………………………………………………………………</span></div>
+  <div class="l"><span class="b">……………………………………………………………………………………………………………………………………………………………</span></div>
+  <div class="l"><span class="b">……………………………………………………………………………………………………………………………………………………………</span></div>
+  <div class="encadre">Mandat établi en deux exemplaires. Le mandant dispose d'un délai de rétractation de quatorze jours lorsque le mandat est conclu hors établissement. Les conditions générales figurent en page 2.</div>
+  <div class="l" style="margin-top:6mm"><span class="k">Fait à</span><span class="b courte">………………………………………</span><span class="k" style="min-width:auto">le</span><span class="b">………………………………………</span></div>
+  <div class="sign"><div>Le mandant<small>« bon pour mandat »</small></div><div>L'agence<small>Agence du Parc</small></div><div></div></div>
+  <div class="pied"><span>Agence du Parc · SAS au capital de 10 000 € · RCS Rouen 123 456 789 · Garantie financière Galian Assurances · RCP MMA IARD</span><span><i>Mandat de vente · page 1/2</i></span></div>
+</section>
+
+<!-- 3. FACTURE D'HONORAIRES -->
+<section class="page" id="facture">
+  <div class="tete"><div class="logo"><div class="mono"><span>P</span></div><div><b>Agence du Parc</b><small>Immobilier · Bois-Guillaume</small></div></div>
+    <div class="coord">14 rue du Parc · 76230 Bois-Guillaume<br>SIRET 123 456 789 00012 · TVA FR 12 123456789</div></div>
+  <h1>Facture d'honoraires</h1>
+  <div class="deux" style="margin-top:4mm">
+    <div class="l"><span class="k">Facture n°</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">Date</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <h2>Facturé à</h2>
+  <div class="l"><span class="k">Client</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="l"><span class="k">Adresse</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="l"><span class="k">Remise au notaire</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <h2>Objet</h2>
+  <div class="l"><span class="k">Bien vendu</span><span class="b">……………………………………………………………………………………………………………………………</span></div>
+  <div class="deux">
+    <div class="l"><span class="k">Mandat n°</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">Date de l'acte</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <div class="deux">
+    <div class="l"><span class="k">Vendeur</span><span class="b">…………………………………………………</span></div>
+    <div class="l"><span class="k">Acquéreur</span><span class="b">…………………………………………………</span></div>
+  </div>
+  <div class="l"><span class="k">Prix de vente</span><span class="b courte">…………………………………………………</span></div>
+  <table class="fact">
+    <tr><th>Désignation</th><th>Montant</th></tr>
+    <tr><td>Honoraires de négociation (HT)</td><td><span style="letter-spacing:1px;color:#8B938F">………………………</span></td></tr>
+    <tr><td>TVA (20 %)</td><td><span style="letter-spacing:1px;color:#8B938F">………………………</span></td></tr>
+    <tr class="total"><td>Total TTC</td><td><span style="letter-spacing:1px;color:#8B938F">………………………</span></td></tr>
+  </table>
+  <p class="clause" style="margin-top:5mm">Règlement à la signature de l'acte authentique, par l'intermédiaire du notaire chargé de la vente. Aucun escompte pour paiement anticipé. En cas de retard, pénalités au taux légal et indemnité forfaitaire de recouvrement de 40 €.</p>
+  <div class="pied"><span>Agence du Parc · SAS au capital de 10 000 € · RCS Rouen 123 456 789 · Carte professionnelle CPI 7601 2024 000 012 345 · Garantie financière Galian Assurances</span><span><i>Facture d'honoraires</i></span></div>
+</section>
+
+<!-- 4. COUVERTURE DE L'AVIS DE VALEUR -->
+<section class="page couv" id="avis">
+  <div class="haut"><div class="logo"><div class="mono"><span>P</span></div><div><b>Agence du Parc</b><small>Immobilier · Bois-Guillaume</small></div></div>
+    <div class="coord" style="color:rgba(255,255,255,.72)">14 rue du Parc · 76230 Bois-Guillaume<br>02 35 00 00 00 · contact@agenceduparc.fr</div></div>
+  <div class="titre"><small>Estimation immobilière</small><h1>Avis de valeur</h1><div class="filet"></div>
+    <p style="margin:0;font:400 11pt Geist,sans-serif;color:rgba(255,255,255,.78);max-width:110mm">Une lecture du marché autour de votre bien, à partir des ventes réellement conclues, pour choisir ensemble le bon prix.</p>
+  </div>
+  <div class="carte">
+    <div class="l"><span class="k">Préparé pour</span><span class="b">………………………………………………………………………………………………………</span></div>
+    <div class="deux">
+      <div class="l"><span class="k">Par</span><span class="b">…………………………………………</span></div>
+      <div class="l"><span class="k">Le</span><span class="b">…………………………………………</span></div>
+    </div>
+    <div class="l"><span class="k">Bien</span><span class="b">………………………………………………………………………………………………………</span></div>
+    <div class="deux">
+      <div class="l"><span class="k">Surface</span><span class="b">…………………………………………</span></div>
+      <div class="l"><span class="k">Pièces</span><span class="b">…………………………………………</span></div>
+    </div>
+    <div class="l"><span class="k">Fourchette de valeur</span><span class="b">………………………………………………………………………………………………………</span></div>
+  </div>
+  <div class="pied"><span>Agence du Parc · Avis de valeur établi à titre indicatif, sans valeur d'expertise</span><span><i>Avis de valeur</i></span></div>
+</section>
+</body></html>
