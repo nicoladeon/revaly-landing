@@ -385,7 +385,7 @@
        pleines, l'étape en cours se remplit en 7 s puis passe à la suivante ; survol, focus et pause générale la figent).
        Chaque panneau : ta question, la réponse de l'agent qui porte le travail, puis ce qui est prêt et qui l'a préparé.
        Les panneaux partagent la même case : rien ne bouge. Sans script ou en mouvement réduit : tout est affiché. ── */
-  .cy-bloc { margin-top: var(--tete-visuel); max-width: 1040px; margin-left: auto; margin-right: auto; }
+  .cy-bloc { margin-top: var(--tete-visuel); max-width: 960px; margin-left: auto; margin-right: auto; }
   .cy-onglets { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
   .cy-onglet {
     min-height: 44px; padding: 0 17px; border-radius: 999px; border: 0.5px solid var(--line); background: var(--raised); cursor: pointer;
@@ -450,7 +450,9 @@
   /* ── 3 bis. Les scènes du cycle (R50 / R49) : une photo plein cadre, UNE carte de notification agentique posée dessus
        (en bas à gauche au bureau, sous la photo sur téléphone), les pastilles « Prêt » dessous ; les documents en vignette,
        ouverts en grand par la lightbox. Un seul niveau de cadre, aucun chevauchement. ── */
-  .sc { position: relative; container: scene / inline-size; border-radius: 28px; overflow: hidden; background: var(--bg-soft); }
+  /* le panneau est le conteneur de requête (un conteneur ne peut pas se styler lui-même) ; la scène prend sa largeur */
+  .cy-panneau { container: scene / inline-size; width: 100%; }
+  .sc { position: relative; border-radius: 28px; overflow: hidden; background: var(--bg-soft); width: 100%; }
   .sc-photo { display: block; } .sc-photo img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
   @container scene (min-width: 901px) { .sc-photo img { aspect-ratio: 2 / 1; } }
   .nc { position: absolute; left: 20px; bottom: 20px; z-index: 2; width: min(420px, calc(100% - 40px)); padding: 14px 16px 16px; border-radius: 20px;
@@ -539,11 +541,19 @@
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lb-corps img { filter: brightness(.93); } }
   :root[data-theme="dark"] .lb-corps img { filter: brightness(.93); }
   /* Téléphone : la photo recadrée en 4:5, la carte SOUS la photo (jamais dessus), rien ne se chevauche */
-  @container scene (max-width: 900px) {
+  @container scene (max-width: 640px) {
     .nc { position: static; width: auto; margin: 0; border-radius: 0; box-shadow: none; background: var(--raised); -webkit-backdrop-filter: none; backdrop-filter: none; padding: 16px 16px 18px; }
     .nc-action { font-size: 16px; } .nc-coches li { font-size: 14.5px; }
   }
   @container scene (max-width: 640px) { .sc-photo img { aspect-ratio: 4 / 5; } }
+  /* tablette : la photo en 4:3 à gauche, la carte à côté (jamais dessus, jamais dessous) */
+  @container scene (min-width: 641px) and (max-width: 900px) {
+    .sc { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: stretch; }
+    .sc-photo { height: 100%; } .sc-photo img { aspect-ratio: 4 / 3; height: 100%; }
+    .nc { position: static; width: auto; margin: 0; border-radius: 0; box-shadow: none; background: var(--raised); -webkit-backdrop-filter: none; backdrop-filter: none; padding: 14px 16px 16px; align-self: center; }
+    .nc-action { font-size: 15.5px; } .nc-coches li { font-size: 13.5px; }
+  }
+
   @media (prefers-reduced-motion: reduce) { .sc-moi::after { animation: none; } .nc, .nc-coches li, .nc-actions, .nc-fait, .nc-ok, .nc-ok::after { animation: none !important; transition: none !important; } html.js .cy-panneau:not(.joue) .nc, html.js .cy-panneau:not(.joue) .nc-coches li { opacity: 1; transform: none; } }
 
   /* ── 3 ter. Max : un téléphone (notre maquette : cadre arrondi, porcelaine, iris), la conversation arrive bulle après bulle
@@ -594,7 +604,7 @@
   .ot { display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 18px 0 14px; border-radius: 16px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); font-size: 15px; font-weight: 500; color: var(--ink); }
   .ot img { display: block; width: auto; height: 26px; }
   .ot-bientot { border-style: dashed; color: var(--muted); } .ot-bientot em { font-style: normal; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--iris-soft); color: var(--iris-ink); }
-  .ot-crm { margin: 12px 0 0; text-align: center; font-size: 14.5px; color: var(--muted); } .ot-crm a { color: var(--iris-ink); font-weight: 500; text-underline-offset: 4px; }
+  .ot-crm { margin: 8px 0 0; text-align: center; font-size: 14.5px; color: var(--muted); } .ot-crm a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; color: var(--iris-ink); font-weight: 500; text-underline-offset: 4px; }
   .ot-modelo { padding: 0 20px; border-color: color-mix(in srgb, var(--iris) 55%, transparent); box-shadow: 0 0 0 3px var(--iris-soft), var(--shadow-sm); }
   /* Tes documents (R51) : l'avant/après d'un vrai modèle, à côté de ce que l'équipe fait dans le CRM */
   .ot-deux { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; max-width: 1000px; margin: 22px auto 0; align-items: stretch; }
@@ -701,7 +711,7 @@
   .eq-lien {
     margin: auto 0 0; padding-top: 12px; min-height: 44px; display: inline-flex; align-items: flex-end; align-self: flex-start;
     font-size: 14px; font-weight: 500; color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px;
-  }
+   min-height: 44px; display: inline-flex; align-items: center; }
   .eq-lien:hover { text-decoration-color: var(--ink); }
   .eq-fleches { display: none; justify-content: center; gap: 12px; margin-top: -22px; position: relative; }
   .eq-fleche { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; border: 0.5px solid var(--line-strong); background: var(--raised); color: var(--ink); cursor: pointer; box-shadow: var(--shadow-sm); }
