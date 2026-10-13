@@ -186,80 +186,62 @@ def _cycle_moments():
 #    l'appli (assets/accueil/docs/*.webp, voir docs/visuels-sources.md) ; la carte est un SVG des vraies rues
 #    (assets/accueil/carte-secteur.svg, OpenStreetMap/ODbL).
 _VISUELS = json.loads((ROOT / "data" / "visuels.json").read_text())
-_COCHE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'  # trait réglé en CSS (.sc svg)
+_COCHE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'  # trait réglé en CSS (.nc svg)
 
-# Les rendus : page entière (960 × 1358) ou le haut de la page recadré et agrandi pour rester lisible à 390 px (R47)
-DOCS_DIM = {"bon-de-visite-haut": (900, 804), "facture-haut": (900, 744), "bilan-haut": (900, 609), "avis-haut": (900, 716)}
+# ── R50 / R49 (13/10) : chaque moment = UNE photo plein cadre (3:2 au bureau, 4:5 sur téléphone) et UNE carte de
+#    notification AGENTIQUE : l'agent vient vers toi (déclencheur = agenda, étape du CRM, DPE du matin), ce qu'il a
+#    préparé en 2-3 coches, une vignette du vrai document (ouverte en grand par la lightbox), Valider / Modifier →
+#    « Envoyé ✓ ». Données : data/visuels.json ; rendus : docs/visuels/README.md.
+def _photo(ident, alt):
+    return (f'<picture class="sc-photo"><source media="(max-width: 640px)" srcset="/assets/accueil/scenes/{ident}-m@520.webp 520w, /assets/accueil/scenes/{ident}-m@820.webp 820w" sizes="100vw">'
+            f'<img src="/assets/accueil/scenes/{ident}@960.webp" srcset="/assets/accueil/scenes/{ident}@960.webp 960w, /assets/accueil/scenes/{ident}@1536.webp 1536w" '
+            f'sizes="(max-width: 1200px) 100vw, 1112px" width="1536" height="1024" alt="{html.escape(alt, quote=True)}" loading="lazy" decoding="async"></picture>')
 
-def _doc(nom, cls, alt):
-    w, h = DOCS_DIM.get(nom, (960, 1358))
-    petit = f'<source media="(max-width: 640px)" srcset="/assets/accueil/docs/{nom}@450.webp">' if nom in DOCS_DIM else ""
-    return (f'<div class="sc-obj sc-doc {cls}"><picture>{petit}<img src="/assets/accueil/docs/{nom}.webp" width="{w}" height="{h}" '
-            f'alt="{html.escape(alt, quote=True)}" loading="lazy" decoding="async"></picture></div>')
+def _agenda(a):
+    e = a["evenement"]
+    heures = "".join(f'<i style="--h:{k}">{h}</i>' for k, h in enumerate(a["heures"]))
+    return (f'<div class="sc-agenda" style="--n:{len(a["heures"])}" role="img" aria-label="Agenda : {html.escape(e["titre"] + ", " + e["detail"], quote=True)}">'
+            f'<div class="sc-agenda-t"><b>{_esc(a["jour"])}</b><span>{logo_app("google-agenda", "lg lg-s")}Google Agenda</span></div>'
+            f'<div class="sc-heures">{heures}<div class="sc-ev" style="--debut:{e["debut"]};--duree:{e["duree"]}"><b>{_esc(_typo(e["titre"]))}</b>'
+            f'<span>{_esc(_typo(e["detail"]))}</span></div></div></div>')
 
-def _appel(a):
-    tete = (f'<img class="av" src="{_visage(a["agent"])}" width="24" height="24" alt="" loading="lazy">' if a.get("agent")
-            else _COCHE if a.get("ok") else "")
-    note = f' <small>· {logo_app(a["appli"], "lg lg-s") if a.get("appli") else ""}{_esc(_typo(a["note"]))}</small>' if a.get("note") else ""
-    return f'<span class="sc-call {a["place"]}{" ok" if a.get("ok") else ""}">{tete}{_esc(_typo(a["texte"]))}{note}</span>'
+def _carte_dpe():
+    pins = [("F", "Maison · rue des Écoles", "112 m²", 40, 46), ("D", "Appartement", "72 m²", 68, 66), ("C", "Maison", "118 m²", 30, 80)]
+    pins = "".join(f'<span class="sc-pin" style="--k:{k};left:{x}%;top:{y}%"><b class="{c}">{c}</b>{_esc(_typo(t))} <small>· {n}</small></span>' for k, (c, t, n, x, y) in enumerate(pins))
+    return (f'<div class="sc-carte"><svg aria-hidden="true"><use href="/assets/accueil/carte-secteur.svg#carte"/></svg><span class="sc-moi"></span>{pins}'
+            f'<span class="sc-osm">© OpenStreetMap</span></div>')
 
-def _mail(m, cls=""):
-    pj = (f'<span class="sc-pj">{_ico("file-pen-line")}{_esc(m["piece"])}</span>' if m.get("piece")
-          else f'<span class="sc-avis">{_ico("star")}{_esc(m["avis"])}</span>' if m.get("avis") else "")
-    app = f'<div class="sc-mail-app">{logo_app(m["appli"], "lg lg-s")}{_esc(APPLIS[m["appli"]]["nom"])} · brouillon</div>' if m.get("appli") else ""
-    return (f'<div class="sc-obj sc-mail{cls}"><div class="sc-mail-t">{app}<div><span>À</span><b>{_esc(m["a"])}</b></div>'
-            f'<div><span>Objet</span><b>{_esc(_typo(m["objet"]))}</b></div></div>'
-            f'<div class="sc-mail-c"><p>{_esc(_typo(m["texte"]))}</p>{pj}</div>'
-            f'<div class="sc-mail-pied"><span>{_esc(_typo(m["pied"]))}</span><b>À valider</b></div></div>')
-
-def scene_html(ident):
-    v = _VISUELS[ident]
-    if EQUIPE_V2 and v.get("v2"):
-        v = {**v, **v["v2"]}  # la relève : le Radar DPE passe à Hugo
-    t = v["type"]
-    if t == "carte":
-        pins = "".join(f'<span class="sc-pin" style="--k:{k};left:{p["x"]}%;top:{p["y"]}%"><b class="{p["classe"]}">{p["classe"]}</b>'
-                       f'{_esc(_typo(p["texte"]))} <small>· {_esc(p["note"])}</small></span>' for k, p in enumerate(v["pastilles"]))
-        corps = (f'<div class="sc-obj sc-carte" role="img" aria-label="La carte du secteur autour de l\'agence, avec les DPE reçus ce matin.">'
-                 f'<svg aria-hidden="true"><use href="/assets/accueil/carte-secteur.svg#carte"/></svg><span class="sc-moi"></span>{pins}'
-                 f'<span class="sc-osm">© OpenStreetMap</span></div>' + _appel(v["appel"]))
-    elif t == "agenda":
-        # La grille horaire comme un vrai agenda : une ligne par heure, l'événement commence pile à sa place
-        # (--debut en heures depuis la première ligne) et sa hauteur suit sa durée (--duree)
-        e = v["evenement"]
-        heures = "".join(f'<i style="--h:{k}">{h}</i>' for k, h in enumerate(v["heures"]))
-        corps = (_doc(v["document"], "sc-doc-visite", v["alt"]) +
-                 f'<div class="sc-obj sc-agenda" style="--n:{len(v["heures"])}"><div class="sc-agenda-t"><b>{_esc(v["jour"])}</b><span>{logo_app(v["appli"], "lg lg-s")}{_esc(v["outil"])}</span></div>'
-                 f'<div class="sc-heures">{heures}<div class="sc-ev" style="--debut:{e["debut"]};--duree:{e["duree"]}"><b>{_esc(_typo(e["titre"]))}</b>'
-                 f'<span>{_esc(_typo(e["detail"]))}</span></div></div></div>' + "".join(map(_appel, v["appels"])))
-    elif t == "documents":
-        corps = _doc(v["gauche"], "sc-doc-g", v["alt_gauche"]) + _doc(v["droite"], "sc-doc-d", v["alt_droite"]) + "".join(map(_appel, v["appels"]))
-    elif t == "dossier":
-        lis = "".join(f'<li>{_COCHE}{_esc(_typo(p))}</li>' for p in v["pieces"])
-        lis += "".join(f'<li class="att" style="--k:{k}">{_COCHE}{_esc(_typo(p["texte"]))}<em>{_esc(p["note"])}</em></li>'
-                       for k, p in enumerate(v["attendues"]))
-        src = f'<div class="sc-source">{logo_app(v["source"]["appli"], "lg lg-s")}{_esc(v["source"]["texte"])}</div>' if v.get("source") else ""
-        corps = (f'<div class="sc-obj sc-dossier"><div class="sc-dossier-t"><div><b>{_esc(_typo(v["titre"]))}</b><span>{_esc(_typo(v["sous"]))}</span></div>'
-                 f'<div class="sc-ring" style="--p:{v["pct"]}"><span>{v["avant"]}</span><span>{v["apres"]}</span></div></div>'
-                 f'<ul class="sc-pieces">{lis}</ul>{src}</div>' + "".join(map(_appel, v["appels"])))
-    elif t == "frise":
-        lis = "".join(f'<li class="{e.get("etat", "")}"><i>{_COCHE if e.get("etat") == "fait" else ""}</i>'
-                      f'{"<b>" if e.get("etat") == "now" else "<em>"}{_esc(_typo(e["texte"]))}{"</b>" if e.get("etat") == "now" else "</em>"}'
-                      f'<span>{_esc(e["date"])}</span></li>' for e in v["etapes"])
-        src = f'<span class="sc-source">{logo_app(v["source"]["appli"], "lg lg-s")}{_esc(v["source"]["texte"])}</span>' if v.get("source") else ""
-        corps = (f'<div class="sc-obj sc-frise"><div class="sc-frise-t"><b>{_esc(_typo(v["titre"]))}</b>{src}</div><ul class="sc-etapes">{lis}</ul></div>'
-                 + "".join(map(_appel, v["appels"])))
-    elif t == "mail":
-        corps = _doc(v["document"], "sc-acte-facture", v["alt"]) + _mail(v["mail"]) + "".join(map(_appel, v["appels"]))
-    elif t == "post":
-        corps = (f'<div class="sc-obj sc-post"><div class="sc-post-t"><i>{v["compte"][:1].upper()}{v["compte"][-4:-3].upper()}</i><div><b>{_esc(v["compte"])}</b>'
-                 f'<span> · {_esc(v["lieu"])}</span></div>{logo_app(v["appli"], "lg lg-m")}</div><div class="sc-post-ph"><img src="/assets/accueil/post-vendu.webp" width="800" height="320" '
-                 f'alt="La photo du post : la remise des clés aux nouveaux propriétaires." loading="lazy"><b>{_esc(v["badge"])}</b>'
-                 f'<span>{_esc(_typo(v["legende"]))}</span><u></u></div><p class="sc-post-c"><b>{_esc(v["compte"])}</b> {_esc(_typo(v["texte"]))}</p></div>'
-                 + _mail(v["mail"], " sc-apres-mail") + "".join(map(_appel, v["appels"])))
+def _vignette(ident, v):
+    """Le bouton-vignette de la carte : une miniature + un libellé ; le grand format est dans un <template> à côté."""
+    if not v:
+        return ""
+    if v["type"] == "carte":
+        mini = '<span class="nc-mini nc-mini-carte"><svg aria-hidden="true"><use href="/assets/accueil/carte-secteur.svg#carte"/></svg><i class="nc-mini-pt"></i></span>'
+        grand = _carte_dpe()
+    elif v["type"] == "post":
+        mini = f'<span class="nc-mini"><img src="/assets/accueil/scenes/{v["src"]}-m@520.webp" width="520" height="650" alt="" loading="lazy"><b class="nc-vendu">VENDU</b></span>'
+        grand = (f'<div class="lb-post"><img src="/assets/accueil/scenes/{v["src"]}-m@820.webp" width="820" height="1025" alt="{html.escape(v["alt"], quote=True)}">'
+                 f'<p><b>agenceduparc</b> Vendu ! Merci à nos vendeurs et à nos acquéreurs pour leur confiance.</p></div>')
     else:
-        raise SystemExit(f"visuels.json : type inconnu {t}")
-    return f'<div class="sc-scene">{corps}</div>'
+        mini = f'<span class="nc-mini"><img src="/assets/accueil/docs/{v["src"]}" width="480" height="320" alt="" loading="lazy"></span>'
+        grand = f'<img src="/assets/accueil/docs/{v["grand"]}" width="1200" height="1697" alt="{html.escape(v["alt"], quote=True)}">'
+    return (f'<button type="button" class="nc-vignette" data-lightbox="lb-{ident}" aria-haspopup="dialog">{mini}<span class="nc-vig-txt"><b>{_esc(_typo(v["label"]))}</b><em>Ouvrir en grand</em></span></button>'
+            f'<template id="lb-{ident}"><p class="lb-titre">{_esc(_typo(v["label"]))}</p>{grand}</template>')
+
+def carte_agentique(ident, m, noms):
+    v = _VISUELS[ident]
+    c = dict(v["carte"])
+    if not EQUIPE_V2 and v.get("v1"):
+        c.update(v["v1"].get("carte", {}))
+    coches = "".join(f'<li style="--v:{k}">{_COCHE}<span>{_esc(_typo(x))}</span></li>' for k, x in enumerate(c["coches"][:3]))
+    agenda = _agenda(c["agenda"]) if c.get("agenda") else ""
+    return (f'<article class="nc" aria-label="Notification de {_esc(noms[c["agent"]])}">'
+            f'<header class="nc-tete"><img src="{_visage(c["agent"])}" width="36" height="36" alt="" loading="lazy"><b>{_esc(noms[c["agent"]])}</b><time>{_esc(c["quand"])}</time></header>'
+            f'<p class="nc-decl">{_esc(_typo(c["declencheur"]))}</p>'
+            f'<p class="nc-action">{_esc(_typo(c["action"]))}</p>'
+            f'<ul class="nc-coches">{coches}</ul>{agenda}{_vignette(ident, c.get("vignette"))}'
+            f'<div class="nc-issue"><div class="nc-actions" aria-hidden="true"><span class="nc-ok">{_esc(c["bouton"])}</span><span class="nc-non">Modifier</span></div>'
+            f'<p class="nc-fait">{_COCHE}<span>{_esc(c["fait"])}</span></p></div></article>')
 
 # ── Section Max (13/10) : un vocal depuis le terrain, Max répartit, deux cartes à valider. Seulement ce que la prod fait :
 #    vocaux WhatsApp/Telegram transformés en tâches (orchestrateur), bon de visite (Christine), relance par e-mail (Emma).
@@ -305,13 +287,10 @@ def cycle_vente():
         prets = "".join(f'<li style="--v:{j}" title="{html.escape(p["texte"], quote=True)}">{_ico("check", "cy-coche")}<span>{_esc(_typo(p["chip"]))}</span>'
                         f'<em>{_esc(noms[p["agent"]])}</em></li>' for j, p in enumerate(m["prets"]))
         chute = f'<p class="cy-chute">{_esc(_typo(m["chute"]))}</p>' if m.get("chute") else ""
-        # R42 : le vrai livrable en grand (scene_html), la conversation plus courte et « ce qui est prêt » à côté
+        # R50 : la photo plein cadre, UNE carte agentique posée dessus (sous la photo sur téléphone), les pastilles dessous
         panneaux.append(
             f'<div class="cy-panneau{" actif" if sel else ""}" id="cy-{m["id"]}" role="tabpanel" aria-labelledby="cy-o-{m["id"]}">'
-            f'<div class="sc">{scene_html(m["id"])}'
-            f'<div class="cy-conv"><p class="cy-q"><span class="cy-toi">Toi</span>{_esc(_typo(m["question"]))}</p>'
-            f'<div class="cy-r"><img src="{_visage(m["agent"])}" width="40" height="40" alt="" loading="lazy">'
-            f'<div><b>{_esc(noms[m["agent"]])}</b><p>{_mots(m["reponse"])}</p></div></div></div></div>'
+            f'<div class="sc">{_photo(m["id"], _VISUELS[m["id"]]["photo_alt"])}{carte_agentique(m["id"], m, noms)}</div>'
             f'<div class="cy-prets"><p class="cy-prets-t">Prêt :</p><ul>{prets}</ul>{chute}</div></div>')
     return {"CYCLE_ONGLETS": "".join(onglets), "CYCLE_FRISE": "".join(frise), "CYCLE_PANNEAUX": "".join(panneaux)}
 

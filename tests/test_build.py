@@ -774,9 +774,8 @@ must("animation: barre 7s linear forwards" in idx and ".cy-bloc:hover .cy-frise 
 _noms = {a["slug"]: a["name"] for a in agents}
 for m in _moments:
     _pn = _cy.split(f'id="cy-{m["id"]}"', 1)[1].split('class="cy-panneau', 1)[0]
-    _pt = html.unescape(re.sub(r"<[^>]+>", "", _pn)).replace("\u00a0", " ")
-    must(m["question"].replace(" :", " :") in _pt and f"<b>{_noms[m['agent']]}</b>" in html.unescape(_pn) and m.get("source"), f"moment {m['id']} : ta question, la réponse de {m['agent']}, source notée")
-    must(re.sub(r"\s+", " ", m["reponse"]) in re.sub(r"\s+", " ", _pt) and all(p["chip"] in _pt and html.escape(p["texte"], quote=True) in _pn for p in m["prets"]), f"moment {m['id']} : la réponse et ce qui est prêt")
+    _pt = html.unescape(re.sub(r"<[^>]+>", " ", _pn)).replace("\u00a0", " ")
+    must(all(p["chip"] in _pt and html.escape(p["texte"], quote=True) in _pn for p in m["prets"]) and m.get("source"), f"moment {m['id']} : les pastilles « prêt », source notée")
 _vis = next(m for m in _moments if m["id"] == "visite")
 must(any(p["agent"] == "christine" and "bon de visite" in p["texte"].lower() for p in _vis["prets"]), "le bon de visite est préparé par Christine")
 _vend = next(m for m in _moments if m["id"] == "vendeur")
@@ -794,27 +793,35 @@ must('id="ot-voir" aria-expanded="false" aria-controls="ot-liste"' in _ot and "h
 # Page plus courte (retour du contrôleur, 13/10 : ≤ 9 000 px au bureau, ≤ 9 500 px sur téléphone, mesurés au navigateur)
 must(_pb.count(" data-bureau") == 2 and "--rang-m:" in _pb and ".notif[data-bureau] { display: none; }" in idx, "pile : quatre notifications sur téléphone, six au bureau")
 must("    .paire-fin { display: none; }" in idx and 'class="sticky-cta"' in idx, "téléphone : la barre collante remplace les paires de fin de bloc")
-# R42 (13/10) : chaque moment montre en grand son vrai livrable (data/visuels.json ; rendus des générateurs de l'appli)
+# R50 / R49 (13/10) : une photo par moment, UNE carte de notification agentique (l'agent vient vers toi), les documents en vignette + lightbox
 _visuels = json.loads((ROOT / "data" / "visuels.json").read_text())
-must(set(_visuels) == {m["id"] for m in _moments} and [_visuels[m["id"]]["type"] for m in _moments] == ["carte", "agenda", "documents", "dossier", "frise", "mail", "post"],
-     "un visuel par moment : carte, agenda, documents, dossier, frise, mail, post")
+must(set(_visuels) - {"_note"} == {m["id"] for m in _moments}, "un visuel par moment")
 for m in _moments:
     _pn = _cy.split(f'id="cy-{m["id"]}"', 1)[1].split('class="cy-panneau', 1)[0]
-    must(_pn.count('<div class="sc">') == 1 and _pn.find('class="sc-scene"') < _pn.find('class="cy-conv"') < _pn.find('class="cy-prets"') and 'cy-cote' not in _pn,
-         f"moment {m['id']} : un seul cadre, la conversation flotte sur la scène, les pastilles dessous (R47)")
-    must(len(m["reponse"]) <= 150, f"moment {m['id']} : réponse courte ({len(m['reponse'])} car.)")
-for _d in ["bon-de-visite-haut", "facture-haut", "bilan-haut", "avis-haut"]:
-    must((dist / "assets" / "accueil" / "docs" / f"{_d}.webp").is_file() and (dist / "assets" / "accueil" / "docs" / f"{_d}@450.webp").is_file() and f"/assets/accueil/docs/{_d}.webp" in _cy, f"document {_d} : vrai rendu, haut de page lisible, publié et affiché")
-must('style="--debut:1.25;--duree:0.75"' in _cy and "top: calc(var(--debut) * var(--hr) + .6em); height: calc(var(--duree) * var(--hr))" in idx, "agenda exact : 17:15 – 18:00 posé sur la grille, hauteur selon la durée")
-must((dist / "assets" / "accueil" / "carte-secteur.svg").is_file() and 'href="/assets/accueil/carte-secteur.svg#carte"' in _cy and "© OpenStreetMap" in _cy, "carte du secteur : vraies rues, attribution OpenStreetMap")
-must('class="sc-pin"' in _cy and 'class="sc-ev"' in _cy and 'class="sc-ring"' in _cy and 'class="sc-etapes"' in _cy and 'class="sc-pj"' in _cy and 'class="sc-post-ph"' in _cy and 'class="sc-avis"' in _cy,
-     "pastilles DPE, événement d'agenda, dossier 5/7, frise des échéances, pièce jointe, post Vendu, avis Google")
-must(not re.search(r"\d{3} ?\d{3} ?€", html.unescape(_cy.split('id="cy-apres"', 1)[1].split('class="cy-cote"', 1)[0])), "post « Vendu » : jamais de prix")
-must(".cy-prets li:nth-child(n+4) { display: none; }" in idx and "    .cy-prets li:nth-child(n+3) { display: none; }" in idx, "« prêt » : trois pastilles au bureau, deux sur téléphone")
-must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in idx and re.search(r"\.cy-prets li \{[^}]*font-size: 15px", idx), "mobile : onglets aimantés, texte des cartes ≥ 15 px")
+    _pt = html.unescape(re.sub(r"<[^>]+>", " ", _pn)).replace("\u00a0", " ")
+    _v = _visuels[m["id"]]; _c = _v["carte"]
+    must(_pn.count('<div class="sc">') == 1 and _pn.count('<picture class="sc-photo">') == 1 and _pn.count('<article class="nc"') == 1 and "cy-conv" not in _pn and "cy-cote" not in _pn,
+         f"moment {m['id']} : une photo plein cadre, une seule carte, plus aucune bulle")
+    for _w in (f"/assets/accueil/scenes/{m['id']}@1536.webp", f"/assets/accueil/scenes/{m['id']}@960.webp", f"/assets/accueil/scenes/{m['id']}-m@820.webp", f"/assets/accueil/scenes/{m['id']}-m@520.webp"):
+        must(_w in _pn and (dist / _w.lstrip("/")).is_file(), f"moment {m['id']} : photo {_w} publiée (3:2 et 4:5)")
+    must(_c["declencheur"] in _pt and _c["action"] in _pt and all(x in _pt for x in _c["coches"][:3]) and _c["bouton"] in _pt and _c["fait"] in _pt and f"<b>{_noms[_c['agent']]}</b>" in _pn,
+         f"moment {m['id']} : déclencheur, action, 2-3 coches, bouton → fait, prénom de l'agent")
+    must(not re.search(r"<p class=\"cy-q\"|\bToi\b", _pn) and len(_c["coches"]) <= 3, f"moment {m['id']} : agentique (aucune question du conseiller), 3 coches au plus")
+    if _c.get("vignette"):
+        must(_pn.count('class="nc-vignette"') == 1 and f'data-lightbox="lb-{m["id"]}"' in _pn and f'<template id="lb-{m["id"]}">' in _pn, f"moment {m['id']} : vignette reliée à sa lightbox")
+        if _c["vignette"]["type"] == "document":
+            for _f in (_c["vignette"]["src"], _c["vignette"]["grand"]):
+                must((dist / "assets" / "accueil" / "docs" / _f).is_file() and f"/assets/accueil/docs/{_f}" in _pn, f"moment {m['id']} : document {_f} publié (vrai rendu)")
+    else:
+        must('class="nc-vignette"' not in _pn, f"moment {m['id']} : pas de vignette")
+    must(len(re.findall(r"<li style=\"--v:", _pn.split('class="cy-prets"', 1)[1])) <= 4 and ".cy-prets li:nth-child(n+4) { display: none; }" in idx, f"moment {m['id']} : rangée « prêt » à 3 pastilles au plus")
+must('style="--debut:1.25;--duree:0.75"' in _cy and "top: calc(var(--debut) * var(--hr) + .6em); height: calc(var(--duree) * var(--hr))" in idx, "agenda exact (carte d'Emma) : 17:15 – 18:00 posé sur la grille, hauteur selon la durée")
+must('<dialog class="lb" id="lb"' in _cy and "lb.showModal()" in idx and "lb.close()" in idx and 'id="lb-fermer"' in _cy, "lightbox : une boîte de dialogue native (Échap ferme), bouton Fermer")
+must('href="/assets/accueil/carte-secteur.svg#carte"' in _cy and "© OpenStreetMap" in _cy and (dist / "assets" / "accueil" / "carte-secteur.svg").is_file(), "carte du secteur (vignette et lightbox de Hugo) : vraies rues, attribution")
+must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in idx and re.search(r"\.cy-prets li \{[^}]*font-size: 15px", idx), "mobile : onglets aimantés, pastilles à 15 px")
+must("    .nc { position: static;" in idx and ".sc-photo img { aspect-ratio: 4 / 5; }" in idx, "téléphone : la carte sous la photo (4:5), jamais dessus")
 must((ROOT / "docs" / "visuels" / "documents.ts").is_file() and (ROOT / "docs" / "visuels" / "carte.py").is_file() and (ROOT / "docs" / "visuels" / "README.md").is_file(), "générateurs et sources des visuels notés dans docs/visuels/")
-must('aria-label="WhatsApp"' in _cy and 'aria-label="Google Agenda"' in _cy and _cy.count('class="sc-mail-app"') == 2 and _cy.count('class="sc-source"') == 2 and 'aria-label="Instagram"' in _cy,
-     "les mêmes logos partout où une source apparaît dans les scènes (agenda, WhatsApp, Gmail, Modelo, Instagram)")
+must('aria-label="Google Agenda"' in _cy, "le logo de l'agenda dans la carte d'Emma")
 # Section Max (13/10) : un vocal depuis le terrain, Max répartit, deux cartes à valider ; notre maquette, pas celle de Limova
 _mx = idx.split('id="max"', 1)[1].split("</section>", 1)[0]
 _mxt = html.unescape(re.sub(r"<[^>]+>", "", _mx)).replace("\u00a0", " ")
@@ -835,7 +842,7 @@ must('http-equiv="refresh" content="0; url=/agents/zoe/"' in (dist / "agents" / 
 must((dist / "agents" / "hugo" / "index.html").is_file() and 'id="agent-hugo"' in idx and idx.count('<article class="eq') == 6, "Hugo dans l'équipe, six agents")
 must("réseaux et visuels" in idx and "six" in idx.lower() and "sept" not in html.unescape(re.sub(r"<[^>]+>", "", idx)).lower(), "Zoé « réseaux et visuels », toujours six agents")
 _p2 = idx.split('id="cy-prospection"', 1)[1].split('class="cy-panneau', 1)[0]
-must("<b>Hugo</b>" in _p2 and "DPE" in _p2 and "/assets/equipe/boucles/hugo@256.webp" in _p2.split('class="cy-cote"', 1)[0], "le Radar DPE passe à Hugo, dans la conversation et sur la scène")
+must("<b>Hugo</b>" in _p2 and "DPE" in _p2 and "/assets/equipe/boucles/hugo@256.webp" in _p2, "le Radar DPE passe à Hugo : sa carte agentique porte son visage")
 must(not list(dist.rglob("googlemybusiness*")), "aucun fichier de la fiche Google publié")
 import tempfile
 _v2 = pathlib.Path(tempfile.mkdtemp()) / "dist-v1"

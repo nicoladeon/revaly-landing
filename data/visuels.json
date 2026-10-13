@@ -1,219 +1,62 @@
 {
+  "_note": "R50/R49 (13/10) : une PHOTO par moment (gpt-image-2, assets/accueil/scenes/<id>@1536|960.webp, 3:2 ; <id>-m@820|520.webp, 4:5 pour mobile) et UNE carte de notification agentique : l'agent vient vers toi, déclenché par l'agenda, le CRM ou un DPE ; tu valides. Documents = vrais rendus (docs/visuels/README.md) ouverts en grand par la lightbox. Tout est fictif (« Agence du Parc »).",
   "prospection": {
-    "type": "carte",
-    "appel": {
-      "agent": "lucas",
-      "texte": "Radar DPE",
-      "note": "3 nouveaux ce matin",
-      "place": "tl"
-    },
-    "pastilles": [
-      {
-        "classe": "F",
-        "texte": "Maison · rue des Écoles",
-        "note": "112 m²",
-        "x": 40,
-        "y": 46
-      },
-      {
-        "classe": "D",
-        "texte": "Appartement",
-        "note": "72 m²",
-        "x": 68,
-        "y": 66
-      },
-      {
-        "classe": "C",
-        "texte": "Maison",
-        "note": "118 m²",
-        "x": 30,
-        "y": 80
-      }
-    ],
-    "v2": {
-      "appel": {
-        "agent": "hugo",
-        "texte": "Radar DPE",
-        "note": "3 nouveaux ce matin",
-        "place": "tl"
-      }
-    }
+    "photo_alt": "Une rue résidentielle française au petit matin, maisons de ville aux volets clairs.",
+    "carte": {"agent": "hugo", "quand": "il y a 12 min", "declencheur": "3 nouveaux DPE ce matin autour de l'agence",
+      "action": "Une maison classée F rue des Écoles : l'approche par courrier est prête.",
+      "coches": ["Adresse absente du fichier de l'agence : vérifié", "Courrier « Au propriétaire », dans les règles", "Les deux autres DPE, notés pour toi"],
+      "vignette": {"type": "carte", "label": "Carte du secteur · 3 DPE", "alt": "La carte du secteur avec les trois DPE reçus ce matin."},
+      "bouton": "Voir", "fait": "Vu ✓"},
+    "v2": {},
+    "v1": {"carte": {"agent": "lucas"}}
   },
   "visite": {
-    "type": "agenda",
-    "jour": "Vendredi 16 octobre",
-    "outil": "Google Agenda",
-    "heures": [
-      "16:00",
-      "17:00",
-      "18:00"
-    ],
-    "evenement": {
-      "titre": "Visite · 12 rue des Lilas",
-      "detail": "17:15 – 18:00 · Camille Durand",
-      "debut": 1.25,
-      "duree": 0.75
-    },
-    "document": "bon-de-visite-haut",
-    "alt": "Le bon de visite de l'agence, prêt à imprimer, généré par l'appli.",
-    "appels": [
-      {
-        "ok": true,
-        "texte": "Confirmée hier soir",
-        "note": "WhatsApp",
-        "appli": "whatsapp",
-        "place": "etat"
-      }
-    ],
-    "appli": "google-agenda"
+    "photo_alt": "L'entrée d'un appartement lumineux : une console, un trousseau de clés et une feuille imprimée.",
+    "carte": {"agent": "emma", "quand": "hier, 18 h", "declencheur": "Visite demain 17 h 15 · Camille Durand, dans ton agenda",
+      "action": "La confirmation WhatsApp et le rappel du jour J sont prêts.",
+      "coches": ["Confirmation à Camille Durand, au vouvoiement", "Rappel du jour J, programmé", "Bon de visite fait par Christine, au format de l'agence"],
+      "vignette": {"type": "document", "src": "bon-de-visite-mockup@480.webp", "grand": "bon-de-visite-plat.webp", "label": "Bon de visite · PDF", "alt": "Le bon de visite de l'Agence du Parc, rempli : Camille Durand, 12 rue des Lilas, vendredi 16 octobre 2026 à 17h15."},
+      "agenda": {"jour": "Vendredi 16 octobre", "heures": ["16:00", "17:00", "18:00"], "evenement": {"titre": "Visite · 12 rue des Lilas", "detail": "17:15 – 18:00 · Camille Durand", "debut": 1.25, "duree": 0.75}},
+      "bouton": "Envoyer", "fait": "Envoyé ✓"}
   },
   "vendeur": {
-    "type": "documents",
-    "gauche": "avis-haut",
-    "droite": "bilan-haut",
-    "alt_gauche": "La couverture de l'avis de valeur, aux couleurs de l'agence.",
-    "alt_droite": "La première page du bilan de commercialisation : visites, offres, retours.",
-    "appels": [
-      {
-        "agent": "lucas",
-        "texte": "Avis de valeur",
-        "note": "242 000 – 255 000 €",
-        "place": "tl"
-      },
-      {
-        "agent": "lucas",
-        "texte": "Bilan",
-        "note": "6 visites, 1 offre, prêt avant le RDV",
-        "place": "br"
-      }
-    ]
+    "photo_alt": "Une table de cuisine : deux tasses, une chemise cartonnée fermée et un stylo.",
+    "carte": {"agent": "lucas", "quand": "il y a 1 h", "declencheur": "Rendez-vous vendeur jeudi · Mme Lefèvre, 5 rue Jeanne-d'Arc",
+      "action": "Ton bilan de commercialisation est prêt : 6 visites, 2 retours, 1 offre.",
+      "coches": ["Visites et offres lues dans ton CRM", "Le document pour Mme Lefèvre, au logo de l'agence", "Ta note de préparation, pour toi seul"],
+      "vignette": {"type": "document", "src": "bilan-vignette@480.webp", "grand": "bilan-plat.webp", "label": "Bilan de commercialisation · PDF", "alt": "La première page du bilan de commercialisation : « Ce que le marché nous dit », 6 visites, 1 offre."},
+      "bouton": "Ouvrir", "fait": "Ouvert ✓"}
   },
   "mandat": {
-    "type": "dossier",
-    "titre": "Dossier de mandat · Perrin",
-    "sous": "Appartement T3, rue Verte",
-    "avant": "5/7",
-    "apres": "7/7",
-    "pct": 71,
-    "pieces": [
-      "Titre de propriété",
-      "Pièce d'identité du vendeur",
-      "Dernier avis de taxe foncière",
-      "DPE",
-      "Règlement de copropriété"
-    ],
-    "attendues": [
-      {
-        "texte": "PV des 3 dernières AG",
-        "note": "relancé par Emma"
-      },
-      {
-        "texte": "Mesurage Carrez",
-        "note": "relancé par Emma"
-      }
-    ],
-    "appels": [
-      {
-        "agent": "christine",
-        "texte": "Mandat pré-rempli",
-        "note": "sur ton modèle",
-        "place": "br"
-      }
-    ],
-    "source": {
-      "appli": "modelo",
-      "texte": "pièces lues dans Modelo"
-    }
+    "photo_alt": "Un bureau rangé : un classeur ouvert à intercalaires, une tablette, un stylo-plume.",
+    "carte": {"agent": "christine", "quand": "il y a 2 h", "declencheur": "Rendu d'estimation demain · M. et Mme Perrin, dans ton agenda",
+      "action": "Le mandat est pré-rempli sur ton modèle, à faire valider par ton juriste.",
+      "coches": ["Données du bien et du vendeur lues dans ton CRM", "5 pièces sur 7 reçues et vérifiées", "Relance des 2 manquantes prête (Emma)"],
+      "vignette": {"type": "document", "src": "mandat-plat.webp", "grand": "mandat-plat.webp", "label": "Mandat de vente · PDF", "alt": "La première page du mandat de vente de l'Agence du Parc, pré-remplie : M. et Mme Perrin, 5 rue Verte, 249 000 €."},
+      "bouton": "Ouvrir", "fait": "Ouvert ✓"}
   },
   "compromis": {
-    "type": "frise",
-    "titre": "Échéances · vente Martin",
-    "etapes": [
-      {
-        "texte": "Offre acceptée",
-        "date": "6 oct.",
-        "etat": "fait"
-      },
-      {
-        "texte": "Compromis signé",
-        "date": "14 oct.",
-        "etat": "fait"
-      },
-      {
-        "texte": "Fin de rétractation",
-        "date": "25 oct.",
-        "etat": "now"
-      },
-      {
-        "texte": "Accord de principe du prêt",
-        "date": "4 nov."
-      },
-      {
-        "texte": "Obtention du prêt",
-        "date": "29 nov."
-      },
-      {
-        "texte": "Acte chez le notaire",
-        "date": "15 janv."
-      }
-    ],
-    "appels": [
-      {
-        "agent": "emma",
-        "texte": "Relance du prêt",
-        "note": "5 jours avant",
-        "place": "tr"
-      }
-    ],
-    "source": {
-      "appli": "modelo",
-      "texte": "dates lues dans Modelo"
-    }
+    "photo_alt": "Une main qui signe un document au stylo-plume, feuilles floues.",
+    "carte": {"agent": "christine", "quand": "il y a 20 min", "declencheur": "Compromis signé · vente Martin, étape franchie dans ton CRM",
+      "action": "Fin de rétractation le 24/10. Il manque 2 pièces, la relance est prête.",
+      "coches": ["Échéances : rétractation 24/10 · prêt 29/11 · acte 15/01", "Titre de propriété et diagnostic amiante : à demander", "Félicitations au client prêtes (Emma)"],
+      "vignette": null,
+      "bouton": "Envoyer", "fait": "Envoyé ✓"}
   },
   "acte": {
-    "type": "mail",
-    "document": "facture-haut",
-    "alt": "La facture d'honoraires de l'agence, générée par l'appli.",
-    "mail": {
-      "a": "Me Lambert, notaire",
-      "objet": "Facture d'honoraires · 7 allée des Tilleuls, Bihorel",
-      "texte": "Maître, vous trouverez ci-joint la facture d'honoraires de l'agence pour la vente Lefèvre / Roux, à régler lors de la signature de jeudi.",
-      "piece": "Facture-2026-041.pdf",
-      "pied": "Brouillon d'Emma · dans ta boîte",
-      "appli": "gmail"
-    },
-    "appels": [
-      {
-        "agent": "emma",
-        "texte": "Facture d'honoraires",
-        "note": "12 000 € TTC",
-        "place": "tr"
-      }
-    ]
+    "photo_alt": "Le bureau en bois d'un notaire : un trousseau de clés passe d'une main à l'autre.",
+    "carte": {"agent": "emma", "quand": "il y a 5 min", "declencheur": "Signature jeudi 22/10 chez Me Lambert, dans ton agenda",
+      "action": "Facture d'honoraires prête, e-mail au notaire avec la facture jointe.",
+      "coches": ["12 000 € TTC, d'après le mandat et la vente dans ton CRM", "E-mail à Me Lambert, en brouillon dans ta boîte", "À apporter : pièce d'identité, mandat, bon de visite"],
+      "vignette": {"type": "document", "src": "facture-mockup@480.webp", "grand": "facture-plat.webp", "label": "Facture d'honoraires · PDF", "alt": "La facture d'honoraires de l'Agence du Parc, remplie : vente Lefèvre / Roux, 12 000 € TTC."},
+      "bouton": "Envoyer", "fait": "Envoyé ✓"}
   },
   "apres": {
-    "type": "post",
-    "compte": "agenceduparc",
-    "lieu": "Bihorel",
-    "badge": "VENDU",
-    "legende": "Maison 5 pièces · Bihorel",
-    "texte": "Vendu ! Merci à nos vendeurs et à nos acquéreurs pour leur confiance.",
-    "mail": {
-      "a": "Mme Lefèvre",
-      "objet": "Merci pour votre confiance",
-      "texte": "Madame, votre maison a trouvé ses nouveaux propriétaires. Accepteriez-vous de partager votre expérience ?",
-      "avis": "Laisser un avis Google",
-      "pied": "Brouillon d'Emma",
-      "appli": "gmail"
-    },
-    "appels": [
-      {
-        "agent": "zoe",
-        "texte": "Post « Vendu »",
-        "note": "jamais de prix",
-        "place": "tl"
-      }
-    ],
-    "appli": "instagram"
+    "photo_alt": "Le portail d'une maison avec un panneau « Vendu » et un bouquet de fleurs.",
+    "carte": {"agent": "zoe", "quand": "il y a 30 min", "declencheur": "Vente signée · 7 allée des Tilleuls, étape franchie dans ton CRM",
+      "action": "Le post Instagram du « Vendu » est prêt, sans le prix.",
+      "coches": ["Publication Instagram et Facebook, à ta charte", "Demande d'avis Google au vendeur, prête (Emma)", "Anniversaire d'achat noté pour l'an prochain (Max)"],
+      "vignette": {"type": "post", "src": "apres", "label": "Post « Vendu » · Instagram", "alt": "Le post Instagram du « Vendu » : le portail de la maison et le panneau."},
+      "bouton": "Publier", "fait": "Publié ✓"}
   }
 }
