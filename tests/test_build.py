@@ -42,15 +42,19 @@ for a in agents:
     page = ap.read_text()
     must(html.escape(a["name"], quote=False) in page, f"{a['slug']} : nom présent sur sa page")
     must(f'https://revaly.io/agents/{a["slug"]}/' in page, f"{a['slug']} : canonical propre")
-    entries = a.get("fiche", {}).get("automatisations", []) + a.get("fiche", {}).get("outils", [])
-    shown = sum(1 for e in entries if html.escape(e["pitch"], quote=False) in page)
-    must(shown >= 4, f"{a['slug']} : au moins 4 pitchs sur sa page (trouvés: {shown})")
-    must(f'Discuter avec {a["name"]}' in page, f"{a['slug']} : bouton « Discuter avec » sur sa page")
-    must(html.escape(a["question"], quote=False) in page, f"{a['slug']} : question verbatim sur sa page")
-    must("<strong>" in page, f"{a['slug']} : chiffres de la réponse en <strong>")
-    fiche = a.get("fiche", {})
-    entries = fiche.get("automatisations", []) + fiche.get("outils", [])
-    pass  # fiches désormais sur /agents/{slug}/ — vérifiées ci-dessus
+    # Révision du 13/10 : la page agent sur le modèle de Limova (data/fiches.json), à notre charte, sans note ni témoignage
+    _fi = json.loads((ROOT / "data" / "fiches.json").read_text())["fiches"][a["slug"]]
+    _pg = html.unescape(re.sub(r"<[^>]+>", "", page)).replace("\u00a0", " ")
+    must(f"Découvrez {a['name']}" in _pg and page.count("<h1") == 1 and 'class="hp-pill"' in page, f"{a['slug']} : héros « Découvrez {a['name']} », pastille métier")
+    must(f'/assets/equipe/portraits/{a["slug"]}@512.webp' in page and (dist / "assets" / "equipe" / "portraits" / f"{a['slug']}@512.webp").is_file(), f"{a['slug']} : grand portrait equipe-v6")
+    must(len(_fi["capacites"]) == 4 and all(c in _pg for c in _fi["capacites"]) and page.count('class="paire') >= 3, f"{a['slug']} : quatre capacités, la paire de boutons")
+    must(len(_fi["scenarios"]) == 3 and all(x["question"] in _pg and x["reponse"] in _pg for x in _fi["scenarios"]) and page.count('<article class="sc">') == 3,
+         f"{a['slug']} : trois scénarios en conversation")
+    must(len(_fi["moments"]) == 3 and all(m["titre"] in _pg and all(x["titre"] in _pg and x["texte"] in _pg for x in m["items"]) for m in _fi["moments"]),
+         f"{a['slug']} : les capacités en trois colonnes, par moment du travail")
+    must(_fi["promesse"]["titre"] in _pg and 'id="faq"' in page and 'id="demo"' in page and "Ton équipe peut commencer ce soir." in _pg, f"{a['slug']} : promesse, FAQ et fin comme l'accueil")
+    must(not re.search(r"trustpilot|★|témoignage|note de \d", _pg, re.I), f"{a['slug']} : ni note ni témoignage inventés")
+    must(("Une fois ta boîte mail et ton agenda branchés avec toi." in _pg) == bool(_fi.get("boite")), f"{a['slug']} : boîte et agenda présentés comme branchés avec toi")
 must("{{" not in idx, "aucun token {{...}} orphelin dans index.html")
 
 # ── Section #controle (Task 5) : storyboard d'approbation ──

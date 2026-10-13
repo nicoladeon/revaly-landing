@@ -1,0 +1,171 @@
+<!-- STYLES -->
+<style>
+  /* ── Commun à l'accueil et aux pages agents (templates/_sections.html) : rythme, fond unique, gabarit de tête de
+       section, paire de boutons, apparitions, FAQ, appel final. ── */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  @font-face {
+    font-family: "Geist Mono"; src: url("/fonts/geist-mono-var.woff2") format("woff2");
+    font-weight: 100 900; font-style: normal; font-display: swap;
+  }
+  /* ── Une page qui s'enchaîne (tâche 17) : UN seul fond du haut au pied, jamais de bande ni de trait entre les
+       sections ; un seul écart entre elles (--rythme) ; la profondeur vient de halos iris très doux derrière
+       quelques visuels. Les cartes sont blanches sur la porcelaine (--carte), les champs en porcelaine (--champ). ── */
+  :root { --rythme: clamp(76px, 9vw, 120px); --tete-visuel: clamp(36px, 4vw, 52px); --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace; --ap: cubic-bezier(.2, .7, .2, 1); }
+  main { --carte: var(--raised); --champ: var(--bg); overflow-x: hidden; overflow-x: clip; }
+  .hp-s { position: relative; padding: 0; margin-top: var(--rythme); }
+  .hp-wide { max-width: 1160px; }
+  @media (max-width: 640px) { .wrap { padding-left: 16px; padding-right: 16px; } }
+  footer { border-top: 0; margin-top: var(--rythme); }
+  .halo { position: relative; isolation: isolate; }
+  .halo::before {
+    content: ""; position: absolute; z-index: -1; inset: -16% -14%; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--iris) 9%, transparent), transparent);
+  }
+
+  /* ── Gabarit unique de tête de section (build.py : tete_section) : pastille → H2 → sous-titre → (option) boutons ── */
+  .tete { display: flex; flex-direction: column; align-items: center; max-width: 980px; margin: 0 auto; text-align: center; }
+  .tete-sur {
+    display: inline-flex; align-items: center; margin: 0; padding: 6px 12px; border-radius: 999px;
+    background: color-mix(in srgb, var(--iris) 8%, transparent); color: var(--iris-ink);
+    font: 500 12.5px/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase;
+  }
+  .tete-titre { margin: 18px 0 0; font-size: clamp(32px, 4.3vw, 52px); font-weight: 560; line-height: 1.05; letter-spacing: -0.042em; }
+  .tete-sous { margin: 16px 0 0; max-width: 680px; font-size: clamp(16.5px, 1.35vw, 18px); line-height: 1.55; color: var(--muted); text-wrap: balance; }
+  .tete-cote .tete-sous { text-wrap: pretty; }
+  .tete .paire { margin-top: 28px; }
+  .tete-cote { align-items: flex-start; max-width: none; margin: 0; text-align: left; }
+
+  /* La paire de boutons, après chaque bloc (et dans la tête de l'appel final) */
+  .paire { display: flex; flex-direction: column; align-items: center; align-self: stretch; gap: 12px; text-align: center; }
+  .paire .btn { white-space: nowrap; }
+  .paire-fin { margin-top: clamp(40px, 4.4vw, 56px); }
+  .paire-boutons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .paire .btn { min-height: 52px; padding: 13px 28px; font-size: 16.5px; justify-content: center; }
+  .paire-risque { margin: 0; font-size: 14px; color: var(--muted); }
+  @media (max-width: 520px) {
+    .paire-boutons { flex-wrap: nowrap; width: 100%; }
+    .paire .btn { flex: 1 1 0; min-width: 0; padding: 12px 10px; font-size: 15.5px; }
+  }
+
+  /* ── Apparition au défilement : flou → net, +24 px → 0, une seule fois ; les frères se suivent de 70 ms.
+       Seuls opacité, transform et filtre bougent (aucun décalage de mise en page). Mouvement réduit : rien ne bouge. ── */
+  html.js [data-ap] { transition: opacity .6s var(--ap), transform .6s var(--ap), filter .6s var(--ap); transition-delay: calc(var(--ap-i, 0) * 70ms); }
+  html.js [data-ap]:not(.vu) { opacity: 0; transform: translateY(24px); filter: blur(8px); }
+  @media (prefers-reduced-motion: reduce) { html.js [data-ap]:not(.vu) { opacity: 1; transform: none; filter: none; } }
+
+  .hp-pill {
+    display: inline-flex; align-items: center; gap: 9px; margin: 0; padding: 6px 14px 6px 12px;
+    border-radius: 999px; background: var(--raised); border: 0.5px solid var(--line-strong); box-shadow: var(--shadow-sm);
+    font-size: 14px; font-weight: 500; line-height: 1.3; color: var(--ink);
+  }
+  .hp-pill i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--iris); box-shadow: 0 0 0 3px var(--iris-soft); }
+  /* ── 12. FAQ ── */
+  #faq-list { max-width: 760px; margin: var(--tete-visuel) auto 0; }
+  .faq-encore {
+    max-width: 760px; margin: 32px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px;
+    padding: 22px 24px; border-radius: 22px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); text-align: left;
+  }
+  .faq-encore-t { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+  .faq-encore-s { margin: 4px 0 0; font-size: 14.5px; color: var(--muted); }
+  .faq-encore > div:first-child { flex: 1 1 260px; }
+  .faq-encore-b { display: flex; flex-wrap: wrap; gap: 10px; }
+  .faq-encore .btn { min-height: 46px; padding: 11px 20px; font-size: 15px; justify-content: center; }
+  .faq-encore .btn { white-space: nowrap; }
+  @media (max-width: 520px) { .faq-encore { padding: 18px; } .faq-encore-b { width: 100%; flex-wrap: nowrap; } .faq-encore .btn { flex: 1 1 0; min-width: 0; padding: 11px 6px; font-size: 14.5px; } }
+  .faq-item { border-bottom: 0.5px solid var(--line); }
+  .faq-item > button {
+    width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px;
+    padding: 18px 4px; background: none; border: none; cursor: pointer;
+    font-family: var(--font-sans); text-align: left; color: var(--ink);
+  }
+  .faq-item > button span { flex: 1; font-size: 16px; font-weight: 550; }
+  .faq-item .chev { color: var(--muted); transition: transform .2s; flex: none; }
+  .faq-item[data-open="true"] .chev { transform: rotate(180deg); }
+  .faq-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s cubic-bezier(.32,.72,0,1); }
+  .faq-item[data-open="true"] .faq-body { grid-template-rows: 1fr; }
+  .faq-body > div { overflow: hidden; }
+  .faq-body p { margin: 0 4px 18px; font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 620px; }
+
+  /* ── 13. Appel final : une reprise forte, comme le haut de page ── */
+  #demo .final {
+    max-width: 1080px; margin: 0 auto; padding: clamp(56px, 7vw, 96px) clamp(20px, 4vw, 48px); border-radius: 36px;
+    background: radial-gradient(70% 90% at 50% 0%, color-mix(in srgb, var(--iris) 9%, var(--raised)), var(--raised) 70%);
+    border: 0.5px solid var(--line); box-shadow: var(--shadow-md);
+  }
+  #demo .final::before { inset: -10% -6%; }
+  .final .faces { display: flex; justify-content: center; margin-bottom: 26px; }
+  .final .faces img { width: 56px; height: 56px; border-radius: 50%; background: #F1F2F7; box-shadow: 0 0 0 3px var(--bg); }
+  .final .faces img + img { margin-left: -12px; }
+
+  /* La conversation : ta question à droite, la réponse de l'agent à gauche avec son visage (accueil et pages agents) */
+  .cy-q { align-self: flex-end; max-width: 86%; margin: 0; padding: 11px 16px 12px; border-radius: 18px 18px 6px 18px; background: var(--iris-deep); color: #fff; font-size: 15.5px; line-height: 1.45; }
+  .cy-toi { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; font-size: 12px; font-weight: 600; opacity: .78; }
+  .cy-toi svg { width: 12px; height: 12px; }
+  .cy-r { display: flex; align-items: flex-end; gap: 10px; max-width: 94%; }
+  .cy-r img { flex: none; width: 40px; height: 40px; border-radius: 50%; background: #F1F2F7; }
+  .cy-r > div { padding: 11px 16px 13px; border-radius: 18px 18px 18px 6px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
+  .cy-r b { display: block; margin-bottom: 3px; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .cy-r p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink); }
+</style>
+<!-- SCRIPT -->
+<script>
+  // ── Commun à l'accueil et aux pages agents (templates/_sections.html) ──
+  // ── FAQ : accordéons rendus par build.py depuis data/faq.json ──
+  document.querySelectorAll('.faq-item > button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const isOpen = item.dataset.open === 'true';
+      item.dataset.open = String(!isOpen);
+      btn.setAttribute('aria-expanded', String(!isOpen));
+    });
+  });
+
+  // ── Apparitions au défilement (tâche 17) : chaque bloc marqué data-ap passe du flou au net en montant, une seule
+  //    fois, à son entrée à l'écran ; ses frères marqués se suivent de 70 ms. Sans observateur ou mouvement réduit : tout est là. ──
+  (() => {
+    const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const els = Array.from(document.querySelectorAll('[data-ap]'));
+    if (REDUCED || !('IntersectionObserver' in window)) { els.forEach((el) => el.classList.add('vu')); return; }
+    els.forEach((el) => {
+      const rang = Array.from(el.parentElement.children).filter((x) => x.hasAttribute('data-ap')).indexOf(el);
+      el.style.setProperty('--ap-i', String(Math.min(rang, 6)));
+    });
+    const o = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { o.unobserve(e.target); e.target.classList.add('vu'); }
+    }), { rootMargin: '0px 0px -6% 0px', threshold: 0.1 });
+    els.forEach((el) => o.observe(el));
+  })();
+
+  // ── « Réserver une démo » : la fenêtre Calendly s'ouvre par-dessus la page. widget.js et sa feuille de style ne sont
+  //    demandés qu'à l'approche d'un lien démo (survol, focus, toucher) ; au clic, popup si le script est là, sinon le lien
+  //    s'ouvre normalement dans un nouvel onglet (aucun clic perdu, aucun bloqueur de fenêtres). ──
+  (() => {
+    const liens = document.querySelectorAll('a[data-track="demo"][href^="https://calendly.com/"]');
+    let demande = false;
+    const prepare = () => {
+      if (demande) return;
+      demande = true;
+      const css = document.createElement('link');
+      css.rel = 'stylesheet'; css.href = 'https://assets.calendly.com/assets/external/widget.css';
+      document.head.appendChild(css);
+      const s = document.createElement('script');
+      s.src = 'https://assets.calendly.com/assets/external/widget.js'; s.async = true;
+      document.head.appendChild(s);
+    };
+    const sombre = () => document.documentElement.getAttribute('data-theme') === 'dark'
+      || (document.documentElement.getAttribute('data-theme') !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+    liens.forEach((a) => {
+      ['pointerenter', 'focus', 'touchstart'].forEach((ev) => a.addEventListener(ev, prepare, { once: true, passive: true }));
+      a.addEventListener('click', (e) => {
+        if (!(window.Calendly && Calendly.initPopupWidget)) return;
+        e.preventDefault();
+        const url = a.href + '?primary_color=6366f1&hide_gdpr_banner=1' + (sombre() ? '&background_color=141822&text_color=f2f3f7' : '');
+        Calendly.initPopupWidget({ url });
+      });
+    });
+    addEventListener('message', (e) => {
+      if (e.origin === 'https://calendly.com' && e.data && e.data.event === 'calendly.event_scheduled') rvTrack('demo_reservee');
+    });
+  })();
+
+</script>

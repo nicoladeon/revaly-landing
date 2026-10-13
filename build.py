@@ -96,8 +96,12 @@ for _a in AGENTS:
         f = ROOT / "assets" / "equipe" / "portraits" / f"{k}@{t}.webp"
         repl[f"__{k.upper()}{t}__"] = uri(f.relative_to(ROOT), "image/webp") if f.exists() else _monogramme(k)
 
+_SECTIONS = (ROOT / "templates" / "_sections.html").read_text().split("<!-- SCRIPT -->\n")
+
 def render(tpl: str, ctx: dict) -> str:
     html = (ROOT / "templates" / tpl).read_text()
+    # le commun (rythme, gabarit de tête, paire de boutons, apparitions, FAQ, appel final) : accueil et pages agents
+    html = html.replace("{{STYLES_SECTIONS}}", _SECTIONS[0].replace("<!-- STYLES -->\n", "")).replace("{{SCRIPT_SECTIONS}}", _SECTIONS[1])
     for k, v in ctx.items():
         html = html.replace("{{" + k + "}}", v)
     return html
@@ -334,6 +338,7 @@ LUCIDE = {
     "paperclip": '<path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551" />',
     "printer": '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" /><rect x="6" y="14" width="12" height="8" rx="1" />',
     "check": '<path d="M20 6 9 17l-5-5" />',
+    "mic": '<path d="M12 19v3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><rect x="9" y="2" width="6" height="13" rx="3" />',
     "circle-check": '<circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" />',
     "circle": '<circle cx="12" cy="12" r="10" />',
     "house": '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />',
@@ -396,94 +401,94 @@ def post_vendu():
     c = next(c for c in json.loads((ROOT / "data" / "cartes-accueil.json").read_text()) if c["slug"] == "zoe")
     return {"VENDU_MOTS": _mots(c["message"]), "VENDU_TEXTE": _esc(_typo(c["message"])), "VENDU_OBJET": _esc(_typo(c["objet"]))}
 
+# ── Pages agents (révision du 13/10, sur le modèle de la page agent de Limova, à notre charte) : le héros (grand portrait,
+# métier, « Découvrez … », deux lignes, quatre capacités, la paire de boutons), trois scénarios en conversation, un
+# titre-promesse et les capacités rangées par moment du travail (accordéons), puis la FAQ et la fin de l'accueil.
+# Contenu : data/fiches.json (porteur vérifié dans le code de prod) ; EQUIPE_V2 : Hugo, et Zoé reprend les visuels.
+_FICHES = json.loads((ROOT / "data" / "fiches.json").read_text())
+
+def _fiche(slug):
+    f = dict(_FICHES["fiches"].get(slug) or _FICHES["v2"][slug])
+    if EQUIPE_V2 and slug in _FICHES["v2"]:
+        v = _FICHES["v2"][slug]
+        f.update({k: v[k] for k in ("description", "capacites", "promesse", "scenarios", "moments", "boite") if k in v})
+        if v.get("scenario_3"):
+            f["scenarios"] = f["scenarios"][:2] + [v["scenario_3"]]
+        if v.get("sans_radar"):
+            f["moments"] = [dict(m, items=[x for x in m["items"] if "DPE" not in x["titre"]]) for m in f["moments"]]
+    return f
+
+def _de(nom):
+    return "d'" if nom[0].lower() in "aeéiou" else "de "
+
+def _que(nom):
+    return "qu'" if nom[0].lower() in "aeéiou" else "que "
+
+def _portrait_grand(slug, nom, role):
+    base = ROOT / "assets" / "equipe" / "portraits"
+    if not (base / f"{slug}@512.webp").exists():
+        return f'<img src="{_monogramme(slug)}" width="512" height="512" alt="">'
+    srcset = f"/assets/equipe/portraits/{slug}@512.webp 512w" + (f", /assets/equipe/portraits/{slug}@1024.webp 1024w" if (base / f"{slug}@1024.webp").exists() else "")
+    return (f'<img src="/assets/equipe/portraits/{slug}@512.webp" srcset="{srcset}" sizes="(max-width: 960px) 300px, 480px" '
+            f'width="512" height="512" alt="Portrait {_de(nom)}{_esc(nom)}, {_esc(role)}" fetchpriority="high">')
+
+_MICRO = _ico("mic") if "mic" in LUCIDE else ""
+
 def agent_main(a, agents):
-    """Contenu d'une page agent : fiche de poste complète depuis agents.json."""
-    k, name = a["slug"].upper(), _esc(a["name"])
-    de = "d'" if a["name"][0].lower() in "aeéiou" else "de "
-    caps = "".join(f"<li>{_CHECK}<span>{_esc(c)}</span></li>" for c in a["capacites"])
-    fiche = a.get("fiche", {})
-    autos = "".join(f'<li class="rv"><b>{_esc(e["titre"])}</b><span>{_esc(e["pitch"])}</span></li>'
-                    for e in fiche.get("automatisations", []))
-    outils = "".join(f'<li class="rv"><b>{_esc(e["titre"])}</b><span>{_esc(e["pitch"])}</span></li>'
-                     for e in fiche.get("outils", []))
-    fem = a["name"] in ("Emma", "Christine", "Zoé")
-    pron = "Elle" if fem else "Il"
-    others = "".join(
-        f'<a class="ag-other" href="/agents/{o["slug"]}/">'
-        f'<img class="face" src="__{o["slug"].upper()}128__" width="52" height="52" alt="" />'
-        f'<span class="nm">{_esc(o["name"])}</span><span class="rl">{_esc(o["role"])}</span></a>'
-        for o in agents if o["slug"] != a["slug"])
-    return f'''<section class="wrap ag-hero">
-    <p class="ag-back"><a href="/agents/">&larr; Toute l'équipe</a></p>
-    <div class="ag-head">
-      <span class="tb-ava"><img class="face" src="__{k}512__" width="112" height="112" alt="Portrait {de}{name}" /><i class="tb-dot" aria-hidden="true"></i></span>
-      <div>
-        <h1 class="ag-name">{name}</h1>
-        <p class="ag-role">{_esc(a["role"])} · dans ton équipe dès le premier jour</p>
-      </div>
-    </div>
-    <div class="ag-grid tblock">
-      <div>
-        <ul class="tb-caps ag-caps">{caps}</ul>
-        <div class="crsl-actions">
-          <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
-          <button type="button" class="btn ghost tb-talk" data-goto-tarif>Discuter avec {name}</button>
-        </div>
-        <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
-      </div>
-      {_conv_panel(a)}
-    </div>
-  </section>
-
-  <section class="wrap ag-sec">
-    <span class="tag">Ses automatisations</span>
-    <h2 class="title">{pron} y pense pour toi, sans qu'on lui demande</h2>
-    <ul class="ag-list">{autos}</ul>
-  </section>
-
-  <section class="wrap ag-sec">
-    <span class="tag">Ses outils</span>
-    <h2 class="title">Et à la demande, {name} sait faire</h2>
-    <ul class="ag-list">{outils}</ul>
-  </section>
-
-  <section class="wrap ag-sec">
-    <span class="tag">Le reste de l'équipe</span>
-    <h2 class="title">{name} ne travaille jamais seul{"e" if fem else ""}</h2>
-    <div class="ag-others">{others}</div>
-  </section>
-
-  <section class="wrap">
-    <div class="ag-recall rv">
-      <p class="ag-recall-t">{name} et toute l'équipe — les six agents — dès <b>129 € HT/mois</b>.</p>
-      <p class="ag-recall-s">Formée à ton métier, dans tes outils. Rien ne part sans toi.</p>
-      <div class="crsl-actions" style="justify-content: center;">
-        <button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>
-        <a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>
-      </div>
-      <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
-    </div>
-  </section>'''
+    slug, nom = a["slug"], a["name"]
+    f = _fiche(slug)
+    caps = "".join(f"<li>{_CHECK}<span>{_esc(_typo(c))}</span></li>" for c in f["capacites"])
+    hero = (f'<section class="ag2-hero" aria-labelledby="ag-titre"><div class="wrap hp-wide ag2-grille">'
+            f'<div class="ag2-portrait halo">{_portrait_grand(slug, nom, a["role"])}</div>'
+            f'<div class="ag2-texte"><p class="hp-pill"><i aria-hidden="true"></i>{_esc(a["role"][:1].upper() + a["role"][1:])}</p>'
+            f'<h1 id="ag-titre">Découvrez {_esc(nom)}</h1><p class="ag2-desc">{_esc(_typo(f["description"]))}</p>'
+            f'<ul class="ag2-caps">{caps}</ul>{paire_cta(False)}</div></div></section>')
+    cartes = []
+    for i, x in enumerate(f["scenarios"]):
+        toi = f"{_MICRO}Toi · vocal" if x.get("vocal") else "Toi"
+        cartes.append(
+            f'<article class="sc"><p class="sc-t"><span>Scénario {i + 1}</span> · {_esc(_typo(x["titre"]))}</p>'
+            f'<div class="sc-conv"><p class="cy-q"><span class="cy-toi">{toi}</span>{_esc(_typo(x["question"]))}</p>'
+            f'<div class="cy-r"><img src="{_visage(slug)}" width="40" height="40" alt="" loading="lazy">'
+            f'<div><b>{_esc(nom)}</b><p>{_esc(_typo(x["reponse"]))}</p></div></div></div></article>')
+    note = '<p class="sc-note">Une fois ta boîte mail et ton agenda branchés avec toi.</p>' if f.get("boite") else ""
+    fleches = ('<div class="sc-fleches"><button type="button" class="eq-fleche" data-sens="-1" aria-label="Scénario précédent">'
+               f'{_ico("chevron-left")}</button><button type="button" class="eq-fleche" data-sens="1" aria-label="Scénario suivant">{_ico("chevron-right")}</button></div>')
+    scenarios = (f'<section class="hp-s" id="scenarios" aria-labelledby="t-scenarios"><div class="wrap hp-wide">'
+                 + tete_section("Cas concrets", f"Ce {_que(nom)}{nom} peut faire pour toi", f"Trois moments de ta semaine, et ce que {nom} te répond.", id_titre="t-scenarios")
+                 + f'<div class="sc-zone" data-ap><div class="sc-rangee" id="sc-rangee" tabindex="0" role="region" aria-label="Les scénarios {_de(nom)}{_esc(nom)}">'
+                 + "".join(cartes) + f'</div>{fleches}</div>{note}{paire_cta()}</div></section>')
+    cols = []
+    for c, m in enumerate(f["moments"]):
+        items = "".join(
+            f'<div class="faq-item mo-item" data-open="false"><button type="button" aria-expanded="false" aria-controls="mo-{c}-{j}">'
+            f'<span>{_esc(_typo(x["titre"]))}</span>{_CHEV}</button>'
+            f'<div class="faq-body" id="mo-{c}-{j}"><div><p>{_esc(_typo(x["texte"]))}</p></div></div></div>'
+            for j, x in enumerate(m["items"]))
+        cols.append(f'<div class="mo-col"><p class="mo-t">{_esc(m["titre"])}</p>{items}</div>')
+    pr = f["promesse"]
+    moments = (f'<section class="hp-s" id="moments" aria-labelledby="t-moments"><div class="wrap hp-wide">'
+               + tete_section(pr["sur_titre"], pr["titre"], pr["sous_titre"], id_titre="t-moments")
+               + f'<div class="mo-grille" data-ap>{"".join(cols)}</div>{paire_cta()}</div></section>')
+    faq_s = (f'<section class="hp-s" id="faq" aria-labelledby="t-faq"><div class="wrap">' + tete_section(**TETES["TETE_FAQ"])
+             + f'<div id="faq-list" data-ap>{faq_items(faq)}</div>' + FAQ_ENCORE + '</div></section>')
+    visages = "".join(f'<a href="/agents/{e["slug"]}/" aria-label="La fiche {_de(e["nom"])}{_esc(e["nom"])}"{" aria-current=\"page\"" if e["slug"] == slug else ""}>'
+                      f'<img src="{_visage(e["slug"])}" width="56" height="56" alt="" loading="lazy" /></a>' for e in _equipe_accueil())
+    fin = (f'<section class="hp-s" id="demo" aria-labelledby="t-fin"><div class="wrap"><div class="final halo">'
+           f'<span class="faces faces-liens" data-ap>{visages}</span>{tete_section(**TETES["TETE_FIN"])}</div></div></section>')
+    return f'<main id="top">{hero}{scenarios}{moments}{faq_s}{fin}</main>'
 
 
 def agents_index_main(agents):
-    cards = "".join(
-        f'''<a class="ag-card" href="/agents/{a["slug"]}/">
-      <span class="tb-ava"><img class="face" src="__{a["slug"].upper()}512__" width="84" height="84" alt="" /><i class="tb-dot" aria-hidden="true"></i></span>
-      <span class="nm">{_esc(a["name"])}</span>
-      <span class="rl">{_esc(a["role"])}</span>
-      <span class="go">Voir sa fiche <span class="arr" aria-hidden="true">→</span></span>
-    </a>''' for a in agents)
-    return f'''<section class="wrap ag-hero">
-    <span class="tag">L'équipe</span>
-    <h1 class="title" style="margin-top: 10px;">Six agents, six métiers.<br />Une seule équipe.</h1>
-    <p class="sub">Chacun porte un vrai métier de l'agence — clique pour voir sa fiche de poste complète : ce qu'il fait tout seul, et ce qu'il sait faire à la demande.</p>
-    <div class="ag-cards">{cards}</div>
-    <div style="text-align:center; margin-top: 44px;">
-      <button type="button" class="btn" data-goto-tarif data-track="essai">Recruter l'équipe — Essayer 7 jours</button>
-      <p class="cta-hint">0 € aujourd'hui · Annulable en 2 clics</p>
-    </div>
-  </section>'''
+    cartes = "".join(
+        f'<a class="ag2-carte" href="/agents/{e["slug"]}/"><span class="ag2-carte-photo">{_boucle(e["slug"], 168)}</span>'
+        f'<span class="ag2-carte-nom">{_esc(e["nom"])}</span><span class="ag2-carte-metier">{_esc(e["metier"])}</span>'
+        f'<span class="ag2-carte-pour">{_esc(e["pour_toi"])}</span><span class="ag2-carte-lien">Voir sa fiche</span></a>'
+        for e in _equipe_accueil())
+    return ('<main id="top"><section class="ag2-index" aria-labelledby="t-index"><div class="wrap hp-wide">'
+            '<header class="tete"><p class="tete-sur" data-ap>L\'équipe</p><h1 class="tete-titre ag2-h1" id="t-index" data-ap>Six agents, six métiers. Une seule équipe.</h1>'
+            '<p class="tete-sous" data-ap>Chacun porte un vrai métier de l\'agence : clique pour voir ce qu\'il fait pour toi, moment par moment.</p></header>'
+            f'<div class="ag2-cartes" data-ap>{cartes}</div>{paire_cta()}</div></section></main>')
 
 # ── FAQ (task 9) : accordéons générés depuis data/faq.json — plus aucune Q/R en
 # dur dans le template. Mécanique existante conservée (bouton aria-expanded +
@@ -491,6 +496,11 @@ def agents_index_main(agents):
 _CHEV = ('<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" '
          'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
          'stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>')
+
+FAQ_ENCORE = ('<div class="faq-encore" data-ap><div><p class="faq-encore-t">Encore une question ?</p>'
+              '<p class="faq-encore-s">Un humain te répond par écrit, ou on en parle en démo.</p></div>'
+              '<div class="faq-encore-b"><a class="btn ghost" href="mailto:support@revaly.io">Écrire à l\'équipe</a>'
+              '<a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a></div></div>')
 
 def faq_items(faq):
     items = []
@@ -713,6 +723,7 @@ body_home = render("home-body.html", {
     "CARTES_HERO": cartes_hero(),
     "PILE_PROBLEME": pile_probleme(json.loads((ROOT / "data" / "probleme.json").read_text())),
     "FAQ_ITEMS": faq_items(faq),
+    "FAQ_ENCORE": FAQ_ENCORE,
     "JSONLD": jsonld_blocks(faq),
 })
 write_page(
@@ -892,6 +903,8 @@ shutil.copytree(ROOT / "assets" / "equipe" / "boucles", OUT / "assets" / "equipe
 shutil.copytree(ROOT / "assets" / "logos", OUT / "assets" / "logos", dirs_exist_ok=True,
                 ignore=shutil.ignore_patterns("LICENSES.md", *([] if GOOGLE_FICHE else ["googlemybusiness.svg"])))
 shutil.copytree(ROOT / "assets" / "accueil", OUT / "assets" / "accueil", dirs_exist_ok=True)
+shutil.copytree(ROOT / "assets" / "equipe" / "portraits", OUT / "assets" / "equipe" / "portraits", dirs_exist_ok=True,
+                ignore=shutil.ignore_patterns("*@128.webp", *([f'{_V2["retire"]}@*'] if EQUIPE_V2 else [])))
 (OUT / "fonts").mkdir(exist_ok=True)
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
     shutil.copy(f, OUT / "fonts" / f.name)

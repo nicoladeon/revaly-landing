@@ -1,0 +1,732 @@
+{
+ "fiches": {
+  "max": {
+   "description": "Max coordonne ton équipe : il te fait le point matin et soir, comprend tes vocaux et confie chaque tâche au bon équipier.",
+   "capacites": [
+    "Point du matin et bilan du soir à 19 h",
+    "Tes vocaux WhatsApp et Telegram transformés en tâches",
+    "Chaque routine réglable d'une phrase",
+    "Les anniversaires de tes clients et de leurs achats"
+   ],
+   "scenarios": [
+    {
+     "titre": "Le point du matin",
+     "question": "Max, ma journée ?",
+     "reponse": "Brief de 7 h : deux visites (10 h Bihorel, 15 h rive droite), trois emails importants triés, l'anniversaire de Mme Lefèvre — et deux DPE tout frais dans ton secteur. Je te refais le point ce soir à 19 h.",
+     "vocal": false
+    },
+    {
+     "titre": "Un vocal, une tâche",
+     "question": "Max, relance le notaire pour l'acte de jeudi.",
+     "reponse": "C'est confié à Emma : l'e-mail au notaire t'attendra à valider. Rien ne part sans toi.",
+     "vocal": true
+    },
+    {
+     "titre": "Une routine en une phrase",
+     "question": "Max, mon bilan du soir, plutôt à 20 h.",
+     "reponse": "C'est réglé : ton bilan du soir arrive désormais à 20 h. Tu peux le changer quand tu veux, d'une phrase.",
+     "vocal": false
+    }
+   ],
+   "boite": true,
+   "promesse": {
+    "sur_titre": "Max, ton coordinateur",
+    "titre": "Plus rien ne traîne entre deux dossiers.",
+    "sous_titre": "Il garde le fil de ta journée et répartit le travail entre tes agents."
+   },
+   "moments": [
+    {
+     "titre": "Le matin",
+     "items": [
+      {
+       "titre": "Point du matin — 7 h",
+       "texte": "Rendez-vous du jour, emails importants, échéances : ton point de la journée tombe chaque matin à 7 h, sans que tu le demandes."
+      },
+      {
+       "titre": "Anniversaires clients et achats",
+       "texte": "Anniversaire d'un client ou date anniversaire d'un achat : le message d'attention est prêt le matin même."
+      },
+      {
+       "titre": "Ton portefeuille en une question",
+       "texte": "« Où en est la villa des Cèdres ? » : biens, contacts du mandat, historique, il te répond tout de suite."
+      }
+     ]
+    },
+    {
+     "titre": "Dans la journée",
+     "items": [
+      {
+       "titre": "Pilotage vocal",
+       "texte": "« Déplace mon rendez-vous de 14 h » suffit : il comprend et s'en occupe, depuis WhatsApp ou Telegram."
+      },
+      {
+       "titre": "Suivi des tâches",
+       "texte": "Il crée les tâches, les assigne et relance ce qui traîne, pour que rien ne tombe entre deux dossiers."
+      },
+      {
+       "titre": "Recherche dans tes documents",
+       "texte": "Le compromis de mars, le DPE du pavillon : il retrouve n'importe quel document, y compris dans ton Drive."
+      }
+     ]
+    },
+    {
+     "titre": "Le soir et dans la durée",
+     "items": [
+      {
+       "titre": "Bilan du soir — 19 h",
+       "texte": "Ce qui a été fait, ce qui reste en attente : le récap tombe chaque soir à 19 h, il y pense pour toi."
+      },
+      {
+       "titre": "Automatisations à la carte",
+       "texte": "Active ou coupe chaque automatisation de l'équipe d'une phrase : c'est toi qui décides."
+      },
+      {
+       "titre": "Ton équipe apprend de tes corrections",
+       "texte": "Tu corriges une formulation ou un point de méthode une fois : ton équipe le retient pour les dossiers suivants."
+      }
+     ]
+    }
+   ]
+  },
+  "emma": {
+   "description": "Emma prépare tes confirmations de visite, tes relances et tes réponses aux e-mails, et tient tes fiches à jour dans Modelo.",
+   "capacites": [
+    "Confirmation la veille, rappel le jour J, suivi le lendemain",
+    "Compte rendu de visite rédigé depuis ton vocal",
+    "Un brouillon prêt pour chaque e-mail qui compte",
+    "La facture d'honoraires et l'e-mail au notaire avant l'acte"
+   ],
+   "scenarios": [
+    {
+     "titre": "Confirmation de visite",
+     "question": "Emma, la visite de 17 h est confirmée ?",
+     "reponse": "Oui : tu as validé la confirmation hier soir, elle est partie à M. Moreau sur WhatsApp. Deux heures avant, je te prépare le rappel du jour.",
+     "vocal": false
+    },
+    {
+     "titre": "Compte rendu depuis ton vocal",
+     "question": "Emma, les Moreau ont adoré la cuisine, ils trouvent le jardin un peu petit.",
+     "reponse": "Ton compte rendu de visite pour le vendeur est rédigé, avec uniquement ce que tu m'as dit. Il t'attend à valider.",
+     "vocal": true
+    },
+    {
+     "titre": "Avant l'acte",
+     "question": "Emma, l'acte des Roux, c'est jeudi.",
+     "reponse": "Ta facture d'honoraires est prête, avec l'e-mail au notaire et la facture en pièce jointe. Tu valides, et je te rappelle ce qu'il faut apporter.",
+     "vocal": false
+    }
+   ],
+   "boite": true,
+   "promesse": {
+    "sur_titre": "Emma, ton assistante",
+    "titre": "Plus jamais un vendeur sans nouvelles.",
+    "sous_titre": "Chaque visite confirmée, chaque compte rendu prêt, chaque échange rangé sur la bonne fiche."
+   },
+   "moments": [
+    {
+     "titre": "Avant la visite",
+     "items": [
+      {
+       "titre": "Confirmation la veille",
+       "texte": "La veille à 18 h, la confirmation au visiteur est prête : par WhatsApp s'il a un téléphone, sinon par e-mail."
+      },
+      {
+       "titre": "Rappel le jour même",
+       "texte": "Deux heures avant la visite, le rappel habituel : l'heure et l'adresse, au vouvoiement."
+      },
+      {
+       "titre": "Agenda complet",
+       "texte": "Créer, déplacer, confirmer un rendez-vous : la confirmation de visite part au client sur le bon canal."
+      }
+     ]
+    },
+    {
+     "titre": "Après la visite",
+     "items": [
+      {
+       "titre": "Suivi le lendemain",
+       "texte": "Le lendemain à 10 h, le message pour remercier le visiteur et lui demander son avis."
+      },
+      {
+       "titre": "Compte rendu de visite",
+       "texte": "Une note vocale après la visite, et le compte rendu est rédigé : l'e-mail du vendeur est retrouvé grâce au mandat."
+      },
+      {
+       "titre": "Fiches Modelo à jour",
+       "texte": "Elle écrit les fiches contact et les fiches recherche acquéreur dans Modelo, y compris pour les demandes des portails."
+      }
+     ]
+    },
+    {
+     "titre": "Jusqu'à l'acte, et après",
+     "items": [
+      {
+       "titre": "Offre acceptée, félicitations prêtes",
+       "texte": "Une offre passe « acceptée » dans Modelo ? Elle te prépare le message de félicitations au client et te prévient."
+      },
+      {
+       "titre": "Relance du prêt",
+       "texte": "L'échéance du prêt approche sans nouvelles dans Modelo : la relance de l'acquéreur est prête, cinq jours avant."
+      },
+      {
+       "titre": "Facture d'honoraires",
+       "texte": "Deux jours avant l'acte : la facture d'après le mandat et la vente dans Modelo, et l'e-mail au notaire avec la facture jointe."
+      },
+      {
+       "titre": "Demande d'avis Google",
+       "texte": "Après la vente : l'e-mail au vendeur pour lui demander un avis Google, et à l'acquéreur si tu l'actives."
+      }
+     ]
+    }
+   ]
+  },
+  "christine": {
+   "description": "Christine prépare tes bons de visite et tes mandats, relit les offres et suit chaque compromis jusqu'à la signature.",
+   "capacites": [
+    "Bon de visite prêt avant chaque visite",
+    "Mandat pré-rempli sur ton modèle",
+    "Offre relue avant de la présenter",
+    "Échéances du compromis suivies : rétractation, prêt, acte"
+   ],
+   "scenarios": [
+    {
+     "titre": "Le bon de visite",
+     "question": "Christine, le bon de visite de 14 h ?",
+     "reponse": "Prêt en PDF : le visiteur, le bien et le numéro de mandat, dans le format de l'agence. Il ne reste qu'à l'imprimer et à le faire signer.",
+     "vocal": false
+    },
+    {
+     "titre": "Le mandat",
+     "question": "Christine, je rends l'estimation des Perrin demain.",
+     "reponse": "Ton mandat est pré-rempli sur ton modèle avec les données de Modelo, à faire valider par ton juriste. Il manque le titre de propriété : Emma a préparé la relance au vendeur.",
+     "vocal": false
+    },
+    {
+     "titre": "L'offre",
+     "question": "Christine, je présente l'offre des Martin à 15 h.",
+     "reponse": "Je l'ai relue : prix, conditions suspensives, financement, délai de validité. Ta synthèse est prête, avec la comparaison au prix du mandat et les points à aborder avec le vendeur.",
+     "vocal": false
+    }
+   ],
+   "boite": true,
+   "promesse": {
+    "sur_titre": "Christine, juridique et mandats",
+    "titre": "Plus jamais une pièce oubliée au compromis.",
+    "sous_titre": "Les pièces vérifiées une par une, les échéances suivies, tes documents à ton format."
+   },
+   "moments": [
+    {
+     "titre": "Avant la visite et le mandat",
+     "items": [
+      {
+       "titre": "Bon de visite automatique",
+       "texte": "Une visite apparaît dans ton agenda ? Le bon arrive tout prêt en PDF (visiteur, bien, n° de mandat) : il ne reste qu'à l'imprimer et le faire signer."
+      },
+      {
+       "titre": "Mandat sur ton modèle",
+       "texte": "Avec ton modèle importé, le mandat est pré-rempli avec les données de Modelo, à faire valider par ton juriste. Sans modèle : une fiche de préparation."
+      },
+      {
+       "titre": "Tes documents, à l'identique",
+       "texte": "Tu importes ton bon de visite, ton mandat ou ta facture (Word, PDF, photo) : elle les ressort à l'identique, remplis."
+      }
+     ]
+    },
+    {
+     "titre": "Pendant la vente",
+     "items": [
+      {
+       "titre": "Mandat de vente : le dossier vérifié",
+       "texte": "Checklist des pièces adaptée au bien et au vendeur, manquantes signalées, chaque document analysé, avant la rédaction comme avant le compromis."
+      },
+      {
+       "titre": "Offre relue avant de la présenter",
+       "texte": "Trois heures avant : prix, conditions suspensives, financement, délai de validité, et la comparaison avec le prix du mandat."
+      },
+      {
+       "titre": "Annonce conforme avant publication",
+       "texte": "Prix, honoraires, surface, DPE : elle vérifie que ton annonce est en règle avant que quelqu'un d'autre le vérifie pour toi."
+      }
+     ]
+    },
+    {
+     "titre": "Jusqu'à l'acte",
+     "items": [
+      {
+       "titre": "Récapitulatif des échéances",
+       "texte": "Le compromis est signé : rétractation, conditions suspensives, prêt, date de l'acte, dans l'ordre, avec le moment de relancer."
+      },
+      {
+       "titre": "Pièces du compromis suivies",
+       "texte": "Les pièces du compromis suivies jusqu'à la signature ; Emma prépare la relance de ce qui manque."
+      },
+      {
+       "titre": "Mandat qui expire sous 30 jours",
+       "texte": "Elle te prévient un mois avant l'échéance d'un mandat actif : le renouvellement se prépare, il ne se subit pas."
+      },
+      {
+       "titre": "Veille juridique — chaque semaine",
+       "texte": "Ce qui a changé dans le droit immobilier cette semaine, résumé et appliqué à ton activité."
+      }
+     ]
+    }
+   ]
+  },
+  "zoe": {
+   "description": "Zoé prépare tes posts Instagram et Facebook à ta charte, tient ton calendrier éditorial et publie au bon créneau, une fois validé.",
+   "capacites": [
+    "Un post proposé dès le mandat signé",
+    "Calendrier éditorial et publication programmée",
+    "Le post « Vendu » après la vente, jamais de prix",
+    "Les statistiques de tes réseaux chaque semaine"
+   ],
+   "scenarios": [
+    {
+     "titre": "Les posts de la semaine",
+     "question": "Zoé, qu'est-ce qui part cette semaine ?",
+     "reponse": "Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
+     "vocal": false
+    },
+    {
+     "titre": "Nouveau mandat",
+     "question": "Zoé, j'ai signé le mandat du T3 rue des Lilas.",
+     "reponse": "Ton post est prêt, visuel à ta charte compris. Tu valides, il part au créneau prévu.",
+     "vocal": false
+    },
+    {
+     "titre": "Vendu",
+     "question": "Zoé, la maison de Bihorel est vendue !",
+     "reponse": "Le post « Vendu » est prêt : merci au vendeur et à l'acquéreur sans les nommer, le type de bien et la ville, jamais le prix ni l'adresse.",
+     "vocal": false
+    }
+   ],
+   "boite": false,
+   "promesse": {
+    "sur_titre": "Zoé, ta community manager",
+    "titre": "Plus jamais un « Vendu » que tu n'as pas publié.",
+    "sous_titre": "Tes réseaux vivent au rythme de tes mandats, à ta charte."
+   },
+   "moments": [
+    {
+     "titre": "Au mandat",
+     "items": [
+      {
+       "titre": "Nouveau mandat, post proposé",
+       "texte": "Tu rentres un mandat, elle te propose le post, visuel à ta charte compris. Tu valides, il part."
+      },
+      {
+       "titre": "Ta charte, ta marque",
+       "texte": "Logo, couleurs, ton : elle tient ton kit de marque et l'applique à chaque visuel."
+      },
+      {
+       "titre": "Reprise dans Canva",
+       "texte": "Un visuel à peaufiner toi-même ? Elle te l'ouvre dans Canva, prêt à modifier."
+      }
+     ]
+    },
+    {
+     "titre": "Chaque semaine",
+     "items": [
+      {
+       "titre": "Calendrier éditorial",
+       "texte": "Jusqu'à 14 créneaux planifiés d'un coup, soit le mois à 3 posts par semaine : mandats, avis clients, marché local."
+      },
+      {
+       "titre": "Publication au bon créneau",
+       "texte": "Une fois validés, tes posts partent à l'heure prévue sur Facebook, Instagram et LinkedIn, même si tu es en visite."
+      },
+      {
+       "titre": "Statistiques de tes réseaux",
+       "texte": "Portée, réactions, meilleurs posts : ton point réseaux tombe chaque semaine, tu sais ce qui marche."
+      }
+     ]
+    },
+    {
+     "titre": "Après la vente",
+     "items": [
+      {
+       "titre": "Le post « Vendu »",
+       "texte": "L'acte est signé : le post « Vendu » remercie le vendeur et l'acquéreur sans les nommer, jamais le prix ni l'adresse."
+      },
+      {
+       "titre": "Veille locale",
+       "texte": "Elle cherche sur le web ce qui se dit de ton marché pour nourrir tes contenus."
+      }
+     ]
+    }
+   ]
+  },
+  "raphael": {
+   "description": "Raphaël retouche tes photos en lot, meuble les pièces vides en home staging virtuel et en tire des vidéos et des visuels à ta marque.",
+   "capacites": [
+    "Retouche pro en lot, même depuis ton Drive",
+    "Home staging virtuel",
+    "Vidéo du bien à partir d'une photo",
+    "Filigrane et visuels à ta marque"
+   ],
+   "scenarios": [
+    {
+     "titre": "Les photos du bien",
+     "question": "Raphaël, les photos du pavillon ?",
+     "reponse": "18 photos retouchées : ciel dégagé, verticales redressées, lumière studio. Le salon vide est meublé en home staging virtuel, ton logo est posé en filigrane — et la vidéo du bien est prête.",
+     "vocal": false
+    },
+    {
+     "titre": "Un lot dans ton Drive",
+     "question": "Raphaël, j'ai déposé les photos de la rue des Lilas dans le Drive.",
+     "reponse": "Je retouche tout le lot : lumière, verticales, ciel. Les photos reviennent dans ton Drive, nommées et rangées par bien.",
+     "vocal": false
+    },
+    {
+     "titre": "Le visuel « Vendu »",
+     "question": "Raphaël, il me faut le visuel « Vendu » pour Bihorel.",
+     "reponse": "Le visuel est prêt à ta charte, avec le badge « Vendu », le type de bien et la ville. Jamais de prix.",
+     "vocal": false
+    }
+   ],
+   "boite": false,
+   "promesse": {
+    "sur_titre": "Raphaël, ton photographe",
+    "titre": "Des photos qui donnent envie de visiter.",
+    "sous_titre": "Retouche, home staging, vidéo : tes annonces au niveau de tes biens."
+   },
+   "moments": [
+    {
+     "titre": "Avant l'annonce",
+     "items": [
+      {
+       "titre": "Un lot Drive retouché",
+       "texte": "Tu poses les photos du bien dans un dossier Drive : il retouche tout le lot (lumière, verticales, ciel) et te le rend prêt à publier."
+      },
+      {
+       "titre": "Retouche pro",
+       "texte": "Lumière, verticales redressées, ciel dégagé : la photo de couverture qui fait cliquer."
+      },
+      {
+       "titre": "Détourage et HD",
+       "texte": "Fond retiré, netteté remontée : des visuels propres même à partir d'une photo moyenne."
+      }
+     ]
+    },
+    {
+     "titre": "Pour l'annonce",
+     "items": [
+      {
+       "titre": "Home staging virtuel",
+       "texte": "Le salon vide devient un salon meublé : l'acquéreur se projette, toi tu vends."
+      },
+      {
+       "titre": "Vidéo du bien",
+       "texte": "À partir d'une photo, une vidéo courte du bien pour tes annonces et tes réseaux."
+      },
+      {
+       "titre": "Filigrane à ta marque",
+       "texte": "Ton logo posé proprement sur chaque photo exportée : tes visuels signés, systématiquement."
+      }
+     ]
+    },
+    {
+     "titre": "Pour tes réseaux",
+     "items": [
+      {
+       "titre": "Visuels à ta charte",
+       "texte": "Post « Vendu », « Nouveau mandat », portes ouvertes : le visuel à ta charte en une demande."
+      },
+      {
+       "titre": "Export rangé dans ton Drive",
+       "texte": "Les photos retouchées reviennent dans ton Drive, nommées et rangées par bien."
+      }
+     ]
+    }
+   ]
+  },
+  "lucas": {
+   "description": "Lucas t'apporte les chiffres du terrain : un ordre d'idée du prix avant le rendez-vous vendeur, le bilan de commercialisation, les nouveaux DPE autour de l'agence.",
+   "capacites": [
+    "Un ordre d'idée du prix la veille du rendez-vous vendeur",
+    "Le bilan de commercialisation prêt avant le rendez-vous",
+    "Les nouveaux DPE autour de l'agence, chaque matin",
+    "Le point marché de ton secteur chaque semaine"
+   ],
+   "scenarios": [
+    {
+     "titre": "Avant le rendez-vous vendeur",
+     "question": "Lucas, l'appartement rue Verte, il vaut quoi ?",
+     "reponse": "Entre 242 000 et 255 000 € : douze ventes notariées comparables dans le quartier. Et un rappel de ce qu'il faut vérifier sur place : surface, état, DPE, charges, travaux.",
+     "vocal": false
+    },
+    {
+     "titre": "Le bilan de commercialisation",
+     "question": "Lucas, je vois Mme Lefèvre demain pour son bilan.",
+     "reponse": "Ton bilan de commercialisation est prêt : les visites et les offres lues dans Modelo, un document pour elle et une note de préparation pour toi.",
+     "vocal": false
+    },
+    {
+     "titre": "Le radar DPE",
+     "question": "Lucas, du nouveau dans mon secteur ce matin ?",
+     "reponse": "Deux DPE tout frais autour de l'agence depuis hier, dont une maison classée F rue des Écoles. Un DPE tout neuf, c'est souvent un propriétaire qui prépare quelque chose.",
+     "vocal": false
+    }
+   ],
+   "boite": true,
+   "promesse": {
+    "sur_titre": "Lucas, ton estimateur",
+    "titre": "Le bon prix, chiffres à l'appui.",
+    "sous_titre": "Des ventes réelles, pas une moyenne de portails."
+   },
+   "moments": [
+    {
+     "titre": "Avant le mandat",
+     "items": [
+      {
+       "titre": "Ordre d'idée du prix",
+       "texte": "La veille du rendez-vous vendeur, à 18 h : une fourchette à partir des ventes comparables proches, et ce qu'il faut vérifier sur place. Pas de dossier d'estimation à ce stade."
+      },
+      {
+       "titre": "Estimation sur ventes réelles",
+       "texte": "Fourchette calculée sur les ventes notariées comparables (base DVF), pas une moyenne de portails."
+      },
+      {
+       "titre": "PDF d'estimation",
+       "texte": "L'estimation mise en page, prête à laisser au propriétaire après le rendez-vous."
+      }
+     ]
+    },
+    {
+     "titre": "Pendant la vente",
+     "items": [
+      {
+       "titre": "Bilan de commercialisation",
+       "texte": "Avant le rendez-vous avec le vendeur : les visites et les offres lues dans Modelo, un document pour lui et une note de préparation pour toi."
+      },
+      {
+       "titre": "Bien immobile depuis 60 jours",
+       "texte": "Un bien sans changement de prix depuis 60 jours (seuil réglable) ? Il te prévient : le bon moment pour reparler prix."
+      },
+      {
+       "titre": "Contre-expertise",
+       "texte": "Une estimation te semble haute ? Il la relit, la confronte aux ventes réelles et argumente."
+      }
+     ]
+    },
+    {
+     "titre": "Ton secteur",
+     "items": [
+      {
+       "titre": "Radar DPE — tous les jours",
+       "texte": "Chaque nouveau diagnostic réalisé autour de ton agence (rayon réglable) arrive le matin : souvent le premier signe d'une mise en vente."
+      },
+      {
+       "titre": "Point marché — chaque semaine",
+       "texte": "Prix, volumes, tendance de ton secteur : ton point marché hebdomadaire, prêt à ressortir en rendez-vous."
+      },
+      {
+       "titre": "Rapport de marché à ta marque",
+       "texte": "Un PDF à ton logo et à tes couleurs : prix médians, volumes, graphiques."
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "v2": {
+  "hugo": {
+   "description": "Hugo repère les vendeurs de demain : les nouveaux DPE autour de l'agence, les logements F et G, les sociétés du registre. Il prépare l'approche, tu décides.",
+   "capacites": [
+    "Les nouveaux DPE autour de l'agence, chaque matin",
+    "Les logements F et G repérés par la base publique des DPE",
+    "Jamais un client de l'agence : vérifié avant toute approche",
+    "Script d'appel, courrier, e-mail en brouillon : rien ne part"
+   ],
+   "scenarios": [
+    {
+     "titre": "Le radar DPE",
+     "question": "Hugo, du nouveau dans mon secteur ?",
+     "reponse": "Deux DPE tout frais autour de l'agence, dont une maison classée F. L'adresse n'est pas dans le fichier de l'agence : ton courrier « Au propriétaire » est prêt, rien ne part sans toi.",
+     "vocal": false
+    },
+    {
+     "titre": "Les logements F et G",
+     "question": "Hugo, les logements classés F et G à Bihorel ?",
+     "reponse": "Je les ai trouvés dans la base publique des DPE, sans nom de propriétaire, et j'ai retiré les adresses déjà dans ton fichier. L'approche permise : un courrier « Au propriétaire » ou une rencontre sur place.",
+     "vocal": false
+    },
+    {
+     "titre": "Une approche dans les règles",
+     "question": "Hugo, prépare l'approche de M. Garnier.",
+     "reponse": "Il a accepté d'être contacté par e-mail : ton e-mail est en brouillon, à valider. Rien ne part sans toi.",
+     "vocal": false
+    }
+   ],
+   "boite": false,
+   "promesse": {
+    "sur_titre": "Hugo, ton prospecteur",
+    "titre": "Les vendeurs de demain, repérés dans les règles.",
+    "sous_titre": "Jamais un client de l'agence, toujours un canal permis, rien d'envoyé sans toi."
+   },
+   "moments": [
+    {
+     "titre": "Repérer",
+     "items": [
+      {
+       "titre": "Radar DPE — chaque matin",
+       "texte": "Chaque nouveau diagnostic réalisé autour de ton agence (rayon réglable) arrive le matin : souvent le premier signe d'une mise en vente."
+      },
+      {
+       "titre": "Les logements F et G",
+       "texte": "Les logements classés F ou G d'un secteur, trouvés dans la base publique des DPE, sans nom de propriétaire."
+      },
+      {
+       "titre": "Les sociétés et les SCI",
+       "texte": "Les sociétés et les SCI d'un secteur, trouvées dans le registre public des entreprises."
+      }
+     ]
+    },
+    {
+     "titre": "Vérifier",
+     "items": [
+      {
+       "titre": "Jamais un client de l'agence",
+       "texte": "Il retire les adresses déjà dans ton fichier et refuse un vendeur, un acquéreur ou une fiche Modelo existante."
+      },
+      {
+       "titre": "L'accord et l'opposition respectés",
+       "texte": "Il ne propose que les canaux que la personne a acceptés, et note toute opposition."
+      },
+      {
+       "titre": "Tes prospects, canal par canal",
+       "texte": "Pour chaque prospect, les canaux permis : tu sais qui tu as le droit d'appeler."
+      }
+     ]
+    },
+    {
+     "titre": "Approcher",
+     "items": [
+      {
+       "titre": "Script d'appel",
+       "texte": "Le script de ton appel, prêt avant que tu décroches."
+      },
+      {
+       "titre": "Courrier « Au propriétaire »",
+       "texte": "Pour un logement repéré par son DPE, le courrier « Au propriétaire », prêt à imprimer."
+      },
+      {
+       "titre": "E-mail en brouillon",
+       "texte": "Par un canal permis, l'e-mail en brouillon à valider. Rien n'est envoyé."
+      }
+     ]
+    }
+   ]
+  },
+  "zoe": {
+   "description": "Zoé prépare tes posts, tes annonces et tes visuels à ta charte : photos retouchées, home staging virtuel, vidéos, publication au bon créneau.",
+   "capacites": [
+    "Un post proposé dès le mandat signé",
+    "Photos retouchées en lot, home staging virtuel",
+    "Vidéo du bien à partir d'une photo",
+    "Calendrier éditorial et publication programmée"
+   ],
+   "promesse": {
+    "sur_titre": "Zoé, réseaux et visuels",
+    "titre": "Plus jamais un « Vendu » que tu n'as pas publié.",
+    "sous_titre": "Tes photos, tes visuels et tes réseaux, au rythme de tes mandats et à ta charte."
+   },
+   "scenarios": [
+    {
+     "titre": "Les posts de la semaine",
+     "question": "Zoé, qu'est-ce qui part cette semaine ?",
+     "reponse": "Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
+     "vocal": false
+    },
+    {
+     "titre": "Les photos du bien",
+     "question": "Zoé, les photos du pavillon ?",
+     "reponse": "18 photos retouchées : ciel dégagé, verticales redressées, lumière studio. Le salon vide est meublé en home staging virtuel, ton logo est posé en filigrane — et la vidéo du bien est prête.",
+     "vocal": false
+    },
+    {
+     "titre": "Vendu",
+     "question": "Zoé, la maison de Bihorel est vendue !",
+     "reponse": "Le post « Vendu » est prêt, avec son visuel : merci au vendeur et à l'acquéreur sans les nommer, le type de bien et la ville, jamais le prix ni l'adresse.",
+     "vocal": false
+    }
+   ],
+   "moments": [
+    {
+     "titre": "Au mandat",
+     "items": [
+      {
+       "titre": "Nouveau mandat, post proposé",
+       "texte": "Tu rentres un mandat, elle te propose le post, visuel à ta charte compris. Tu valides, il part."
+      },
+      {
+       "titre": "Ta charte, ta marque",
+       "texte": "Logo, couleurs, ton : elle tient ton kit de marque et l'applique à chaque visuel."
+      },
+      {
+       "titre": "Reprise dans Canva",
+       "texte": "Un visuel à peaufiner toi-même ? Elle te l'ouvre dans Canva, prêt à modifier."
+      }
+     ]
+    },
+    {
+     "titre": "Photos et visuels",
+     "items": [
+      {
+       "titre": "Un lot Drive retouché",
+       "texte": "Tu poses les photos du bien dans un dossier Drive : elle retouche tout le lot (lumière, verticales, ciel) et te le rend prêt à publier."
+      },
+      {
+       "titre": "Home staging virtuel",
+       "texte": "Le salon vide devient un salon meublé : l'acquéreur se projette, toi tu vends."
+      },
+      {
+       "titre": "Vidéo du bien",
+       "texte": "À partir d'une photo, une vidéo courte du bien pour tes annonces et tes réseaux."
+      },
+      {
+       "titre": "Filigrane à ta marque",
+       "texte": "Ton logo posé proprement sur chaque photo exportée."
+      }
+     ]
+    },
+    {
+     "titre": "Chaque semaine, et après la vente",
+     "items": [
+      {
+       "titre": "Calendrier éditorial",
+       "texte": "Jusqu'à 14 créneaux planifiés d'un coup, soit le mois à 3 posts par semaine : mandats, avis clients, marché local."
+      },
+      {
+       "titre": "Publication au bon créneau",
+       "texte": "Une fois validés, tes posts partent à l'heure prévue sur Facebook, Instagram et LinkedIn, même si tu es en visite."
+      },
+      {
+       "titre": "Statistiques de tes réseaux",
+       "texte": "Portée, réactions, meilleurs posts : ton point réseaux tombe chaque semaine, tu sais ce qui marche."
+      },
+      {
+       "titre": "Le post « Vendu »",
+       "texte": "L'acte est signé : le post « Vendu » et son visuel, sans nommer personne, jamais le prix ni l'adresse."
+      }
+     ]
+    }
+   ]
+  },
+  "lucas": {
+   "capacites": [
+    "Un ordre d'idée du prix la veille du rendez-vous vendeur",
+    "Le bilan de commercialisation prêt avant le rendez-vous",
+    "Le point marché de ton secteur chaque semaine",
+    "Un rapport de marché à ta marque"
+   ],
+   "scenario_3": {
+    "titre": "Un bien qui ne bouge pas",
+    "question": "Lucas, la maison de la rue des Écoles ne bouge pas.",
+    "reponse": "Pas de changement de prix depuis 60 jours : c'est le bon moment pour en reparler avec le vendeur. Ton point marché du secteur est prêt pour appuyer la discussion.",
+    "vocal": false
+   },
+   "sans_radar": true
+  }
+ }
+}
