@@ -456,10 +456,57 @@ def fondateur_visuel():
         return f'<img class="fondateur-photo" src="{uri("assets/fondateur.jpg", "image/jpeg")}" width="72" height="72" alt="Julien, fondateur de Revaly" />'
     return '<span class="fondateur-mono" aria-hidden="true">J</span>'
 
+# ── Gabarit unique des têtes de section (tâche 17, référence Limova) : pastille de sur-titre → H2 toujours à la même
+# taille → sous-titre court → (option) la paire de boutons. Chaque section de l'accueil passe par tete_section() ;
+# paire_cta() referme les sections qui finissent par un pas vers l'action. data-ap = apparition au défilement.
+RISQUE = "0 € aujourd'hui · Annulable en 2 clics"
+
+def paire_cta(fin_de_section=True):
+    cls = "paire paire-fin" if fin_de_section else "paire"
+    return (f'<div class="{cls}" data-ap><div class="paire-boutons">'
+            '<button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>'
+            '<a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>'
+            f'</div><p class="paire-risque">{_esc(RISQUE)}</p></div>')
+
+def tete_section(sur_titre, titre, sous_titre="", boutons=False, cote=False, id_titre=""):
+    """Tête de section : centrée par défaut ; cote=True pour les deux sections « texte d'un côté, visuel de l'autre »."""
+    ident = f' id="{id_titre}"' if id_titre else ""
+    sous = f'<p class="tete-sous" data-ap>{_esc(_typo(sous_titre))}</p>' if sous_titre else ""
+    return (f'<header class="tete{" tete-cote" if cote else ""}">'
+            f'<p class="tete-sur" data-ap>{_esc(sur_titre)}</p>'
+            f'<h2 class="tete-titre"{ident} data-ap>{_esc(_typo(titre))}</h2>{sous}'
+            f'{paire_cta(False) if boutons else ""}</header>')
+
+TETES = {
+    "TETE_PROBLEME": dict(sur_titre="Le problème", titre="Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.",
+                          sous_titre="Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, "
+                                     "publier, classer. Et ce qu'on oublie finit par coûter un mandat.", cote=True, id_titre="t-probleme"),
+    "TETE_SOLUTION": dict(sur_titre="La solution", titre="On installe ton équipe avec toi.",
+                          sous_titre="Confirmer, relancer, rendre compte, publier : ton équipe le prépare à ta place. "
+                                     "Il reste à la brancher sur tes outils, et on le fait avec toi.", id_titre="t-solution"),
+    "TETE_EQUIPE": dict(sur_titre="L'équipe", titre="Six spécialistes. Un seul abonnement.",
+                        sous_titre="Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.", id_titre="t-equipe"),
+    "TETE_CONTROLE": dict(sur_titre="Pourquoi nous faire confiance", titre="Rien ne part sans toi.",
+                          sous_titre="Chaque message, post ou document t'attend en brouillon : tu relis, tu corriges si besoin, tu valides. "
+                                     "Et tes e-mails, c'est toi qui les envoies, depuis ta boîte.", id_titre="t-controle"),
+    "TETE_CALCUL": dict(sur_titre="Ton temps", titre="Combien d'heures te rend ton équipe ?",
+                        sous_titre="Mets ton rythme du mois : on compte ce que ton équipe prépare à ta place, tâche par tâche.", id_titre="t-calcul"),
+    "TETE_TARIF": dict(sur_titre="Le prix", titre="Une équipe entière pour moins qu'une demi-journée d'assistante par mois.",
+                       sous_titre="Une assistante à mi-temps, c'est ~1 200 €/mois. Ici, les six agents sont inclus. "
+                                  "Essai 7 jours avec carte, sans engagement. Pas de frais de mise en place.", id_titre="t-tarif"),
+    "TETE_FAQ": dict(sur_titre="Questions", titre="Les questions qu'on nous pose",
+                     sous_titre="Et si tu préfères en parler, écris-nous : un humain répond.", id_titre="t-faq"),
+    "TETE_FIN": dict(sur_titre="Essai 7 jours", titre="Ton équipe peut commencer ce soir.",
+                     sous_titre="Chaque semaine sans équipe, ce sont des relances oubliées et des mandats qui expirent en silence. "
+                                "Demain matin, ça peut être : post prêt, relances rédigées, dossier complet.", boutons=True, id_titre="t-fin"),
+}
+
 HERO_SOUS_TITRE = ("Visites confirmées, vendeurs informés, mandats suivis, posts prêts. Pendant que tu es "
                    "sur le terrain, ton équipe avance. Toi, tu valides d'un geste.")
 body_home = render("home-body.html", {
     "HERO_SOUS_TITRE": HERO_SOUS_TITRE,
+    **{k: tete_section(**v) for k, v in TETES.items()},
+    "PAIRE_CTA": paire_cta(),
     **fondateurs_blocs(FONDATEURS_LINK, FONDATEURS_API),
     "FONDATEUR_VISUEL": fondateur_visuel(),
     "CALCUL_STATIQUE": calculateur_statique(),

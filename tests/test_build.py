@@ -544,7 +544,7 @@ for f in ["template.html", "assets/hero.mp4", "assets/hero-poster.jpg", "assets/
     must(not (ROOT / f).exists(), f"fichier hérité supprimé : {f}")
 for f in ["hero.mp4", "hero-poster.jpg", "fonts/fraunces-var.woff2"]:
     must(not (dist / f).exists(), f"plus publié : {f}")
-must([f.name for f in (dist / "fonts").iterdir()] == ["geist-var.woff2"], "une seule police publiée : Geist")
+must(sorted(f.name for f in (dist / "fonts").iterdir()) == ["geist-mono-var.woff2", "geist-var.woff2"], "polices publiées : Geist et Geist Mono (pastilles)")
 must('<video id="film-lecteur" controls playsinline preload="none"></video>' in idx, "film complet : rien demandé avant le clic (ni image ni vidéo)")
 must(re.findall(r"<h([1-6])", idx.split("<footer", 1)[1])[:1] == ["2"], "pied de page : titres de niveau 2 (pas de saut h2 → h4)")
 print("OK nettoyage")
@@ -572,7 +572,7 @@ must(_pb2.find("Le vendeur sans nouvelles depuis dix jours.") < _pb2.find("La re
 _inst = "Installation faite avec toi, offerte."
 must(_t.count(_inst) >= 2 and idx.find(_inst) > idx.find('id="comment"') and idx.split('id="tarif"', 1)[1].count(_inst) >= 1, "installation offerte sous « Comment ça marche » et dans les prix")
 must("Pas de frais de mise en place." in html.unescape(idx.split('id="tarif"', 1)[1].split("</section>", 1)[0]), "prix : pas de frais de mise en place")
-must(idx.count('class="cta-relance"') == 2, "relances d'essai entre les sections (après la validation, sous le calculateur ; masquées sur mobile, barre collante)")
+must(idx.count('class="paire paire-fin"') >= 3, "une paire de boutons referme les blocs (tâche 17)")
 must(idx.count('class="') and all(f'aria-label="{x}' in idx for x in ("Les six agents, à faire défiler", "Les trois étapes", "Les trois offres")), "rangées à faire glisser sur mobile (page plus courte)")
 _ctl = html.unescape(idx.split('id="controle"', 1)[1].split("</section>", 1)[0])
 must("t'attend en brouillon" in _ctl and "24 h" not in _ctl, "« Rien ne part sans toi » : brouillon, sans « 24 h/24 »")
@@ -647,15 +647,39 @@ print("OK aucune image cassée")
 _sections = re.findall(r'<section class="([^"]*)" id="([\w-]+)"', idx.split("<main", 1)[1].split("</main>", 1)[0])
 must([s[1] for s in _sections] == ["hero", "probleme", "comment", "equipe", "controle", "calculateur", "tarif", "faq", "demo"],
      "ordre : héros, problème, solution, équipe, confiance, calculateur, prix, FAQ, démo")
-_fonds = ["blanc" if "fond-blanc" in s[0] else "porcelaine" for s in _sections]
-must(all(a != b for a, b in zip(_fonds, _fonds[1:])), f"fonds porcelaine / blanc en alternance : {_fonds}")
-_sur = {sid: re.search(r'<p class="sur-titre">([^<]+)</p>', idx.split(f'id="{sid}"', 1)[1].split("</section>", 1)[0]) for _, sid in _sections[1:]}
+_sur = {sid: re.search(r'<p class="tete-sur" data-ap>([^<]+)</p>', idx.split(f'id="{sid}"', 1)[1].split("</section>", 1)[0]) for _, sid in _sections[1:]}
 must({k: (v.group(1) if v else None) for k, v in _sur.items()} == {"probleme": "Le problème", "comment": "La solution", "equipe": "L'équipe",
      "controle": "Pourquoi nous faire confiance", "calculateur": "Ton temps", "tarif": "Le prix", "faq": "Questions", "demo": "Essai 7 jours"},
      "un sur-titre court par section")
 _pbh = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
-must(_pbh.find('class="sur-titre"') < _pbh.find('class="pb-citation"') < _pbh.find("<h2"), "problème : sur-titre, puis la citation, puis le titre")
-must("Confirmer, relancer, rendre compte, publier : ton équipe le prépare à ta place." in idx.split('id="comment"', 1)[1].split("</section>", 1)[0],
+must(_pbh.find('class="tete-sur"') < _pbh.find("<h2") < _pbh.find('class="pb-citation"'), "problème : sur-titre, titre, puis la citation en petit sous le texte (tâche 17)")
+must("Confirmer, relancer, rendre compte, publier : ton équipe le prépare à ta place." in html.unescape(idx.split('id="comment"', 1)[1].split("</section>", 1)[0]).replace("\u00a0", " "),
      "phrase de transition du problème à la solution")
-must("--carte: var(--bg); --champ: var(--raised);" in idx, "les cartes prennent la couleur opposée au fond")
 print("OK enchaînement")
+
+# ── Une page qui s'enchaîne (tâche 17, référence Limova) : un seul fond, un seul gabarit de tête, des apparitions ──
+_main = idx.split("<main", 1)[1].split("</main>", 1)[0]
+must("fond-blanc" not in idx, "plus de bande de fond blanc")
+# styles de l'accueil (dans <body>) ; le socle n'en pose aucun sur les sections, et son trait du pied de page est annulé ici
+_css = " ".join(re.findall(r"<style>(.*?)</style>", idx.split("<body>", 1)[1], re.S))
+must("footer { border-top: 0;" in _css, "pas de trait au-dessus du pied de page")
+_sel_sections = {"section", ".hp-s", ".hp-hero", "main", "footer"} | {f"#{s[1]}" for s in _sections}
+for _sel, _decl in re.findall(r"([^{}]+)\{([^{}]*)\}", re.sub(r"/\*.*?\*/", "", _css, flags=re.S)):
+    for _s in _sel.split(","):
+        _dernier = _s.strip().split()[-1] if _s.strip() else ""
+        if any(_dernier == x or _dernier.startswith(x + "[") or _dernier.startswith(x + ":") or _dernier.startswith(x + ".") for x in _sel_sections):
+            _decl_sans_zero = re.sub(r"border(-top|-bottom)?\s*:\s*0(?![.\d])\s*;?", "", _decl.strip())
+            must(not re.search(r"(^|;)\s*(background|border(-top|-bottom)?)\s*:", _decl_sans_zero),
+                 f"aucune section ne change de fond ni n'a de trait : {_s.strip()} {{{_decl.strip()[:60]}}}")
+must(re.search(r'body \{\s*margin: 0;\s*background:', idx), "le fond est porté par body seul")
+_h2 = re.findall(r"<h2([^>]*)>", _main)
+must(len(_h2) == len(_sections) - 1 and all('class="tete-titre"' in a for a in _h2), f"chaque H2 de section utilise le gabarit unique (.tete-titre) : {_h2}")
+for _, _sid in _sections[1:]:
+    _s = _main.split(f'id="{_sid}"', 1)[1].split("</section>", 1)[0]
+    must(_s.count('<header class="tete') == 1 and _s.count("<h2") == 1, f"une tête de section unique dans #{_sid}")
+must(re.search(r"\.tete-titre \{[^}]*font-size: clamp\(", idx) and len(re.findall(r"\.tete-titre[^{]*\{[^}]*font-size", idx)) == 1, "tous les H2 de section à la même taille (un seul clamp)")
+must("Geist Mono" in idx and (dist / "fonts" / "geist-mono-var.woff2").is_file() and (ROOT / "assets" / "fonts" / "OFL-Geist.txt").is_file(), "pastilles en Geist Mono (licence OFL jointe)")
+must(_main.split('id="probleme"', 1)[1].count("data-ap") >= 10, "apparitions au défilement posées sur les blocs")
+must('[data-ap]:not(.vu) { opacity: 0; transform: translateY(24px); filter: blur(8px); }' in idx and "70ms" in idx, "apparition flou → net, montée de 24 px, décalage entre frères")
+must("data-ap" not in idx.split('id="hero"', 1)[1].split("</section>", 1)[0], "le haut de page n'attend aucune apparition (LCP)")
+print("OK une page qui s'enchaîne")
