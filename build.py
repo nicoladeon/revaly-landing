@@ -160,7 +160,7 @@ def equipe_cartes():
         de = "d'" if e["nom"][0].lower() in "aeéiou" else "de "
         taches = "".join(f"<li>{_CHECK}<span>{_esc(_typo(x))}</span></li>" for x in e["taches"])
         cartes.append(
-            f'<article class="eq{" actif" if i == 0 else ""}" id="agent-{e["slug"]}" role="tabpanel" aria-labelledby="eq-onglet-{e["slug"]}" style="--k:{i}"{"" if i == 0 else " inert"}>'
+            f'<article class="eq{" actif" if i == 0 else ""}" id="agent-{e["slug"]}" role="tabpanel" aria-labelledby="eq-onglet-{e["slug"]}" style="--k:{i}">'
             f'{_prepare(e)}'
             f'<div class="eq-qui"><div class="eq-tete"><span class="eq-photo">{_boucle(e["slug"], 168)}</span>'
             f'<div><h3 class="eq-nom">{nom}</h3><p class="eq-metier">{_esc(e["metier"])}</p>'

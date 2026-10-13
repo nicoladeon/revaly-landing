@@ -281,8 +281,6 @@
   .notif-quand { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
   html.js .pile.anime .notif { transition: transform .6s var(--ap), opacity .45s var(--ap), filter .45s var(--ap); }
   html.js .pile.anime .notif:not(.arrive) { opacity: 0; filter: blur(6px); transform: translateY(calc(var(--rang) * (var(--h) + var(--g)) - 22px)) scale(.97); }
-  html.js .pile.anime.vide .notif { opacity: 0; transition: opacity .4s ease; }
-  html.js .pile.anime.net .notif { transition: none; }
   @media (max-width: 520px) {
     .pile { --h: 72px; --g: 8px; padding: 12px; border-radius: 24px; }
     .notif { grid-template-columns: 36px minmax(0, 1fr) auto; gap: 10px; padding: 0 12px; }
@@ -447,7 +445,10 @@
   .eq-bloc.auto.en-vue .eq-onglet[aria-selected="true"] .eq-o-barre i { animation: barre 6s linear forwards; }
   .eq-bloc:hover .eq-o-barre i, .eq-bloc:focus-within .eq-o-barre i, .rv-pause .eq-o-barre i { animation-play-state: paused !important; }
 
-  .eq-scene { --eq-w: min(960px, calc(100vw - 120px)); --eq-g: 20px; width: 100vw; margin-left: calc(50% - 50vw); margin-top: 16px; padding: 12px 0 20px; overflow: hidden; touch-action: pan-y; }
+  .eq-scene { --eq-w: min(960px, calc(100vw - 120px)); --eq-g: 20px; width: 100vw; margin-left: calc(50% - 50vw); margin-top: 4px; padding: 24px 0 44px; overflow: hidden; touch-action: pan-y; }
+  /* la scène coupe ce qui dépasse : sa marge intérieure laisse toute la place à l'ombre des cartes */
+  .eq-bloc + .paire-fin { margin-top: 16px; }
+  @media (max-width: 860px) { .eq-bloc + .paire-fin { margin-top: 32px; } }
   .eq-scene::before { inset: 0 18%; }
   .eq-piste {
     display: flex; align-items: stretch; gap: var(--eq-g); padding: 0 calc((100% - var(--eq-w)) / 2);
@@ -458,7 +459,11 @@
     border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left;
     transition: opacity .6s var(--ap), transform .6s var(--ap), filter .6s var(--ap);
   }
-  .eq:not(.actif) { opacity: .42; transform: scale(.94); filter: saturate(.5); cursor: pointer; }
+  html.js .eq:not(.actif) { opacity: .42; transform: scale(.94); filter: saturate(.5); cursor: pointer; }
+  /* sans script : les six cartes se font défiler à la main */
+  html:not(.js) .eq-scene { overflow-x: auto; scroll-snap-type: x mandatory; }
+  html:not(.js) .eq { scroll-snap-align: center; }
+  html:not(.js) .eq-fleches { display: none; }
   .eq-prepare { display: flex; flex-direction: column; min-width: 0; padding: 18px; border-radius: 20px; background: var(--bg); }
   .pr-qui { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
   .pr-qui::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--iris); box-shadow: 0 0 0 3px var(--iris-soft); }
@@ -541,12 +546,28 @@
     font-size: 14px; font-weight: 500; color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px;
   }
   .eq-lien:hover { text-decoration-color: var(--ink); }
-  .eq-fleches { display: none; justify-content: center; gap: 12px; margin-top: 4px; }
+  .eq-fleches { display: none; justify-content: center; gap: 12px; margin-top: -22px; position: relative; }
   .eq-fleche { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; border: 0.5px solid var(--line-strong); background: var(--raised); color: var(--ink); cursor: pointer; box-shadow: var(--shadow-sm); }
   .eq-fleche svg { width: 20px; height: 20px; }
+  @media (max-width: 960px) {
+    .eq { gap: 22px; padding: 18px; }
+    .eq-photo { width: 96px; height: 96px; border-radius: 16px; }
+    .eq-nom { font-size: 22px; }
+    .eq-pour { font-size: 15px; }
+  }
   @media (max-width: 860px) {
-    .eq-scene { --eq-w: calc(100vw - 56px); --eq-g: 12px; margin-top: 18px; padding: 10px 0 16px; }
+    .eq-scene { --eq-w: calc(100vw - 56px); --eq-g: 12px; margin-top: 6px; padding: 22px 0 40px; }
     .eq-scene::before { inset: 0; }
+    .eq-fleches { display: flex; }
+    .eq-onglets { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2px; max-width: 640px; margin-left: auto; margin-right: auto; }
+    .eq-onglet { flex-direction: column; justify-content: center; gap: 4px; min-height: 0; padding: 6px 0 9px; border-radius: 16px; background: none; border-color: transparent; }
+    .eq-onglet img { width: 46px; height: 46px; }
+    .eq-o-txt b { font-size: 12.5px; text-align: center; }
+    .eq-o-txt span { display: none; }
+    .eq-onglet[aria-selected="true"] { background: var(--raised); box-shadow: none; }
+    .eq-o-barre { left: 12px; right: 12px; }
+  }
+  @media (max-width: 640px) {
     /* mobile : qui il est, ce qu'il vient de préparer, ce qu'il sait faire, sa fiche ; tout en haut de la carte */
     .eq { grid-template-columns: minmax(0, 1fr); align-content: start; gap: 14px; padding: 14px; border-radius: 24px; }
     .eq-qui { display: contents; }
@@ -559,16 +580,6 @@
     .eq-nom { font-size: 21px; }
     .eq-metier { font-size: 13.5px; }
     .eq-pour { margin-top: 6px; font-size: 15px; }
-    .eq-fleches { display: flex; }
-  }
-  @media (max-width: 640px) {
-    .eq-onglets { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2px; }
-    .eq-onglet { flex-direction: column; justify-content: center; gap: 4px; min-height: 0; padding: 6px 0 9px; border-radius: 16px; background: none; border-color: transparent; }
-    .eq-onglet img { width: 46px; height: 46px; }
-    .eq-o-txt b { font-size: 12.5px; text-align: center; }
-    .eq-o-txt span { display: none; }
-    .eq-onglet[aria-selected="true"] { background: var(--raised); box-shadow: none; }
-    .eq-o-barre { left: 12px; right: 12px; }
   }
 
   /* ── 9. Ton temps, compacté : deux champs et le total sur une ligne, les quatre tâches qui pèsent le plus, le détail
@@ -1382,13 +1393,14 @@
     els.forEach((el) => o.observe(el));
   })();
 
-  // ── Le problème : la pile de ce qui attend monte depuis le bas, une notification après l'autre (1,1 s), le compteur
-  //    avec elle, puis la pile se vide et recommence. Seulement à l'écran ; arrêt onglet caché ou pause générale. ──
+  // ── Le problème : la pile de ce qui attend monte depuis le bas (trois notifications déjà là, puis une toutes les 0,9 s),
+  //    le compteur avec elle ; la pile redescend à trois et recommence. Seulement à l'écran ; arrêt onglet caché ou pause générale. ──
   (() => {
     const pile = document.getElementById('pile');
     if (!pile || REDUCED || !('IntersectionObserver' in window)) return;
     const items = Array.from(pile.querySelectorAll('.notif')), n = items.length, compte = document.getElementById('pile-n');
-    let arrives = 0, enVue = false, minuteur = null;
+    const depart = Math.min(3, n);
+    let arrives = depart, enVue = false, minuteur = null;
     const pose = () => {
       items.forEach((li, i) => li.classList.toggle('arrive', i >= n - arrives));
       compte.textContent = String(arrives);
@@ -1397,15 +1409,11 @@
     const tic = () => {
       minuteur = null;
       if (!enVue || document.hidden || window.rvPause) return;
-      if (arrives < n) { arrives += 1; pose(); minuteur = setTimeout(tic, arrives < n ? 1100 : 5200); return; }
-      pile.classList.add('vide');
-      minuteur = setTimeout(() => {
-        pile.classList.add('net'); arrives = 0; pose(); void pile.offsetWidth;
-        pile.classList.remove('vide', 'net');
-        minuteur = setTimeout(tic, 600);
-      }, 450);
+      if (arrives < n) { arrives += 1; pose(); minuteur = setTimeout(tic, arrives < n ? 900 : 5200); return; }
+      arrives = depart; pose();
+      minuteur = setTimeout(tic, 1000);
     };
-    const relance = () => { if (!minuteur && enVue && !document.hidden && !window.rvPause) minuteur = setTimeout(tic, arrives ? 900 : 500); };
+    const relance = () => { if (!minuteur && enVue && !document.hidden && !window.rvPause) minuteur = setTimeout(tic, 700); };
     pile.classList.add('anime'); pose();
     new IntersectionObserver((en) => { enVue = en[0].isIntersecting; relance(); }, { threshold: 0.35 }).observe(pile);
     document.addEventListener('visibilitychange', relance);
@@ -1580,6 +1588,7 @@
       x0 = null;
     }, { passive: true });
     bloc.addEventListener('animationend', (e) => { if (e.target.matches('.eq-o-barre i') && bloc.classList.contains('auto')) montre(actif + 1); });
+    cartes.forEach((c, i) => { c.inert = i !== 0; });
     if (REDUCED) { manuel(); cartes.forEach((c) => c.classList.add('joue')); return; }
     if (!('IntersectionObserver' in window)) { enVue = true; bloc.classList.add('en-vue'); cartes[actif].classList.add('joue'); return; }
     new IntersectionObserver((en) => {

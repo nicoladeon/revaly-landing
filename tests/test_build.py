@@ -707,7 +707,8 @@ _tabs = re.findall(r'<button type="button" role="tab"[^>]*>', _eqs)
 must('role="tablist"' in _eqs and len(_tabs) == 6 and sum('aria-selected="true"' in x for x in _tabs) == 1
      and all(f'aria-controls="agent-{e["slug"]}"' in _eqs for e in _ea), "six onglets role=tab, un sélectionné, chacun relié à sa carte")
 _panels = re.findall(r'<article class="eq[^"]*" id="agent-[\w]+" role="tabpanel" aria-labelledby="eq-onglet-[\w]+"[^>]*>', _eqs)
-must(len(_panels) == 6 and sum(" inert" in x for x in _panels) == 5, "six cartes role=tabpanel, les voisines inertes")
+must(len(_panels) == 6 and "cartes.forEach((c, i) => { c.inert = i !== 0; });" in idx and "html:not(.js) .eq-scene { overflow-x: auto;" in idx,
+     "six cartes role=tabpanel ; les voisines rendues inertes par le script (sans script : défilement à la main)")
 must("ArrowRight: 1, ArrowLeft: -1" in idx and "animation: barre 6s linear forwards" in idx and ".eq-bloc:hover .eq-o-barre i, .eq-bloc:focus-within .eq-o-barre i, .rv-pause .eq-o-barre i" in idx
      and "'touchstart'" in idx and 'aria-label="Agent suivant"' in _eqs, "clavier, rotation 6 s figée au survol/focus/pause, balayage et flèches")
 for e in _ea:
