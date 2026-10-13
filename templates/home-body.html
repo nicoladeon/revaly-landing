@@ -169,7 +169,7 @@
   .film-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   /* ── 2. La preuve : le fondateur et le chiffre qualité, côte à côte ── */
   .confiance-preuve { display: grid; gap: 16px; margin-top: 20px; align-items: stretch; text-align: left; }
-  @media (min-width: 900px) { .confiance-preuve { grid-template-columns: 240px minmax(0, 1fr); gap: 16px; } .confiance-preuve .fondateur { padding: 18px 22px; } .confiance-preuve .fondateur blockquote { margin-top: 6px; font-size: 15px; } }
+  @media (min-width: 720px) { .confiance-preuve { grid-template-columns: 240px minmax(0, 1fr); gap: 16px; } .confiance-preuve .fondateur { padding: 18px 22px; } .confiance-preuve .fondateur blockquote { margin-top: 6px; font-size: 15px; } }
   .confiance-preuve .fondateur { margin: 0; max-width: none; height: 100%; }
   .pf-chiffre { display: flex; flex-direction: column; justify-content: center; padding: 20px 24px; border-radius: 22px; background: var(--carte); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
   .pf-nombre { margin: 0; font-size: clamp(56px, 7vw, 84px); font-weight: 560; line-height: 1; letter-spacing: -0.05em; color: var(--iris-ink); font-variant-numeric: tabular-nums; }
@@ -195,7 +195,8 @@
   /* ── 3. Le problème : texte à gauche ; à droite, la pile de ce qui attend, qui monte une notification après l'autre.
        Sans script ou en mouvement réduit : la pile complète, immobile (état final). ── */
   .pb { display: grid; gap: 40px; align-items: center; }
-  @media (min-width: 960px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: clamp(48px, 6vw, 88px); } }
+  @media (min-width: 720px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: clamp(32px, 5vw, 88px); } }  /* tablette : texte et pile côte à côte, à parts égales */
+  @media (min-width: 720px) and (max-width: 959px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
   .pile { --h: 62px; --g: 8px; padding: 14px; border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); }
   .pile-zone::before { inset: -20% -16%; }
   .pile-tete { display: flex; align-items: center; gap: 8px; padding: 2px 4px 0; font-size: 14px; font-weight: 600; color: var(--ink); }
@@ -591,7 +592,7 @@
   .mx-ico { width: 44px; height: 44px; padding: 11px; border-radius: 14px; background: var(--iris-soft); color: var(--iris-ink); }
   .mx-points b { display: block; font-size: 19px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.25; color: var(--ink); }
   .mx-points p { margin: 6px 0 0; font-size: 16px; line-height: 1.5; color: var(--muted); }
-  @media (max-width: 860px) {
+  @media (max-width: 719px) {
     .mx-bloc { grid-template-columns: minmax(0, 1fr); gap: 24px; }
     .mx-points { gap: 14px; }
     .mx-points li { grid-template-columns: 36px minmax(0, 1fr); gap: 12px; }
@@ -625,11 +626,13 @@
   .ot-docs-n { margin: 12px 0 0; font-size: 12.5px; line-height: 1.4; color: var(--subtle); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ot-avap img { filter: brightness(.93); } }
   :root[data-theme="dark"] .ot-avap img { filter: brightness(.93); }
-  @media (max-width: 860px) { .ot-deux { grid-template-columns: minmax(0, 1fr); } .ot-docs { padding: 18px; } }
+  @media (max-width: 719px) { .ot-deux { grid-template-columns: minmax(0, 1fr); } .ot-docs { padding: 18px; } }
+  @media (min-width: 720px) and (max-width: 1023px) { .ot-deux { gap: 12px; } .ot-docs, .ot-modelo-bloc { padding: 18px 18px 14px; } }
   .ot-modelo-bloc { max-width: 880px; margin: 0; padding: 22px 26px 16px; border-radius: 24px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
   .ot-modelo-t { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 16px; font-size: 16.5px; font-weight: 600; color: var(--ink); }
   .ot-modelo-t img { display: block; }
   .ot-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
+  @media (max-width: 1023px) { .ot-liste { grid-template-columns: 1fr; gap: 8px; } }
   html.js .ot-liste:not(.ouvert) li:nth-child(n+4) { display: none; }
   .ot-pied { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 20px; margin-top: 10px; padding-top: 6px; border-top: 0.5px solid var(--line); }
   .ot-pied .calc-plus[aria-expanded="true"] svg { transform: rotate(180deg); }
@@ -842,7 +845,8 @@
     html.js .ap-flow.armed .ap-step, html.js .ap-flow.armed .ap-arrow,
     html.js .ap-flow.armed .ap-sent { opacity: 1; transform: none; }
   }
-  @media (max-width: 880px) {
+  @media (min-width: 720px) and (max-width: 880px) { .ap-flow { grid-template-columns: 1fr 28px 1fr 28px 1fr; } .ap-flow .ap-arrow svg { width: 16px; } }
+  @media (max-width: 719px) {
     .ap-flow { grid-template-columns: minmax(0, 1fr); max-width: 440px; margin-left: auto; margin-right: auto; row-gap: 10px; }
     .ap-arrow { padding-top: 0; }
     .ap-arrow svg { transform: rotate(90deg); }
