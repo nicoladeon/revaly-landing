@@ -220,7 +220,7 @@ def _vignette(ident, v):
         grand = _carte_dpe()
     elif v["type"] == "post":
         mini = f'<span class="nc-mini"><img src="/assets/accueil/scenes/{v["src"]}-m@520.webp" width="520" height="650" alt="" loading="lazy"><b class="nc-vendu">VENDU</b></span>'
-        grand = (f'<div class="lb-post"><p class="lb-post-t"><img src="/assets/accueil/docs/logo-agence-du-parc.svg" width="150" height="36" alt="Agence du Parc"><span>agence.du.parc · Bois-Guillaume</span></p>'
+        grand = (f'<div class="lb-post"><p class="lb-post-t"><img src="/assets/accueil/docs/logo-agence-du-parc@400.webp" width="400" height="76" alt="Agence du Parc"><span>agence.du.parc · Bois-Guillaume</span></p>'
                  f'<img src="/assets/accueil/scenes/{v["src"]}-m@820.webp" width="820" height="1025" alt="{html.escape(v["alt"], quote=True)}">'
                  f'<p><b>agence.du.parc</b> Vendu ! Merci à nos vendeurs et à nos acquéreurs pour leur confiance. Un appartement T3 a trouvé ses nouveaux propriétaires à Bois-Guillaume.</p></div>')
     else:
