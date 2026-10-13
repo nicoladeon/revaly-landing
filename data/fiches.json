@@ -531,7 +531,7 @@
  },
  "v2": {
   "hugo": {
-   "description": "Hugo repère les vendeurs de demain : les nouveaux DPE autour de l'agence, les logements F et G, les sociétés du registre. Il prépare l'approche, tu décides.",
+   "description": "Hugo repère chaque matin les nouveaux DPE autour de l'agence, les logements F et G et les sociétés du registre. Il prépare l'approche, tu décides.",
    "capacites": [
     "Les nouveaux DPE autour de l'agence, chaque matin",
     "Les logements F et G repérés par la base publique des DPE",
@@ -561,7 +561,7 @@
    "boite": false,
    "promesse": {
     "sur_titre": "Hugo, ton prospecteur",
-    "titre": "Les vendeurs de demain, repérés dans les règles.",
+    "titre": "Les propriétaires à approcher, repérés dans les règles.",
     "sous_titre": "Jamais un client de l'agence, toujours un canal permis, rien d'envoyé sans toi."
    },
    "moments": [
