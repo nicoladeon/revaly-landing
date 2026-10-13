@@ -15,9 +15,12 @@ must("<urlset" in (dist / "sitemap.xml").read_text(), "sitemap.xml")
 # ── data/agents.json (Task 2) : source unique des 6 agents, vérifiée contre l'annexe A ──
 agents_path = ROOT / "data" / "agents.json"
 must(agents_path.exists(), "data/agents.json existe")
-agents = json.loads(agents_path.read_text())
-must([a["slug"] for a in agents] == ["max", "emma", "christine", "zoe", "raphael", "lucas"],
+must([a["slug"] for a in json.loads(agents_path.read_text())] == ["max", "emma", "christine", "zoe", "raphael", "lucas"],
      "agents.json : ordre des 6 slugs")
+sys.path.insert(0, str(ROOT))
+import build as _build  # l'équipe livrée (EQUIPE_V2 allumé le 13/10 : Hugo à la place de Raphaël, Zoé « réseaux et visuels »)
+agents = _build.AGENTS
+must([a["slug"] for a in agents] == ["max", "emma", "christine", "zoe", "hugo", "lucas"], "équipe livrée : Hugo à la place de Raphaël")
 for a in agents:
     must(bool(re.search(r"\d", a["reponse"])), f"{a['slug']} : reponse contient un chiffre/heure")
     must(bool(a.get("role")), f"{a['slug']} : role non vide")
@@ -43,7 +46,7 @@ for a in agents:
     must(html.escape(a["name"], quote=False) in page, f"{a['slug']} : nom présent sur sa page")
     must(f'https://revaly.io/agents/{a["slug"]}/' in page, f"{a['slug']} : canonical propre")
     # Révision du 13/10 : la page agent sur le modèle de Limova (data/fiches.json), à notre charte, sans note ni témoignage
-    _fi = json.loads((ROOT / "data" / "fiches.json").read_text())["fiches"][a["slug"]]
+    _fi = _build._fiche(a["slug"])  # la fiche livrée (relève comprise)
     _pg = html.unescape(re.sub(r"<[^>]+>", "", page)).replace("\u00a0", " ")
     must(f"Découvrez {a['name']}" in _pg and page.count("<h1") == 1 and 'class="hp-pill"' in page, f"{a['slug']} : héros « Découvrez {a['name']} », pastille métier")
     must(f'/assets/equipe/portraits/{a["slug"]}@512.webp' in page and (dist / "assets" / "equipe" / "portraits" / f"{a['slug']}@512.webp").is_file(), f"{a['slug']} : grand portrait equipe-v6")
@@ -357,13 +360,13 @@ must("document.querySelector('.connectors')" not in idx and ".conn-marquee" not 
 print("OK v3 correction 2")
 
 # ── Équipe : personnages 3D validés, boucles animées (Task 7) ──
-for k in ["max", "emma", "lucas", "christine", "zoe", "raphael"]:
+for k in ["max", "emma", "lucas", "christine", "zoe", "hugo"]:
     for ext in ("mp4", "webm", "webp"):
         must((dist / "assets" / "equipe" / "boucles" / f"{k}@256.{ext}").exists(), f"boucle {k}@256.{ext}")
     must(f'poster="/assets/equipe/boucles/{k}@256.webp"' in idx, f"poster {k}")
 eq = idx.split('id="equipe"', 1)[1].split("</section>", 1)[0]
-must("hugo" not in eq.lower(), "Hugo absent de l'équipe")
-must(not list((dist / "assets" / "equipe").rglob("hugo*")), "aucun fichier Hugo publié")
+must("hugo" in eq.lower() and "rapha" not in eq.lower(), "Hugo dans l'équipe, plus de Raphaël")
+must((dist / "assets" / "equipe" / "portraits" / "hugo@512.webp").is_file() and (dist / "assets" / "equipe" / "boucles" / "hugo@256.webp").is_file() and "data:image/svg+xml" not in eq, "vrai portrait et boucle de Hugo publiés (plus de monogramme)")
 must(eq.count("<video") == 6 and " autoplay" not in eq and 'preload="none"' in eq, "6 vidéos, pas d'autoplay, preload none")
 must(eq.count('width="168" height="168"') == 6, "dimensions posées (pas de décalage)")
 must(re.search(r"\.eq-photo \{[^}]*width: 1[6-9]\dpx; height: 1[6-9]\dpx", idx), "visages des cartes en grand (≥ 160 px)")
@@ -506,10 +509,10 @@ must(re.search(r"\.hp-hero h1 \{[^}]*font-size: var\(--h1\)", idx) and re.search
 must(_hero.find('class="hp-texte"') < _hero.find('id="bande-reseaux"') < _hero.find('id="film-cadre"') < _hero.find('id="flux"'),
      "mobile : texte, preuve, film, cartes (ordre du balisage)")
 _ea = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
-must([e["slug"] for e in _ea] == ["max", "emma", "lucas", "christine", "zoe", "raphael"], "équipe : six agents dans l'ordre du brief, sans Hugo")
+must([e["slug"] for e in _ea] == ["max", "emma", "lucas", "christine", "zoe", "raphael"] and [e["slug"] for e in _build._equipe_accueil()] == ["max", "emma", "lucas", "christine", "zoe", "hugo"],
+     "équipe : six agents dans l'ordre du brief, Hugo à la place de Raphaël dans la page")
 # Tâche 17 : la rangée des six visages sous le haut de page est retirée (doublon des onglets de l'équipe)
 must('class="rangee"' not in idx and "<video data-loop" not in _hero, "plus de rangée de visages sous le haut de page")
-must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 # Ordre des sections du brief
 # Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
 # Ronde Julien 1 (playbook des références) : preuve juste après le haut, les collègues avant « Rien ne part sans toi »,
@@ -534,7 +537,7 @@ for phrase in ["Chaque semaine, des heures partent dans ce qui ne vend rien : co
                "Essai 7 jours avec carte"]:
     must(phrase in _t, f"texte du brief : {phrase[:50]}")
 _eq = idx.split('id="equipe"', 1)[1].split("</section>", 1)[0]
-for e in _ea:
+for e in _build._equipe_accueil():  # l'équipe livrée (relève)
     for x in e["taches"]:
         must(html.escape(x, quote=False).replace(" :", "\u00a0:") in _eq or html.escape(x, quote=False) in _eq, f"tâche de {e['slug']} : {x}")
     must(f'href="/agents/{e["slug"]}/"' in _eq, f"fiche de {e['slug']} reliée")
@@ -734,7 +737,7 @@ print("OK la solution")
 _eqs = idx.split('id="equipe"', 1)[1].split("</section>", 1)[0]
 _tabs = re.findall(r'<button type="button" role="tab"[^>]*>', _eqs)
 must('role="tablist"' in _eqs and len(_tabs) == 6 and sum('aria-selected="true"' in x for x in _tabs) == 1
-     and all(f'aria-controls="agent-{e["slug"]}"' in _eqs for e in _ea), "six onglets role=tab, un sélectionné, chacun relié à sa carte")
+     and all(f'aria-controls="agent-{e["slug"]}"' in _eqs for e in _build._equipe_accueil()), "six onglets role=tab, un sélectionné, chacun relié à sa carte")
 _panels = re.findall(r'<article class="eq[^"]*" id="agent-[\w]+" role="tabpanel" aria-labelledby="eq-onglet-[\w]+"[^>]*>', _eqs)
 must(len(_panels) == 6 and "cartes.forEach((c, i) => { c.inert = i !== 0; });" in idx and "html:not(.js) .eq-scene { overflow-x: auto;" in idx,
      "six cartes role=tabpanel ; les voisines rendues inertes par le script (sans script : défilement à la main)")
@@ -761,7 +764,7 @@ print("OK ton temps, prix, FAQ, fin")
 
 # ── Révision du 13/10 : la vente moment par moment, « Tu ne changes pas d'outil » ──
 _cy = idx.split('id="cycle"', 1)[1].split("</section>", 1)[0]
-_moments = json.loads((ROOT / "data" / "cycle.json").read_text())
+_moments = [dict(m, **m["v2"]) if m.get("v2") else m for m in json.loads((ROOT / "data" / "cycle.json").read_text())]  # la relève (EQUIPE_V2)
 _ong = re.findall(r'<button type="button" role="tab" class="cy-onglet"[^>]*>([^<]+)</button>', _cy)
 must(_ong == ["Prospection", "Visite", "Vendeur", "Mandat", "Compromis", "Acte", "Après la vente"] == [m["onglet"] for m in _moments],
      "onglets dans l'ordre de la vente : Prospection → Après la vente")
@@ -816,28 +819,26 @@ must(_mx.count('class="mx-carte"') == 2 and _mx.count('>Valider<') == 2 and 'ari
 must("Pilotez" not in _mxt and "Charly" not in _mxt and "WhatsApp" in _mxt and not re.search(r'<h2[^>]*>[^<]*<img', _mx), "anti-copie : ni leur formule, ni avatar dans le titre ; WhatsApp et Telegram sont réels en prod")
 print("OK la vente moment par moment, les outils")
 
-# ── Interrupteurs : éteints, rien de Hugo ni de la fiche Google ; allumés (construction à part), Hugo à la place de Raphaël ──
-must(_build.EQUIPE_V2 is False and _build.GOOGLE_FICHE is False, "interrupteurs livrés éteints")
-for page in sorted(dist.rglob("*")):
-    if page.is_file() and page.suffix in (".html", ".txt", ".xml", ".json", ".md", "") :
-        _c = page.read_text(errors="ignore")
-        must(not re.search(r"hugo", _c, re.I), f"rien de Hugo ({page.relative_to(dist)})")
-        must(not re.search(r"fiche google|google business|googlemybusiness", _c, re.I), f"rien de la fiche Google ({page.relative_to(dist)})")
-must(not list(dist.rglob("*hugo*")) and not list(dist.rglob("googlemybusiness*")), "aucun fichier de Hugo ni de la fiche Google publié")
+# ── Interrupteurs : EQUIPE_V2 allumé (13/10), GOOGLE_FICHE éteint ; la variante Raphaël (REVALY_EQUIPE_V2=0) et la fiche Google
+#    allumée se construisent à part ──
+must(_build.EQUIPE_V2 is True and _build.GOOGLE_FICHE is False, "livré : la relève allumée, la fiche Google éteinte")
+for page in sorted(dist.rglob("*.html")):
+    if page.relative_to(dist).as_posix() != "agents/raphael/index.html":
+        must(not re.search(r"rapha[eë]l", page.read_text(), re.I), f"plus aucune mention de Raphaël ({page.relative_to(dist)})")
+    must(not re.search(r"fiche google|google business|googlemybusiness", page.read_text(), re.I), f"rien de la fiche Google ({page.relative_to(dist)})")
+must('http-equiv="refresh" content="0; url=/agents/zoe/"' in (dist / "agents" / "raphael" / "index.html").read_text() and "/agents/raphael/ /agents/zoe/ 301" in (dist / "_redirects").read_text(),
+     "/agents/raphael/ renvoie vers /agents/zoe/")
+must((dist / "agents" / "hugo" / "index.html").is_file() and 'id="agent-hugo"' in idx and idx.count('<article class="eq') == 6, "Hugo dans l'équipe, six agents")
+must("réseaux et visuels" in idx and "six" in idx.lower() and "sept" not in html.unescape(re.sub(r"<[^>]+>", "", idx)).lower(), "Zoé « réseaux et visuels », toujours six agents")
+_p2 = idx.split('id="cy-prospection"', 1)[1].split('class="cy-panneau', 1)[0]
+must("<b>Hugo</b>" in _p2 and "DPE" in _p2 and "/assets/equipe/boucles/hugo@256.webp" in _p2.split('class="cy-cote"', 1)[0], "le Radar DPE passe à Hugo, dans la conversation et sur la scène")
+must(not list(dist.rglob("googlemybusiness*")), "aucun fichier de la fiche Google publié")
 import tempfile
-_v2 = pathlib.Path(tempfile.mkdtemp()) / "dist-v2"
+_v2 = pathlib.Path(tempfile.mkdtemp()) / "dist-v1"
 subprocess.run([sys.executable, str(ROOT / "build.py")], check=True, capture_output=True,
-               env={**__import__("os").environ, "REVALY_EQUIPE_V2": "1", "REVALY_GOOGLE_FICHE": "1", "REVALY_DIST": str(_v2)})
+               env={**__import__("os").environ, "REVALY_EQUIPE_V2": "0", "REVALY_GOOGLE_FICHE": "1", "REVALY_DIST": str(_v2)})
 _i2 = (_v2 / "index.html").read_text()
-for page in sorted(_v2.rglob("*.html")):
-    if page.relative_to(_v2).as_posix() != "agents/raphael/index.html":
-        must(not re.search(r"rapha[eë]l", page.read_text(), re.I), f"équipe v2 : plus aucune mention de Raphaël ({page.relative_to(_v2)})")
-must('http-equiv="refresh" content="0; url=/agents/zoe/"' in (_v2 / "agents" / "raphael" / "index.html").read_text() and "/agents/raphael/ /agents/zoe/ 301" in (_v2 / "_redirects").read_text(),
-     "équipe v2 : /agents/raphael/ renvoie vers /agents/zoe/")
-must((_v2 / "agents" / "hugo" / "index.html").is_file() and 'id="agent-hugo"' in _i2 and _i2.count('<article class="eq') == 6, "équipe v2 : Hugo dans l'équipe, six agents")
-must("réseaux et visuels" in _i2 and "six" in _i2.lower() and "sept" not in html.unescape(re.sub(r"<[^>]+>", "", _i2)).lower(), "équipe v2 : Zoé « réseaux et visuels », toujours six agents")
-_p2 = _i2.split('id="cy-prospection"', 1)[1].split('class="cy-panneau', 1)[0]
-must("<b>Hugo</b>" in _p2 and "DPE" in _p2, "équipe v2 : le Radar DPE passe à Hugo")
+must("hugo" not in _i2.lower() and 'id="agent-raphael"' in _i2 and not list((_v2 / "assets" / "equipe").rglob("hugo*")), "variante éteinte : Raphaël, rien de Hugo")
 must("Ta fiche Google vit" in _i2 and (_v2 / "assets" / "logos" / "googlemybusiness.svg").is_file() and "Fiche Google" in _i2.split('id="outils"', 1)[1].split("</section>", 1)[0],
      "fiche Google allumée : dans « Après la vente » et dans les outils")
 shutil.rmtree(_v2.parent, ignore_errors=True)

@@ -29,7 +29,15 @@
         "x": 30,
         "y": 80
       }
-    ]
+    ],
+    "v2": {
+      "appel": {
+        "agent": "hugo",
+        "texte": "Radar DPE",
+        "note": "3 nouveaux ce matin",
+        "place": "tl"
+      }
+    }
   },
   "visite": {
     "type": "agenda",

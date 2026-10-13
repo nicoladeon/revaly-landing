@@ -11,12 +11,9 @@ ROOT = pathlib.Path(__file__).parent
 #   l'équipe reste à six, /agents/raphael/ renvoie vers /agents/zoe/.
 # GOOGLE_FICHE : la fiche Google de l'agence (Zoé publie des articles et répond aux avis), dans « Après la vente » et les outils.
 # Les tests construisent aussi les variantes allumées, dans un dossier à part (REVALY_DIST), sans toucher à dist/.
-EQUIPE_V2 = False
-GOOGLE_FICHE = False
-if os.environ.get("REVALY_EQUIPE_V2") == "1":
-    EQUIPE_V2 = True
-if os.environ.get("REVALY_GOOGLE_FICHE") == "1":
-    GOOGLE_FICHE = True
+# 13/10 (Julien : « on a encore Raphaël mais pas celui qui fait la prospection ») : EQUIPE_V2 allumé, médias de Hugo livrés.
+EQUIPE_V2 = os.environ.get("REVALY_EQUIPE_V2", "1") == "1"
+GOOGLE_FICHE = os.environ.get("REVALY_GOOGLE_FICHE") == "1"
 
 def uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode((ROOT / path).read_bytes()).decode()
@@ -212,6 +209,8 @@ def _mail(m, cls=""):
 
 def scene_html(ident):
     v = _VISUELS[ident]
+    if EQUIPE_V2 and v.get("v2"):
+        v = {**v, **v["v2"]}  # la relève : le Radar DPE passe à Hugo
     t = v["type"]
     if t == "carte":
         pins = "".join(f'<span class="sc-pin" style="--k:{k};left:{p["x"]}%;top:{p["y"]}%"><b class="{p["classe"]}">{p["classe"]}</b>'
@@ -1033,13 +1032,15 @@ except (ImportError, subprocess.CalledProcessError):
 for f in (ROOT / "assets" / "film").glob("*"):
     if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
         shutil.copy(f, OUT / "assets" / "film" / f.name)
+# la relève : les médias de l'agent retiré restent hors de dist/ ; éteinte : ceux de Hugo (variante de test)
+_HORS_EQUIPE = [f'{_V2["retire"]}@*'] if EQUIPE_V2 else [f'{a["slug"]}@*' for a in _V2["agents"]]
 shutil.copytree(ROOT / "assets" / "equipe" / "boucles", OUT / "assets" / "equipe" / "boucles", dirs_exist_ok=True,
-                ignore=shutil.ignore_patterns(f'{_V2["retire"]}@*') if EQUIPE_V2 else None)
+                ignore=shutil.ignore_patterns(*_HORS_EQUIPE))
 shutil.copytree(ROOT / "assets" / "logos", OUT / "assets" / "logos", dirs_exist_ok=True,
                 ignore=shutil.ignore_patterns("LICENSES.md", *([] if GOOGLE_FICHE else ["googlemybusiness.svg"])))
 shutil.copytree(ROOT / "assets" / "accueil", OUT / "assets" / "accueil", dirs_exist_ok=True)
 shutil.copytree(ROOT / "assets" / "equipe" / "portraits", OUT / "assets" / "equipe" / "portraits", dirs_exist_ok=True,
-                ignore=shutil.ignore_patterns("*@128.webp", *([f'{_V2["retire"]}@*'] if EQUIPE_V2 else [])))
+                ignore=shutil.ignore_patterns("*@128.webp", *_HORS_EQUIPE))
 (OUT / "fonts").mkdir(exist_ok=True)
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
     shutil.copy(f, OUT / "fonts" / f.name)
