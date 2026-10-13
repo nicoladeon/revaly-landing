@@ -339,13 +339,12 @@ print("OK v3 ce que voient tes clients")
 
 # ── Conversation « Tu peux aussi leur parler » (Task 8), fusionnée le 12/10 au soir dans l'étape 3 de « Comment ça marche » ──
 _com = idx.split('id="comment"', 1)[1].split("</section>", 1)[0]
-must('id="parler"' not in idx and "Max, relance le notaire pour jeudi" in _com and 'class="conv"' in _com, "conversation dans l'étape 3")
+# Tâche 17 : l'étape 3 montre la validation en vrai (carte « À valider » puis publiée) ; le vocal reste dit dans l'étape
+must('id="parler"' not in idx and "Un vocal depuis ta voiture suffit : Max confie la tâche au bon équipier." in html.unescape(_com).replace("\u00a0", " "), "le vocal à Max, dit dans l'étape 3")
 print("OK v3 tu peux aussi leur parler")
 
 # ── Ronde de correction 1 (blocs 5, 6, 8) ──
 must('id="connecteurs"' not in idx and "#connecteurs" not in idx, "section #connecteurs retirée de l'accueil")
-must("html.js .conv.armed .msg:not(.on)" in idx, "bulles masquées seulement si le bloc est armé (repli sans observateur)")
-must('role="group"' in _com.split('class="conv"', 1)[1][:200], "conversation : role=group")
 print("OK v3 correction 1")
 
 # ── Ronde de correction 2 : plus de script ni de CSS pour la grille de connecteurs retirée ──
@@ -500,7 +499,7 @@ _pos = [idx.find(x) for x in _ordre]
 must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
 _t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 must("Pas secrétaire" not in _t, "plus de « Pas secrétaire » (demande de Julien)")
-for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "On installe ton équipe avec toi.",
+for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "Ton équipe s'en occupe. Toi, tu valides.",
               "Six spécialistes. Un seul abonnement.",
               "Combien d'heures te rend ton équipe ?", "Rien ne part sans toi.",
               "Une équipe entière pour moins qu'une demi-journée d'assistante par mois.", "Ton équipe peut commencer ce soir."]:
@@ -573,7 +572,7 @@ _inst = "Installation faite avec toi, offerte."
 must(_t.count(_inst) >= 2 and idx.find(_inst) > idx.find('id="comment"') and idx.split('id="tarif"', 1)[1].count(_inst) >= 1, "installation offerte sous « Comment ça marche » et dans les prix")
 must("Pas de frais de mise en place." in html.unescape(idx.split('id="tarif"', 1)[1].split("</section>", 1)[0]), "prix : pas de frais de mise en place")
 must(idx.count('class="paire paire-fin"') >= 3, "une paire de boutons referme les blocs (tâche 17)")
-must(idx.count('class="') and all(f'aria-label="{x}' in idx for x in ("Les six agents, à faire défiler", "Les trois étapes", "Les trois offres")), "rangées à faire glisser sur mobile (page plus courte)")
+must(idx.count('class="') and all(f'aria-label="{x}' in idx for x in ("Les trois offres",)), "rangées à faire glisser sur mobile (page plus courte)")
 _ctl = html.unescape(idx.split('id="controle"', 1)[1].split("</section>", 1)[0])
 must("t'attend en brouillon" in _ctl and "24 h" not in _ctl, "« Rien ne part sans toi » : brouillon, sans « 24 h/24 »")
 _emma = next(e for e in json.loads((ROOT / "data" / "equipe-accueil.json").read_text()) if e["slug"] == "emma")
@@ -683,3 +682,18 @@ must(_main.split('id="probleme"', 1)[1].count("data-ap") >= 10, "apparitions au 
 must('[data-ap]:not(.vu) { opacity: 0; transform: translateY(24px); filter: blur(8px); }' in idx and "70ms" in idx, "apparition flou → net, montée de 24 px, décalage entre frères")
 must("data-ap" not in idx.split('id="hero"', 1)[1].split("</section>", 1)[0], "le haut de page n'attend aucune apparition (LCP)")
 print("OK une page qui s'enchaîne")
+
+# ── La solution (tâche 17) : accordéon des trois étapes qui avance seul, panneau synchronisé, le post « Vendu » de Zoé ──
+_so = idx.split('id="comment"', 1)[1].split("</section>", 1)[0]
+must(_so.count('<li class="etape"') == 3 and _so.count('aria-expanded="true"') == 1 and _so.count('aria-expanded="false"') == 2
+     and all(f'aria-controls="etape-c{i}"' in _so and f'id="etape-c{i}"' in _so for i in range(3)), "trois étapes en accordéon accessible, la première ouverte")
+must(_so.count('class="demo-vue') == 3 and _so.count('class="demo-vue active"') == 1 and _so.count('role="group"') == 3, "un panneau, trois vues synchronisées")
+must("animation: barre 5s linear forwards" in idx and "animationend" in idx and ".etapes-bloc:hover .etape-barre i, .etapes-bloc:focus-within .etape-barre i, .rv-pause .etape-barre i" in idx,
+     "avance seule toutes les 5 s, figée au survol, au focus et en pause générale")
+must("bloc.classList.remove('auto'); montre(i);" in idx and "liste.style.minHeight" in idx, "un clic choisit l'étape et coupe l'avance ; la hauteur ne bouge pas")
+_zoe = next(c for c in json.loads((ROOT / "data" / "cartes-accueil.json").read_text()) if c["slug"] == "zoe")
+_so_txt = html.unescape(re.sub(r"<[^>]+>", "", _so)).replace("\u00a0", " ")
+must(re.sub(r"\s+", " ", _zoe["message"]) in re.sub(r"\s+", " ", _so_txt), "le post « Vendu » de Zoé, texte des cartes du haut")
+must(sum(1 for o in json.loads((ROOT / "data" / "outils.json").read_text()) if o["nom"] in _build.OUTILS_BRANCHES_EXEMPLE) == _so.count("data-branche"), "les outils branchés de l'exemple")
+must((dist / "assets" / "accueil" / "post-vendu.webp").is_file() and "post-vendu" in (ROOT / "film" / "sources.md").read_text(), "photo du post publiée, origine notée")
+print("OK la solution")

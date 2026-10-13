@@ -67,3 +67,6 @@ Choix d'ensemble : les plans 1, 2 et 6 viennent du même tournage (même agent, 
 - Étalonnage commun et passage à 30 i/s : `film/grade.sh` → `film/graded/<n>.mp4` (non versionné). Plan 5 recadré de 12 % à gauche (le carton sort du champ), sans dépasser 15 s.
 - Seuls les moments conseillés ci-dessus sont utilisés ; une scène plus longue que son moment est ralentie (`film/grade.sh`) : plan 1 de 1,0 à 4,75 (ouverture A, vitesse normale) ou de 1,0 à 4,45 (ouverture B, ralenti 0,75) ; plan 2 de 1,5 à 5,9 (A) ou de 1,5 à 6,0 (B, ralenti 0,6) ; plan 3 de 0,0 à 5,0 (ralenti 0,625) ; plan 4 de 0,0 à 5,0 (ralenti 0,83) ; plan 5 de 2,0 à 7,0 (ralenti 0,625) ; plan 6 de 1,0 à 6,0 (ralenti 0,77).
 - `film/assets/post-vendu.jpg` (photo du post « Vendu » de Zoé) : image extraite du plan 6 (même licence Pexels), recadrée et étalonnée comme le film.
+
+## Usage dans la page (tâche 17, 13/10/2026)
+- `assets/accueil/post-vendu.webp` (800 × 320) : la même image que `film/assets/post-vendu.jpg` (plan 6, licence Pexels), en WebP, pour le post « Vendu » de Zoé dans « La solution ».

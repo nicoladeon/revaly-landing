@@ -216,11 +216,40 @@ def pile_probleme(items):
             f'<span class="pile-compte" aria-hidden="true"><b id="pile-n">{len(items)}</b> en attente</span></div>'
             f'<ol class="pile-liste" aria-label="Ce qui attend aujourd\'hui">{lis}</ol></div></div>')
 
-def outils_etape(outils):
-    """Les outils branchés, en petit, dans l'étape 1 de « Comment ça marche »."""
-    return (f'<ul class="et-logos" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(_bande_item(o, False) for o in outils)}</ul>'
+# ── La solution (tâche 17) : trois étapes qui avancent seules, et un panneau qui montre chaque étape en vrai.
+# Étape 1 : les outils de data/outils.json qui se branchent (ceux de l'exemple ci-dessous ; les autres restent « disponibles »,
+# on ne branche que ce que le conseiller utilise). Étapes 2 et 3 : le post « Vendu » de Zoé (data/cartes-accueil.json),
+# rédigé puis validé — « Tu valides, il part. » (fiche de Zoé).
+OUTILS_BRANCHES_EXEMPLE = ["Modelo", "Google Agenda", "Gmail", "WhatsApp"]
+
+def outils_branchement(outils):
+    lis, k = [], 0
+    for o in outils:
+        h = _HAUTEUR_LOGO.get(o["logo"].rsplit("/", 1)[-1], 22)
+        vb = re.search(r'viewBox="[\d.\-]+ [\d.\-]+ ([\d.]+) ([\d.]+)"', (ROOT / o["logo"]).read_text())
+        w = round(h * float(vb.group(1)) / float(vb.group(2)))
+        mot = o["logo"].rsplit("/", 1)[-1] in _HAUTEUR_LOGO
+        img = f'<img src="/{_esc(o["logo"])}" alt="{_esc(o["nom"]) if mot else ""}" width="{w}" height="{h}" loading="lazy">'
+        # logo-mot (Modelo) : il prend la place du logo et du nom
+        cellules = f'<span class="br-nom br-mot">{img}</span>' if mot else f'<span class="br-logo">{img}</span><span class="br-nom">{_esc(o["nom"])}</span>'
+        if o["nom"] in OUTILS_BRANCHES_EXEMPLE:
+            etat = (f'<span class="br-etat br-branche"><span class="br-attente">Connexion…</span>'
+                    f'<span class="br-ok">{_ico("check")}Branché</span></span>')
+            lis.append(f'<li class="br" style="--k:{k}" data-branche>{cellules}{etat}</li>')
+            k += 1
+        else:
+            lis.append(f'<li class="br">{cellules}'
+                       '<span class="br-etat br-dispo">Disponible</span></li>')
+    return (f'<ul class="branche" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(lis)}</ul>'
             '<p class="et-portails">Tes contacts SeLoger, Leboncoin et Bien\'ici arrivent directement chez Emma.</p>')
 
+def _mots(texte):
+    """Le texte d'un brouillon, mot par mot (chaque mot apparaît à son tour ; la place est réservée dès le départ)."""
+    return " ".join(f'<span class="mot" style="--m:{i}">{_esc(m)}</span>' for i, m in enumerate(_typo(texte).split(" ")))
+
+def post_vendu():
+    c = next(c for c in json.loads((ROOT / "data" / "cartes-accueil.json").read_text()) if c["slug"] == "zoe")
+    return {"VENDU_MOTS": _mots(c["message"]), "VENDU_TEXTE": _esc(_typo(c["message"])), "VENDU_OBJET": _esc(_typo(c["objet"]))}
 
 def agent_main(a, agents):
     """Contenu d'une page agent : fiche de poste complète depuis agents.json."""
@@ -398,22 +427,8 @@ OUT.mkdir()
 # L'accueil n'affiche (et ne décrit en JSON-LD) que les questions marquées « accueil » ; les autres restent
 # dans data/faq.json pour une future page FAQ.
 faq = [f for f in json.loads((ROOT / "data" / "faq.json").read_text()) if f.get("accueil")]
-# ── Logos des outils (étape 1 de « Comment ça marche ») : données dans data/outils.json ──
-_HAUTEUR_LOGO = {"modelo.svg": 28}
-
-def _bande_item(i, copie):
-    src = "/" + i["logo"]
-    fichier = i["logo"].rsplit("/", 1)[-1]
-    glyphe = fichier not in _HAUTEUR_LOGO
-    # alt vide si le nom est déjà écrit à côté (glyphe) ou dans la copie masquée ; sinon alt = nom
-    nom = "" if (copie or glyphe) else _esc(i["nom"])
-    h = _HAUTEUR_LOGO.get(fichier, 24)
-    vb = re.search(r'viewBox="[\d.\-]+ [\d.\-]+ ([\d.]+) ([\d.]+)"', (ROOT / i["logo"]).read_text())
-    w = round(h * float(vb.group(1)) / float(vb.group(2)))  # largeur fixe au ratio : boucle sans saut même si l'image ne charge pas
-    img = f'<img src="{_esc(src)}" alt="{nom}" loading="lazy" width="{w}" height="{h}">'
-    txt = f'<span class="bande-nom">{_esc(i["nom"])}</span>' if glyphe else ""
-    cls = "" if glyphe else ' class="large"'
-    return f'<li{cls}>{img}{txt}</li>'
+# ── Logos des outils (étape 1 de « La solution ») : données dans data/outils.json ; Modelo est un logo-mot (le nom est dans le logo)
+_HAUTEUR_LOGO = {"modelo.svg": 22}
 
 # ── Calculateur de temps rendu : même formule que assets/calcul.js (portée une fois ici pour
 # la phrase sans JavaScript ; tests/test_build.py compare les deux sur plusieurs entrées). ──
@@ -502,7 +517,7 @@ TETES = {
     "TETE_PROBLEME": dict(sur_titre="Le problème", titre="Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.",
                           sous_titre="Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, "
                                      "publier, classer. Et ce qu'on oublie finit par coûter un mandat.", cote=True, id_titre="t-probleme"),
-    "TETE_SOLUTION": dict(sur_titre="La solution", titre="On installe ton équipe avec toi.",
+    "TETE_SOLUTION": dict(sur_titre="La solution", titre="Ton équipe s'en occupe. Toi, tu valides.",
                           sous_titre="Confirmer, relancer, rendre compte, publier : ton équipe le prépare à ta place. "
                                      "Il reste à la brancher sur tes outils, et on le fait avec toi.", id_titre="t-solution"),
     "TETE_EQUIPE": dict(sur_titre="L'équipe", titre="Six spécialistes. Un seul abonnement.",
@@ -534,7 +549,8 @@ body_home = render("home-body.html", {
     "CALCUL_DEFAUT_M": str(CALCUL_DEFAUT[0]), "CALCUL_DEFAUT_V": str(CALCUL_DEFAUT[1]),
     "EQUIPE_CARTES": equipe_cartes(),
     "PREUVE": preuve_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
-    "OUTILS_ETAPE": outils_etape(json.loads((ROOT / "data" / "outils.json").read_text())),
+    "OUTILS_BRANCHEMENT": outils_branchement(json.loads((ROOT / "data" / "outils.json").read_text())),
+    **post_vendu(),
     "CARTES_HERO": cartes_hero(),
     "PILE_PROBLEME": pile_probleme(json.loads((ROOT / "data" / "probleme.json").read_text())),
     "FAQ_ITEMS": faq_items(faq),
@@ -706,6 +722,7 @@ for f in (ROOT / "assets" / "film").glob("*"):
         shutil.copy(f, OUT / "assets" / "film" / f.name)
 shutil.copytree(ROOT / "assets" / "equipe" / "boucles", OUT / "assets" / "equipe" / "boucles", dirs_exist_ok=True)
 shutil.copytree(ROOT / "assets" / "logos", OUT / "assets" / "logos", dirs_exist_ok=True)
+shutil.copytree(ROOT / "assets" / "accueil", OUT / "assets" / "accueil", dirs_exist_ok=True)
 (OUT / "fonts").mkdir(exist_ok=True)
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
     shutil.copy(f, OUT / "fonts" / f.name)

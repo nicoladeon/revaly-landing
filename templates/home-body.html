@@ -255,7 +255,6 @@
     .ap-flow.glisse > .ap-step { flex-basis: 86%; }
     .plans.glisse { padding-top: 18px; margin-top: 24px; }
     .plans.glisse > .plan { flex-basis: 86%; }
-    .etapes.glisse { margin-top: 28px; }
   }
 
   /* ── 3. Le problème : texte à gauche ; à droite, la pile de ce qui attend, qui monte une notification après l'autre.
@@ -313,39 +312,117 @@
   .fond-prix { margin: 4px 0 10px; font-size: 14.5px; font-weight: 500; line-height: 1.4; color: var(--ink); }
   .fond-carte .btn { min-height: 44px; font-size: 15px; }
 
-  /* ── 4. Comment ça marche ── */
-  .etapes { list-style: none; margin: var(--tete-visuel) 0 0; padding: 0; display: grid; gap: 14px; align-items: start; }
-  @media (min-width: 900px) { .etapes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
-  .etape { display: flex; flex-direction: column; padding: 24px 22px 22px; background: var(--carte); border: 0.5px solid var(--line); border-radius: 22px; }
-  .etape-n {
-    width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
-    background: var(--iris-deep); color: #fff; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums;
+  /* ── 4. La solution : l'accordéon des trois étapes (il avance seul, la barre iris montre le temps qui reste ; survol,
+       focus ou pause générale l'arrêtent ; un clic choisit l'étape et coupe l'avance) et le panneau synchronisé.
+       Les trois vues du panneau partagent la même case : sa hauteur ne bouge jamais. Sans script : tout est ouvert,
+       chaque vue dans son état final. ── */
+  .etapes-bloc { display: grid; gap: 28px; margin-top: var(--tete-visuel); align-items: center; }
+  @media (min-width: 960px) { .etapes-bloc { grid-template-columns: minmax(0, 1fr) minmax(0, 560px); gap: clamp(40px, 5vw, 80px); } }
+  @media (max-width: 959px) { .etapes-bloc { max-width: 600px; margin-left: auto; margin-right: auto; } }
+  .etapes { list-style: none; margin: 0; padding: 0; text-align: left; }
+  .etape { position: relative; border-bottom: 1px dashed var(--line-strong); }
+  .etape:last-child { border-bottom-color: transparent; }
+  .etape h3 { margin: 0; }
+  .etape button {
+    width: 100%; min-height: 64px; display: flex; align-items: center; gap: 14px; padding: 18px 0;
+    background: none; border: 0; border-radius: 0; cursor: pointer; font: inherit; text-align: left; color: var(--muted);
   }
-  .etape h3 { margin: 18px 0 0; font-size: 19px; font-weight: 550; line-height: 1.3; letter-spacing: -0.015em; }
-  .etape > p { margin: 8px 0 0; font-size: 15.5px; line-height: 1.55; color: var(--muted); }
-  .etape-visuel { padding-top: 20px; }
-  .et-logos { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-  .et-logos li { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; border-radius: 12px; background: var(--champ); border: 0.5px solid var(--line); font-size: 13.5px; font-weight: 500; color: var(--muted); }
-  .et-logos img { display: block; filter: grayscale(1); opacity: .7; }
-  .et-logos .bande-nom { font-size: 13.5px; font-weight: 500; }
-  .et-portails { margin: 12px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .et-logos img { filter: grayscale(1) invert(1); } }
-  :root[data-theme="dark"] .et-logos img { filter: grayscale(1) invert(1); }
-  .et-visages { display: flex; }
-  .et-visages img { width: 44px; height: 44px; border-radius: 50%; box-shadow: 0 0 0 3px var(--bg); background: #F1F2F7; }
-  .et-visages img + img { margin-left: -10px; }
-  .et-carte { display: grid; gap: 6px; padding: 14px; border-radius: 16px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); font-size: 13.5px; color: var(--muted); }
-  .et-carte b { color: var(--ink); font-weight: 600; font-size: 14.5px; }
-  .et-boutons { display: flex; gap: 8px; margin-top: 6px; }
-  .et-boutons span { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border-radius: 9px; font-size: 13px; font-weight: 600; }
-  .et-ok { background: var(--iris-deep); color: #fff; }
-  .et-non { background: var(--bg-soft); color: var(--muted); }
-  .et-vocal { margin-top: 6px !important; font-size: 14px !important; color: var(--ink) !important; }
-  .etape .conv { max-width: none; box-shadow: var(--shadow-sm); }
-  .etape .conv-corps { padding: 14px; }
-  .etape .conv-tete { padding: 12px 14px; }
-  .etape .conv-tete span:not(.conv-canal) { display: none; }
-  .auto-badge { justify-self: start; padding: 2px 9px; border-radius: 99px; background: #4F46E5; color: #fff; font-size: 11.5px; font-weight: 600; letter-spacing: .02em; }
+  .etape-n {
+    flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-strong);
+    font: 500 14px/1 var(--font-mono); color: var(--muted); transition: background .3s, border-color .3s, color .3s;
+  }
+  .etape-t { font-size: 19px; font-weight: 550; line-height: 1.3; letter-spacing: -0.015em; transition: color .3s; }
+  .etape button:hover .etape-t, .etape[data-ouvert="true"] .etape-t { color: var(--ink); }
+  .etape[data-ouvert="true"] .etape-n { background: var(--iris-deep); border-color: var(--iris-deep); color: #fff; }
+  .etape-corps { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s var(--ap); }
+  .etape[data-ouvert="true"] .etape-corps, html:not(.js) .etape-corps { grid-template-rows: 1fr; }
+  .etape-corps > div { overflow: hidden; padding-left: 46px; }
+  .etape-corps p { margin: 0 0 10px; max-width: 46ch; font-size: 16px; line-height: 1.55; color: var(--muted); }
+  .etape-corps > div > :last-child { margin-bottom: 22px; }
+  .etape-offert { display: inline-flex !important; align-items: center; gap: 8px; padding: 7px 13px; border-radius: 999px; background: var(--iris-soft); font-size: 14.5px !important; font-weight: 500; color: var(--ink) !important; }
+  .etape-offert svg { width: 17px; height: 17px; flex: none; color: var(--iris-ink); }
+  .etape-barre { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; overflow: hidden; border-radius: 2px; pointer-events: none; }
+  .etape-barre i { display: block; height: 100%; background: var(--iris); transform: scaleX(0); transform-origin: left; }
+  .etapes-bloc.auto.en-vue .etape[data-ouvert="true"] .etape-barre i { animation: barre 5s linear forwards; }
+  .etapes-bloc:hover .etape-barre i, .etapes-bloc:focus-within .etape-barre i, .rv-pause .etape-barre i { animation-play-state: paused !important; }
+  @keyframes barre { to { transform: scaleX(1); } }
+
+  .demo-zone::before { inset: -14% -10%; }
+  .demo { display: grid; padding: 22px; border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
+  .demo-vue {
+    grid-area: 1 / 1; display: flex; flex-direction: column; justify-content: center; min-width: 0;
+    opacity: 0; visibility: hidden; transform: translateY(10px) scale(.985); filter: blur(4px);
+    transition: opacity .45s var(--ap), transform .45s var(--ap), filter .45s var(--ap), visibility 0s .45s;
+  }
+  .demo-vue.active { opacity: 1; visibility: visible; transform: none; filter: none; transition-delay: 0s; }
+  .dv-tete { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-size: 14.5px; color: var(--muted); }
+  .dv-tete b { font-weight: 600; color: var(--ink); }
+  .dv-tete img { width: 32px; height: 32px; border-radius: 50%; flex: none; background: #F1F2F7; }
+  .dv-r { flex: none; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--iris-deep); color: #fff; font-size: 15px; font-weight: 600; }
+  .dv-note, .dv-heure { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .dv-pill { flex: none; padding: 3px 10px; border-radius: 999px; background: var(--iris-soft); color: var(--iris-ink); font-size: 12px; font-weight: 600; }
+  /* vue 1 : les outils qui se branchent, un par un */
+  .branche { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .br { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 46px; padding: 0 14px 0 12px; border-radius: 12px; background: var(--bg); border: 0.5px solid var(--line); }
+  .br-logo { display: grid; place-items: center; }
+  .br-logo img { display: block; width: auto; max-width: 24px; height: 22px; object-fit: contain; filter: grayscale(1); opacity: .75; }
+  .br-nom { min-width: 0; font-size: 14.5px; font-weight: 500; color: var(--ink); }
+  .br-mot { grid-column: 1 / 3; }
+  .br-nom img { display: block; width: auto; height: 22px; filter: grayscale(1); opacity: .75; }
+  html.js .demo-vue.joue [data-branche] .br-nom img, html:not(.js) .br-nom img { filter: none; opacity: 1; transition: filter .3s calc(var(--k) * 450ms + 350ms), opacity .3s calc(var(--k) * 450ms + 350ms); }
+  .br-etat { display: inline-grid; justify-items: end; font-size: 13px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+  .br-etat > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 5px; }
+  .br-ok { color: var(--iris-ink); font-weight: 600; }
+  .br-ok svg { width: 15px; height: 15px; }
+  .br-dispo { color: var(--subtle); }
+  .br-attente { opacity: 0; }
+  html.js .demo-vue:not(.joue) .br-attente { opacity: 1; }
+  html.js .demo-vue:not(.joue) [data-branche] .br-ok { opacity: 0; transform: scale(.85); }
+  html.js .demo-vue.joue [data-branche] .br-attente { opacity: 0; transition: opacity .2s calc(var(--k) * 450ms + 300ms); }
+  html.js .demo-vue.joue [data-branche] .br-ok { transition: opacity .3s calc(var(--k) * 450ms + 350ms), transform .4s cubic-bezier(.34, 1.56, .64, 1) calc(var(--k) * 450ms + 350ms); }
+  html.js .demo-vue.joue [data-branche] .br-logo img { filter: none; opacity: 1; transition: filter .3s calc(var(--k) * 450ms + 350ms), opacity .3s calc(var(--k) * 450ms + 350ms); }
+  .demo-vue:not(.joue) [data-branche] .br-logo img { transition: none; }
+  html:not(.js) [data-branche] .br-logo img { filter: none; opacity: 1; }
+  .et-portails { margin: 12px 2px 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .br-logo img, :root:not([data-theme="light"]) .br-nom img { filter: grayscale(1) invert(1); } }
+  :root[data-theme="dark"] .br-logo img, :root[data-theme="dark"] .br-nom img { filter: grayscale(1) invert(1); }
+  /* vue 2 : le brouillon de Zoé s'écrit mot par mot (la place du texte est réservée dès le départ) */
+  .dv-post { border-radius: 18px; overflow: hidden; background: var(--bg); border: 0.5px solid var(--line); }
+  .dv-photo { display: block; width: 100%; height: auto; aspect-ratio: 5 / 2; object-fit: cover; background: var(--bg-soft); }
+  .dv-texte { margin: 0; padding: 14px 16px 0; font-size: 15.5px; line-height: 1.5; color: var(--ink); }
+  html.js .demo-vue:not(.joue) .mot { opacity: 0; }
+  html.js .demo-vue.joue .mot { transition: opacity .2s calc(var(--m) * 65ms + 250ms); }
+  .dv-canaux { margin: 0; padding: 10px 16px 14px; font-size: 13px; color: var(--muted); }
+  /* vue 3 : la carte « À valider » ; le doigt touche « Valider », la carte passe à « publié » */
+  .dv-carte { padding: 16px; border-radius: 20px; background: var(--bg); border: 0.5px solid var(--line-strong); box-shadow: var(--shadow-sm); }
+  .dv-carte .carte-objet { -webkit-line-clamp: 2; }
+  .dv-photo-carte { margin-top: 12px; border-radius: 12px; }
+  .dv-extrait { margin: 10px 0 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .dv-issue { display: grid; margin-top: 16px; }
+  .dv-actions, .dv-fait { grid-area: 1 / 1; }
+  .dv-actions { display: flex; gap: 8px; opacity: 0; }
+  .dv-valider, .dv-refuser { position: relative; display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: 10px; font-size: 14.5px; font-weight: 600; }
+  .dv-valider { background: var(--iris-deep); color: #fff; }
+  .dv-refuser { background: var(--bg-soft); color: var(--muted); }
+  .dv-valider::after { content: ""; position: absolute; inset: -6px; border-radius: 14px; border: 2px solid var(--iris); opacity: 0; pointer-events: none; }
+  .dv-fait { margin: 0; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 14px; border-radius: 10px; background: color-mix(in srgb, var(--success) 11%, var(--raised)); font-size: 14px; font-weight: 600; line-height: 1.35; color: var(--ink); }
+  .dv-fait svg { width: 16px; height: 16px; flex: none; color: var(--success); }
+  html.js .demo-vue:not(.joue) .dv-actions { opacity: 1; }
+  html.js .demo-vue:not(.joue) .dv-fait { opacity: 0; transform: translateY(6px); }
+  html.js .demo-vue.joue .dv-valider::after { animation: tap .7s ease-out 1.1s; }
+  html.js .demo-vue.joue .dv-valider { animation: appui .25s ease-out 1.3s; }
+  html.js .demo-vue.joue .dv-actions { transition: opacity .25s 1.65s; }
+  html.js .demo-vue.joue .dv-fait { transition: opacity .35s 1.8s, transform .4s var(--ap) 1.8s; }
+  @keyframes tap { 0% { opacity: .9; transform: scale(.7); } 100% { opacity: 0; transform: scale(1.25); } }
+  @keyframes appui { 50% { transform: scale(.94); } }
+  .dv-ou { margin: 14px 0 0; text-align: center; font-size: 13.5px; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { .demo-vue *, .demo-vue *::after { transition-delay: 0s !important; animation: none !important; } }
+  @media (max-width: 520px) {
+    .demo { padding: 14px; border-radius: 22px; }
+    .etape-t { font-size: 17px; }
+    .etape-corps > div { padding-left: 46px; }
+    .br { min-height: 42px; }
+  }
 
   /* ── 5. L'équipe : six cartes, les visages en grand ── */
   .eq-grille { margin-top: var(--tete-visuel); display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
@@ -367,38 +444,6 @@
     font-size: 14px; font-weight: 500; color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px;
   }
   .eq-lien:hover { text-decoration-color: var(--ink); }
-
-  /* ── 8. Tu peux aussi leur parler : la conversation Telegram se joue message par message (600 ms) ── */
-  .parler-grille { display: grid; gap: 32px; align-items: center; grid-template-columns: 1fr; }
-  @media (min-width: 900px) { .parler-grille { grid-template-columns: 1fr minmax(0, 440px); gap: 64px; } }
-  .conv { background: var(--raised); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-md); overflow: hidden; width: 100%; max-width: 440px; }
-  .conv-tete { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 0.5px solid var(--line); }
-  .conv-tete img { border-radius: 50%; display: block; background: #F1F2F7; }
-  .conv-tete b { display: block; font-size: 15px; font-weight: 600; line-height: 1.2; }
-  .conv-tete span { font-size: 12.5px; color: var(--muted); }
-  .conv-canal { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: var(--muted); }
-  .conv-canal svg { width: 16px; height: 16px; fill: currentColor; }
-  .conv-corps { display: flex; flex-direction: column; gap: 10px; padding: 18px; background: var(--bg-soft); }
-  .msg { max-width: 86%; }
-  .msg.moi { align-self: flex-end; background: #4F46E5; color: #fff; padding: 12px 14px; border-radius: 18px 18px 5px 18px; }
-  .msg.max { align-self: flex-start; background: var(--raised); border: 0.5px solid var(--line); padding: 11px 15px; border-radius: 18px 18px 18px 5px; box-shadow: var(--shadow-sm); font-size: 15px; line-height: 1.5; }
-  .msg p { margin: 0; }
-  .vocal { display: flex; align-items: center; gap: 12px; }
-  .onde { display: flex; align-items: center; gap: 3px; height: 26px; }
-  .onde i { display: block; width: 3px; border-radius: 2px; background: rgba(255,255,255,.85); }
-  .onde i:nth-child(1) { height: 8px; } .onde i:nth-child(2) { height: 16px; } .onde i:nth-child(3) { height: 24px; } .onde i:nth-child(4) { height: 12px; }
-  .onde i:nth-child(5) { height: 20px; } .onde i:nth-child(6) { height: 26px; } .onde i:nth-child(7) { height: 14px; } .onde i:nth-child(8) { height: 22px; }
-  .onde i:nth-child(9) { height: 10px; } .onde i:nth-child(10) { height: 18px; } .onde i:nth-child(11) { height: 12px; } .onde i:nth-child(12) { height: 6px; }
-  .duree { font-size: 13px; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.85); }
-  .transcrit { margin-top: 8px !important; padding-top: 8px; border-top: 0.5px solid rgba(255,255,255,.28); font-size: 14.5px; line-height: 1.45; font-style: italic; }
-  .conv-carte { display: grid; gap: 4px; font-size: 13.5px; line-height: 1.45; color: var(--muted); }
-  .conv-carte b { color: var(--ink); font-weight: 600; }
-  .conv-carte .auto-badge { margin-bottom: 2px; }
-  html.js .conv .msg { transition: opacity .3s ease-out, transform .3s ease-out; }
-  html.js .conv.armed .msg:not(.on) { opacity: 0; transform: translateY(10px); }
-  @media (prefers-reduced-motion: reduce) {
-    html.js .conv .msg { opacity: 1 !important; transform: none !important; transition: none; }
-  }
 
   /* ── 9. Calculateur de temps rendu ── */
   .calc { display: grid; gap: 32px; grid-template-columns: 1fr; margin-top: var(--tete-visuel); }
@@ -618,11 +663,6 @@
     #tarif .garanties { display: none; }
     .calc { gap: 20px; }
     .calc-detail li { padding: 7px 0; font-size: 14px; }
-    .etapes.glisse { align-items: flex-start; }
-    .etape { padding: 20px 18px; }
-    .etape-visuel { margin-top: 0; padding-top: 16px; }
-    .et-logos { gap: 6px; }
-    .et-logos li { height: 34px; padding: 0 10px; font-size: 13px; }
     /* le détail du calculateur en deux colonnes : chaque tâche et ses minutes restent visibles */
     .calc-detail { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; }
     .calc-detail li { flex-direction: column; justify-content: flex-start; gap: 0; padding: 8px 0; border-bottom: 0.5px solid var(--line) !important; font-size: 13.5px; line-height: 1.35; }
@@ -712,55 +752,66 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 3. LA SOLUTION : comment ça marche ═══════════════ -->
+  <!-- ═══════════════ 3. LA SOLUTION : trois étapes qui avancent seules (5 s), et le panneau qui montre chaque étape en vrai ═══════════════ -->
   <section class="hp-s" id="comment" aria-labelledby="t-solution">
-    <div class="wrap">
+    <div class="wrap hp-wide">
       {{TETE_SOLUTION}}
-      <ol class="etapes glisse" tabindex="0" role="region" aria-label="Les trois étapes, à faire défiler" data-ap>
-        <li class="etape">
-          <span class="etape-n" aria-hidden="true">1</span>
-          <h3>On branche Modelo, ta boîte mail et ton agenda avec toi.</h3>
-          <p>Rien à migrer : Modelo reste ton CRM.</p>
-          <div class="etape-visuel">
-            {{OUTILS_ETAPE}}
-          </div>
-        </li>
-        <li class="etape">
-          <span class="etape-n" aria-hidden="true">2</span>
-          <h3>Ton équipe prépare, jour et nuit.</h3>
-          <p>Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.</p>
-          <div class="etape-visuel">
-            <span class="et-visages" aria-hidden="true">
-              <img src="/assets/equipe/boucles/max@256.webp" width="44" height="44" alt="" loading="lazy" />
-              <img src="/assets/equipe/boucles/emma@256.webp" width="44" height="44" alt="" loading="lazy" />
-              <img src="/assets/equipe/boucles/lucas@256.webp" width="44" height="44" alt="" loading="lazy" />
-              <img src="/assets/equipe/boucles/christine@256.webp" width="44" height="44" alt="" loading="lazy" />
-              <img src="/assets/equipe/boucles/zoe@256.webp" width="44" height="44" alt="" loading="lazy" />
-              <img src="/assets/equipe/boucles/raphael@256.webp" width="44" height="44" alt="" loading="lazy" />
-            </span>
-          </div>
-        </li>
-        <li class="etape">
-          <span class="etape-n" aria-hidden="true">3</span>
-          <h3>Tu valides d'un geste.</h3>
-          <p>Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.</p>
-          <p class="et-vocal">Un vocal depuis ta voiture suffit : Max confie la tâche au bon équipier.</p>
-          <div class="etape-visuel">
-          <div class="conv" role="group" aria-label="Exemple de conversation avec Max sur Telegram">
-            <div class="conv-tete">
-              <img src="/assets/equipe/boucles/max@256.webp" width="40" height="40" alt="" loading="lazy" />
-              <div><b>Max</b><span>Coordinateur de ton équipe</span></div>
-              <span class="conv-canal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" /></svg>Telegram</span>
+      <div class="etapes-bloc auto" id="etapes" data-ap>
+        <ol class="etapes">
+          <li class="etape" data-ouvert="true">
+            <h3><button type="button" id="etape-b0" aria-expanded="true" aria-controls="etape-c0"><span class="etape-n" aria-hidden="true">1</span><span class="etape-t">On branche Modelo, ta boîte mail et ton agenda avec toi.</span></button></h3>
+            <div class="etape-corps" id="etape-c0"><div>
+              <p>Rien à migrer : Modelo reste ton CRM.</p>
+              <p class="etape-offert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation faite avec toi, offerte.</span></p>
+            </div></div>
+            <span class="etape-barre" aria-hidden="true"><i></i></span>
+          </li>
+          <li class="etape" data-ouvert="false">
+            <h3><button type="button" id="etape-b1" aria-expanded="false" aria-controls="etape-c1"><span class="etape-n" aria-hidden="true">2</span><span class="etape-t">Ton équipe prépare, jour et nuit.</span></button></h3>
+            <div class="etape-corps" id="etape-c1"><div>
+              <p>Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.</p>
+            </div></div>
+            <span class="etape-barre" aria-hidden="true"><i></i></span>
+          </li>
+          <li class="etape" data-ouvert="false">
+            <h3><button type="button" id="etape-b2" aria-expanded="false" aria-controls="etape-c2"><span class="etape-n" aria-hidden="true">3</span><span class="etape-t">Tu valides d'un geste.</span></button></h3>
+            <div class="etape-corps" id="etape-c2"><div>
+              <p>Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.</p>
+              <p>Un vocal depuis ta voiture suffit : Max confie la tâche au bon équipier.</p>
+            </div></div>
+            <span class="etape-barre" aria-hidden="true"><i></i></span>
+          </li>
+        </ol>
+        <div class="demo-zone halo">
+          <div class="demo">
+            <div class="demo-vue active" data-vue="0" role="group" aria-label="Étape 1 en exemple : tes outils branchés">
+              <div class="dv-tete"><span class="dv-r" aria-hidden="true">R.</span><b>Ton installation</b><span class="dv-note">avec toi, offerte</span></div>
+              {{OUTILS_BRANCHEMENT}}
             </div>
-            <div class="conv-corps">
-              <div class="msg moi"><div class="vocal"><span class="onde" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="duree">0:04</span></div><p class="transcrit">Max, relance le notaire pour jeudi</p></div>
-                  <div class="msg max"><div class="conv-carte"><span class="auto-badge">À valider</span><b>Mail au notaire</b><span>Relance pour l'acte de jeudi.</span></div></div>
+            <div class="demo-vue" data-vue="1" role="group" aria-label="Étape 2 en exemple : Zoé rédige le post « Vendu »">
+              <div class="dv-tete"><img src="/assets/equipe/boucles/zoe@256.webp" width="32" height="32" alt="" loading="lazy" /><b>Zoé rédige</b><span class="dv-pill">Brouillon</span><time class="dv-heure">23 h 40</time></div>
+              <div class="dv-post">
+                <img class="dv-photo" src="/assets/accueil/post-vendu.webp" width="800" height="320" alt="La photo du post : la remise des clés aux nouveaux propriétaires." loading="lazy" />
+                <p class="dv-texte">{{VENDU_MOTS}}</p>
+                <p class="dv-canaux">Instagram · Facebook</p>
+              </div>
+            </div>
+            <div class="demo-vue" data-vue="2" role="group" aria-label="Étape 3 en exemple : tu valides le post, il part">
+              <div class="dv-carte">
+                <div class="carte-tete"><img src="/assets/equipe/boucles/zoe@256.webp" width="36" height="36" alt="" loading="lazy" /><p><b>Zoé</b> a préparé</p><span class="dv-pill">À valider</span></div>
+                <p class="carte-objet">{{VENDU_OBJET}}</p>
+                <img class="dv-photo dv-photo-carte" src="/assets/accueil/post-vendu.webp" width="800" height="320" alt="" loading="lazy" />
+                <p class="dv-extrait">{{VENDU_TEXTE}}</p>
+                <div class="dv-issue">
+                  <div class="dv-actions" aria-hidden="true"><span class="dv-valider">Valider</span><span class="dv-refuser">Refuser</span></div>
+                  <p class="dv-fait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span>Validé : publié sur Instagram et Facebook</span></p>
+                </div>
+              </div>
+              <p class="dv-ou">Dans l'appli, sur WhatsApp ou Telegram : tu valides, il part.</p>
             </div>
           </div>
-          </div>
-        </li>
-      </ol>
-      <p class="installation" data-ap><span class="installation-txt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation faite avec toi, offerte.</span></span></p>
+        </div>
+      </div>
       {{PAIRE_CTA}}
     </div>
   </section>
@@ -1163,16 +1214,6 @@
     });
   });
 
-  // Révélation unique à l'entrée dans l'écran : ajoute .vu (ou appelle fn). Mouvement réduit : tout est déjà visible.
-  const revealOnce = (sel, fn) => {
-    const els = document.querySelectorAll(sel);
-    if (REDUCED || !('IntersectionObserver' in window)) { els.forEach((el) => el.classList.add('vu')); return; }
-    const o = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { o.unobserve(e.target); fn ? fn(e.target) : e.target.classList.add('vu'); } });
-    }, { threshold: 0.25 });
-    els.forEach((el) => o.observe(el));
-  };
-
   // ── Apparitions au défilement (tâche 17) : chaque bloc marqué data-ap passe du flou au net en montant, une seule
   //    fois, à son entrée à l'écran ; ses frères marqués se suivent de 70 ms. Sans observateur ou mouvement réduit : tout est là. ──
   (() => {
@@ -1317,11 +1358,42 @@
     }, 4000);
   })();
 
-  if (!REDUCED && 'IntersectionObserver' in window) document.querySelectorAll('.conv').forEach((el) => el.classList.add('armed'));
-  revealOnce('.conv', (el) => {
-    el.classList.add('vu');
-    el.querySelectorAll('.msg').forEach((m, i) => setTimeout(() => m.classList.add('on'), i * 600));
-  });
+  // ── La solution : l'accordéon des trois étapes avance seul toutes les 5 s (la barre iris de l'étape ouverte mène la
+  //    danse : à la fin de son animation, on passe à la suivante ; survol, focus et pause générale la figent). Un clic choisit
+  //    l'étape et coupe l'avance. La vue du panneau se rejoue à chaque étape. La liste garde la hauteur de sa plus longue
+  //    étape ouverte : rien ne bouge en dessous. Mouvement réduit : pas d'avance, chaque vue dans son état final. ──
+  (() => {
+    const bloc = document.getElementById('etapes');
+    if (!bloc) return;
+    const liste = bloc.querySelector('.etapes'), etapes = Array.from(bloc.querySelectorAll('.etape'));
+    const vues = Array.from(bloc.querySelectorAll('.demo-vue'));
+    let actif = 0, enVue = false;
+    const montre = (k) => {
+      actif = k;
+      etapes.forEach((e, i) => { e.dataset.ouvert = String(i === k); e.querySelector('button').setAttribute('aria-expanded', String(i === k)); });
+      vues.forEach((v, i) => { v.classList.toggle('active', i === k); if (!REDUCED) v.classList.remove('joue'); });
+      void bloc.offsetWidth;
+      if (enVue || REDUCED) vues[k].classList.add('joue');
+    };
+    const hauteur = () => {
+      liste.style.minHeight = '';
+      const corps = etapes.map((e) => e.querySelector('.etape-corps > div'));
+      const ouvert = corps[actif].offsetHeight, plus = Math.max(...corps.map((c) => c.scrollHeight));
+      liste.style.minHeight = (liste.offsetHeight - ouvert + plus) + 'px';
+    };
+    etapes.forEach((e, i) => e.querySelector('button').addEventListener('click', () => { bloc.classList.remove('auto'); montre(i); }));
+    bloc.addEventListener('animationend', (ev) => { if (ev.target.matches('.etape-barre i') && bloc.classList.contains('auto')) montre((actif + 1) % etapes.length); });
+    if (REDUCED) { bloc.classList.remove('auto'); vues.forEach((v) => v.classList.add('joue')); }
+    hauteur();
+    if (document.fonts) document.fonts.ready.then(hauteur);
+    let r = null; addEventListener('resize', () => { clearTimeout(r); r = setTimeout(hauteur, 150); });
+    if (!('IntersectionObserver' in window)) { enVue = true; vues[actif].classList.add('joue'); bloc.classList.add('en-vue'); return; }
+    new IntersectionObserver((en) => {
+      enVue = en[0].isIntersecting;
+      bloc.classList.toggle('en-vue', enVue);
+      if (enVue && !REDUCED && !vues[actif].classList.contains('joue')) vues[actif].classList.add('joue');
+    }, { threshold: 0.45 }).observe(bloc);
+  })();
 
   // ── « Réserver une démo » : la fenêtre Calendly s'ouvre par-dessus la page. widget.js et sa feuille de style ne sont
   //    demandés qu'à l'approche d'un lien démo (survol, focus, toucher) ; au clic, popup si le script est là, sinon le lien
