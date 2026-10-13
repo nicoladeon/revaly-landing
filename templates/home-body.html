@@ -588,7 +588,27 @@
   .ot-bientot { border-style: dashed; color: var(--muted); } .ot-bientot em { font-style: normal; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--iris-soft); color: var(--iris-ink); }
   .ot-crm { margin: 12px 0 0; text-align: center; font-size: 14.5px; color: var(--muted); } .ot-crm a { color: var(--iris-ink); font-weight: 500; text-underline-offset: 4px; }
   .ot-modelo { padding: 0 20px; border-color: color-mix(in srgb, var(--iris) 55%, transparent); box-shadow: 0 0 0 3px var(--iris-soft), var(--shadow-sm); }
-  .ot-modelo-bloc { max-width: 880px; margin: 22px auto 0; padding: 22px 26px 16px; border-radius: 24px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
+  /* Tes documents (R51) : l'avant/après d'un vrai modèle, à côté de ce que l'équipe fait dans le CRM */
+  .ot-deux { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; max-width: 1000px; margin: 22px auto 0; align-items: stretch; }
+  .ot-docs { padding: 22px 24px 18px; border-radius: 24px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
+  .ot-docs-t { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 16.5px; font-weight: 600; color: var(--ink); }
+  .ot-docs-t svg { width: 20px; height: 20px; color: var(--iris-ink); flex: none; }
+  .ot-docs-s { margin: 8px 0 0; font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+  .ot-avap { display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr); align-items: start; gap: 10px; margin-top: 16px; }
+  .ot-avap .ot-fleche { align-self: center; }
+  .ot-avap figure { margin: 0; text-align: center; }
+  .ot-avap img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 10px 30px -14px rgba(12, 14, 24, .4), 0 0 0 .5px var(--line); background: #fff; }
+  .ot-avap figcaption { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .ot-avap figcaption em { display: block; font-style: normal; font-weight: 500; font-size: 12.5px; color: var(--iris-ink); }
+  .ot-apres { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 8px; transition: transform .2s; }
+  .ot-apres:hover { transform: translateY(-2px); } .ot-apres:focus-visible { outline: 2px solid var(--iris); outline-offset: 3px; }
+  .ot-fleche { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--iris-soft); color: var(--iris-ink); }
+  .ot-fleche svg { width: 18px; height: 18px; }
+  .ot-docs-n { margin: 14px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--subtle); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ot-avap img { filter: brightness(.93); } }
+  :root[data-theme="dark"] .ot-avap img { filter: brightness(.93); }
+  @media (max-width: 860px) { .ot-deux { grid-template-columns: minmax(0, 1fr); } .ot-docs { padding: 18px; } }
+  .ot-modelo-bloc { max-width: 880px; margin: 0; padding: 22px 26px 16px; border-radius: 24px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
   .ot-modelo-t { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 16px; font-size: 16.5px; font-weight: 600; color: var(--ink); }
   .ot-modelo-t img { display: block; }
   .ot-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
@@ -1071,11 +1091,14 @@
     <div class="wrap">
       {{TETE_OUTILS}}
       <div data-ap>{{OUTILS_TUILES}}</div>
+      <div class="ot-deux">
+      {{TES_DOCUMENTS}}
       <div class="ot-modelo-bloc" data-ap>
         <p class="ot-modelo-t"><img src="/assets/logos/modelo.svg" width="86" height="22" alt="Modelo" loading="lazy"><span>Ce que ton équipe fait dans ton CRM (dans Modelo aujourd'hui)</span></p>
         <ul class="ot-liste" id="ot-liste">{{DANS_MODELO}}</ul>
         <div class="ot-pied"><button type="button" class="calc-plus" id="ot-voir" aria-expanded="false" aria-controls="ot-liste"><span>Voir tout ce que l'équipe fait dans ton CRM</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <p class="ot-note">Toute écriture dans ton CRM passe par une carte à valider. Rien à migrer.</p></div>
+      </div>
       </div>
     </div>
   </section>
@@ -1282,7 +1305,7 @@
           <li class="etape" data-ouvert="false">
             <h3><button type="button" id="etape-b1" aria-controls="demo-vue-1"><span class="etape-n" aria-hidden="true">2</span><span class="etape-t">Ton équipe prépare, jour et nuit.</span></button></h3>
             <div class="etape-corps" id="etape-c1">
-              <p>Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.</p>
+              <p>Confirmations, bons de visite, bilans de commercialisation, relances, annonces et publications, avis de valeur.</p>
             </div>
             <span class="etape-barre" aria-hidden="true"><i></i></span>
           </li>

@@ -213,36 +213,36 @@
     "slug": "zoe",
     "name": "Zoé",
     "role": "community manager",
-    "pour_toi": "Elle prépare tes posts Instagram et Facebook, à ta charte.",
+    "pour_toi": "Elle prépare tes annonces et tes publications Instagram et Facebook, à ta charte.",
     "question": "Zoé, qu'est-ce qui part cette semaine ?",
-    "reponse": "Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
+    "reponse": "Trois publications prêtes : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
     "capacites": [
-      "Posts Instagram & Facebook, visuels générés à ta charte",
+      "Publications Instagram et Facebook, visuels générés à ta charte",
       "Calendrier éditorial + publication programmée",
-      "Nouveau mandat = post proposé tout seul",
+      "Nouveau mandat = l'annonce du bien proposée toute seule",
       "Stats sociales chaque semaine"
     ],
     "fiche": {
       "automatisations": [
         {
-          "titre": "Nouveau mandat → post proposé",
-          "pitch": "Tu rentres un mandat, elle te propose le post — visuel à ta charte compris. Tu valides, il part.",
+          "titre": "Nouveau mandat → l'annonce du bien proposée",
+          "pitch": "Tu rentres un mandat, elle te propose l'annonce du bien et sa publication — visuel à ta charte compris. Tu valides, il part.",
           "source": "cron-mandat-social-posts"
         },
         {
           "titre": "Publication au bon créneau",
-          "pitch": "Tes posts programmés partent à l'heure prévue, même si tu es en visite.",
+          "pitch": "Tes publications programmées partent à l'heure prévue, même si tu es en visite.",
           "source": "cron-publish-scheduled"
         },
         {
           "titre": "Stats sociales — chaque semaine",
-          "pitch": "Portée, réactions, meilleurs posts : ton point réseaux tombe chaque semaine, tu sais ce qui marche.",
+          "pitch": "Portée, réactions, meilleures publications : ton point réseaux tombe chaque semaine, tu sais ce qui marche.",
           "source": "cron-social-stats"
         }
       ],
       "outils": [
         {
-          "titre": "Posts Instagram & Facebook",
+          "titre": "Publications Instagram et Facebook",
           "pitch": "Texte + visuel généré à ta charte (logo, couleurs) — prêts à relire, publiés quand tu valides.",
           "source": "generate-image, publish-social"
         },

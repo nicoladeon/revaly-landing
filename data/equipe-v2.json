@@ -55,9 +55,9 @@
  ],
  "zoe": {
   "role": "réseaux et visuels",
-  "pour_toi": "Elle prépare tes posts, tes annonces et tes visuels, à ta charte.",
+  "pour_toi": "Elle prépare tes annonces, tes publications sur tes réseaux et tes visuels, à ta charte.",
   "capacites": [
-   "Posts Instagram & Facebook, visuels à ta charte",
+   "Publications Instagram et Facebook, visuels à ta charte",
    "Calendrier éditorial + publication programmée",
    "Retouche en lot, home staging virtuel, filigrane",
    "Vidéo du bien à partir d'une photo"
@@ -67,7 +67,7 @@
   "zoe": {
    "metier": "réseaux et visuels",
    "taches": [
-    "Annonce et post proposés dès le mandat signé",
+    "Annonce du bien et publication proposées dès le mandat signé",
     "Retouche en lot, home staging virtuel, filigrane",
     "Calendrier éditorial et publication programmée"
    ]

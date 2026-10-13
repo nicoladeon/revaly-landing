@@ -467,7 +467,7 @@ must("Une équipe d'agents IA qui travaille vraiment pour toi." in _hero_txt, "H
 must(re.search(r'<h1[^>]*>Une équipe d\'agents IA qui travaille <span class="iris">vraiment</span> pour toi\.</h1>', idx), "« vraiment » en iris")
 must(idx.count("<h1") == 1, "un seul H1")
 must("6 agents IA spécialistes de l'immobilier" in _hero_txt, "sur-titre")
-must("Visites confirmées, vendeurs informés, mandats suivis, posts prêts. Pendant que tu es sur le terrain, ton équipe avance. Toi, tu valides d'un geste." in _hero_txt, "sous-titre exact")
+must("Visites confirmées, vendeurs informés, mandats suivis, annonces prêtes. Avec tes outils et tes documents, rien à remplacer. Pendant que tu es sur le terrain, ton équipe avance. Toi, tu valides d'un geste." in _hero_txt, "sous-titre exact")
 must('data-track="essai"' in _hero and 'data-track="demo"' in _hero and ">Essayer 7 jours<" in _hero and ">Réserver une démo<" in _hero, "deux boutons du haut mesurés")
 must(re.search(r'<a class="hp-demo"[^>]*data-track="demo">Réserver une démo</a>', _hero), "la démo en lien secondaire, l'essai seul bouton principal")
 must("0 € aujourd'hui · Annulable en 2 clics" in _hero_txt, "ligne de risque sous le bouton principal")
@@ -524,7 +524,7 @@ must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
 _t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 must("Pas secrétaire" not in _t, "plus de « Pas secrétaire » (demande de Julien)")
 for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "De la prospection à l'acte. Et même après.",
-              "Tu gardes tes outils. Ton équipe travaille dedans.", "Ton équipe en place en 3 étapes",
+              "Tes outils. Tes documents. Ton équipe travaille avec.", "Ton équipe en place en 3 étapes",
               "Six spécialistes. Un seul abonnement.",
               "Combien d'heures te rend ton équipe ?", "Rien ne part sans toi.",
               "Une équipe entière pour moins qu'une demi-journée d'assistante par mois.", "Ton équipe peut commencer ce soir."]:
@@ -532,7 +532,7 @@ for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétaria
 for phrase in ["Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, publier, classer. Et ce qu'on oublie finit par coûter un mandat.",
                "La relance que tu voulais faire hier soir.", "Le vendeur sans nouvelles depuis dix jours.", "Le post du « Vendu » que tu n'as jamais publié.",
                "On branche ton CRM, ta boîte mail et ton agenda avec toi.", "Rien à migrer : ton CRM reste le tien (Modelo aujourd'hui, d'autres arrivent).",
-               "Ton équipe prépare, jour et nuit.", "Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.",
+               "Ton équipe prépare, jour et nuit.", "Confirmations, bons de visite, bilans de commercialisation, relances, annonces et publications, avis de valeur.",
                "Tu valides d'un geste.", "Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.",
                "Essai 7 jours avec carte"]:
     must(phrase in _t, f"texte du brief : {phrase[:50]}")
@@ -564,7 +564,7 @@ must(len(idx.encode()) < 280_000 and len(gzip.compress(idx.encode())) < 58_000, 
 must("<title>Revaly — Une équipe d'agents IA qui travaille vraiment pour toi</title>" in idx, "title = H1")
 must('property="og:title" content="Une équipe d&#x27;agents IA qui travaille vraiment pour toi."' in idx
      or "property=\"og:title\" content=\"Une équipe d'agents IA qui travaille vraiment pour toi.\"" in idx, "og:title = H1")
-must('name="description" content="Visites confirmées, vendeurs informés, mandats suivis, posts prêts.' in idx, "description = sous-titre")
+must('name="description" content="Visites confirmées, vendeurs informés, mandats suivis, annonces prêtes.' in idx, "description = sous-titre")
 must('name="twitter:description" content="Visites confirmées' in idx, "twitter:description = sous-titre")
 print("OK refonte accueil")
 
@@ -681,7 +681,7 @@ must([s[1] for s in _sections] == ["hero", "probleme", "cycle", "max", "equipe",
      "ordre (révision du 13/10) : héros, problème, la vente moment par moment, Max, équipe, outils, confiance, temps, prix, mise en route, FAQ, fin")
 _sur = {sid: re.search(r'<p class="tete-sur" data-ap>([^<]+)</p>', idx.split(f'id="{sid}"', 1)[1].split("</section>", 1)[0]) for _, sid in _sections[1:]}
 must({k: (v.group(1) if v else None) for k, v in _sur.items()} == {"probleme": "Le problème", "cycle": "La solution", "max": "Max, ton coordinateur", "equipe": "L'équipe",
-     "outils": "Tes outils", "controle": "Pourquoi nous faire confiance", "calculateur": "Ton temps", "tarif": "Le prix",
+     "outils": "Tes outils, tes documents", "controle": "Pourquoi nous faire confiance", "calculateur": "Ton temps", "tarif": "Le prix",
      "comment": "Mise en route", "faq": "Questions", "demo": "Essai 7 jours"},
      "un sur-titre court par section")
 _pbh = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
@@ -828,6 +828,17 @@ _mxt = html.unescape(re.sub(r"<[^>]+>", "", _mx)).replace("\u00a0", " ")
 must("Un vocal depuis ta voiture. Max s'occupe du reste." in _mxt and _build.MAX_SCENE["vocal"]["texte"] in _mxt and _build.MAX_SCENE["reponse"] in _mxt, "Max : titre à nous, le vocal et sa réponse")
 must(_mx.count('class="mx-carte"') == 2 and _mx.count('>Valider<') == 2 and 'aria-label="Telegram"' in _mx and "0:12" in _mx and _mx.count("<li data-ap") == 3, "Max : deux cartes à valider, Telegram, vocal de 0:12, trois points")
 must("Pilotez" not in _mxt and "Charly" not in _mxt and "WhatsApp" in _mxt and not re.search(r'<h2[^>]*>[^<]*<img', _mx), "anti-copie : ni leur formule, ni avatar dans le titre ; WhatsApp et Telegram sont réels en prod")
+# R51 (Julien) : « on travaille avec LEURS outils et LEURS documents, ils ne remplacent rien » — l'avant/après d'un vrai modèle
+must("Elle ne remplace rien : elle se branche sur ce que tu utilises déjà, et elle remplit tes propres modèles." in html.unescape(_ot).replace("\u00a0", " ")
+     and 'class="ot-docs"' in _ot and _ot.count("<figure>") == 2 and 'data-lightbox="lb-doc-bon"' in _ot and '<template id="lb-doc-bon">' in _ot, "« Tes documents » : avant (modèle vide) → après (rempli), lightbox")
+for _f in ["bon-de-visite-vide@600.webp", "bon-de-visite-rempli@600.webp", "bon-de-visite-plat.webp"]:
+    must((dist / "assets" / "accueil" / "docs" / _f).is_file() and f"/assets/accueil/docs/{_f}" in _ot, f"document {_f} publié")
+must("Exemple fictif" in _ot, "l'agence des documents est présentée comme fictive")
+_txt_pages = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<(style|script)[^>]*>[\s\S]*?</\1>", " ", idx))).replace("\u00a0", " ")
+# le mot du fondateur (« un post Facebook en retard ») est un texte validé : hors contrôle
+_posts = [m.group(0) for m in re.finditer(r".{30}\bposts?\b.{30}", _txt_pages, re.I)
+          if not re.search(r"post (Instagram )?(du )?« Vendu »|Post « Vendu »|post Facebook en retard", m.group(0))]
+must(not _posts, f"le mot « post » seul remplacé par ce qu'il désigne : {_posts[:3]}")
 print("OK la vente moment par moment, les outils")
 
 # ── Interrupteurs : EQUIPE_V2 allumé (13/10), GOOGLE_FICHE éteint ; la variante Raphaël (REVALY_EQUIPE_V2=0) et la fiche Google

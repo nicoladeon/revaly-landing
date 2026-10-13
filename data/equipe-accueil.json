@@ -3,6 +3,6 @@
   {"slug": "emma", "metier": "assistante", "taches": ["Compte rendu de visite rédigé depuis ton vocal", "Confirmation, rappel et suivi de chaque visite", "Fiches contact et recherche acquéreur dans ton CRM"]},
   {"slug": "lucas", "metier": "estimateur", "taches": ["Avis de valeur prêt avant ton rendez-vous vendeur", "Bilan de commercialisation prêt avant le rendez-vous", "Radar DPE : les nouveaux diagnostics de ta commune"]},
   {"slug": "christine", "metier": "juridique", "taches": ["Dossier de mandat vérifié pièce par pièce", "Pièces du compromis suivies jusqu'à la signature", "Échéances suivies : rétractation, prêt, acte"]},
-  {"slug": "zoe", "metier": "communication", "taches": ["Annonce et post proposés dès le mandat signé", "Calendrier éditorial et publication programmée", "Statistiques de tes réseaux chaque semaine"]},
+  {"slug": "zoe", "metier": "communication", "taches": ["Annonce du bien et publication proposées dès le mandat signé", "Calendrier éditorial et publication programmée", "Statistiques de tes réseaux chaque semaine"]},
   {"slug": "raphael", "metier": "visuels", "taches": ["Retouche en lot, même depuis ton Drive", "Home staging virtuel", "Filigrane et visuels à ta marque"]}
 ]

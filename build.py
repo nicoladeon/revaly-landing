@@ -251,7 +251,7 @@ MAX_SCENE = {
     "cartes": [{"agent": "christine", "objet": "Bon de visite · 12 rue des Lilas · 17 h 15", "detail": "PDF au format de l'agence, visiteur et mandat lus dans ton CRM."},
                {"agent": "emma", "objet": "Relance du notaire · Me Lambert · jeudi", "detail": "E-mail en brouillon dans ta boîte : tu relis, tu envoies."}],
     "points": [("mic", "Vocal ou texte, depuis le terrain", "Sur WhatsApp ou Telegram, entre deux visites : Max comprend ce que tu lui confies."),
-               ("users", "Il confie chaque tâche au bon équipier", "Le bon de visite à Christine, la relance à Emma, le post à Zoé. Tu n'as rien à répartir."),
+               ("users", "Il confie chaque tâche au bon équipier", "Le bon de visite à Christine, la relance à Emma, l'annonce du bien à Zoé. Tu n'as rien à répartir."),
                ("check", "Tu valides d'un geste", "Chaque préparation t'attend sur une carte « À valider ». Rien ne part sans toi.")],
 }
 
@@ -326,7 +326,22 @@ def outils_tuiles():
     modelo = "".join(f"<li>{_CHECK}<span>{_esc(_typo(x))}</span></li>" for x in DANS_MODELO)
     return {"OUTILS_TUILES": f'<ul class="ot-tuiles" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(lis)}</ul>'
                              '<p class="ot-crm"><a href="mailto:support@revaly.io?subject=Mon%20CRM">Ton CRM n\'est pas encore là ? Dis-nous lequel.</a></p>',
-            "DANS_MODELO": modelo}
+            "DANS_MODELO": modelo, "TES_DOCUMENTS": tes_documents()}
+
+# ── « Tes documents » (R51, Julien : « on travaille avec LEURS outils et LEURS documents, ils ne remplacent rien ») :
+#    l'avant/après d'un vrai modèle d'agence (fictive « Agence du Parc ») importé en Word, PDF ou photo, puis ressorti
+#    à l'identique, rempli par le moteur d'import de l'appli (docs/visuels/README.md). Lightbox sur le document rempli.
+def tes_documents():
+    return (f'<div class="ot-docs" data-ap><p class="ot-docs-t">{_ico("file-pen-line")}<span>Tes documents, remplis sur tes modèles</span></p>'
+            '<p class="ot-docs-s">Tu envoies ton bon de visite, ton mandat, ta facture (Word, PDF ou photo). Ton équipe les ressort à l\'identique, remplis, avec ton logo.</p>'
+            '<div class="ot-avap">'
+            '<figure><img src="/assets/accueil/docs/bon-de-visite-vide@600.webp" width="600" height="848" alt="Le modèle de bon de visite de l\'agence, vide, tel qu\'il est importé." loading="lazy"><figcaption>Ton modèle</figcaption></figure>'
+            f'<span class="ot-fleche" aria-hidden="true">{_ico("arrow-right")}</span>'
+            '<figure><button type="button" class="ot-apres" data-lightbox="lb-doc-bon" aria-haspopup="dialog"><img src="/assets/accueil/docs/bon-de-visite-rempli@600.webp" width="600" height="848" alt="Le même bon de visite, rempli par ton équipe : visiteur, bien, date, conseiller." loading="lazy"></button>'
+            '<figcaption>Rempli par ton équipe<em>Ouvrir en grand</em></figcaption></figure>'
+            '<template id="lb-doc-bon"><p class="lb-titre">Bon de visite · rempli sur le modèle de l\'agence</p><img src="/assets/accueil/docs/bon-de-visite-plat.webp" width="1200" height="1697" alt="Le bon de visite rempli, à plat."></template>'
+            '</div><p class="ot-docs-n">Exemple fictif : « Agence du Parc ». Bon de visite, compte rendu, mandat et facture d\'honoraires ; sans modèle, l\'équipe utilise le sien, à ton nom et à ta couleur.</p></div>')
+
 
 def equipe_onglets():
     out = []
@@ -424,6 +439,7 @@ def preuve_reseaux(reseaux, logos=None):
 
 # Icônes Lucide (lucide-static 1.31, licence ISC), tracés recopiés tels quels : jamais d'icône dessinée à la main.
 LUCIDE = {
+    "arrow-right": '<path d="M5 12h14" /><path d="m12 5 7 7-7 7" />',
     "message-circle-off": '<path d="m2 2 20 20" /><path d="M4.93 4.929a10 10 0 0 0-1.938 11.412 2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 0 0 11.302-1.989" /><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65" />',
     "clock-alert": '<path d="M12 6v6l4 2" /><path d="M20 12v5" /><path d="M20 21h.01" /><path d="M21.25 8.2A10 10 0 1 0 16 21.16" />',
     "image-off": '<line x1="2" x2="22" y1="2" y2="22" /><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83" /><line x1="13.5" x2="6" y1="13.5" y2="21" /><line x1="18" x2="21" y1="12" y2="15" /><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59" /><path d="M21 15V5a2 2 0 0 0-2-2H9" />',
@@ -651,7 +667,7 @@ def jsonld_blocks(faq):
         {"@context": "https://schema.org", "@type": "Product",
          "name": "Revaly",
          "description": "L'équipe d'agents IA des agents immobiliers français : "
-                        "annonces, posts, relances, dossiers, mandats — branchée sur "
+                        "annonces, publications sur tes réseaux, relances, dossiers, mandats — branchée sur "
                         "ton CRM (Modelo aujourd'hui). Rien ne part sans toi.",
          "image": "https://revaly.io/og.jpg",
          "brand": {"@type": "Brand", "name": "Revaly"},
@@ -798,8 +814,8 @@ TETES = {
                                      "publier, classer. Et ce qu'on oublie finit par coûter un mandat.", cote=True, id_titre="t-probleme"),
     "TETE_CYCLE": dict(sur_titre="La solution", titre="De la prospection à l'acte. Et même après.",
                        sous_titre="À chaque moment de la vente, ton équipe a déjà préparé la suite. Toi, tu valides.", id_titre="t-cycle"),
-    "TETE_OUTILS": dict(sur_titre="Tes outils", titre="Tu gardes tes outils. Ton équipe travaille dedans.",
-                        sous_titre="Tu ne changes pas d'outil : ton équipe se branche sur ceux que tu utilises déjà, et on le fait avec toi. Ton CRM aussi : Modelo aujourd'hui, d'autres arrivent.",
+    "TETE_OUTILS": dict(sur_titre="Tes outils, tes documents", titre="Tes outils. Tes documents. Ton équipe travaille avec.",
+                        sous_titre="Elle ne remplace rien : elle se branche sur ce que tu utilises déjà, et elle remplit tes propres modèles.",
                         id_titre="t-outils"),
     "TETE_SOLUTION": dict(sur_titre="Mise en route", titre="Ton équipe en place en 3 étapes",
                           sous_titre="Pas de logiciel à apprendre : on branche tes outils avec toi, ton équipe prépare, tu valides.",
@@ -809,7 +825,7 @@ TETES = {
     "TETE_EQUIPE": dict(sur_titre="L'équipe", titre="Six spécialistes. Un seul abonnement.",
                         sous_titre="Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.", id_titre="t-equipe"),
     "TETE_CONTROLE": dict(sur_titre="Pourquoi nous faire confiance", titre="Rien ne part sans toi.",
-                          sous_titre="Chaque message, post ou document t'attend en brouillon : tu relis, tu valides. "
+                          sous_titre="Chaque message, publication ou document t'attend en brouillon : tu relis, tu valides. "
                                      "Tes e-mails, c'est toi qui les envoies, depuis ta boîte.", id_titre="t-controle"),
     "TETE_CALCUL": dict(sur_titre="Ton temps", titre="Combien d'heures te rend ton équipe ?",
                         sous_titre="Mets ton rythme du mois : on compte ce que ton équipe prépare à ta place, tâche par tâche.", id_titre="t-calcul"),
@@ -820,10 +836,10 @@ TETES = {
                      sous_titre="Et si tu préfères en parler, écris-nous : un humain répond.", id_titre="t-faq"),
     "TETE_FIN": dict(sur_titre="Essai 7 jours", titre="Ton équipe peut commencer ce soir.",
                      sous_titre="Chaque semaine sans équipe, ce sont des relances oubliées et des mandats qui expirent en silence. "
-                                "Demain matin, ça peut être : post prêt, relances rédigées, dossier complet.", boutons=True, id_titre="t-fin"),
+                                "Demain matin, ça peut être : annonce du bien prête, relances rédigées, dossier complet.", boutons=True, id_titre="t-fin"),
 }
 
-HERO_SOUS_TITRE = ("Visites confirmées, vendeurs informés, mandats suivis, posts prêts. Pendant que tu es "
+HERO_SOUS_TITRE = ("Visites confirmées, vendeurs informés, mandats suivis, annonces prêtes. Avec tes outils et tes documents, rien à remplacer. Pendant que tu es "
                    "sur le terrain, ton équipe avance. Toi, tu valides d'un geste.")
 body_home = render("home-body.html", {
     "HERO_SOUS_TITRE": HERO_SOUS_TITRE,

@@ -273,24 +273,24 @@
    ]
   },
   "zoe": {
-   "description": "Zoé prépare tes posts Instagram et Facebook à ta charte, tient ton calendrier éditorial et publie au bon créneau, une fois validé.",
+   "description": "Zoé prépare tes annonces et tes publications Instagram et Facebook à ta charte, tient ton calendrier éditorial et publie au bon créneau, une fois validé.",
    "capacites": [
-    "Un post proposé dès le mandat signé",
+    "L'annonce du bien proposée dès le mandat signé",
     "Calendrier éditorial et publication programmée",
     "Le post « Vendu » après la vente, jamais de prix",
     "Les statistiques de tes réseaux chaque semaine"
    ],
    "scenarios": [
     {
-     "titre": "Les posts de la semaine",
+     "titre": "Les publications de la semaine",
      "question": "Zoé, qu'est-ce qui part cette semaine ?",
-     "reponse": "Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
+     "reponse": "Trois publications prêtes : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
      "vocal": false
     },
     {
      "titre": "Nouveau mandat",
      "question": "Zoé, j'ai signé le mandat du T3 rue des Lilas.",
-     "reponse": "Ton post est prêt, visuel à ta charte compris. Tu valides, il part au créneau prévu.",
+     "reponse": "Ta publication est prête, visuel à ta charte compris. Tu valides, il part au créneau prévu.",
      "vocal": false
     },
     {
@@ -311,7 +311,7 @@
      "titre": "Au mandat",
      "items": [
       {
-       "titre": "Nouveau mandat, post proposé",
+       "titre": "Nouveau mandat, annonce proposée",
        "texte": "Tu rentres un mandat, elle te propose le post, visuel à ta charte compris. Tu valides, il part."
       },
       {
@@ -337,7 +337,7 @@
       },
       {
        "titre": "Statistiques de tes réseaux",
-       "texte": "Portée, réactions, meilleurs posts : ton point réseaux tombe chaque semaine, tu sais ce qui marche."
+       "texte": "Portée, réactions, meilleures publications : ton point réseaux tombe chaque semaine, tu sais ce qui marche."
       }
      ]
     },
@@ -621,7 +621,7 @@
   "zoe": {
    "description": "Zoé prépare tes posts, tes annonces et tes visuels à ta charte : photos retouchées, home staging virtuel, vidéos, publication au bon créneau.",
    "capacites": [
-    "Un post proposé dès le mandat signé",
+    "L'annonce du bien proposée dès le mandat signé",
     "Photos retouchées en lot, home staging virtuel",
     "Vidéo du bien à partir d'une photo",
     "Calendrier éditorial et publication programmée"
@@ -633,9 +633,9 @@
    },
    "scenarios": [
     {
-     "titre": "Les posts de la semaine",
+     "titre": "Les publications de la semaine",
      "question": "Zoé, qu'est-ce qui part cette semaine ?",
-     "reponse": "Trois posts prêts : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
+     "reponse": "Trois publications prêtes : l'exclusivité de la villa des Cèdres (visuel à ta charte), ton avis client cinq étoiles, et ton marché en trois chiffres. Le premier part demain 18 h — et tes stats de la semaine arrivent lundi.",
      "vocal": false
     },
     {
@@ -656,7 +656,7 @@
      "titre": "Au mandat",
      "items": [
       {
-       "titre": "Nouveau mandat, post proposé",
+       "titre": "Nouveau mandat, annonce proposée",
        "texte": "Tu rentres un mandat, elle te propose le post, visuel à ta charte compris. Tu valides, il part."
       },
       {
@@ -703,7 +703,7 @@
       },
       {
        "titre": "Statistiques de tes réseaux",
-       "texte": "Portée, réactions, meilleurs posts : ton point réseaux tombe chaque semaine, tu sais ce qui marche."
+       "texte": "Portée, réactions, meilleures publications : ton point réseaux tombe chaque semaine, tu sais ce qui marche."
       },
       {
        "titre": "Le post « Vendu »",

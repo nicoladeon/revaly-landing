@@ -7,7 +7,7 @@
   },
   {
     "question": "Et si l'IA se trompe ?",
-    "reponse": "Rien ne part sans toi : chaque message, post ou document arrive en carte « À valider ». Tu corriges en une phrase ou tu refuses, avant tout envoi. On mesure aussi la qualité sur 53 situations réelles avant chaque mise à jour.",
+    "reponse": "Rien ne part sans toi : chaque message, publication ou document arrive en carte « À valider ». Tu corriges en une phrase ou tu refuses, avant tout envoi. On mesure aussi la qualité sur 53 situations réelles avant chaque mise à jour.",
     "schema": true,
     "accueil": true
   },
@@ -37,7 +37,7 @@
   },
   {
     "question": "Est-ce que l'IA écrit à mes clients sans moi ?",
-    "reponse": "Non. Chaque email, chaque post, chaque message sortant est d'abord préparé en brouillon — rien ne part sans ta validation. Le système est verrouillé côté envoi : sans brouillon validé et confirmé de ta part, aucun message ne peut sortir. Pour les automatisations qui touchent tes contacts, comme les relances, c'est toi qui actives l'option, qui règles le délai, le ton et le canal — jamais l'inverse. Tu gardes la main sur tout ce qui part en ton nom.",
+    "reponse": "Non. Chaque e-mail, chaque publication sur tes réseaux, chaque message sortant est d'abord préparé en brouillon — rien ne part sans ta validation. Le système est verrouillé côté envoi : sans brouillon validé et confirmé de ta part, aucun message ne peut sortir. Pour les automatisations qui touchent tes contacts, comme les relances, c'est toi qui actives l'option, qui règles le délai, le ton et le canal — jamais l'inverse. Tu gardes la main sur tout ce qui part en ton nom.",
     "schema": true,
     "accueil": false
   },
