@@ -480,16 +480,14 @@ for c in _cartes:
     must(html.escape(c["objet"], quote=False).replace(" :", "\u00a0:").replace("« ", "«\u00a0").replace(" »", "\u00a0»") in _flux, f"objet de la carte : {c['objet']}")
 must(".carte[data-slot=\"0\"]" in idx and '.carte[data-slot="1"], .carte[data-slot="2"]' in idx and "}, 4000);" in idx, "1 carte sur mobile, 3 au bureau, une nouvelle toutes les 4 s")
 must('id="anim-pause"' in _cadre and 'aria-pressed="false"' in _cadre, "bouton pause des animations (AA 2.2.2)")
-must('grid-template-areas: "texte film" "preuve preuve" "flux flux" "rangee rangee";' in idx and "@media (min-width: 1024px)" in idx,
+must('grid-template-areas: "texte film" "preuve preuve" "flux flux";' in idx and "@media (min-width: 1024px)" in idx,
      "bureau : texte à gauche, film à droite, puis la preuve et la rangée de 3 cartes")
 must(_hero.find('class="hp-texte"') < _hero.find('id="bande-reseaux"') < _hero.find('id="film-cadre"') < _hero.find('id="flux"'),
      "mobile : texte, preuve, film, cartes (ordre du balisage)")
 _ea = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
 must([e["slug"] for e in _ea] == ["max", "emma", "lucas", "christine", "zoe", "raphael"], "équipe : six agents dans l'ordre du brief, sans Hugo")
-_rangee = _hero.split('class="rangee"', 1)[1]
-must(_rangee.count("<video data-loop") == 6, "les six visages restent visibles, en plus petit")
-for e in _ea:
-    must(f'poster="/assets/equipe/boucles/{e["slug"]}@256.webp"' in _rangee and len(e["taches"]) == 3, f"personnage equipe-v6 de {e['slug']} dans la rangée")
+# Tâche 17 : la rangée des six visages sous le haut de page est retirée (doublon des onglets de l'équipe)
+must('class="rangee"' not in idx and "<video data-loop" not in _hero, "plus de rangée de visages sous le haut de page")
 must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 # Ordre des sections du brief
 # Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
@@ -520,7 +518,9 @@ for e in _ea:
         must(html.escape(x, quote=False).replace(" :", "\u00a0:") in _eq or html.escape(x, quote=False) in _eq, f"tâche de {e['slug']} : {x}")
     must(f'href="/agents/{e["slug"]}/"' in _eq, f"fiche de {e['slug']} reliée")
 _pb = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
-must(_pb.count('class="pb-ico"') == 3 and "M21.25 8.2A10 10 0 1 0 16 21.16" in _pb, "trois icônes Lucide (aucun SVG fait main)")
+_pile = json.loads((ROOT / "data" / "probleme.json").read_text())
+must(_pb.count('<li class="notif"') == len(_pile) == 6 and "M21.25 8.2A10 10 0 1 0 16 21.16" in _pb and all(it["icone"] in _build.LUCIDE for it in _pile),
+     "la pile du problème : six notifications, icônes Lucide (aucun SVG fait main)")
 must('class="sticky-cta"' in idx and ">Démo<" in idx.split('class="sticky-cta"', 1)[1][:600], "barre collante : Essayer 7 jours + Démo")
 # Police : Geist partout, aucune police à empattements chargée
 for page in sorted(dist.rglob("*.html")):

@@ -1,0 +1,8 @@
+[
+  {"texte": "Le vendeur sans nouvelles depuis dix jours.", "quand": "10 jours", "icone": "message-circle-off"},
+  {"texte": "La relance que tu voulais faire hier soir.", "quand": "hier, 21 h", "icone": "clock-alert"},
+  {"texte": "Le post du « Vendu » que tu n'as jamais publié.", "quand": "3 semaines", "icone": "image-off"},
+  {"texte": "Le compte rendu de visite pas encore écrit.", "quand": "ce matin", "icone": "file-pen-line"},
+  {"texte": "La pièce du compromis qui manque toujours.", "quand": "depuis lundi", "icone": "paperclip"},
+  {"texte": "Le bon de visite à imprimer avant 17 h.", "quand": "17 h", "icone": "printer"}
+]

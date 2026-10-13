@@ -132,7 +132,7 @@
 
   /* ── La vitrine : le film qui se lance seul (16:9 au bureau, vertical sur mobile) et le travail préparé ── */
   .hp-grille { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; }
-  .hp-texte, .hp-grille > .preuve, .rangee { justify-self: stretch; }
+  .hp-texte, .hp-grille > .preuve { justify-self: stretch; }
   .hp-film { position: relative; margin-top: clamp(28px, 3vw, 40px); width: min(100%, 360px); }
   .hp-film::before {
     content: ""; position: absolute; z-index: -1; left: 6%; right: 6%; top: 8%; bottom: 0; border-radius: 50%;
@@ -191,20 +191,9 @@
   .flux-pied svg { margin-top: 1px; }
   .flux-pied svg { width: 16px; height: 16px; flex: none; color: var(--iris-ink); }
 
-  /* L'équipe, en plus petit : six visages animés */
-  .rangee { margin-top: clamp(28px, 3.4vw, 40px); text-align: center; }
-  .rangee-titre { margin: 0; font-size: 14px; font-weight: 500; color: var(--muted); }
-  .rangee ul { list-style: none; margin: 14px auto 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 10px; max-width: 360px; }
-  .rangee li { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
-  .rg-photo { display: block; width: 64px; height: 64px; border-radius: 50%; overflow: hidden; background: #F1F2F7; box-shadow: 0 0 0 3px var(--raised), 0 0 0 3.5px var(--line); margin-bottom: 6px; }
-  .rg-photo video { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .rangee b { font-size: 14px; font-weight: 600; color: var(--ink); }
-  .rangee li > span:last-child { font-size: 12.5px; color: var(--muted); }
-
   @media (min-width: 700px) {
     .hp-film { width: 100%; }
     .film-cadre { aspect-ratio: 16 / 9; border-radius: 24px; }
-    .rangee ul { grid-template-columns: repeat(6, minmax(0, 1fr)); max-width: 720px; }
   }
   /* Bureau : le texte à gauche, le film 16:9 entier à droite, au-dessus de la ligne de flottaison ;
      dessous, la bande des réseaux, puis les 3 cartes de travail en rangée (la nouvelle arrive à gauche) */
@@ -212,7 +201,7 @@
     .hp-hero { padding-top: clamp(28px, 3vw, 48px); }
     .hp-grille {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); column-gap: clamp(40px, 4vw, 56px); align-items: center;
-      grid-template-areas: "texte film" "preuve preuve" "flux flux" "rangee rangee";
+      grid-template-areas: "texte film" "preuve preuve" "flux flux";
     }
     .hp-texte { grid-area: texte; text-align: left; }
     .hp-hero h1 { margin-left: 0; font-size: clamp(40px, 3.75vw, 54px); line-height: 1.03; max-width: none; }
@@ -225,7 +214,6 @@
     .carte { top: 16px; left: 16px; right: auto; width: calc((100% - 32px - 2 * var(--g)) / 3); transform: translateX(calc(var(--slot) * (100% + var(--g)))); }
     .carte-objet { -webkit-line-clamp: 1; }
     .flux-pied { margin-top: 0; }
-    .rangee { grid-area: rangee; }
   }
 
   .film-dialog {
@@ -268,20 +256,40 @@
     .plans.glisse { padding-top: 18px; margin-top: 24px; }
     .plans.glisse > .plan { flex-basis: 86%; }
     .etapes.glisse { margin-top: 28px; }
-    .rangee ul { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; max-width: none; }
-    .rg-photo { width: 50px; height: 50px; margin-bottom: 4px; }
-    .rangee b { font-size: 12.5px; }
-    .rangee li > span:last-child { display: none; }
   }
 
-  /* ── 3. Le problème ── */
-  .pb { display: grid; gap: 32px; align-items: center; }
-  @media (min-width: 900px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 64px; } }
-  .pb-liste { list-style: none; margin: 0; padding: 4px 0; background: var(--carte); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); }
-  .pb-liste li { display: flex; align-items: center; gap: 14px; padding: 16px 20px; font-size: 16.5px; line-height: 1.45; color: var(--ink); }
-  .pb-liste li + li { border-top: 0.5px solid var(--line); }
-  .pb-ico { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--bg-soft); color: var(--muted); }
-  .pb-ico svg { width: 20px; height: 20px; }
+  /* ── 3. Le problème : texte à gauche ; à droite, la pile de ce qui attend, qui monte une notification après l'autre.
+       Sans script ou en mouvement réduit : la pile complète, immobile (état final). ── */
+  .pb { display: grid; gap: 40px; align-items: center; }
+  @media (min-width: 960px) { .pb { grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: clamp(48px, 6vw, 88px); } }
+  .pile { --h: 68px; --g: 10px; padding: 16px; border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); }
+  .pile-zone::before { inset: -20% -16%; }
+  .pile-tete { display: flex; align-items: center; gap: 8px; padding: 2px 4px 0; font-size: 14px; font-weight: 600; color: var(--ink); }
+  .pile-tete svg { width: 17px; height: 17px; color: var(--muted); }
+  .pile-compte { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--muted); }
+  .pile-compte b { min-width: 24px; height: 24px; padding: 0 7px; display: inline-grid; place-items: center; border-radius: 999px; background: var(--iris-deep); color: #fff; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pile-compte b.pop { animation: pop .32s cubic-bezier(.34, 1.56, .64, 1); }
+  @keyframes pop { 40% { transform: scale(1.22); } }
+  .pile-liste { position: relative; list-style: none; margin: 14px 0 0; padding: 0; height: calc(var(--n) * (var(--h) + var(--g)) - var(--g)); }
+  .notif {
+    position: absolute; left: 0; right: 0; top: 0; height: var(--h); display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+    padding: 0 14px; border-radius: 16px; background: var(--bg); border: 0.5px solid var(--line);
+    transform: translateY(calc(var(--rang) * (var(--h) + var(--g))));
+  }
+  .notif-ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--bg-soft); color: var(--muted); }
+  .notif-ico svg { width: 19px; height: 19px; }
+  .notif-txt { font-size: 15px; font-weight: 500; line-height: 1.35; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .notif-quand { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+  html.js .pile.anime .notif { transition: transform .6s var(--ap), opacity .45s var(--ap), filter .45s var(--ap); }
+  html.js .pile.anime .notif:not(.arrive) { opacity: 0; filter: blur(6px); transform: translateY(calc(var(--rang) * (var(--h) + var(--g)) - 22px)) scale(.97); }
+  html.js .pile.anime.vide .notif { opacity: 0; transition: opacity .4s ease; }
+  html.js .pile.anime.net .notif { transition: none; }
+  @media (max-width: 520px) {
+    .pile { --h: 72px; --g: 8px; padding: 12px; border-radius: 24px; }
+    .notif { grid-template-columns: 36px minmax(0, 1fr) auto; gap: 10px; padding: 0 12px; }
+    .notif-ico { width: 36px; height: 36px; border-radius: 10px; }
+    .notif-txt { font-size: 14.5px; }
+  }
 
   .pb-citation { margin: 28px 0 0; max-width: 560px; padding-left: 14px; border-left: 2px solid var(--iris); }
   .pb-citation blockquote { margin: 0; }
@@ -602,9 +610,6 @@
   /* Mobile : page plus courte (cible ~9 000 px) — rythme resserré, doublons repliés */
   @media (max-width: 760px) {
     .calc-carte .calc-gauche .calc-note { display: none; }
-    .pb-liste li { padding: 12px 16px; font-size: 16px; gap: 12px; }
-    .pb-ico { width: 34px; height: 34px; border-radius: 10px; }
-    .pb-ico svg { width: 18px; height: 18px; }
     .foot .about, .copyright { font-size: 12px; }
     .foot .about { margin-top: 4px; }
     .foot { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 14px; padding-top: 32px; }
@@ -681,10 +686,6 @@
           <div class="flux" id="flux" role="group" aria-labelledby="flux-titre">{{CARTES_HERO}}</div>
           <p class="flux-pied"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m16 9-5.5 5.5L8 12" /></svg>Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides.</p>
         </div>
-      <div class="rangee">
-        <p class="rangee-titre" id="rangee-titre">Ton équipe</p>
-        <ul aria-labelledby="rangee-titre">{{EQUIPE_RANGEE}}</ul>
-      </div>
     </div>
 
     <dialog id="film-dialog" class="film-dialog" aria-label="Le film Revaly, 45 secondes">
@@ -706,11 +707,7 @@
           <figcaption>— Journal de l'Agence, mai 2026</figcaption>
         </figure>
       </div>
-      <ul class="pb-liste" data-ap>
-        <li><span class="pb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20" /><path d="M4.93 4.929a10 10 0 0 0-1.938 11.412 2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 0 0 11.302-1.989" /><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65" /></svg></span>Le vendeur sans nouvelles depuis dix jours.</li>
-        <li><span class="pb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2" /><path d="M20 12v5" /><path d="M20 21h.01" /><path d="M21.25 8.2A10 10 0 1 0 16 21.16" /></svg></span>La relance que tu voulais faire hier soir.</li>
-        <li><span class="pb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="2" x2="22" y1="2" y2="22" /><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83" /><line x1="13.5" x2="6" y1="13.5" y2="21" /><line x1="18" x2="21" y1="12" y2="15" /><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59" /><path d="M21 15V5a2 2 0 0 0-2-2H9" /></svg></span>Le post du «&nbsp;Vendu&nbsp;» que tu n'as jamais publié.</li>
-      </ul>
+      {{PILE_PROBLEME}}
     </div>
     </div>
   </section>
@@ -1191,6 +1188,36 @@
     els.forEach((el) => o.observe(el));
   })();
 
+  // ── Le problème : la pile de ce qui attend monte depuis le bas, une notification après l'autre (1,1 s), le compteur
+  //    avec elle, puis la pile se vide et recommence. Seulement à l'écran ; arrêt onglet caché ou pause générale. ──
+  (() => {
+    const pile = document.getElementById('pile');
+    if (!pile || REDUCED || !('IntersectionObserver' in window)) return;
+    const items = Array.from(pile.querySelectorAll('.notif')), n = items.length, compte = document.getElementById('pile-n');
+    let arrives = 0, enVue = false, minuteur = null;
+    const pose = () => {
+      items.forEach((li, i) => li.classList.toggle('arrive', i >= n - arrives));
+      compte.textContent = String(arrives);
+      compte.classList.remove('pop'); void compte.offsetWidth; if (arrives) compte.classList.add('pop');
+    };
+    const tic = () => {
+      minuteur = null;
+      if (!enVue || document.hidden || window.rvPause) return;
+      if (arrives < n) { arrives += 1; pose(); minuteur = setTimeout(tic, arrives < n ? 1100 : 5200); return; }
+      pile.classList.add('vide');
+      minuteur = setTimeout(() => {
+        pile.classList.add('net'); arrives = 0; pose(); void pile.offsetWidth;
+        pile.classList.remove('vide', 'net');
+        minuteur = setTimeout(tic, 600);
+      }, 450);
+    };
+    const relance = () => { if (!minuteur && enVue && !document.hidden && !window.rvPause) minuteur = setTimeout(tic, arrives ? 900 : 500); };
+    pile.classList.add('anime'); pose();
+    new IntersectionObserver((en) => { enVue = en[0].isIntersecting; relance(); }, { threshold: 0.35 }).observe(pile);
+    document.addEventListener('visibilitychange', relance);
+    document.addEventListener('rv-pause', relance);
+  })();
+
   // ── Personnages : chaque boucle ne se charge qu'après la page, à son entrée à l'écran, et s'arrête dehors,
   //    onglet caché ou en pause. Mouvement réduit ou économiseur de données : l'image fixe seule. ──
   (() => {
@@ -1222,8 +1249,10 @@
       window.rvPause = !window.rvPause;
       btn.setAttribute('aria-pressed', String(window.rvPause));
       document.getElementById('hero').classList.toggle('pause', window.rvPause);
+      document.documentElement.classList.toggle('rv-pause', window.rvPause);
       if (window.rvSyncLoops) window.rvSyncLoops();
       if (window.rvSyncFilm) window.rvSyncFilm();
+      document.dispatchEvent(new Event('rv-pause'));
     });
   })();
 

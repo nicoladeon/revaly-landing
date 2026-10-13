@@ -187,18 +187,39 @@ def preuve_reseaux(reseaux, logos=None):
             f'<div class="marquee"><ul class="marquee-liste">{liste}</ul>'
             f'<ul class="marquee-liste" aria-hidden="true">{copie}</ul></div>{mention}</div>')
 
+# Icônes Lucide (lucide-static 1.31, licence ISC), tracés recopiés tels quels : jamais d'icône dessinée à la main.
+LUCIDE = {
+    "message-circle-off": '<path d="m2 2 20 20" /><path d="M4.93 4.929a10 10 0 0 0-1.938 11.412 2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 0 0 11.302-1.989" /><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65" />',
+    "clock-alert": '<path d="M12 6v6l4 2" /><path d="M20 12v5" /><path d="M20 21h.01" /><path d="M21.25 8.2A10 10 0 1 0 16 21.16" />',
+    "image-off": '<line x1="2" x2="22" y1="2" y2="22" /><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83" /><line x1="13.5" x2="6" y1="13.5" y2="21" /><line x1="18" x2="21" y1="12" y2="15" /><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59" /><path d="M21 15V5a2 2 0 0 0-2-2H9" />',
+    "file-pen-line": '<path d="M14.364 13.634a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506l4.013-4.009a1 1 0 0 0-3.004-3.004z" /><path d="M14.487 7.858A1 1 0 0 1 14 7V2" /><path d="M20 19.645V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l2.516 2.516" /><path d="M8 18h1" />',
+    "paperclip": '<path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551" />',
+    "printer": '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" /><rect x="6" y="14" width="12" height="8" rx="1" />',
+    "check": '<path d="M20 6 9 17l-5-5" />',
+    "bell": '<path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />',
+}
+
+def _ico(nom, cls=""):
+    c = f' class="{cls}"' if cls else ""
+    return (f'<svg{c} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
+            f'stroke-linejoin="round" aria-hidden="true">{LUCIDE[nom]}</svg>')
+
+def pile_probleme(items):
+    """Le problème, en vrai : la pile de ce qui attend. Dans la page, la liste est dans l'ordre de lecture (le vendeur
+    sans nouvelles en haut) ; le script la fait arriver par le bas, une notification après l'autre, compteur compris."""
+    lis = "".join(
+        f'<li class="notif" style="--rang:{i}"><span class="notif-ico">{_ico(it["icone"])}</span>'
+        f'<span class="notif-txt">{_esc(_typo(it["texte"]))}</span><span class="notif-quand">{_esc(it["quand"])}</span></li>'
+        for i, it in enumerate(items))
+    return (f'<div class="pile-zone halo" data-ap><div class="pile" id="pile" style="--n:{len(items)}">'
+            f'<div class="pile-tete">{_ico("bell")}<span>À faire aujourd\'hui</span>'
+            f'<span class="pile-compte" aria-hidden="true"><b id="pile-n">{len(items)}</b> en attente</span></div>'
+            f'<ol class="pile-liste" aria-label="Ce qui attend aujourd\'hui">{lis}</ol></div></div>')
+
 def outils_etape(outils):
     """Les outils branchés, en petit, dans l'étape 1 de « Comment ça marche »."""
     return (f'<ul class="et-logos" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(_bande_item(o, False) for o in outils)}</ul>'
             '<p class="et-portails">Tes contacts SeLoger, Leboncoin et Bien\'ici arrivent directement chez Emma.</p>')
-
-def equipe_rangee():
-    """Les six visages, en plus petit, sous le film."""
-    out = []
-    for e in _equipe_accueil():
-        out.append(f'<li><span class="rg-photo">{_boucle(e["slug"], 64)}</span>'
-                   f'<b>{_esc(e["nom"])}</b><span>{_esc(e["metier"])}</span></li>')
-    return "".join(out)
 
 
 def agent_main(a, agents):
@@ -515,7 +536,7 @@ body_home = render("home-body.html", {
     "PREUVE": preuve_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
     "OUTILS_ETAPE": outils_etape(json.loads((ROOT / "data" / "outils.json").read_text())),
     "CARTES_HERO": cartes_hero(),
-    "EQUIPE_RANGEE": equipe_rangee(),
+    "PILE_PROBLEME": pile_probleme(json.loads((ROOT / "data" / "probleme.json").read_text())),
     "FAQ_ITEMS": faq_items(faq),
     "JSONLD": jsonld_blocks(faq),
 })
