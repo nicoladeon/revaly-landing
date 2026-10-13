@@ -1,0 +1,67 @@
+/* Copie des jetons de l'appli Revaly (revaly-io/frontend/src/styles/tokens.css,
+   thème clair « porcelaine », 12/10/2026) — seulement ce que le film emploie.
+   Ne pas inventer de valeur ici : reprendre celles de l'appli. */
+@font-face {
+  font-family: 'Geist Variable';
+  src: url('../../assets/fonts/geist-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: block;
+}
+:root {
+  --font-sans: 'Geist Variable', ui-sans-serif, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-feature-default: 'cv11', 'ss01', 'ss03', 'cv02', 'calt', 'kern';
+  --font-feature-tabular: 'tnum', 'cv11';
+
+  --font-size-xs: 0.75rem;     /* 12 */
+  --font-size-sm: 0.8125rem;   /* 13 */
+  --font-size-base: 0.9375rem; /* 15 */
+  --line-height-snug: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.06em;
+
+  --brand-50: #EEF2FF;
+  --brand-100: #E0E7FF;
+  --brand-400: #818CF8;
+  --brand-500: #6366F1;
+  --brand-600: #4F46E5;
+  --brand-700: #4338CA;
+  --ink-950: #090B0F;
+
+  --color-bg: #F4F5F8;
+  --color-bg-raised: #FFFFFF;
+  --color-bg-subtle: #F7F8FA;
+  --color-bg-hover: #E9EBEF;
+  --color-fg: #0C0F16;
+  --color-fg-muted: #586170;
+  --color-fg-subtle: #687080;
+  --color-fg-brand: var(--brand-600);
+  --color-fg-on-brand: #FFFFFF;
+  --color-bubble-user: #E9EBEF;
+  --color-avatar-bg: linear-gradient(160deg, #EEF0F4, #E0E3E9);
+  --color-avatar-line: rgba(12, 15, 22, 0.08);
+  --color-border: rgba(12, 15, 22, 0.10);
+  --color-border-strong: rgba(12, 15, 22, 0.16);
+  --gradient-ambient: radial-gradient(1150px 480px at 64% -10%, rgba(79,70,229,0.05), transparent 66%);
+  --color-action: var(--brand-600);
+  --color-action-subtle: var(--brand-50);
+  --color-action-fg: #FFFFFF;
+  --color-success: #12B76A;
+  --color-success-bg: #E3F6EC;
+  --color-success-text: #087443;
+  --color-warning: #D97706;
+  --color-warning-bg: #FEF3C7;
+  --color-warning-text: #92400E;
+
+  --radius-control: 0.5rem;  /* 8 */
+  --radius-card: 0.75rem;    /* 12 */
+  --radius-sheet: 1rem;      /* 16 */
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(16, 22, 38, 0.05), 0 0 0 1px rgba(16, 22, 38, 0.04);
+  --shadow-md: 0 4px 12px rgba(16, 22, 38, 0.07), 0 1px 3px rgba(16, 22, 38, 0.05), 0 0 0 1px rgba(16, 22, 38, 0.04);
+  --shadow-lg: 0 16px 36px rgba(16, 22, 38, 0.10), 0 4px 10px rgba(16, 22, 38, 0.06), 0 0 0 1px rgba(16, 22, 38, 0.04);
+  --shadow-xl: 0 28px 60px rgba(16, 22, 38, 0.14), 0 8px 18px rgba(16, 22, 38, 0.08), 0 0 0 1px rgba(16, 22, 38, 0.04);
+  --hairline-hi: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}

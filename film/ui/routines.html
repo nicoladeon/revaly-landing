@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="ui.css">
+<style>body{margin:0;background:var(--color-bg);font-family:var(--font-sans)} .page{zoom:2;padding:24px;display:flex;flex-direction:column;gap:16px;align-items:flex-start}</style>
+<title>Page Routines</title></head><body>
+<!-- Une ligne de la page Routines (« Ce que ton équipe fait toute seule. Rien ne
+     part en ton nom sans ton accord. ») : portrait, titre, pastille, puis
+     « moment → agent → consigne → canal ». Dans film.html : 0:30-0:34. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check-check" viewBox="0 0 24 24"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chevron-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+  <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+  <symbol id="i-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+  <symbol id="i-list-checks" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+</svg>
+<div class="ui page" style="width:460px">
+  <div class="routine" style="width:440px">
+    <span class="ra" style="--ra-s:32px"><span class="ra-stack"><img src="../assets/agents/emma.webp" alt=""></span></span>
+    <div><div class="routine-title">Bilan de commercialisation du vendredi</div></div>
+    <p class="routine-line"><b>Le vendredi à 17 h</b> → <b>Emma</b> prépare pour chaque vendeur son bilan de commercialisation de la semaine → sur Telegram</p>
+  </div>
+  <div class="routine" style="width:440px">
+    <span class="ra" style="--ra-s:32px"><span class="ra-stack"><img src="../assets/agents/emma.webp" alt=""></span></span>
+    <div><div class="routine-title">Confirmation de visite <span class="tag tag-brand">Prête à l'emploi</span></div></div>
+    <p class="routine-line"><b>La veille de chaque visite à 18 h</b> → <b>Emma</b> prépare la confirmation au visiteur → sur Telegram</p>
+  </div>
+</div></body></html>
