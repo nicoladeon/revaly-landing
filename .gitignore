@@ -3,7 +3,6 @@ dist/
 .gstack/
 .wrangler/
 .superpowers/
-video/node_modules/
 film/rushes/
 film/frames*/
 film/graded/

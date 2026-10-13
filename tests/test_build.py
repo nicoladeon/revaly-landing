@@ -265,7 +265,7 @@ must('data-track="film"' in idx and "Regarder avec le son (45 s)" in idx, "« Re
 must("assistants IA" not in idx and "Autonome, 24 h/24" not in idx, "ancienne promesse retirée")
 for f in ["poster.jpg", "poster-vertical.jpg", "poster@1280.webp", "poster-vertical@720.webp", "boucle.webm", "boucle.mp4",
           "boucle-vertical.webm", "boucle-vertical.mp4", "revaly-45s.webm", "revaly-45s.mp4", "revaly-45s-vertical.webm", "revaly-45s-vertical.mp4"]:
-    must((dist / "film" / f).is_file(), f"dist/film/{f} copié")
+    must((dist / "assets" / "film" / f).is_file(), f"dist/assets/film/{f} copié")
 print("OK v3 haut de page")
 
 # ── Logos (Task 4, revus le 12/10 au soir : une seule bande de preuve en haut, les outils en petit dans l'étape 1) ──
@@ -429,12 +429,12 @@ must("Le mode supervisé, par défaut : tout est préparé, tu relis, tu valides
 must("En ce moment chez toi :" in _hero_txt, "ligne « En ce moment chez toi : »")
 # Le film qui se lance seul (ronde Julien 1) : image fixe d'abord, vidéo muette en boucle demandée après le chargement
 _cadre = _hero.split('id="film-cadre"', 1)[1].split("</figure>", 1)[0]
-must('srcset="/film/poster-vertical@720.webp"' in _cadre and 'src="/film/poster@1280.webp"' in _cadre and 'fetchpriority="high"' in _cadre, "image fixe du film : verticale sur mobile, 16:9 au bureau")
+must('srcset="/assets/film/poster-vertical@720.webp"' in _cadre and 'src="/assets/film/poster@1280.webp"' in _cadre and 'fetchpriority="high"' in _cadre, "image fixe du film : verticale sur mobile, 16:9 au bureau")
 must(re.search(r'<video id="film-boucle" muted loop playsinline preload="none"', _cadre), "boucle muette, en boucle, dans la page, rien de chargé avant le script")
-must("'/film/boucle-vertical' : '/film/boucle'" in idx and "window.addEventListener('load', lance" in idx, "boucle verticale sur mobile, 16:9 au bureau, lancée après le chargement")
+must("'/assets/film/boucle-vertical' : '/assets/film/boucle'" in idx and "window.addEventListener('load', lance" in idx, "boucle verticale sur mobile, 16:9 au bureau, lancée après le chargement")
 must("mobile.addEventListener('change'" in idx and "object-fit: contain" in idx, "la boucle suit le format de l'écran et n'est jamais recadrée")
 must('id="voir-film"' in _cadre and 'data-track="film"' in _cadre, "« Regarder avec le son » sur le film")
-must("'/film/revaly-45s-vertical' : '/film/revaly-45s'" in idx, "film complet vertical sur mobile")
+must("'/assets/film/revaly-45s-vertical' : '/assets/film/revaly-45s'" in idx, "film complet vertical sur mobile")
 must(idx.count('rel="preload" as="image"') == 2 and 'media="(max-width: 699px)"' in idx, "image fixe du film préchargée (une par format)")
 must(not re.search(r'<video[^>]*\sautoplay', idx), "aucune lecture automatique sans script (mouvement réduit respecté)")
 # Les cartes de travail : au format des cartes « À valider » du produit, 3 au plus, une nouvelle toutes les 4 s
@@ -559,3 +559,26 @@ _fp = next(p for p in parsed if p["@type"] == "FAQPage")
 must([q["name"] for q in _fp["mainEntity"]] == [f["question"] for f in faq], "JSON-LD de l'accueil = les 6 questions affichées")
 must('<ul class="confiance">' not in idx, "tuiles de confiance retirées (89 % dans la preuve, données et CRM dans la FAQ)")
 print("OK page plus courte")
+
+# ── T13b : film final intégré (contrôles du brief T13, step 4) ──
+for f in ["revaly-45s.mp4", "revaly-45s.webm", "revaly-45s-vertical.mp4", "revaly-45s-vertical.webm", "boucle.mp4", "boucle.webm",
+          "boucle-vertical.mp4", "boucle-vertical.webm", "poster.jpg", "poster-vertical.jpg"]:
+    must((dist / "assets" / "film" / f).exists(), f"film : {f}")
+for f in ["boucle.mp4", "boucle.webm", "boucle-vertical.mp4", "boucle-vertical.webm"]:
+    must((dist / "assets" / "film" / f).stat().st_size < 2_500_000, f"boucle < 2,5 Mo : {f}")
+must(not (dist / "film").exists(), "plus de copie du film hors de dist/assets/film")
+# Vidéo du haut sans chargement lourd : preload="none" (plus léger que "metadata"), rien demandé avant le chargement de la page,
+# et l'image fixe d'abord (<picture> préchargée, la vidéo ne devient visible qu'une fois en lecture)
+_v = re.search(r'<video id="film-boucle"[^>]*>', idx).group(0)
+must('preload="none"' in _v and "autoplay" not in _v and "<source" not in idx.split('<video id="film-boucle"', 1)[1].split("</video>", 1)[0],
+     "vidéo du haut : aucun préchargement, sources posées par le script après le chargement")
+must(_cadre.find("<picture>") < _cadre.find('<video id="film-boucle"') and ".film-cadre video { opacity: 0;" in idx and ".film-cadre.joue video { opacity: 1; }" in idx,
+     "image fixe d'abord, la vidéo apparaît en lecture")
+must("vid.poster = vertical ? '/assets/film/poster-vertical.jpg' : '/assets/film/poster.jpg';" in idx, "film complet : image du brief (0:42) en attente")
+must(not (ROOT / "video").exists() and "hero.mp4" not in idx and not (ROOT / "assets" / "hero.mp4").exists(), "ancien film et sa source retirés")
+_gi = (ROOT / ".gitignore").read_text()
+must("film/rushes/" in _gi and "film/frames*/" in _gi, "rushes et images de rendu du film ignorés")
+_suivis = subprocess.run(["git", "-C", str(ROOT), "ls-files", "film/rushes", "film/frames"], capture_output=True, text=True).stdout.strip()
+must(_suivis == "", "aucun rush ni image de rendu suivi par git")
+must(".film-dialog.vertical { width: min(92vw, calc(min(92vh, 900px) * 9 / 16));" in idx, "lecteur vertical jamais plus large que l'écran")
+print("OK T13b film final")

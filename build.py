@@ -441,8 +441,8 @@ write_page(
     og_title="Une équipe d'agents IA qui travaille vraiment pour toi.",
     og_desc=HERO_SOUS_TITRE,
     # L'image fixe du film (premier affichage) est demandée tout de suite : verticale sur mobile, 16:9 au bureau
-    head=('<link rel="preload" as="image" type="image/webp" href="/film/poster-vertical@720.webp" media="(max-width: 699px)" fetchpriority="high" />'
-          '<link rel="preload" as="image" type="image/webp" href="/film/poster@1280.webp" media="(min-width: 700px)" fetchpriority="high" />'),
+    head=('<link rel="preload" as="image" type="image/webp" href="/assets/film/poster-vertical@720.webp" media="(max-width: 699px)" fetchpriority="high" />'
+          '<link rel="preload" as="image" type="image/webp" href="/assets/film/poster@1280.webp" media="(min-width: 700px)" fetchpriority="high" />'),
 )
 
 # ── Page /integrations (task 11) : catalogue searchable depuis data/integrations.json.
@@ -578,7 +578,7 @@ for static in ["og.jpg", "logo.png"]:
     src = ROOT / "assets" / static
     if src.exists():
         shutil.copy(src, ROOT / "dist" / static)
-(ROOT / "dist" / "film").mkdir(exist_ok=True)
+(ROOT / "dist" / "assets" / "film").mkdir(parents=True, exist_ok=True)
 # Image fixe du haut = première image de la boucle (le passage à la vidéo ne se voit pas). Refaite à chaque
 # construction quand ffmpeg et Pillow sont là (les fichiers du film peuvent être remplacés, mêmes noms) ;
 # sinon, les WebP du dépôt servent telles quelles.
@@ -596,7 +596,7 @@ except (ImportError, subprocess.CalledProcessError):
     pass
 for f in (ROOT / "assets" / "film").glob("*"):
     if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
-        shutil.copy(f, ROOT / "dist" / "film" / f.name)
+        shutil.copy(f, ROOT / "dist" / "assets" / "film" / f.name)
 shutil.copytree(ROOT / "assets" / "equipe" / "boucles", ROOT / "dist" / "assets" / "equipe" / "boucles", dirs_exist_ok=True)
 shutil.copytree(ROOT / "assets" / "logos", ROOT / "dist" / "assets" / "logos", dirs_exist_ok=True)
 (ROOT / "dist" / "fonts").mkdir(exist_ok=True)

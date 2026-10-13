@@ -163,7 +163,9 @@
     width: min(92vw, 1100px); max-width: none; max-height: 92vh; padding: 0; margin: auto;
     border: 0; border-radius: 18px; overflow: hidden; background: var(--night-3); color: #fff; box-shadow: var(--shadow-xl);
   }
-  .film-dialog.vertical { width: auto; height: min(92vh, 900px); aspect-ratio: 9 / 16; }
+  /* vertical : la plus petite des deux limites (largeur ou hauteur de l'écran), jamais coupé */
+  .film-dialog.vertical { width: min(92vw, calc(min(92vh, 900px) * 9 / 16)); height: auto; aspect-ratio: 9 / 16; }
+  .film-dialog.vertical video { height: 100%; object-fit: contain; }
   .film-dialog::backdrop { background: rgba(9, 11, 15, .78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
   .film-dialog video { display: block; width: 100%; height: 100%; max-height: 92vh; background: #000; }
   .film-close {
@@ -620,8 +622,8 @@
       <div class="hp-film">
         <figure class="film-cadre" id="film-cadre">
           <picture>
-            <source media="(max-width: 699px)" srcset="/film/poster-vertical@720.webp" type="image/webp" width="720" height="1280" />
-            <img src="/film/poster@1280.webp" width="1280" height="720" alt="Un agent immobilier en visite ; à côté, la carte « Rappel de visite » préparée par Emma, en attente de validation." fetchpriority="high" />
+            <source media="(max-width: 699px)" srcset="/assets/film/poster-vertical@720.webp" type="image/webp" width="720" height="1280" />
+            <img src="/assets/film/poster@1280.webp" width="1280" height="720" alt="Un agent immobilier en visite ; à côté, la carte « Rappel de visite » préparée par Emma, en attente de validation." fetchpriority="high" />
           </picture>
           <video id="film-boucle" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"></video>
           <button type="button" class="anim-pause" id="anim-pause" aria-pressed="false" aria-label="Mettre en pause les animations">
@@ -1204,7 +1206,7 @@
     v.addEventListener('playing', () => cadre.classList.add('joue'));
     const mobile = matchMedia('(max-width: 699px)');
     const charge = () => {
-      const base = mobile.matches ? '/film/boucle-vertical' : '/film/boucle';
+      const base = mobile.matches ? '/assets/film/boucle-vertical' : '/assets/film/boucle';
       cadre.classList.remove('joue');
       v.innerHTML = '<source src="' + base + '.webm" type="video/webm" /><source src="' + base + '.mp4" type="video/mp4" />';
       v.load();
@@ -1294,8 +1296,8 @@
     btn.addEventListener('click', () => {
       if (!vid.dataset.pret) {
         const vertical = matchMedia('(max-width: 699px)').matches;
-        const base = vertical ? '/film/revaly-45s-vertical' : '/film/revaly-45s';
-        vid.poster = vertical ? '/film/poster-vertical@720.webp' : '/film/poster@1280.webp';
+        const base = vertical ? '/assets/film/revaly-45s-vertical' : '/assets/film/revaly-45s';
+        vid.poster = vertical ? '/assets/film/poster-vertical.jpg' : '/assets/film/poster.jpg';
         vid.innerHTML = '<source src="' + base + '.webm" type="video/webm" /><source src="' + base + '.mp4" type="video/mp4" />';
         dlg.classList.toggle('vertical', vertical);
         vid.dataset.pret = '1';
