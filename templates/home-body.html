@@ -169,7 +169,7 @@
   .film-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   /* ── 2. La preuve : le fondateur et le chiffre qualité, côte à côte ── */
   .confiance-preuve { display: grid; gap: 16px; margin-top: 20px; align-items: stretch; text-align: left; }
-  @media (min-width: 900px) { .confiance-preuve { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 20px; } }
+  @media (min-width: 900px) { .confiance-preuve { grid-template-columns: 240px minmax(0, 1fr); gap: 16px; } .confiance-preuve .fondateur { padding: 18px 22px; } .confiance-preuve .fondateur blockquote { margin-top: 6px; font-size: 15px; } }
   .confiance-preuve .fondateur { margin: 0; max-width: none; height: 100%; }
   .pf-chiffre { display: flex; flex-direction: column; justify-content: center; padding: 20px 24px; border-radius: 22px; background: var(--carte); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
   .pf-nombre { margin: 0; font-size: clamp(56px, 7vw, 84px); font-weight: 560; line-height: 1; letter-spacing: -0.05em; color: var(--iris-ink); font-variant-numeric: tabular-nums; }
@@ -361,7 +361,20 @@
   @keyframes appui { 50% { transform: scale(.94); } }
   .dv-ou { margin: 14px 0 0; text-align: center; font-size: 13.5px; color: var(--muted); }
   @media (prefers-reduced-motion: reduce) { .demo-vue *, .demo-vue *::after { transition-delay: 0s !important; animation: none !important; } }
-  @media (max-width: 640px) { #comment .demo-zone { display: none; } }
+  /* Page plus courte (13/10) : les trois étapes sans panneau à toutes les largeurs (la démo concrète est déjà plus haut),
+     en rangée de trois au bureau ; le haut de page sans la rangée de cartes (le film en grand les montre déjà) ;
+     trois paires de boutons au plus (après le cycle, au prix, à la fin) */
+  #comment .demo-zone { display: none; }
+  @media (min-width: 960px) {
+    .etapes-bloc { grid-template-columns: minmax(0, 1fr); }
+    .etapes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+    .etape { border-bottom: 0; padding: 20px 22px 8px; border-radius: 22px; background: var(--raised); border: 0.5px solid var(--line); }
+    .etape-barre { left: 22px; right: 22px; bottom: 0; }
+    .etape-corps p { max-width: none; }
+  }
+  .flux-zone { display: none; }
+  #equipe .paire-fin, #controle .paire-fin { display: none; }
+  .mx-detail { display: none; }
   @media (max-width: 520px) {
     .demo { padding: 14px; border-radius: 22px; }
     .etape-t { font-size: 17px; }
@@ -963,7 +976,19 @@
     #comment .etape-corps p + p:not(.etape-offert) { display: none; }
     .confiance-preuve { gap: 12px; margin-top: 16px; }
     .fondateur blockquote { font-size: 14.5px; }
-    .calc-carte .calc-detail:not(.ouvert) li:nth-child(n+3) { display: none; }
+    .calc-carte .calc-detail:not(.ouvert) { display: none; }
+    /* téléphone, page plus courte : le film un peu moins large, le chiffre de réussite en ligne, les trois points de Max en une ligne chacun, le pied serré */
+    .hp-film { width: min(100%, 320px); }
+    .pf-chiffre { flex-direction: row; align-items: center; gap: 14px; padding: 14px 18px; }
+    .pf-nombre { font-size: 44px; } .pf-legende { margin: 0; font-size: 14.5px; }
+    .fondateur h3 { display: none; }
+    .mx-points p { display: none; }
+    .mx-points { gap: 10px; }
+    .mx-fil { padding: 10px; gap: 8px; }
+    .mx-transcrit { font-size: 13px; }
+    .sc-scene { aspect-ratio: 4 / 3 !important; }
+    .foot { padding-top: 24px; }
+    .calc-carte .calc-pied { margin-top: 2px; }
   }
   @media (max-width: 520px) {
     .eq-taches { display: none; }
