@@ -570,32 +570,41 @@
     .eq-o-barre { left: 12px; right: 12px; }
   }
 
-  /* ── 9. Calculateur de temps rendu ── */
-  .calc { display: grid; gap: 32px; grid-template-columns: 1fr; margin-top: var(--tete-visuel); }
-  .calc-carte, .calc-statique { background: var(--carte); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-md); padding: 24px; }
-  .calc-carte { display: none; gap: 28px; grid-template-columns: 1fr; }
+  /* ── 9. Ton temps, compacté : deux champs et le total sur une ligne, les quatre tâches qui pèsent le plus, le détail
+       complet dépliable (jamais un chiffre sans son détail). Sans script : l'exemple par défaut et ses huit tâches. ── */
+  .calc { max-width: 880px; margin: var(--tete-visuel) auto 0; }
+  .calc-carte, .calc-statique { background: var(--carte); border: 0.5px solid var(--line); border-radius: 24px; box-shadow: var(--shadow-md); padding: 26px 28px; text-align: left; }
+  .calc-carte { display: none; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px 36px; align-items: end; }
   .calc-actif .calc-carte { display: grid; }
   .calc-actif .calc-statique { display: none; }
-  @media (min-width: 900px) {
-    .calc-carte { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 48px; padding: 36px; align-items: start; }
-    .calc-carte .calc-champs { grid-template-columns: 1fr; gap: 18px; }
-    .calc-carte .calc-resultat { margin-top: 0; padding-top: 0; border-top: 0; }
-  }
-  .calc-statique .calc-resultat { margin-top: 0; padding-top: 0; border-top: 0; }
-  .calc-plafond { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
   .calc-champs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 340px) { .calc-champs { grid-template-columns: 1fr; } }
   .calc-champ { display: flex; flex-direction: column; justify-content: flex-end; }
   .calc-champ label { display: block; font-size: 13.5px; font-weight: 500; color: var(--muted); margin-bottom: 7px; }
-  .calc-champ input { width: 100%; font: inherit; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); background: var(--champ); border: 0.5px solid var(--line-strong); border-radius: 12px; padding: 12px 14px; min-height: 48px; }
+  .calc-champ input { width: 100%; font: inherit; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); background: var(--champ); border: 0.5px solid var(--line-strong); border-radius: 12px; padding: 11px 14px; min-height: 48px; }
   .calc-champ input:focus-visible { outline: 2px solid var(--iris); outline-offset: 1px; border-color: transparent; }
-  .calc-resultat { margin: 24px 0 0; padding-top: 22px; border-top: 0.5px solid var(--line); font-size: 21px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.35; color: var(--ink); }
-  .calc-resultat b { color: var(--iris-ink); font-size: 1.5em; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .calc-detail { list-style: none; margin: 16px 0 0; padding: 0; }
-  .calc-detail li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 0.5px solid var(--line); font-size: 14.5px; color: var(--muted); }
-  .calc-detail li:last-child { border-bottom: 0; }
-  .calc-detail li span:last-child { color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .calc-note { margin: 14px 0 0; font-size: 13px; color: var(--subtle); }
+  .calc-resultat { margin: 0; font-size: 19px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.3; color: var(--ink); }
+  .calc-resultat b { color: var(--iris-ink); font-size: 1.7em; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .calc-plafond { margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+  .calc-detail { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .calc-carte .calc-detail { grid-column: 1 / -1; padding-top: 18px; border-top: 0.5px solid var(--line); }
+  .calc-statique .calc-detail { margin-top: 16px; }
+  .calc-detail li { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: var(--champ); font-size: 13.5px; line-height: 1.35; color: var(--muted); }
+  .calc-detail li span:last-child { font-size: 17px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .calc-carte .calc-detail:not(.ouvert) li:nth-child(n+5) { display: none; }
+  .calc-pied { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; margin-top: -6px; }
+  .calc-plus {
+    min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 2px; background: none; border: 0; cursor: pointer;
+    font: 500 14.5px/1 var(--font-sans); color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px;
+  }
+  .calc-plus svg { transition: transform .2s; }
+  .calc-plus[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .calc-note { margin: 0; font-size: 13px; color: var(--subtle); }
+  .calc-statique .calc-note { margin-top: 14px; }
+  @media (max-width: 760px) {
+    .calc-carte, .calc-statique { padding: 18px; border-radius: 20px; }
+    .calc-carte { grid-template-columns: minmax(0, 1fr); }
+    .calc-detail { grid-template-columns: 1fr 1fr; }
+  }
 
   /* ── 10. Rien ne part sans toi : storyboard (① brouillon ② notification ③ tu envoies depuis ta boîte),
        quatre engagements, le fondateur. armed/play une seule fois ; sans JS ou mouvement réduit : état final. ── */
@@ -744,6 +753,16 @@
 
   /* ── 12. FAQ ── */
   #faq-list { max-width: 760px; margin: var(--tete-visuel) auto 0; }
+  .faq-encore {
+    max-width: 760px; margin: 32px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px;
+    padding: 22px 24px; border-radius: 22px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); text-align: left;
+  }
+  .faq-encore-t { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+  .faq-encore-s { margin: 4px 0 0; font-size: 14.5px; color: var(--muted); }
+  .faq-encore > div:first-child { flex: 1 1 260px; }
+  .faq-encore-b { display: flex; flex-wrap: wrap; gap: 10px; }
+  .faq-encore .btn { min-height: 46px; padding: 11px 20px; font-size: 15px; justify-content: center; }
+  @media (max-width: 520px) { .faq-encore-b { width: 100%; flex-wrap: nowrap; } .faq-encore .btn { flex: 1 1 0; min-width: 0; padding: 11px 8px; } }
   .faq-item { border-bottom: 0.5px solid var(--line); }
   .faq-item > button {
     width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px;
@@ -759,7 +778,12 @@
   .faq-body p { margin: 0 4px 18px; font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 620px; }
 
   /* ── 13. Appel final : une reprise forte, comme le haut de page ── */
-  #demo .final { padding-top: 0; }
+  #demo .final {
+    max-width: 1080px; margin: 0 auto; padding: clamp(56px, 7vw, 96px) clamp(20px, 4vw, 48px); border-radius: 36px;
+    background: radial-gradient(70% 90% at 50% 0%, color-mix(in srgb, var(--iris) 9%, var(--raised)), var(--raised) 70%);
+    border: 0.5px solid var(--line); box-shadow: var(--shadow-md);
+  }
+  #demo .final::before { inset: -10% -6%; }
   .final .faces { display: flex; justify-content: center; margin-bottom: 26px; }
   .final .faces img { width: 56px; height: 56px; border-radius: 50%; background: #F1F2F7; box-shadow: 0 0 0 3px var(--bg); }
   .final .faces img + img { margin-left: -12px; }
@@ -779,19 +803,12 @@
   .sticky-cta .btn:first-child { flex: 1 1 auto; }
   /* Mobile : page plus courte (cible ~9 000 px) — rythme resserré, doublons repliés */
   @media (max-width: 760px) {
-    .calc-carte .calc-gauche .calc-note { display: none; }
     .foot .about, .copyright { font-size: 12px; }
     .foot .about { margin-top: 4px; }
     .foot { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 14px; padding-top: 32px; }
     .foot > div:first-child { grid-column: 1 / -1; margin-bottom: 8px; }
     .foot a { padding: 4px 0; min-height: 44px; display: flex; align-items: center; font-size: 13.5px; line-height: 1.3; }
     #tarif .garanties { display: none; }
-    .calc { gap: 20px; }
-    .calc-detail li { padding: 7px 0; font-size: 14px; }
-    /* le détail du calculateur en deux colonnes : chaque tâche et ses minutes restent visibles */
-    .calc-detail { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; }
-    .calc-detail li { flex-direction: column; justify-content: flex-start; gap: 0; padding: 8px 0; border-bottom: 0.5px solid var(--line) !important; font-size: 13.5px; line-height: 1.35; }
-    .calc-detail li span:last-child { font-size: 15px; font-weight: 600; }
   }
   @media (max-width: 760px) { .sticky-cta { display: flex; } }
 </style>
@@ -1030,30 +1047,29 @@
         <p class="calc-note">Calcul indicatif à partir de durées moyennes par tâche. Total arrondi à la demi-heure.</p>
       </div>
       <div class="calc-carte">
-        <div class="calc-gauche">
-          <div class="calc-champs">
-            <div class="calc-champ">
-              <label for="calc-mandats">Mandats signés par mois</label>
-              <input id="calc-mandats" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="{{CALCUL_DEFAUT_M}}" />
-            </div>
-            <div class="calc-champ">
-              <label for="calc-visites">Visites par mois</label>
-              <input id="calc-visites" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="{{CALCUL_DEFAUT_V}}" />
-            </div>
+        <div class="calc-champs">
+          <div class="calc-champ">
+            <label for="calc-mandats">Mandats signés par mois</label>
+            <input id="calc-mandats" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="{{CALCUL_DEFAUT_M}}" />
           </div>
-          <p class="calc-note">Calcul indicatif à partir de durées moyennes par tâche. Total arrondi à la demi-heure.</p>
+          <div class="calc-champ">
+            <label for="calc-visites">Visites par mois</label>
+            <input id="calc-visites" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="{{CALCUL_DEFAUT_V}}" />
+          </div>
         </div>
-        <div class="calc-droite">
-          <div aria-live="polite">
-            <p class="calc-resultat" id="calc-resultat"></p>
-            <p class="calc-plafond" id="calc-plafond" hidden>Au-delà de 15 h par semaine, on arrête de compter.</p>
-          </div>
-          <ul class="calc-detail" id="calc-detail" aria-label="Détail par tâche, en minutes par semaine"></ul>
+        <div class="calc-total" aria-live="polite">
+          <p class="calc-resultat" id="calc-resultat"></p>
+          <p class="calc-plafond" id="calc-plafond" hidden>Au-delà de 15 h par semaine, on arrête de compter.</p>
+        </div>
+        <ul class="calc-detail" id="calc-detail" aria-label="Détail par tâche, en minutes par semaine"></ul>
+        <div class="calc-pied">
+          <button type="button" class="calc-plus" id="calc-plus" aria-expanded="false" aria-controls="calc-detail"><span>Voir les {{CALCUL_N}} tâches</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <p class="calc-note">Calcul indicatif à partir de durées moyennes par tâche. Total arrondi à la demi-heure.</p>
         </div>
       </div>
     </div>
     <script type="application/json" id="calcul-cfg">__CALCUL_JSON__</script>
-    <script type="module" src="/assets/calcul.js"></script>
+    <script type="module" src="/assets/calcul.js?v={{CALCUL_VERSION}}"></script>
     </div>
   </section>
 
@@ -1147,6 +1163,10 @@
     <div class="wrap">
     {{TETE_FAQ}}
     <div id="faq-list" data-ap>{{FAQ_ITEMS}}</div>
+    <div class="faq-encore" data-ap>
+      <div><p class="faq-encore-t">Encore une question ?</p><p class="faq-encore-s">Un humain te répond par écrit, ou on en parle en démo.</p></div>
+      <div class="faq-encore-b"><a class="btn ghost" href="mailto:support@revaly.io">Écrire à l'équipe</a><a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a></div>
+    </div>
     </div>
     <noscript><style>.faq-body { grid-template-rows: 1fr; } .faq-item .chev { display: none; }</style></noscript>
   </section>
@@ -1154,7 +1174,7 @@
   <!-- ═══════════════ 9. APPEL FINAL ═══════════════ -->
   <section class="hp-s" id="demo" aria-labelledby="t-fin">
     <div class="wrap">
-    <div class="final">
+    <div class="final halo">
       <span class="faces" aria-hidden="true" data-ap>
         <img src="/assets/equipe/boucles/max@256.webp" width="56" height="56" alt="" loading="lazy" />
         <img src="/assets/equipe/boucles/emma@256.webp" width="56" height="56" alt="" loading="lazy" />

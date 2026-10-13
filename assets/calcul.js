@@ -39,7 +39,8 @@ function brancher() {
     b.textContent = plafond ? `${cfg.plafond_heures_semaine} h ou plus` : `${fr(r.heures)} h`;
     sortie.append("≈ ", b, " par semaine rendues");
     liste.innerHTML = "";
-    r.detail.forEach((d) => {
+    // affichage : les tâches qui pèsent le plus d'abord (les quatre premières restent visibles, le reste se déplie)
+    r.detail.slice().sort((x, y) => y.minutes - x.minutes).forEach((d) => {
       const li = document.createElement("li");
       const a = document.createElement("span"), c = document.createElement("span");
       a.textContent = d.libelle; c.textContent = `${d.minutes} min`;
@@ -50,6 +51,13 @@ function brancher() {
     c.addEventListener("input", maj);
     // À la sortie du champ, une saisie invalide est remplacée par la valeur réellement utilisée.
     c.addEventListener("change", () => { if (c.value.trim() !== "") c.value = lire(c, c === champM ? MAX_MANDATS : MAX_VISITES); });
+  });
+  const plus = racine.querySelector("#calc-plus");
+  if (plus) plus.addEventListener("click", () => {
+    const ouvert = plus.getAttribute("aria-expanded") !== "true";
+    plus.setAttribute("aria-expanded", String(ouvert));
+    liste.classList.toggle("ouvert", ouvert);
+    plus.firstElementChild.textContent = ouvert ? "Masquer le détail" : `Voir les ${cfg.taches.length} tâches`;
   });
   racine.classList.add("calc-actif");
   maj();

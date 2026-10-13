@@ -374,7 +374,7 @@ print("OK v3 équipe : une phrase chacun")
 # ── Calculateur de temps rendu (task 9) ──
 subprocess.run(["node", str(ROOT / "tests" / "test_calcul.mjs")], check=True)
 must('id="calculateur"' in idx, "calculateur")
-must('id="calcul-cfg"' in idx and "__CALCUL_JSON__" not in idx and 'type="module" src="/assets/calcul.js"' in idx, "config injectée + module chargé")
+must('id="calcul-cfg"' in idx and "__CALCUL_JSON__" not in idx and re.search(r'type="module" src="/assets/calcul\.js\?v=[0-9a-f]{10}"', idx), "config injectée + module chargé (empreinte du contenu)")
 must((dist / "assets" / "calcul.js").exists(), "calcul.js copié dans dist")
 calc = idx.split('id="calculateur"', 1)[1].split("</section>", 1)[0]
 for t in ["Mandats signés par mois", "Visites par mois", 'aria-live="polite"', 'inputmode="numeric"',
@@ -717,3 +717,19 @@ for frag in ["Le point du matin", "Confirmation de visite", "242 000 €", "Piè
     must(frag in _eq_txt, f"carte de l'équipe : {frag}")
 must("ce n'est pas une photo d'origine d'un client" in (ROOT / "film" / "sources.md").read_text(), "avant / après de Raphaël : illustration déclarée")
 print("OK l'équipe en onglets")
+
+# ── Ton temps compacté, le prix, la FAQ centrée et la fin (tâche 17) ──
+_calc = idx.split('id="calculateur"', 1)[1].split("</section>", 1)[0]
+must('id="calc-plus" aria-expanded="false" aria-controls="calc-detail"' in _calc and ".calc-carte .calc-detail:not(.ouvert) li:nth-child(n+5) { display: none; }" in idx,
+     "calculateur : quatre tâches visibles, le détail complet dépliable")
+_cjs = (ROOT / "assets" / "calcul.js").read_text()
+must("sort((x, y) => y.minutes - x.minutes)" in _cjs and 'liste.classList.toggle("ouvert", ouvert)' in _cjs, "les tâches qui pèsent le plus d'abord ; le bouton déplie la liste")
+must(idx.find('id="calculateur"') < idx.find('id="tarif"') and idx.split('id="calculateur"', 1)[1].split('id="tarif"', 1)[0].count("<section") == 1, "le prix suit directement le calculateur")
+_faqs = idx.split('id="faq"', 1)[1].split("</section>", 1)[0]
+must("Encore une question ?" in _faqs and "mailto:support@revaly.io" in _faqs and 'data-track="demo"' in _faqs, "FAQ : carte « Encore une question ? » (écrire, démo)")
+_fin2 = idx.split('id="demo"', 1)[1].split("</section>", 1)[0]
+must('class="final halo"' in _fin2 and _fin2.count("<img") == 6 and 'class="paire"' in _fin2, "fin : les six visages, le titre, la paire de boutons")
+_pi = idx.split('id="pile"', 1)[1].split("</ol>", 1)[0]
+must("html.js .pile.anime .notif:not(.arrive)" in idx and "pile.classList.add('anime')" in idx and "if (!pile || REDUCED" in idx, "pile : animée seulement avec le script et sans mouvement réduit (sinon complète)")
+must(".halo::before" in idx and idx.count(" halo") >= 4, "profondeur par des halos (au moins quatre visuels)")
+print("OK ton temps, prix, FAQ, fin")

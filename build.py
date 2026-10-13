@@ -578,8 +578,8 @@ TETES = {
     "TETE_EQUIPE": dict(sur_titre="L'équipe", titre="Six spécialistes. Un seul abonnement.",
                         sous_titre="Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.", id_titre="t-equipe"),
     "TETE_CONTROLE": dict(sur_titre="Pourquoi nous faire confiance", titre="Rien ne part sans toi.",
-                          sous_titre="Chaque message, post ou document t'attend en brouillon : tu relis, tu corriges si besoin, tu valides. "
-                                     "Et tes e-mails, c'est toi qui les envoies, depuis ta boîte.", id_titre="t-controle"),
+                          sous_titre="Chaque message, post ou document t'attend en brouillon : tu relis, tu valides. "
+                                     "Tes e-mails, c'est toi qui les envoies, depuis ta boîte.", id_titre="t-controle"),
     "TETE_CALCUL": dict(sur_titre="Ton temps", titre="Combien d'heures te rend ton équipe ?",
                         sous_titre="Mets ton rythme du mois : on compte ce que ton équipe prépare à ta place, tâche par tâche.", id_titre="t-calcul"),
     "TETE_TARIF": dict(sur_titre="Le prix", titre="Une équipe entière pour moins qu'une demi-journée d'assistante par mois.",
@@ -602,6 +602,9 @@ body_home = render("home-body.html", {
     "FONDATEUR_VISUEL": fondateur_visuel(),
     "CALCUL_STATIQUE": calculateur_statique(),
     "CALCUL_DEFAUT_M": str(CALCUL_DEFAUT[0]), "CALCUL_DEFAUT_V": str(CALCUL_DEFAUT[1]),
+    "CALCUL_N": str(len(CALCUL_CFG["taches"])),
+    # le module du calculateur porte l'empreinte de son contenu : un navigateur ne garde jamais une ancienne version
+    "CALCUL_VERSION": __import__("hashlib").sha256((ROOT / "assets" / "calcul.js").read_bytes()).hexdigest()[:10],
     "EQUIPE_CARTES": equipe_cartes(),
     "EQUIPE_ONGLETS": equipe_onglets(),
     "PREUVE": preuve_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
