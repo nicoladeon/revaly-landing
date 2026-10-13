@@ -273,14 +273,22 @@ must('id="bande-outils"' in idx and "Fonctionne avec tes outils" in idx, "outils
 must(idx.find('id="bande-outils"') > idx.find('id="comment"'), "les outils dans « Comment ça marche », plus en haut de page")
 must("Tes contacts SeLoger, Leboncoin et Bien'ici arrivent directement chez Emma" in idx.replace("&#x27;", "'"), "ligne portails")
 reseaux = json.loads((ROOT / "data" / "reseaux.json").read_text())
+sys.path.insert(0, str(ROOT))
+import build as _build  # (construction idempotente ; même module réutilisé plus bas)
 if reseaux:
-    must("Des agents de ces réseaux travaillent déjà avec Revaly" in idx, "phrase exacte réseaux")
-    must("Les marques citées appartiennent à leurs propriétaires" in idx, "mention marques")
-    must('id="bande-reseaux"' in idx, "bande réseaux affichée")
+    # Décision de Julien (12/10) : noms en texte, sans logo, en attendant l'avis du juriste (RESEAUX_LOGOS = False)
+    must(_build.RESEAUX_LOGOS is False, "réseaux : version texte livrée (logos éteints)")
+    _pr = idx.split('id="bande-reseaux"', 1)[1].split("</div>", 1)[0]
+    must("Des agents de <b>Century 21</b>, <b>Orpi</b>, <b>Laforêt</b> et <b>IAD</b> utilisent déjà Revaly." in _pr, "phrase des réseaux, noms en gras")
+    must("<img" not in _pr and "/assets/logos/reseaux/" not in idx and "<a " not in _pr, "aucun logo ni lien de réseau affiché")
+    must("Les marques citées appartiennent à leurs propriétaires" in _pr, "mention marques")
+    _pl = _build.preuve_reseaux(reseaux, logos=True)
+    must(_pl.count("<img") == len(reseaux) and "Des agents de ces réseaux travaillent déjà avec Revaly" in _pl and all((ROOT / r["logo"]).exists() for r in reseaux),
+         "bande de logos prête à être rallumée d'une ligne (RESEAUX_LOGOS = True)")
 else:
     must('id="bande-reseaux"' not in idx, "bande réseaux masquée si liste vide")
 outils = json.loads((ROOT / "data" / "outils.json").read_text())
-for band, items in (("bande-outils", outils), ("bande-reseaux", reseaux)):
+for band, items in (("bande-outils", outils),):
     if not items: continue
     sec = idx.split(f'id="{band}"', 1)[1].split("</ul>", 1)[0]
     must(sec.count("<li") == len(items), f"{band} : une seule liste, un logo par entrée (plus de copie défilante)")

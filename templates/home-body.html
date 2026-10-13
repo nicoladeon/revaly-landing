@@ -48,6 +48,9 @@
   /* ── Preuve sociale, juste sous les boutons : une seule bande, immobile, logos en gris ── */
   .preuve { margin: clamp(28px, 3vw, 36px) auto 0; text-align: center; }
   .preuve-titre { margin: 0; font-size: 14px; font-weight: 500; color: var(--muted); }
+  /* Version texte (décision de Julien, en attendant l'avis du juriste) : même place, même poids visuel que la bande de logos */
+  .preuve-texte { margin: 0 auto; max-width: 34em; font-size: clamp(17px, 1.6vw, 20px); font-weight: 400; line-height: 1.45; letter-spacing: -0.01em; color: var(--muted); text-wrap: balance; }
+  .preuve-texte b { font-weight: 600; color: color-mix(in srgb, var(--ink) 72%, var(--muted)); white-space: nowrap; }
   .preuve-logos { list-style: none; margin: 14px auto 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 18px clamp(28px, 5vw, 64px); }
   .preuve-logos li { display: flex; align-items: center; height: 32px; }
   .preuve-logos img { display: block; filter: brightness(0); opacity: .55; }

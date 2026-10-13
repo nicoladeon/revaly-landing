@@ -140,14 +140,26 @@ def cartes_hero():
             f'<p class="carte-msg">{_esc(_typo(c["message"]))}</p></article>')
     return "".join(out)
 
-def preuve_reseaux(reseaux):
-    """Une seule bande de preuve sous les boutons : les logos des réseaux, en gris, immobiles."""
+# Preuve sociale sous les boutons. Décision de Julien (12/10) : les noms des réseaux EN TEXTE, sans logo, en attendant
+# l'avis de son juriste. RESEAUX_LOGOS = True rallume la bande de logos (assets/logos/reseaux/ gardé) sans autre changement.
+RESEAUX_LOGOS = False
+
+def _liste_fr(noms):  # « A, B, C et D »
+    return noms[0] if len(noms) == 1 else ", ".join(noms[:-1]) + " et " + noms[-1]
+
+def preuve_reseaux(reseaux, logos=None):
+    """Une seule ligne de preuve sous les boutons : les noms des réseaux (ou leurs logos en gris si logos=True)."""
     if not reseaux:
         return ""
-    logos = "".join(_bande_item(r, False) for r in reseaux)
-    return (f'<div class="preuve" id="bande-reseaux"><p class="preuve-titre">Des agents de ces réseaux travaillent déjà avec Revaly</p>'
-            f'<ul class="preuve-logos">{logos}</ul>'
-            f'<p class="preuve-mention">Les marques citées appartiennent à leurs propriétaires.</p></div>')
+    logos = RESEAUX_LOGOS if logos is None else logos
+    mention = '<p class="preuve-mention">Les marques citées appartiennent à leurs propriétaires.</p>'
+    if logos:
+        items = "".join(_bande_item(r, False) for r in reseaux)
+        return (f'<div class="preuve" id="bande-reseaux"><p class="preuve-titre">Des agents de ces réseaux travaillent déjà avec Revaly</p>'
+                f'<ul class="preuve-logos">{items}</ul>{mention}</div>')
+    noms = _liste_fr([f"<b>{_esc(r['nom'])}</b>" for r in reseaux])
+    return (f'<div class="preuve" id="bande-reseaux"><p class="preuve-texte">Des agents de {noms} utilisent déjà Revaly.</p>'
+            f'{mention}</div>')
 
 def outils_etape(outils):
     """Les outils branchés, en petit, dans l'étape 1 de « Comment ça marche »."""
