@@ -55,3 +55,11 @@ Logos officiels repris des sites des réseaux, téléchargés le 2026-10-12, cha
 | reseaux/3gimmo.webp | https://3gimmo.com/site/img/Logo/3G%20LOGO%20SITE_horizontal.png | recadré (seule version publiée, 150 × 38 px) |
 | reseaux/sextant.svg | https://www.sextantfrance.fr/brand/logos/Sextant_logo_june-2026-line.svg | svgo |
 | reseaux/axo.webp | https://www.axo.immo/images/logo.png (axo-actifs.fr redirige vers axo.immo) | slogan coupé ; symbole au-dessus retiré, le mot seul, WebP 41 px (13/10) |
+
+## Logos ajoutés le 2026-10-13 (tâche 17, « Tu ne changes pas d'outil »)
+| Fichier | Origine | Licence |
+|---|---|---|
+| googledrive.svg, facebook.svg, instagram.svg | simple-icons 16.25.0, https://github.com/simple-icons/simple-icons (titre retiré) | CC0 1.0 |
+| linkedin.svg, googlemybusiness.svg | simple-icons 9.21 (paquet simple-icons-legacy ; retirés des versions récentes), titre retiré | CC0 1.0 |
+
+googlemybusiness.svg n'est publié que si la fiche Google est allumée (`GOOGLE_FICHE` dans build.py). Usage de désignation uniquement.

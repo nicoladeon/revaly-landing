@@ -3,8 +3,20 @@
 pour chaque page (home pour l'instant) via write_page(), copie les assets statiques,
 écrit robots.txt + sitemap.xml réels.
 Usage : python3 build.py  (puis : wrangler pages deploy dist --project-name revaly)"""
-import base64, html, json, math, pathlib, re, shutil
+import base64, html, json, math, os, pathlib, re, shutil
 ROOT = pathlib.Path(__file__).parent
+
+# ── Interrupteurs (décisions de Julien du 13/10) : tant qu'ils sont éteints, la page reste celle d'aujourd'hui.
+# EQUIPE_V2 : Hugo (prospection) prend la place de Raphaël, Zoé reprend les photos et les visuels (data/equipe-v2.json) ;
+#   l'équipe reste à six, /agents/raphael/ renvoie vers /agents/zoe/.
+# GOOGLE_FICHE : la fiche Google de l'agence (Zoé publie des articles et répond aux avis), dans « Après la vente » et les outils.
+# Les tests construisent aussi les variantes allumées, dans un dossier à part (REVALY_DIST), sans toucher à dist/.
+EQUIPE_V2 = False
+GOOGLE_FICHE = False
+if os.environ.get("REVALY_EQUIPE_V2") == "1":
+    EQUIPE_V2 = True
+if os.environ.get("REVALY_GOOGLE_FICHE") == "1":
+    GOOGLE_FICHE = True
 
 def uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode((ROOT / path).read_bytes()).decode()
@@ -43,9 +55,46 @@ repl = {"__CALENDLY__": CALENDLY_URL}
 repl["__META_PIXEL_ID__"] = META_PIXEL_ID
 repl["__CALCUL_JSON__"] = json.dumps(json.loads((ROOT / "data" / "calculateur.json").read_text()), ensure_ascii=False).replace("</", "<\\/")
 repl["__PAYMENT_LINKS_JSON__"] = json.dumps(PAYMENT_LINKS, ensure_ascii=False)
-for k in ["max", "emma", "christine", "zoe", "raphael", "lucas"]:
-    repl[f"__{k.upper()}128__"] = uri(f"assets/equipe/portraits/{k}@128.webp", "image/webp")
-    repl[f"__{k.upper()}512__"] = uri(f"assets/equipe/portraits/{k}@512.webp", "image/webp")
+# ── Les agents : data/agents.json, et avec EQUIPE_V2 la relève de data/equipe-v2.json (Hugo à la place de Raphaël,
+# Zoé « réseaux et visuels »). Une seule liste pour l'accueil, les cartes du haut et les pages agents.
+_V2 = json.loads((ROOT / "data" / "equipe-v2.json").read_text())
+
+def _charge_agents():
+    agents = json.loads((ROOT / "data" / "agents.json").read_text())
+    if not EQUIPE_V2:
+        return agents
+    out = []
+    for a in agents:
+        if a["slug"] == _V2["retire"]:
+            out.extend(_V2["agents"])  # Hugo prend la place de Raphaël
+        elif a["slug"] == "zoe":
+            ra = next(x for x in agents if x["slug"] == _V2["retire"])
+            fiche = {k: a["fiche"].get(k, []) + ra["fiche"].get(k, []) for k in ("automatisations", "outils")}
+            out.append(dict(a, **_V2["zoe"], fiche=fiche))
+        else:
+            out.append(a)
+    return out
+
+AGENTS = _charge_agents()
+
+def _portrait_dispo(slug):
+    return (ROOT / "assets" / "equipe" / "boucles" / f"{slug}@256.webp").exists()
+
+def _monogramme(slug):  # emplacement provisoire tant que le portrait equipe-v6 n'est pas livré (Hugo)
+    lettre = next(a for a in AGENTS if a["slug"] == slug)["name"][0]
+    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#EEF0FE"/>'
+           f'<text x="32" y="42" text-anchor="middle" font-family="Geist,Arial,sans-serif" font-size="28" fill="#4F46E5">{lettre}</text></svg>')
+    return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+
+def _visage(slug):
+    """Adresse de l'image fixe du visage (le monogramme provisoire si le portrait n'existe pas encore)."""
+    return f"/assets/equipe/boucles/{slug}@256.webp" if _portrait_dispo(slug) else _monogramme(slug)
+
+for _a in AGENTS:
+    k = _a["slug"]
+    for t in (128, 512):
+        f = ROOT / "assets" / "equipe" / "portraits" / f"{k}@{t}.webp"
+        repl[f"__{k.upper()}{t}__"] = uri(f.relative_to(ROOT), "image/webp") if f.exists() else _monogramme(k)
 
 def render(tpl: str, ctx: dict) -> str:
     html = (ROOT / "templates" / tpl).read_text()
@@ -88,16 +137,21 @@ def _conv_panel(a):
 # + data/agents.json (prénom, phrase « pour_toi »). Hugo n'y figure pas.
 def _boucle(slug, taille):
     """Personnage equipe-v6 animé : image fixe d'abord, vidéo lancée par le script de la page."""
+    if not _portrait_dispo(slug):
+        return f'<img src="{_monogramme(slug)}" width="{taille}" height="{taille}" alt="">'
     return (f'<video data-loop muted loop playsinline preload="none" width="{taille}" height="{taille}" '
             f'poster="/assets/equipe/boucles/{slug}@256.webp" aria-hidden="true">'
             f'<source src="/assets/equipe/boucles/{slug}@256.webm" type="video/webm" />'
             f'<source src="/assets/equipe/boucles/{slug}@256.mp4" type="video/mp4" /></video>')
 
 def _equipe_accueil():
-    fiches = {a["slug"]: a for a in json.loads((ROOT / "data" / "agents.json").read_text())}
+    fiches = {a["slug"]: a for a in AGENTS}
     equipe = json.loads((ROOT / "data" / "equipe-accueil.json").read_text())
+    if EQUIPE_V2:
+        v2 = _V2["equipe_accueil"]
+        equipe = [dict(v2["hugo"], slug="hugo") if e["slug"] == v2["hugo"]["place_de"] else dict(e, **v2.get(e["slug"], {})) for e in equipe]
     for e in equipe:
-        if e["slug"] not in fiches or e["slug"] == "hugo":
+        if e["slug"] not in fiches or (e["slug"] == "hugo" and not EQUIPE_V2):
             raise SystemExit(f"equipe-accueil.json : agent inconnu ou exclu ({e['slug']})")
         if len(e["taches"]) != 3:
             raise SystemExit(f"equipe-accueil.json : 3 tâches pour {e['slug']}")
@@ -106,41 +160,76 @@ def _equipe_accueil():
 def _typo(s):  # espaces insécables de la typographie française (« Vendu » ne se coupe pas, « : » reste collé)
     return s.replace("« ", "«\u00a0").replace(" »", "\u00a0»").replace(" :", "\u00a0:")
 
-# ── L'équipe (tâche 17) : six onglets (visage, prénom, métier) et un carrousel ; la carte au centre montre ce que l'agent
-# vient de préparer (data/equipe-accueil.json, champ « prepare », source prod notée), puis qui il est. Les voisines dépassent.
-_TYPES_PREPARE = {"message", "fourchette", "pieces", "posts", "avant-apres"}
+# ── L'équipe (tâche 17, version légère depuis la révision du 13/10) : six onglets (visage, prénom, métier) et un carrousel
+# de cartes « qui il est » : portrait, métier, une phrase, trois capacités, sa fiche. Le travail concret est montré plus
+# haut, moment par moment (cycle_vente). Les voisines dépassent sur les côtés.
+# ── De la prospection à l'acte, et même après (révision du 13/10) : un onglet par moment de la vente (data/cycle.json,
+# source prod notée), un scénario en conversation (ta question, la réponse de l'agent qui porte le travail) et ce qui est
+# prêt, avec le visage de qui l'a préparé. Une frise sous les onglets suit la vente et mène la rotation.
+def _cycle_moments():
+    moments = json.loads((ROOT / "data" / "cycle.json").read_text())
+    slugs = {a["slug"] for a in AGENTS}
+    out = []
+    for m in moments:
+        m = dict(m, **m["v2"]) if EQUIPE_V2 and m.get("v2") else dict(m)
+        if GOOGLE_FICHE and m.get("google_fiche"):
+            m["prets"] = m["prets"] + [m["google_fiche"]]
+        for x in [m["agent"]] + [p["agent"] for p in m["prets"]]:
+            if x not in slugs:
+                raise SystemExit(f"cycle.json : agent inconnu ou éteint ({x}, moment {m['id']})")
+        out.append(m)
+    return out
 
-def _prepare(e):
-    p = e["prepare"]
-    if p["type"] not in _TYPES_PREPARE:
-        raise SystemExit(f"equipe-accueil.json : type « prepare » inconnu pour {e['slug']}")
-    pastille = f'<span class="pr-pastille">{_esc(p["pastille"])}</span>' if p.get("pastille") else ""
-    tete = f'<div class="pr-tete"><p class="pr-titre">{_esc(_typo(p["titre"]))}</p>{pastille}</div>'
-    texte = f'<p class="pr-texte">{_esc(_typo(p["texte"]))}</p>' if p.get("texte") else ""
-    if p["type"] == "message":
-        corps = f'<p class="pr-message">{_mots(p["texte"])}</p>'
-        texte = ""
-    elif p["type"] == "fourchette":
-        points = "".join(f'<i style="--d:{d}"></i>' for d in (8, 17, 26, 31, 38, 44, 52, 57, 63, 71, 80, 90))
-        corps = (f'<p class="pr-prix"><span>{_esc(p["bas"])}</span><span class="pr-tiret">–</span><span>{_esc(p["haut"])}</span></p>'
-                 f'<div class="pr-echelle" aria-hidden="true"><span class="pr-plage"></span>{points}</div>')
-    elif p["type"] == "pieces":
-        n, deja = len(p["pieces"]), p["deja"]
-        lis = "".join(f'<li class="{"pr-ok" if i < deja else "pr-vient"}" style="--v:{max(0, i - deja)}">{_ico("circle-check")}{_ico("circle", "pr-vide")}'
-                      f'<span>{_esc(p_)}</span></li>' for i, p_ in enumerate(p["pieces"]))
-        compte = "".join(f'<b style="--v:{k}">{deja + k}/{n}</b>' for k in range(n - deja + 1))
-        tete = f'<div class="pr-tete"><p class="pr-titre">{_esc(_typo(p["titre"]))}</p><span class="pr-pastille pr-compte">{compte}</span></div>'
-        corps = f'<ul class="pr-pieces">{lis}</ul>'
-        texte = f'<p class="pr-texte pr-fin">{_ico("check")}{_esc(_typo(p["texte"]))}</p>'
-    elif p["type"] == "posts":
-        corps = '<ul class="pr-posts">' + "".join(
-            f'<li style="--v:{i}"><span class="pr-ico">{_ico(x["icone"])}</span><span class="pr-post">{_esc(_typo(x["titre"]))}</span>'
-            f'<span class="pr-quand">{_esc(x["quand"])}</span></li>' for i, x in enumerate(p["posts"])) + "</ul>"
-    else:  # avant-apres
-        corps = (f'<div class="pr-aa"><img src="/{_esc(p["avant"])}" width="640" height="400" alt="" loading="lazy">'
-                 f'<div class="pr-apres"><img src="/{_esc(p["apres"])}" width="640" height="400" alt="Photo retouchée par Raphaël : pièce lumineuse, couleurs justes." loading="lazy"></div>'
-                 '<span class="pr-ligne" aria-hidden="true"></span><span class="pr-label pr-l-avant">Avant</span><span class="pr-label pr-l-apres">Après</span></div>')
-    return f'<div class="eq-prepare"><p class="pr-qui">{_esc(e["nom"])} vient de préparer</p><div class="pr-carte pr-t-{p["type"]}">{tete}{corps}{texte}</div></div>'
+def cycle_vente():
+    noms = {a["slug"]: a["name"] for a in AGENTS}
+    moments = _cycle_moments()
+    onglets, frise, panneaux = [], [], []
+    for i, m in enumerate(moments):
+        sel = i == 0
+        onglets.append(f'<button type="button" role="tab" class="cy-onglet" id="cy-o-{m["id"]}" aria-controls="cy-{m["id"]}" '
+                       f'aria-selected="{"true" if sel else "false"}" tabindex="{0 if sel else -1}">{_esc(m["onglet"])}</button>')
+        frise.append(f'<li class="{"actif" if sel else ""}" style="--k:{i}"><i></i></li>')
+        prets = "".join(f'<li style="--v:{j}"><img src="{_visage(p["agent"])}" width="24" height="24" alt="" loading="lazy">'
+                        f'<span>{_esc(_typo(p["texte"]))} <em>{_esc(noms[p["agent"]])}</em></span>{_ico("check", "cy-coche")}</li>'
+                        for j, p in enumerate(m["prets"]))
+        chute = f'<p class="cy-chute">{_esc(_typo(m["chute"]))}</p>' if m.get("chute") else ""
+        panneaux.append(
+            f'<div class="cy-panneau{" actif" if sel else ""}" id="cy-{m["id"]}" role="tabpanel" aria-labelledby="cy-o-{m["id"]}">'
+            f'<div class="cy-conv"><p class="cy-q"><span class="cy-toi">Toi</span>{_esc(_typo(m["question"]))}</p>'
+            f'<div class="cy-r"><img src="{_visage(m["agent"])}" width="40" height="40" alt="" loading="lazy">'
+            f'<div><b>{_esc(noms[m["agent"]])}</b><p>{_mots(m["reponse"])}</p></div></div></div>'
+            f'<div class="cy-prets"><p class="cy-prets-t">Ce qui est prêt</p><ul>{prets}</ul>{chute}</div></div>')
+    return {"CYCLE_ONGLETS": "".join(onglets), "CYCLE_FRISE": "".join(frise), "CYCLE_PANNEAUX": "".join(panneaux)}
+
+# ── Tu ne changes pas d'outil (révision du 13/10, à la manière des intégrations de Limova) : les tuiles des outils, Modelo
+# en premier, puis ce que l'équipe fait dans Modelo. La fiche Google n'apparaît qu'avec GOOGLE_FICHE.
+OUTILS_TUILES = [("Modelo", "assets/logos/modelo.svg"), ("Gmail", "assets/logos/gmail.svg"), ("Outlook", "assets/logos/outlook.svg"),
+                 ("Google Agenda", "assets/logos/google-agenda.svg"), ("WhatsApp", "assets/logos/whatsapp.svg"),
+                 ("Telegram", "assets/logos/telegram.svg"), ("Google Drive", "assets/logos/googledrive.svg"),
+                 ("Canva", "assets/logos/canva.svg"), ("Facebook", "assets/logos/facebook.svg"),
+                 ("Instagram", "assets/logos/instagram.svg"), ("LinkedIn", "assets/logos/linkedin.svg")]
+OUTILS_FICHE_GOOGLE = ("Fiche Google", "assets/logos/googlemybusiness.svg")
+DANS_MODELO = ["Lit tes biens, tes contacts, tes visites, tes offres et tes étapes de vente : une étape franchie déclenche le travail qui suit",
+               "Relie chaque vente à son bien",
+               "Crée et met à jour les fiches contact, y compris les demandes qui arrivent des portails",
+               "Inscrit les actions et les rendez-vous dans l'agenda Modelo",
+               "Crée la fiche recherche de l'acquéreur",
+               "Consigne tes échanges (e-mails, messages) sur la bonne fiche",
+               "Vérifie le dossier de mandat"]
+
+def outils_tuiles():
+    tuiles = OUTILS_TUILES + ([OUTILS_FICHE_GOOGLE] if GOOGLE_FICHE else [])
+    lis = []
+    for nom, logo in tuiles:
+        mot = logo.rsplit("/", 1)[-1] in _HAUTEUR_LOGO
+        vb = re.search(r'viewBox="[\d.\-]+ [\d.\-]+ ([\d.]+) ([\d.]+)"', (ROOT / logo).read_text())
+        h = 26 if mot else 28
+        w = round(h * float(vb.group(1)) / float(vb.group(2)))
+        img = f'<img src="/{_esc(logo)}" alt="{_esc(nom) if mot else ""}" width="{w}" height="{h}" loading="lazy">'
+        lis.append(f'<li class="ot{" ot-modelo" if mot else ""}">{img}{"" if mot else f"<span>{_esc(nom)}</span>"}</li>')
+    modelo = "".join(f"<li>{_CHECK}<span>{_esc(_typo(x))}</span></li>" for x in DANS_MODELO)
+    return {"OUTILS_TUILES": f'<ul class="ot-tuiles" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(lis)}</ul>',
+            "DANS_MODELO": modelo}
 
 def equipe_onglets():
     out = []
@@ -148,7 +237,7 @@ def equipe_onglets():
         sel = "true" if i == 0 else "false"
         out.append(f'<button type="button" role="tab" class="eq-onglet" id="eq-onglet-{e["slug"]}" aria-controls="agent-{e["slug"]}" '
                    f'aria-selected="{sel}" tabindex="{0 if i == 0 else -1}">'
-                   f'<img src="/assets/equipe/boucles/{e["slug"]}@256.webp" width="36" height="36" alt="" loading="lazy">'
+                   f'<img src="{_visage(e["slug"])}" width="36" height="36" alt="" loading="lazy">'
                    f'<span class="eq-o-txt"><b>{_esc(e["nom"])}</b><span>{_esc(e["metier"])}</span></span>'
                    '<span class="eq-o-barre" aria-hidden="true"><i></i></span></button>')
     return "".join(out)
@@ -161,7 +250,6 @@ def equipe_cartes():
         taches = "".join(f"<li>{_CHECK}<span>{_esc(_typo(x))}</span></li>" for x in e["taches"])
         cartes.append(
             f'<article class="eq{" actif" if i == 0 else ""}" id="agent-{e["slug"]}" role="tabpanel" aria-labelledby="eq-onglet-{e["slug"]}" style="--k:{i}">'
-            f'{_prepare(e)}'
             f'<div class="eq-qui"><div class="eq-tete"><span class="eq-photo">{_boucle(e["slug"], 168)}</span>'
             f'<div><h3 class="eq-nom">{nom}</h3><p class="eq-metier">{_esc(e["metier"])}</p>'
             f'<p class="eq-pour">{_esc(e["pour_toi"])}</p></div></div>'
@@ -173,15 +261,17 @@ def equipe_cartes():
 # ── Haut de page (ronde Julien 1) : de vraies cartes de travail, au format des cartes « À valider » du produit
 # (data/cartes-accueil.json : agent, objet, extrait du message ; source prod notée pour chaque carte).
 def cartes_hero():
-    noms = {a["slug"]: a["name"] for a in json.loads((ROOT / "data" / "agents.json").read_text())}
+    noms = {a["slug"]: a["name"] for a in AGENTS}
     cartes = json.loads((ROOT / "data" / "cartes-accueil.json").read_text())
+    if EQUIPE_V2:
+        cartes = [dict(c, slug=_V2["cartes_hero"].get(c["slug"], c["slug"])) for c in cartes]
     out = []
     for i, c in enumerate(cartes):
-        if c["slug"] not in noms or c["slug"] == "hugo":
+        if c["slug"] not in noms:
             raise SystemExit(f"cartes-accueil.json : agent inconnu ou exclu ({c['slug']})")
         out.append(
             f'<article class="carte" style="--slot:{i}" data-slot="{i}">'
-            f'<div class="carte-tete"><img src="/assets/equipe/boucles/{c["slug"]}@256.webp" width="36" height="36" alt="" />'
+            f'<div class="carte-tete"><img src="{_visage(c["slug"])}" width="36" height="36" alt="" />'
             f'<p><b>{_esc(noms[c["slug"]])}</b> a préparé</p>'
             f'<span class="carte-ok" aria-hidden="true">Valider</span></div>'
             f'<p class="carte-objet">{_esc(_typo(c["objet"]))}</p>'
@@ -295,12 +385,12 @@ def outils_branchement(outils):
         else:
             lis.append(f'<li class="br">{cellules}'
                        '<span class="br-etat br-dispo">Disponible</span></li>')
-    return (f'<ul class="branche" id="bande-outils" aria-label="Fonctionne avec tes outils">{"".join(lis)}</ul>'
+    return (f'<ul class="branche" aria-label="Exemple : tes outils branchés">{"".join(lis)}</ul>'
             '<p class="et-portails">Tes contacts SeLoger, Leboncoin et Bien\'ici arrivent directement chez Emma.</p>')
 
 def _mots(texte):
     """Le texte d'un brouillon, mot par mot (chaque mot apparaît à son tour ; la place est réservée dès le départ)."""
-    return " ".join(f'<span class="mot" style="--m:{i}">{_esc(m)}</span>' for i, m in enumerate(_typo(texte).split(" ")))
+    return " ".join(f'<span class=m style=--m:{i}>{_esc(m)}</span>' for i, m in enumerate(_typo(texte).split(" ")))
 
 def post_vendu():
     c = next(c for c in json.loads((ROOT / "data" / "cartes-accueil.json").read_text()) if c["slug"] == "zoe")
@@ -474,7 +564,9 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
 # La construction écrit dans un dossier neuf (.dist-construction), puis le synchronise dans dist/ à la fin :
 # dist/ n'est jamais vide ni incomplet pendant une construction (un serveur local peut y être lancé et servir la
 # page au même moment), et aucun fichier retiré (ancienne vidéo, police) n'y reste.
-OUT = ROOT / ".dist-construction"
+# REVALY_DIST (tests seulement) : construire une variante ailleurs que dans dist/.
+DIST = pathlib.Path(os.environ["REVALY_DIST"]) if os.environ.get("REVALY_DIST") else ROOT / "dist"
+OUT = ROOT / ".dist-construction" if DIST == ROOT / "dist" else DIST.with_name(DIST.name + ".construction")
 shutil.rmtree(OUT, ignore_errors=True)
 OUT.mkdir()
 
@@ -572,9 +664,14 @@ TETES = {
     "TETE_PROBLEME": dict(sur_titre="Le problème", titre="Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.",
                           sous_titre="Chaque semaine, des heures partent dans ce qui ne vend rien : confirmer, relancer, rendre compte, "
                                      "publier, classer. Et ce qu'on oublie finit par coûter un mandat.", cote=True, id_titre="t-probleme"),
-    "TETE_SOLUTION": dict(sur_titre="La solution", titre="Ton équipe s'en occupe. Toi, tu valides.",
-                          sous_titre="Confirmer, relancer, rendre compte, publier : ton équipe le prépare à ta place. "
-                                     "Il reste à la brancher sur tes outils, et on le fait avec toi.", id_titre="t-solution"),
+    "TETE_CYCLE": dict(sur_titre="La solution", titre="De la prospection à l'acte. Et même après.",
+                       sous_titre="À chaque moment de la vente, ton équipe a déjà préparé la suite. Toi, tu valides.", id_titre="t-cycle"),
+    "TETE_OUTILS": dict(sur_titre="Tes outils", titre="Modelo reste ton CRM. Ton équipe travaille dedans.",
+                        sous_titre="Tu ne changes pas d'outil : ton équipe se branche sur ceux que tu utilises déjà, et on le fait avec toi.",
+                        id_titre="t-outils"),
+    "TETE_SOLUTION": dict(sur_titre="Mise en route", titre="Ton équipe en place en 3 étapes",
+                          sous_titre="Pas de logiciel à apprendre : on branche tes outils avec toi, ton équipe prépare, tu valides.",
+                          id_titre="t-solution"),
     "TETE_EQUIPE": dict(sur_titre="L'équipe", titre="Six spécialistes. Un seul abonnement.",
                         sous_titre="Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.", id_titre="t-equipe"),
     "TETE_CONTROLE": dict(sur_titre="Pourquoi nous faire confiance", titre="Rien ne part sans toi.",
@@ -607,6 +704,9 @@ body_home = render("home-body.html", {
     "CALCUL_VERSION": __import__("hashlib").sha256((ROOT / "assets" / "calcul.js").read_bytes()).hexdigest()[:10],
     "EQUIPE_CARTES": equipe_cartes(),
     "EQUIPE_ONGLETS": equipe_onglets(),
+    "VISAGES_FIN": "".join(f'<img src="{_visage(e["slug"])}" width="56" height="56" alt="" loading="lazy" />' for e in _equipe_accueil()),
+    **cycle_vente(),
+    **outils_tuiles(),
     "PREUVE": preuve_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
     "OUTILS_BRANCHEMENT": outils_branchement(json.loads((ROOT / "data" / "outils.json").read_text())),
     **post_vendu(),
@@ -670,6 +770,8 @@ def _mono_colors(name):
 
 def integrations_ctx():
     apps = json.loads((ROOT / "data" / "integrations.json").read_text())
+    if not GOOGLE_FICHE:  # la gestion de la fiche Google n'est pas encore en prod : elle n'apparaît nulle part
+        apps = [a for a in apps if a["name"] != "Google Business Profile"]
     bad = [a["name"] for a in apps if a["cat"] not in IT_CATS]
     if bad:
         raise SystemExit(f"integrations.json : catégorie inconnue pour {bad}")
@@ -735,14 +837,20 @@ write_page(
 )
 
 # ── Pages agents (onglet Agents — demande Julien 16/07) : /agents/ + 6 fiches. ──
-_agents = json.loads((ROOT / "data" / "agents.json").read_text())
+_agents = AGENTS
 write_page(
     "agents/index.html", render("agent-body.html", {"AGENT_MAIN": agents_index_main(_agents)}),
     title="L'équipe — six agents IA formés à l'immobilier | Revaly",
-    desc="Max coordonne, Emma gère l'admin, Christine le juridique, Zoé les réseaux, "
-         "Raphaël les photos, Lucas les estimations. Six fiches de poste complètes.",
+    desc=", ".join(f"{a['name']} ({a['role']})" for a in AGENTS) + " : six fiches de poste complètes.",
     path="/agents/",
 )
+if EQUIPE_V2:  # Raphaël n'est plus dans l'équipe : son ancienne adresse renvoie vers Zoé, qui reprend son travail
+    write_page("agents/raphael/index.html",
+               '<section class="wrap ag-hero"><p>Les photos et les visuels sont maintenant chez Zoé. '
+               '<a href="/agents/zoe/">Voir la fiche de Zoé</a></p></section>',
+               title="Zoé — réseaux et visuels | Revaly", desc="Les photos et les visuels sont chez Zoé.", path="/agents/raphael/",
+               noindex=True, head='<meta http-equiv="refresh" content="0; url=/agents/zoe/" />')
+    (OUT / "_redirects").write_text("/agents/raphael/ /agents/zoe/ 301\n/agents/raphael /agents/zoe/ 301\n")
 for _a in _agents:
     _pitch = (_a.get("fiche", {}).get("automatisations") or [{}])[0].get("pitch", "")
     write_page(
@@ -779,8 +887,10 @@ except (ImportError, subprocess.CalledProcessError):
 for f in (ROOT / "assets" / "film").glob("*"):
     if f.is_file() and f.suffix in {".mp4", ".webm", ".jpg", ".webp", ".vtt"}:
         shutil.copy(f, OUT / "assets" / "film" / f.name)
-shutil.copytree(ROOT / "assets" / "equipe" / "boucles", OUT / "assets" / "equipe" / "boucles", dirs_exist_ok=True)
-shutil.copytree(ROOT / "assets" / "logos", OUT / "assets" / "logos", dirs_exist_ok=True)
+shutil.copytree(ROOT / "assets" / "equipe" / "boucles", OUT / "assets" / "equipe" / "boucles", dirs_exist_ok=True,
+                ignore=shutil.ignore_patterns(f'{_V2["retire"]}@*') if EQUIPE_V2 else None)
+shutil.copytree(ROOT / "assets" / "logos", OUT / "assets" / "logos", dirs_exist_ok=True,
+                ignore=shutil.ignore_patterns("LICENSES.md", *([] if GOOGLE_FICHE else ["googlemybusiness.svg"])))
 shutil.copytree(ROOT / "assets" / "accueil", OUT / "assets" / "accueil", dirs_exist_ok=True)
 (OUT / "fonts").mkdir(exist_ok=True)
 for f in (ROOT / "assets" / "fonts").glob("*.woff2"):
@@ -826,15 +936,14 @@ for rel in ["index.html", "integrations/index.html"]:
     leftover = [t for t in repl if t in page_html]
     unknown = [t for t in ("__HUGO128__", "__HUGO512__") if t in page_html]
     orphan_tpl = "{{" in page_html
-    print("build ok →", ROOT / "dist" / rel, f"({len(page_html)//1024} KB)",
+    print("build ok →", DIST / rel, f"({len(page_html)//1024} KB)",
           "| tokens restants:", (leftover + unknown) or "aucun",
           "| tokens {{}} non résolus:", orphan_tpl)
 
 # ── Synchronisation de la construction dans dist/ : fichiers nouveaux ou changés copiés, fichiers disparus retirés,
 # le dossier dist/ lui-même gardé (un serveur peut y tourner). ──
 import filecmp
-DIST = ROOT / "dist"
-DIST.mkdir(exist_ok=True)
+DIST.mkdir(parents=True, exist_ok=True)
 for _src in sorted(OUT.rglob("*")):
     _dst = DIST / _src.relative_to(OUT)
     if _src.is_dir():

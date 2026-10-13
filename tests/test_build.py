@@ -1,5 +1,5 @@
 # tests/test_build.py — exécuter avec: python3 tests/test_build.py
-import html, json, pathlib, re, subprocess, sys
+import html, json, pathlib, re, shutil, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 subprocess.run([sys.executable, str(ROOT / "build.py")], check=True)
 dist = ROOT / "dist"
@@ -172,7 +172,7 @@ for req in ["Gmail", "Google Calendar", "Google Drive", "Google Sheets", "Instag
     must(any(a["name"] == req for a in apps), f"incontournable présent : {req}")
 n_tiles = integ.count('class="it-tile"')
 must(n_tiles >= 80, f"/integrations/ : ≥80 tuiles (trouvées: {n_tiles})")
-must(n_tiles == len(apps), "toutes les entrées du JSON rendues en tuiles")
+must(n_tiles == len([a for a in apps if a["name"] != "Google Business Profile"]), "toutes les entrées du JSON rendues en tuiles (sauf la fiche Google, éteinte)")
 must("<title>Intégrations — 3 200+ outils connectés | Revaly</title>" in integ, "title /integrations/")
 must('rel="canonical" href="https://revaly.io/integrations/"' in integ, "canonical /integrations/")
 must("3 200" in integ, "« 3 200 » présent sur /integrations/")
@@ -261,7 +261,7 @@ must("rvTrack('essai_demarre')" in bienv, "essai démarré mesuré au retour de 
 print("OK v3 données et texte")
 # ── Task 3 : haut de page v3 ──
 _txt = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
-must("Ton équipe travaille. Toi, tu es avec tes clients." not in _txt and "Ton équipe travaille" not in idx, "ancien titre absent")
+must("Ton équipe travaille. Toi, tu es avec tes clients." not in _txt and "Ton équipe travaille. " not in idx, "ancien titre absent")
 _micro = html.unescape(re.sub(r"<[^>]+>", "", idx.split('class="hp-micro"', 1)[1].split("</p>", 1)[0]))
 must(all(x in _micro for x in ("0 € aujourd'hui", "Annulable en 2 clics", "Rien ne part sans toi")), "ligne de risque : 0 €, annulable, rien ne part sans toi")
 must('id="voir-film"' in idx and 'id="film-dialog"' in idx, "lecteur du film")
@@ -274,7 +274,7 @@ print("OK v3 haut de page")
 
 # ── Logos (Task 4, revus le 12/10 au soir : une seule bande de preuve en haut, les outils en petit dans l'étape 1) ──
 must('id="bande-outils"' in idx and "Fonctionne avec tes outils" in idx, "outils branchés")
-must(idx.find('id="bande-outils"') > idx.find('id="comment"'), "les outils dans « Comment ça marche », plus en haut de page")
+must(idx.find('id="bande-outils"') > idx.find('id="outils"') > idx.find('id="equipe"'), "les outils dans « Tu ne changes pas d'outil », après l'équipe (révision du 13/10)")
 must("Tes contacts SeLoger, Leboncoin et Bien'ici arrivent directement chez Emma" in idx.replace("&#x27;", "'"), "ligne portails")
 reseaux = json.loads((ROOT / "data" / "reseaux.json").read_text())
 sys.path.insert(0, str(ROOT))
@@ -313,7 +313,8 @@ outils = json.loads((ROOT / "data" / "outils.json").read_text())
 for band, items in (("bande-outils", outils),):
     if not items: continue
     sec = idx.split(f'id="{band}"', 1)[1].split("</ul>", 1)[0]
-    must(sec.count("<li") == len(items), f"{band} : une seule liste, un logo par entrée (plus de copie défilante)")
+    must(sec.count("<li") == len(_build.OUTILS_TUILES), f"{band} : une seule liste, une tuile par outil (plus de copie défilante)")
+    must(re.findall(r'<li class="ot([^"]*)"', sec)[0] == " ot-modelo" and 'alt="Modelo"' in sec.split("</li>", 1)[0], "Modelo en tête des outils")
     for i in items:
         must(i["logo"] and (ROOT / i["logo"]).exists(), f"{band} : logo présent pour {i['nom']}")
         must((dist / i["logo"]).exists(), f"{band} : logo copié dans dist pour {i['nom']}")
@@ -443,7 +444,13 @@ print("OK v3 task 10")
 
 # ── Vocabulaire : le rapport du vendredi s'appelle « bilan de commercialisation » ──
 must("point vendeurs" not in idx.lower() and "bilan de la semaine" not in idx.lower() and "point de la semaine" not in idx.lower(), "ancien nom du rapport vendeur absent")
-must("bilan de commercialisation du vendredi" in idx.lower(), "bilan de commercialisation du vendredi (carte d'Emma)")
+# Correction de Julien (13/10) : le bilan de commercialisation est prêt AVANT le rendez-vous avec le vendeur (Lucas), jamais « du vendredi »
+for page in sorted(dist.rglob("*.html")):
+    _v = html.unescape(_NOISE.sub("", page.read_text())).lower()
+    must(not re.search(r"bilans? de commercialisation[^.]{0,60}(vendredi|chaque semaine|de la semaine)", _v), f"bilan sans « vendredi » ni « chaque semaine » ({page.relative_to(dist)})")
+for _f in ["data/equipe-accueil.json", "data/cartes-accueil.json", "data/cycle.json", "data/agents.json", "data/faq.json"]:
+    must("vendredi" not in (ROOT / _f).read_text().lower(), f"aucun « vendredi » dans {_f}")
+must("bilan de commercialisation prêt avant le rendez-vous" in idx.lower(), "bilan de commercialisation prêt avant le rendez-vous (Lucas)")
 print("OK v3 vocabulaire bilan")
 
 # ── Refonte de l'accueil (tâche 15, 12/10) ──
@@ -492,14 +499,14 @@ must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 # Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
 # Ronde Julien 1 (playbook des références) : preuve juste après le haut, les collègues avant « Rien ne part sans toi »,
 # « Ce que voient tes clients » dans le même bloc que « Plus rien d'oublié ».
-_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="probleme"', 'id="comment"', 'id="bande-outils"',
-          'id="equipe"', 'id="controle"', 'id="calculateur"',
-          'id="tarif"', 'id="faq"', 'id="demo"']
+_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="probleme"', 'id="cycle"', 'id="equipe"', 'id="outils"',
+          'id="bande-outils"', 'id="controle"', 'id="calculateur"', 'id="tarif"', 'id="comment"', 'id="faq"', 'id="demo"']
 _pos = [idx.find(x) for x in _ordre]
 must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
 _t = html.unescape(re.sub(r"<[^>]+>", "", idx)).replace("\u00a0", " ").replace("\u00ad", "")
 must("Pas secrétaire" not in _t, "plus de « Pas secrétaire » (demande de Julien)")
-for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "Ton équipe s'en occupe. Toi, tu valides.",
+for titre in ["Tu es agent immobilier. Tu n'es pas là pour faire du secrétariat.", "De la prospection à l'acte. Et même après.",
+              "Modelo reste ton CRM. Ton équipe travaille dedans.", "Ton équipe en place en 3 étapes",
               "Six spécialistes. Un seul abonnement.",
               "Combien d'heures te rend ton équipe ?", "Rien ne part sans toi.",
               "Une équipe entière pour moins qu'une demi-journée d'assistante par mois.", "Ton équipe peut commencer ce soir."]:
@@ -531,7 +538,7 @@ must("--font-display: var(--font-sans)" in idx, "titres en Geist")
 must(not re.search(r"data:image/(?!svg)[\w+.-]+;base64,", idx), "aucune image base64 sur l'accueil")
 # Tâche 17 : les démos vivantes (pile, étapes, onglets) ajoutent du balisage ; le poids qui compte est celui transféré (gzip)
 import gzip
-must(len(idx.encode()) < 230_000 and len(gzip.compress(idx.encode())) < 52_000, f"accueil < 230 Ko de HTML, < 52 Ko compressé ({len(idx.encode())} o, {len(gzip.compress(idx.encode()))} o)")
+must(len(idx.encode()) < 240_000 and len(gzip.compress(idx.encode())) < 52_000, f"accueil < 240 Ko de HTML, < 52 Ko compressé ({len(idx.encode())} o, {len(gzip.compress(idx.encode()))} o)")
 # Métadonnées : H1 et sous-titre
 must("<title>Revaly — Une équipe d'agents IA qui travaille vraiment pour toi</title>" in idx, "title = H1")
 must('property="og:title" content="Une équipe d&#x27;agents IA qui travaille vraiment pour toi."' in idx
@@ -571,14 +578,17 @@ _pb2 = html.unescape(re.sub(r"<[^>]+>", "", idx.split('id="probleme"', 1)[1].spl
 must("« Après chaque visite, le silence est souvent la pire expérience possible pour un vendeur. »" in _pb2 and "Journal de l'Agence, mai 2026" in _pb2, "citation sourcée en tête du problème")
 must(_pb2.find("Le vendeur sans nouvelles depuis dix jours.") < _pb2.find("La relance que tu voulais faire hier soir."), "le vendeur sans nouvelles en premier")
 _inst = "Installation faite avec toi, offerte."
-must(_t.count(_inst) >= 2 and idx.find(_inst) > idx.find('id="comment"') and idx.split('id="tarif"', 1)[1].count(_inst) >= 1, "installation offerte sous « Comment ça marche » et dans les prix")
+must(_t.count(_inst) >= 2 and _inst in idx.split('id="comment"', 1)[1].split("</section>", 1)[0] and _inst in idx.split('id="tarif"', 1)[1].split("</section>", 1)[0],
+     "installation offerte dans la mise en route et dans les prix")
 must("Pas de frais de mise en place." in html.unescape(idx.split('id="tarif"', 1)[1].split("</section>", 1)[0]), "prix : pas de frais de mise en place")
 must(idx.count('class="paire paire-fin"') >= 3, "une paire de boutons referme les blocs (tâche 17)")
 must(idx.count('class="') and all(f'aria-label="{x}' in idx for x in ("Les trois offres",)), "rangées à faire glisser sur mobile (page plus courte)")
 _ctl = html.unescape(idx.split('id="controle"', 1)[1].split("</section>", 1)[0])
 must("t'attend en brouillon" in _ctl and "24 h" not in _ctl, "« Rien ne part sans toi » : brouillon, sans « 24 h/24 »")
 _emma = next(e for e in json.loads((ROOT / "data" / "equipe-accueil.json").read_text()) if e["slug"] == "emma")
-must(_emma["taches"][0].startswith("Compte rendu de visite") and "Bilan de commercialisation" in _emma["taches"][1], "Emma : compte rendu et bilan vendeur en tête")
+_lucas = next(e for e in json.loads((ROOT / "data" / "equipe-accueil.json").read_text()) if e["slug"] == "lucas")
+must(_emma["taches"][0].startswith("Compte rendu de visite") and not any("bilan" in x.lower() for x in _emma["taches"])
+     and any(x.startswith("Bilan de commercialisation prêt avant") for x in _lucas["taches"]), "le bilan de commercialisation est chez Lucas, prêt avant le rendez-vous")
 for _q in json.loads((ROOT / "data" / "faq.json").read_text()):
     must("rappel par email" not in _q["reponse"].lower() and "avant la fin de l'essai" not in _q["reponse"].lower(),
          f"FAQ sans rappel de fin d'essai non vérifié : {_q['question'][:30]}")
@@ -646,16 +656,17 @@ print("OK aucune image cassée")
 
 # ── L'enchaînement comme une histoire (retour de Julien, 12/10) ──
 _sections = re.findall(r'<section class="([^"]*)" id="([\w-]+)"', idx.split("<main", 1)[1].split("</main>", 1)[0])
-must([s[1] for s in _sections] == ["hero", "probleme", "comment", "equipe", "controle", "calculateur", "tarif", "faq", "demo"],
-     "ordre : héros, problème, solution, équipe, confiance, calculateur, prix, FAQ, démo")
+must([s[1] for s in _sections] == ["hero", "probleme", "cycle", "equipe", "outils", "controle", "calculateur", "tarif", "comment", "faq", "demo"],
+     "ordre (révision du 13/10) : héros, problème, la vente moment par moment, équipe, outils, confiance, temps, prix, mise en route, FAQ, fin")
 _sur = {sid: re.search(r'<p class="tete-sur" data-ap>([^<]+)</p>', idx.split(f'id="{sid}"', 1)[1].split("</section>", 1)[0]) for _, sid in _sections[1:]}
-must({k: (v.group(1) if v else None) for k, v in _sur.items()} == {"probleme": "Le problème", "comment": "La solution", "equipe": "L'équipe",
-     "controle": "Pourquoi nous faire confiance", "calculateur": "Ton temps", "tarif": "Le prix", "faq": "Questions", "demo": "Essai 7 jours"},
+must({k: (v.group(1) if v else None) for k, v in _sur.items()} == {"probleme": "Le problème", "cycle": "La solution", "equipe": "L'équipe",
+     "outils": "Tes outils", "controle": "Pourquoi nous faire confiance", "calculateur": "Ton temps", "tarif": "Le prix",
+     "comment": "Mise en route", "faq": "Questions", "demo": "Essai 7 jours"},
      "un sur-titre court par section")
 _pbh = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
 must(_pbh.find('class="tete-sur"') < _pbh.find("<h2") < _pbh.find('class="pb-citation"'), "problème : sur-titre, titre, puis la citation en petit sous le texte (tâche 17)")
-must("Confirmer, relancer, rendre compte, publier : ton équipe le prépare à ta place." in html.unescape(idx.split('id="comment"', 1)[1].split("</section>", 1)[0]).replace("\u00a0", " "),
-     "phrase de transition du problème à la solution")
+must("À chaque moment de la vente, ton équipe a déjà préparé la suite. Toi, tu valides." in html.unescape(idx.split('id="cycle"', 1)[1].split("</section>", 1)[0]).replace("\u00a0", " "),
+     "le problème appelle la réponse : la vente, moment par moment")
 print("OK enchaînement")
 
 # ── Une page qui s'enchaîne (tâche 17, référence Limova) : un seul fond, un seul gabarit de tête, des apparitions ──
@@ -711,13 +722,7 @@ must(len(_panels) == 6 and "cartes.forEach((c, i) => { c.inert = i !== 0; });" i
      "six cartes role=tabpanel ; les voisines rendues inertes par le script (sans script : défilement à la main)")
 must("ArrowRight: 1, ArrowLeft: -1" in idx and "animation: barre 6s linear forwards" in idx and ".eq-bloc:hover .eq-o-barre i, .eq-bloc:focus-within .eq-o-barre i, .rv-pause .eq-o-barre i" in idx
      and "'touchstart'" in idx and 'aria-label="Agent suivant"' in _eqs, "clavier, rotation 6 s figée au survol/focus/pause, balayage et flèches")
-for e in _ea:
-    _p = e["prepare"]
-    must(_p["type"] in _build._TYPES_PREPARE and _p.get("source") and f'pr-t-{_p["type"]}' in _eqs, f"{e['slug']} : ce qu'il vient de préparer, source prod notée")
-_eq_txt = html.unescape(re.sub(r"<[^>]+>", " ", _eqs)).replace("\u00a0", " ")
-for frag in ["Le point du matin", "Confirmation de visite", "242 000 €", "Pièces du compromis", "Tes posts de la semaine", "photos retouchées"]:
-    must(frag in _eq_txt, f"carte de l'équipe : {frag}")
-must("ce n'est pas une photo d'origine d'un client" in (ROOT / "film" / "sources.md").read_text(), "avant / après de Raphaël : illustration déclarée")
+must("eq-prepare" not in _eqs and _eqs.count('class="eq-tete"') == 6, "équipe en version légère : qui il est, ce qu'il sait faire (le travail concret est montré moment par moment)")
 print("OK l'équipe en onglets")
 
 # ── Ton temps compacté, le prix, la FAQ centrée et la fin (tâche 17) ──
@@ -735,3 +740,58 @@ _pi = idx.split('id="pile"', 1)[1].split("</ol>", 1)[0]
 must("html.js .pile.anime .notif:not(.arrive)" in idx and "pile.classList.add('anime')" in idx and "if (!pile || REDUCED" in idx, "pile : animée seulement avec le script et sans mouvement réduit (sinon complète)")
 must(".halo::before" in idx and idx.count(" halo") >= 4, "profondeur par des halos (au moins quatre visuels)")
 print("OK ton temps, prix, FAQ, fin")
+
+# ── Révision du 13/10 : la vente moment par moment, « Tu ne changes pas d'outil » ──
+_cy = idx.split('id="cycle"', 1)[1].split("</section>", 1)[0]
+_moments = json.loads((ROOT / "data" / "cycle.json").read_text())
+_ong = re.findall(r'<button type="button" role="tab" class="cy-onglet"[^>]*>([^<]+)</button>', _cy)
+must(_ong == ["Prospection", "Visite", "Vendeur", "Mandat", "Compromis", "Acte", "Après la vente"] == [m["onglet"] for m in _moments],
+     "onglets dans l'ordre de la vente : Prospection → Après la vente")
+must('role="tablist"' in _cy and _cy.count('role="tabpanel"') == 7 and _cy.count("<li class=") >= 7 and 'class="cy-frise"' in _cy, "sept panneaux, une frise de sept étapes")
+must("animation: barre 7s linear forwards" in idx and ".cy-bloc:hover .cy-frise li i, .cy-bloc:focus-within .cy-frise li i, .rv-pause .cy-frise li i" in idx,
+     "la frise mène la rotation (7 s), figée au survol, au focus, en pause générale")
+_noms = {a["slug"]: a["name"] for a in agents}
+for m in _moments:
+    _pn = _cy.split(f'id="cy-{m["id"]}"', 1)[1].split('class="cy-panneau', 1)[0]
+    _pt = html.unescape(re.sub(r"<[^>]+>", "", _pn)).replace("\u00a0", " ")
+    must(m["question"].replace(" :", " :") in _pt and f"<b>{_noms[m['agent']]}</b>" in html.unescape(_pn) and m.get("source"), f"moment {m['id']} : ta question, la réponse de {m['agent']}, source notée")
+    must(re.sub(r"\s+", " ", m["reponse"]) in re.sub(r"\s+", " ", _pt) and all(p["texte"] in _pt for p in m["prets"]), f"moment {m['id']} : la réponse et ce qui est prêt")
+_vis = next(m for m in _moments if m["id"] == "visite")
+must(any(p["agent"] == "christine" and "bon de visite" in p["texte"].lower() for p in _vis["prets"]), "le bon de visite est préparé par Christine")
+_vend = next(m for m in _moments if m["id"] == "vendeur")
+must(_vend["agent"] == "lucas" and "bilan de commercialisation" in _vend["reponse"].lower(), "le bilan de commercialisation est chez Lucas")
+must("démarch" not in html.unescape(_cy).lower(), "pas de démarchage automatique")
+_ot = idx.split('id="outils"', 1)[1].split("</section>", 1)[0]
+must([n for n, _ in _build.OUTILS_TUILES][0] == "Modelo" and all(html.escape(n, quote=False) in _ot for n, _ in _build.OUTILS_TUILES), "les tuiles des outils, Modelo en tête")
+must(all(html.escape(x, quote=False).replace(" :", "\u00a0:") in _ot for x in _build.DANS_MODELO) and "Toute écriture dans Modelo passe par une carte à valider." in _ot,
+     "ce que l'équipe fait dans Modelo, toute écriture validée")
+for f in ["googledrive.svg", "facebook.svg", "instagram.svg", "linkedin.svg"]:
+    must((dist / "assets" / "logos" / f).is_file() and f in lic, f"logo {f} publié, licence notée")
+print("OK la vente moment par moment, les outils")
+
+# ── Interrupteurs : éteints, rien de Hugo ni de la fiche Google ; allumés (construction à part), Hugo à la place de Raphaël ──
+must(_build.EQUIPE_V2 is False and _build.GOOGLE_FICHE is False, "interrupteurs livrés éteints")
+for page in sorted(dist.rglob("*")):
+    if page.is_file() and page.suffix in (".html", ".txt", ".xml", ".json", ".md", "") :
+        _c = page.read_text(errors="ignore")
+        must(not re.search(r"hugo", _c, re.I), f"rien de Hugo ({page.relative_to(dist)})")
+        must(not re.search(r"fiche google|google business|googlemybusiness", _c, re.I), f"rien de la fiche Google ({page.relative_to(dist)})")
+must(not list(dist.rglob("*hugo*")) and not list(dist.rglob("googlemybusiness*")), "aucun fichier de Hugo ni de la fiche Google publié")
+import tempfile
+_v2 = pathlib.Path(tempfile.mkdtemp()) / "dist-v2"
+subprocess.run([sys.executable, str(ROOT / "build.py")], check=True, capture_output=True,
+               env={**__import__("os").environ, "REVALY_EQUIPE_V2": "1", "REVALY_GOOGLE_FICHE": "1", "REVALY_DIST": str(_v2)})
+_i2 = (_v2 / "index.html").read_text()
+for page in sorted(_v2.rglob("*.html")):
+    if page.relative_to(_v2).as_posix() != "agents/raphael/index.html":
+        must(not re.search(r"rapha[eë]l", page.read_text(), re.I), f"équipe v2 : plus aucune mention de Raphaël ({page.relative_to(_v2)})")
+must('http-equiv="refresh" content="0; url=/agents/zoe/"' in (_v2 / "agents" / "raphael" / "index.html").read_text() and "/agents/raphael/ /agents/zoe/ 301" in (_v2 / "_redirects").read_text(),
+     "équipe v2 : /agents/raphael/ renvoie vers /agents/zoe/")
+must((_v2 / "agents" / "hugo" / "index.html").is_file() and 'id="agent-hugo"' in _i2 and _i2.count('<article class="eq') == 6, "équipe v2 : Hugo dans l'équipe, six agents")
+must("réseaux et visuels" in _i2 and "six" in _i2.lower() and "sept" not in html.unescape(re.sub(r"<[^>]+>", "", _i2)).lower(), "équipe v2 : Zoé « réseaux et visuels », toujours six agents")
+_p2 = _i2.split('id="cy-prospection"', 1)[1].split('class="cy-panneau', 1)[0]
+must("<b>Hugo</b>" in _p2 and "DPE" in _p2, "équipe v2 : le Radar DPE passe à Hugo")
+must("Ta fiche Google vit" in _i2 and (_v2 / "assets" / "logos" / "googlemybusiness.svg").is_file() and "Fiche Google" in _i2.split('id="outils"', 1)[1].split("</section>", 1)[0],
+     "fiche Google allumée : dans « Après la vente » et dans les outils")
+shutil.rmtree(_v2.parent, ignore_errors=True)
+print("OK interrupteurs (équipe v2, fiche Google)")

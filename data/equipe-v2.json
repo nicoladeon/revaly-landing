@@ -1,0 +1,95 @@
+{
+ "_note": "EQUIPE_V2 (build.py) : Hugo prend la place de Raphaël, Zoé reprend les photos et visuels. L'équipe reste à six. Hugo : PR #558 (supabase/functions/_shared/tools/fiches/prospection.ts).",
+ "retire": "raphael",
+ "agents": [
+  {
+   "slug": "hugo",
+   "name": "Hugo",
+   "role": "prospection",
+   "pour_toi": "Il repère les vendeurs de demain et prépare une approche dans les règles.",
+   "question": "Hugo, du nouveau dans mon secteur ?",
+   "reponse": "Deux DPE tout frais autour de l'agence, dont une maison classée F. L'adresse n'est pas dans le fichier de l'agence : ton courrier « Au propriétaire » est prêt, rien ne part sans toi.",
+   "capacites": [
+    "Nouveaux DPE autour de l'agence, chaque matin",
+    "Logements F et G repérés par la base publique des DPE",
+    "Sociétés et SCI identifiées par le registre",
+    "Approche préparée : script d'appel, courrier, e-mail en brouillon"
+   ],
+   "fiche": {
+    "automatisations": [
+     {
+      "titre": "Radar DPE — chaque matin",
+      "pitch": "Chaque nouveau diagnostic réalisé autour de ton agence (rayon réglable) arrive le matin : souvent le premier signe d'une mise en vente.",
+      "source": "DPE récents (prospection), veille DPE réglable"
+     },
+     {
+      "titre": "Jamais un client de l'agence",
+      "pitch": "Il retire les adresses déjà dans ton fichier et refuse un vendeur, un acquéreur ou une fiche Modelo existante.",
+      "source": "prospection.ts : add-prospect, chasse F et G"
+     }
+    ],
+    "outils": [
+     {
+      "titre": "Chasser les logements F et G",
+      "pitch": "Les logements classés F ou G d'un secteur, sans nom de propriétaire : l'approche permise est le courrier « Au propriétaire » ou la rencontre sur place.",
+      "source": "prospection.ts"
+     },
+     {
+      "titre": "Identifier une SCI ou société",
+      "pitch": "Les sociétés et SCI d'un secteur, trouvées dans le registre public des entreprises.",
+      "source": "prospection.ts"
+     },
+     {
+      "titre": "Préparer une approche",
+      "pitch": "Script d'appel, courrier, e-mail en brouillon à valider : par un canal permis, rien n'est envoyé. Une opposition est notée.",
+      "source": "prospection.ts"
+     },
+     {
+      "titre": "Tes prospects, canal par canal",
+      "pitch": "Pour chaque prospect, les canaux qu'il a acceptés : tu sais qui tu as le droit d'appeler.",
+      "source": "prospection.ts"
+     }
+    ]
+   }
+  }
+ ],
+ "zoe": {
+  "role": "réseaux et visuels",
+  "pour_toi": "Elle prépare tes posts, tes annonces et tes visuels, à ta charte.",
+  "capacites": [
+   "Posts Instagram & Facebook, visuels à ta charte",
+   "Calendrier éditorial + publication programmée",
+   "Retouche en lot, home staging virtuel, filigrane",
+   "Vidéo du bien à partir d'une photo"
+  ]
+ },
+ "equipe_accueil": {
+  "zoe": {
+   "metier": "réseaux et visuels",
+   "taches": [
+    "Annonce et post proposés dès le mandat signé",
+    "Retouche en lot, home staging virtuel, filigrane",
+    "Calendrier éditorial et publication programmée"
+   ]
+  },
+  "lucas": {
+   "taches": [
+    "Avis de valeur prêt avant ton rendez-vous vendeur",
+    "Bilan de commercialisation prêt avant le rendez-vous",
+    "Point marché chaque semaine"
+   ]
+  },
+  "hugo": {
+   "metier": "prospection",
+   "place_de": "raphael",
+   "taches": [
+    "Nouveaux DPE autour de l'agence, chaque matin",
+    "Jamais un client de l'agence : vérifié avant toute approche",
+    "Script d'appel, courrier, e-mail en brouillon : rien ne part"
+   ]
+  }
+ },
+ "cartes_hero": {
+  "raphael": "zoe"
+ }
+}

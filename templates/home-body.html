@@ -390,8 +390,8 @@
   .dv-post { border-radius: 18px; overflow: hidden; background: var(--bg); border: 0.5px solid var(--line); }
   .dv-photo { display: block; width: 100%; height: auto; aspect-ratio: 5 / 2; object-fit: cover; background: var(--bg-soft); }
   .dv-texte { margin: 0; padding: 14px 16px 0; font-size: 15.5px; line-height: 1.5; color: var(--ink); }
-  html.js .demo-vue:not(.joue) .mot { opacity: 0; }
-  html.js .demo-vue.joue .mot { transition: opacity .2s calc(var(--m) * 65ms + 250ms); }
+  html.js .demo-vue:not(.joue) .m { opacity: 0; }
+  html.js .demo-vue.joue .m { transition: opacity .2s calc(var(--m) * 65ms + 250ms); }
   .dv-canaux { margin: 0; padding: 10px 16px 14px; font-size: 13px; color: var(--muted); }
   /* vue 3 : la carte « À valider » ; le doigt touche « Valider », la carte passe à « publié » */
   .dv-carte { padding: 16px; border-radius: 20px; background: var(--bg); border: 0.5px solid var(--line-strong); box-shadow: var(--shadow-sm); }
@@ -417,10 +417,110 @@
   @keyframes appui { 50% { transform: scale(.94); } }
   .dv-ou { margin: 14px 0 0; text-align: center; font-size: 13.5px; color: var(--muted); }
   @media (prefers-reduced-motion: reduce) { .demo-vue *, .demo-vue *::after { transition-delay: 0s !important; animation: none !important; } }
+  @media (max-width: 640px) { #comment .demo-zone { display: none; } }
   @media (max-width: 520px) {
     .demo { padding: 14px; border-radius: 22px; }
     .etape-t { font-size: 17px; }
     .br { min-height: 42px; }
+  }
+
+  /* ── 3. De la prospection à l'acte : un onglet par moment de la vente ; la frise dessous suit la vente (étapes passées
+       pleines, l'étape en cours se remplit en 7 s puis passe à la suivante ; survol, focus et pause générale la figent).
+       Chaque panneau : ta question, la réponse de l'agent qui porte le travail, puis ce qui est prêt et qui l'a préparé.
+       Les panneaux partagent la même case : rien ne bouge. Sans script ou en mouvement réduit : tout est affiché. ── */
+  .cy-bloc { margin-top: var(--tete-visuel); }
+  .cy-onglets { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .cy-onglet {
+    min-height: 44px; padding: 0 17px; border-radius: 999px; border: 0.5px solid var(--line); background: var(--raised); cursor: pointer;
+    font: 500 14.5px/1 var(--font-sans); color: var(--muted); white-space: nowrap; transition: background .25s, color .25s, border-color .25s;
+  }
+  .cy-onglet:hover { color: var(--ink); border-color: var(--line-strong); }
+  .cy-onglet[aria-selected="true"] { background: var(--iris-deep); border-color: var(--iris-deep); color: #fff; }
+  .cy-onglet:focus-visible { border-radius: 999px; }
+  .cy-frise { --n: 7; list-style: none; margin: 18px auto 0; padding: 0; max-width: 720px; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px; }
+  .cy-frise li { position: relative; height: 4px; border-radius: 4px; overflow: hidden; background: var(--line-strong); }
+  .cy-frise li i { position: absolute; inset: 0; border-radius: 4px; background: var(--iris); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ap); }
+  .cy-frise li.passe i, .cy-bloc:not(.auto) .cy-frise li.actif i, html:not(.js) .cy-frise li i { transform: none; }
+  .cy-bloc.auto.en-vue .cy-frise li.actif i { transition: none; animation: barre 7s linear forwards; }
+  .cy-bloc:hover .cy-frise li i, .cy-bloc:focus-within .cy-frise li i, .rv-pause .cy-frise li i { animation-play-state: paused !important; }
+  .cy-zone { margin-top: 26px; }
+  .cy-zone::before { inset: -12% -8%; }
+  .cy-panneaux { display: grid; }
+  .cy-panneau {
+    grid-area: 1 / 1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 22px; padding: 22px; border-radius: 28px;
+    background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left;
+    opacity: 0; visibility: hidden; transform: translateY(10px); filter: blur(4px);
+    transition: opacity .45s var(--ap), transform .45s var(--ap), filter .45s var(--ap), visibility 0s .45s;
+  }
+  .cy-panneau.actif { opacity: 1; visibility: visible; transform: none; filter: none; transition-delay: 0s; }
+  .cy-conv { display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 22px; border-radius: 20px; background: var(--bg); }
+  .cy-q { align-self: flex-end; max-width: 86%; margin: 0; padding: 11px 16px 12px; border-radius: 18px 18px 6px 18px; background: var(--iris-deep); color: #fff; font-size: 15.5px; line-height: 1.45; }
+  .cy-toi { display: block; margin-bottom: 2px; font-size: 12px; font-weight: 600; opacity: .78; }
+  .cy-r { display: flex; align-items: flex-end; gap: 10px; max-width: 94%; }
+  .cy-r img { flex: none; width: 40px; height: 40px; border-radius: 50%; background: #F1F2F7; }
+  .cy-r > div { padding: 11px 16px 13px; border-radius: 18px 18px 18px 6px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
+  .cy-r b { display: block; margin-bottom: 3px; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .cy-r p { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink); }
+  .cy-prets { display: flex; flex-direction: column; justify-content: center; padding: 6px 4px; }
+  .cy-prets-t { margin: 0 0 12px; font: 500 12.5px/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .cy-prets ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .cy-prets li { display: grid; grid-template-columns: 24px minmax(0, 1fr) 18px; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--bg); font-size: 14.5px; line-height: 1.4; color: var(--ink); }
+  .cy-prets li img { width: 24px; height: 24px; border-radius: 50%; background: #F1F2F7; }
+  .cy-prets em { display: block; margin-top: 1px; font-style: normal; font-size: 12.5px; color: var(--muted); }
+  .cy-coche { width: 18px; height: 18px; color: var(--iris-ink); }
+  .cy-chute { margin: 14px 2px 0; font-size: 14.5px; font-weight: 600; color: var(--ink); }
+  .cy-quotidien { margin: 22px auto 0; max-width: 840px; text-align: center; font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+  html.js .cy-panneau:not(.joue) .m { opacity: 0; }
+  html.js .cy-panneau.joue .m { transition: opacity .2s calc(var(--m) * 40ms + 350ms); }
+  html.js .cy-panneau:not(.joue) .cy-prets li { opacity: 0; transform: translateY(8px); }
+  html.js .cy-panneau.joue .cy-prets li { transition: opacity .35s calc(var(--v) * 220ms + 1100ms), transform .45s var(--ap) calc(var(--v) * 220ms + 1100ms); }
+  html.js .cy-panneau:not(.joue) .cy-coche { transform: scale(0); }
+  html.js .cy-panneau.joue .cy-coche { transition: transform .35s cubic-bezier(.34, 1.56, .64, 1) calc(var(--v) * 220ms + 1350ms); }
+  html.js .cy-panneau:not(.joue) .cy-chute { opacity: 0; }
+  html.js .cy-panneau.joue .cy-chute { transition: opacity .3s 2.2s; }
+  @media (prefers-reduced-motion: reduce) { .cy-panneau *, .cy-panneau { transition-delay: 0s !important; } }
+  @media (max-width: 860px) {
+    .cy-onglets { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; margin: 0 -24px; padding: 4px 24px; scrollbar-width: none; scroll-padding: 0 24px; }
+    .cy-onglets::-webkit-scrollbar { display: none; }
+    .cy-onglet { flex: none; }
+    .cy-panneau { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 14px; border-radius: 24px; }
+    .cy-conv { padding: 16px 14px; }
+    .cy-frise { margin-top: 14px; }
+  }
+  @media (max-width: 640px) {
+    .cy-onglets { margin: 0 -16px; padding: 4px 16px; scroll-padding: 0 16px; }
+    .cy-conv { gap: 10px; padding: 12px; border-radius: 16px; }
+    .cy-q, .cy-r p { font-size: 15px; }
+    .cy-r img { width: 32px; height: 32px; }
+    .cy-prets { padding: 2px 0; }
+    .cy-prets-t { margin-bottom: 8px; }
+    .cy-prets ul { gap: 6px; }
+    .cy-prets li { padding: 8px 10px; font-size: 14px; gap: 10px; }
+    .cy-quotidien { margin-top: 16px; font-size: 14px; }
+  }
+
+  /* ── 5. Tu ne changes pas d'outil : les tuiles des outils (Modelo en tête), puis ce que l'équipe fait dans Modelo ── */
+  .ot-tuiles { list-style: none; margin: var(--tete-visuel) auto 0; padding: 0; max-width: 1000px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .ot { display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 18px 0 14px; border-radius: 16px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); font-size: 15px; font-weight: 500; color: var(--ink); }
+  .ot img { display: block; width: auto; height: 26px; }
+  .ot-modelo { padding: 0 20px; border-color: color-mix(in srgb, var(--iris) 55%, transparent); box-shadow: 0 0 0 3px var(--iris-soft), var(--shadow-sm); }
+  .ot-modelo-bloc { max-width: 880px; margin: 28px auto 0; padding: 26px 28px; border-radius: 24px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left; }
+  .ot-modelo-t { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 16px; font-size: 16.5px; font-weight: 600; color: var(--ink); }
+  .ot-modelo-t img { display: block; }
+  .ot-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 32px; }
+  .ot-liste li { display: flex; align-items: flex-start; gap: 10px; font-size: 14.5px; line-height: 1.45; color: var(--muted); }
+  .ot-liste svg { width: 16px; height: 16px; flex: none; margin-top: 2.5px; color: var(--iris-ink); }
+  .ot-note { margin: 18px 0 0; padding-top: 16px; border-top: 0.5px solid var(--line); font-size: 14.5px; font-weight: 500; color: var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ot img, :root:not([data-theme="light"]) .ot-modelo-t img { filter: grayscale(1) invert(1); } }
+  :root[data-theme="dark"] .ot img, :root[data-theme="dark"] .ot-modelo-t img { filter: grayscale(1) invert(1); }
+  @media (max-width: 640px) {
+    .ot-tuiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .ot { flex-direction: column; justify-content: center; gap: 6px; height: 72px; padding: 6px 4px; border-radius: 14px; font-size: 12.5px; text-align: center; line-height: 1.2; }
+    .ot-modelo { padding: 6px 4px; }
+    .ot img { height: 22px; }
+    .ot-liste li { font-size: 14px; }
+    .ot-modelo-bloc { padding: 20px 18px; }
+    .ot-liste { grid-template-columns: minmax(0, 1fr); }
   }
 
   /* ── 5. L'équipe : six onglets et un carrousel. La carte du centre montre ce que l'agent vient de préparer, puis qui il
@@ -445,7 +545,7 @@
   .eq-bloc.auto.en-vue .eq-onglet[aria-selected="true"] .eq-o-barre i { animation: barre 6s linear forwards; }
   .eq-bloc:hover .eq-o-barre i, .eq-bloc:focus-within .eq-o-barre i, .rv-pause .eq-o-barre i { animation-play-state: paused !important; }
 
-  .eq-scene { --eq-w: min(960px, calc(100vw - 120px)); --eq-g: 20px; width: 100vw; margin-left: calc(50% - 50vw); margin-top: 4px; padding: 24px 0 44px; overflow: hidden; touch-action: pan-y; }
+  .eq-scene { --eq-w: min(760px, calc(100vw - 120px)); --eq-g: 20px; width: 100vw; margin-left: calc(50% - 50vw); margin-top: 4px; padding: 24px 0 44px; overflow: hidden; touch-action: pan-y; }
   /* la scène coupe ce qui dépasse : sa marge intérieure laisse toute la place à l'ombre des cartes */
   .eq-bloc + .paire-fin { margin-top: 16px; }
   @media (max-width: 860px) { .eq-bloc + .paire-fin { margin-top: 32px; } }
@@ -455,7 +555,7 @@
     transform: translateX(calc(var(--i, 0) * -1 * (var(--eq-w) + var(--eq-g)))); transition: transform .7s var(--ap);
   }
   .eq {
-    flex: 0 0 var(--eq-w); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 32px; padding: 22px 30px 22px 22px;
+    flex: 0 0 var(--eq-w); display: grid; grid-template-columns: minmax(0, 1fr); padding: 24px 28px;
     border-radius: 28px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-md); text-align: left;
     transition: opacity .6s var(--ap), transform .6s var(--ap), filter .6s var(--ap);
   }
@@ -464,73 +564,12 @@
   html:not(.js) .eq-scene { overflow-x: auto; scroll-snap-type: x mandatory; }
   html:not(.js) .eq { scroll-snap-align: center; }
   html:not(.js) .eq-fleches { display: none; }
-  .eq-prepare { display: flex; flex-direction: column; min-width: 0; padding: 18px; border-radius: 20px; background: var(--bg); }
-  .pr-qui { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
-  .pr-qui::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--iris); box-shadow: 0 0 0 3px var(--iris-soft); }
-  .pr-carte { margin: auto 0; display: flex; flex-direction: column; gap: 12px; padding: 16px 18px; border-radius: 16px; background: var(--raised); border: 0.5px solid var(--line); box-shadow: var(--shadow-sm); }
-  .pr-tete { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .pr-titre { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--ink); }
-  .pr-pastille { flex: none; padding: 3px 10px; border-radius: 999px; background: var(--iris-soft); color: var(--iris-ink); font-size: 12px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .pr-texte { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
-  .pr-message { margin: 0; font-size: 15.5px; line-height: 1.55; color: var(--ink); }
-  .pr-prix { margin: 4px 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: clamp(24px, 2.4vw, 30px); font-weight: 560; letter-spacing: -0.03em; color: var(--iris-ink); font-variant-numeric: tabular-nums; }
-  .pr-tiret { color: var(--subtle); font-weight: 400; }
-  .pr-echelle { position: relative; height: 26px; margin: 4px 0; }
-  .pr-echelle::before { content: ""; position: absolute; left: 0; right: 0; top: 11px; height: 4px; border-radius: 4px; background: var(--bg-soft); }
-  .pr-plage { position: absolute; left: 30%; right: 26%; top: 9px; height: 8px; border-radius: 8px; background: color-mix(in srgb, var(--iris) 30%, transparent); transform-origin: center; }
-  .pr-echelle i { position: absolute; left: calc(var(--d) * 1%); top: 9px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--iris); box-shadow: 0 0 0 2px var(--raised); }
-  .pr-pieces { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-  .pr-pieces li { position: relative; display: flex; align-items: center; gap: 10px; font-size: 13.5px; line-height: 1.4; color: var(--ink); }
-  .pr-pieces svg { width: 18px; height: 18px; flex: none; color: var(--iris-ink); }
-  .pr-pieces .pr-vide { position: absolute; left: 0; color: var(--subtle); opacity: 0; }
-  .pr-compte { display: inline-grid; }
-  .pr-compte b { grid-area: 1 / 1; font-weight: 600; opacity: 0; }
-  .pr-compte b:last-child { opacity: 1; }
-  .pr-fin { display: flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 500; }
-  .pr-fin svg { width: 16px; height: 16px; flex: none; color: var(--success); }
-  .pr-posts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .pr-posts li { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 8px 10px 8px 8px; border-radius: 12px; background: var(--bg); }
-  .pr-ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--iris-soft); color: var(--iris-ink); }
-  .pr-ico svg { width: 18px; height: 18px; }
-  .pr-post { font-size: 14.5px; font-weight: 500; line-height: 1.35; color: var(--ink); }
-  .pr-quand { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
-  .pr-t-avant-apres { padding: 12px; }
-  .pr-aa { position: relative; overflow: hidden; border-radius: 12px; aspect-ratio: 2 / 1; background: var(--bg-soft); }
-  .pr-aa img, .pr-apres { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .pr-aa img { object-fit: cover; display: block; }
-  .pr-apres { clip-path: inset(0 0 0 46%); }
-  .pr-ligne { position: absolute; top: 0; bottom: 0; left: 46%; width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 0 0.5px rgba(0,0,0,.15); }
-  .pr-label { position: absolute; top: 10px; padding: 3px 9px; border-radius: 999px; background: rgba(12, 14, 20, .62); color: #fff; font-size: 12px; font-weight: 600; }
-  .pr-l-avant { left: 10px; }
-  .pr-l-apres { right: 10px; }
-  /* l'animation de la carte au centre (.joue) ; sans script ou en mouvement réduit : l'état final */
-  html.js .eq:not(.joue) .mot { opacity: 0; }
-  html.js .eq.joue .mot { transition: opacity .2s calc(var(--m) * 45ms + 300ms); }
-  html.js .eq:not(.joue) .pr-plage { transform: scaleX(0); }
-  html.js .eq.joue .pr-plage { transition: transform .8s var(--ap) .3s; }
-  html.js .eq:not(.joue) .pr-echelle i { opacity: 0; transform: translateY(-6px); }
-  html.js .eq.joue .pr-echelle i { transition: opacity .25s calc(var(--d) * 9ms + 700ms), transform .35s calc(var(--d) * 9ms + 700ms); }
-  html.js .eq:not(.joue) .pr-vient svg:not(.pr-vide) { opacity: 0; transform: scale(.6); }
-  html.js .eq:not(.joue) .pr-vient .pr-vide { opacity: 1; }
-  html.js .eq.joue .pr-vient svg:not(.pr-vide) { transition: opacity .2s calc(var(--v) * 800ms + 700ms), transform .35s cubic-bezier(.34, 1.56, .64, 1) calc(var(--v) * 800ms + 700ms); }
-  html.js .eq.joue .pr-vient .pr-vide { transition: opacity .15s calc(var(--v) * 800ms + 700ms); }
-  html.js .eq:not(.joue) .pr-compte b { opacity: 0; }
-  html.js .eq:not(.joue) .pr-compte b:first-child { opacity: 1; }
-  html.js .eq.joue .pr-compte b:first-child { opacity: 0; transition: opacity .1s .7s; }
-  html.js .eq.joue .pr-compte b:not(:first-child):not(:last-child) { animation: fenetre .8s linear calc((var(--v) - 1) * 800ms + 700ms) both; }
-  html.js .eq.joue .pr-compte b:last-child { opacity: 1; transition: opacity .1s calc((var(--v) - 1) * 800ms + 700ms); }
-  @keyframes fenetre { 0%, 100% { opacity: 0; } 2%, 98% { opacity: 1; } }
-  html.js .eq:not(.joue) .pr-fin { opacity: 0; }
-  html.js .eq.joue .pr-fin { transition: opacity .3s 2.4s; }
-  html.js .eq:not(.joue) .pr-posts li { opacity: 0; transform: translateY(8px); }
-  html.js .eq.joue .pr-posts li { transition: opacity .35s calc(var(--v) * 350ms + 300ms), transform .45s var(--ap) calc(var(--v) * 350ms + 300ms); }
-  html.js .eq:not(.joue) .pr-apres { clip-path: inset(0 0 0 100%); }
-  html.js .eq:not(.joue) .pr-ligne { left: 100%; opacity: 0; }
-  html.js .eq.joue .pr-apres { transition: clip-path 1.4s var(--ap) .4s; }
-  html.js .eq.joue .pr-ligne { transition: left 1.4s var(--ap) .4s, opacity .2s .4s; }
-  @media (prefers-reduced-motion: reduce) { .eq *, .eq *::before { transition-delay: 0s !important; animation: none !important; } .eq-piste { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .eq-piste, .eq { transition: none; } }
 
-  .eq-qui { display: flex; flex-direction: column; min-width: 0; padding: 6px 0 2px; }
+  .eq-qui { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 4px 32px; align-items: start; min-width: 0; }
+  .eq-qui .eq-tete { grid-row: 1 / 3; }
+  .eq-qui .eq-taches { margin-top: 0; padding-top: 0; border-top: 0; }
+  .eq-qui .eq-lien { margin-top: 4px; }
   .eq-tete { display: flex; align-items: center; gap: 18px; }
   .eq-photo { flex: none; width: 160px; height: 160px; border-radius: 20px; overflow: hidden; background: #F1F2F7; box-shadow: inset 0 0 0 0.5px rgba(23, 26, 33, .08); }
   .eq-photo video { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -550,7 +589,10 @@
   .eq-fleche { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; border: 0.5px solid var(--line-strong); background: var(--raised); color: var(--ink); cursor: pointer; box-shadow: var(--shadow-sm); }
   .eq-fleche svg { width: 20px; height: 20px; }
   @media (max-width: 960px) {
-    .eq { gap: 22px; padding: 18px; }
+    .eq { padding: 18px; }
+    .eq-qui { grid-template-columns: minmax(0, 1fr); }
+    .eq-qui .eq-tete { grid-row: auto; }
+    .eq-qui .eq-taches { margin-top: 14px; padding-top: 14px; border-top: 0.5px solid var(--line); }
     .eq-photo { width: 96px; height: 96px; border-radius: 16px; }
     .eq-nom { font-size: 22px; }
     .eq-pour { font-size: 15px; }
@@ -568,14 +610,10 @@
     .eq-o-barre { left: 12px; right: 12px; }
   }
   @media (max-width: 640px) {
-    /* mobile : qui il est, ce qu'il vient de préparer, ce qu'il sait faire, sa fiche ; tout en haut de la carte */
-    .eq { grid-template-columns: minmax(0, 1fr); align-content: start; gap: 14px; padding: 14px; border-radius: 24px; }
-    .eq-qui { display: contents; }
-    .eq-tete { order: 1; padding: 4px 4px 0; align-items: flex-start; gap: 14px; }
-    .eq-prepare { order: 2; padding: 12px; border-radius: 16px; }
-    .eq-taches { order: 3; margin: 0 4px; padding-top: 0; border-top: 0; gap: 6px; }
+    /* mobile : qui il est, ce qu'il sait faire, sa fiche */
+    .eq { align-content: start; padding: 16px; border-radius: 24px; }
+    .eq-tete { align-items: flex-start; gap: 14px; }
     .eq-taches li { font-size: 14px; }
-    .eq-lien { order: 4; margin: 0 4px; padding-top: 0; align-items: center; }
     .eq-photo { width: 72px; height: 72px; border-radius: 14px; }
     .eq-nom { font-size: 21px; }
     .eq-metier { font-size: 13.5px; }
@@ -681,16 +719,6 @@
     .ap-arrow { padding-top: 0; }
     .ap-arrow svg { transform: rotate(90deg); }
   }
-  .proof-note { margin: 18px auto 0; text-align: center; font-size: 13px; color: var(--muted); max-width: 640px; }
-  .confiance { list-style: none; margin: 40px auto 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-  @media (max-width: 699px) {
-    .confiance { gap: 0; margin-top: 28px; }
-    .confiance li { padding: 14px 2px !important; border-radius: 0 !important; background: none !important; border: 0 !important; border-top: 0.5px solid var(--line) !important; box-shadow: none !important; }
-  }
-  .confiance li { background: var(--raised); border: 0.5px solid var(--line); border-radius: 20px; padding: 20px 20px 22px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 6px; text-align: left; }
-  .confiance b { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
-  .confiance span { font-size: 14.5px; line-height: 1.55; color: var(--muted); }
-  .confiance em { font-style: normal; color: var(--subtle); font-size: 13px; display: block; margin-top: 2px; }
   .fondateur {
     display: flex; align-items: flex-start; gap: 20px; max-width: 760px; margin: 28px auto 0; padding: 24px 26px;
     background: var(--carte); border: 0.5px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); text-align: left;
@@ -907,65 +935,15 @@
     </div>
   </section>
 
-  <!-- ═══════════════ 3. LA SOLUTION : trois étapes qui avancent seules (5 s), et le panneau qui montre chaque étape en vrai ═══════════════ -->
-  <section class="hp-s" id="comment" aria-labelledby="t-solution">
+  <!-- ═══════════════ 3. LA SOLUTION : de la prospection à l'acte, un onglet par moment de la vente (rotation 7 s) ═══════════════ -->
+  <section class="hp-s" id="cycle" aria-labelledby="t-cycle">
     <div class="wrap hp-wide">
-      {{TETE_SOLUTION}}
-      <div class="etapes-bloc auto" id="etapes" data-ap>
-        <ol class="etapes">
-          <li class="etape" data-ouvert="true">
-            <h3><button type="button" id="etape-b0" aria-controls="demo-vue-0" aria-current="step"><span class="etape-n" aria-hidden="true">1</span><span class="etape-t">On branche Modelo, ta boîte mail et ton agenda avec toi.</span></button></h3>
-            <div class="etape-corps" id="etape-c0">
-              <p>Rien à migrer : Modelo reste ton CRM.</p>
-              <p class="etape-offert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation faite avec toi, offerte.</span></p>
-            </div>
-            <span class="etape-barre" aria-hidden="true"><i></i></span>
-          </li>
-          <li class="etape" data-ouvert="false">
-            <h3><button type="button" id="etape-b1" aria-controls="demo-vue-1"><span class="etape-n" aria-hidden="true">2</span><span class="etape-t">Ton équipe prépare, jour et nuit.</span></button></h3>
-            <div class="etape-corps" id="etape-c1">
-              <p>Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.</p>
-            </div>
-            <span class="etape-barre" aria-hidden="true"><i></i></span>
-          </li>
-          <li class="etape" data-ouvert="false">
-            <h3><button type="button" id="etape-b2" aria-controls="demo-vue-2"><span class="etape-n" aria-hidden="true">3</span><span class="etape-t">Tu valides d'un geste.</span></button></h3>
-            <div class="etape-corps" id="etape-c2">
-              <p>Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.</p>
-              <p>Un vocal depuis ta voiture suffit : Max confie la tâche au bon équipier.</p>
-            </div>
-            <span class="etape-barre" aria-hidden="true"><i></i></span>
-          </li>
-        </ol>
-        <div class="demo-zone halo">
-          <div class="demo">
-            <div class="demo-vue active" id="demo-vue-0" data-vue="0" role="group" aria-label="Étape 1 en exemple : tes outils branchés">
-              <div class="dv-tete"><span class="dv-r" aria-hidden="true">R.</span><b>Ton installation</b><span class="dv-note">avec toi, offerte</span></div>
-              {{OUTILS_BRANCHEMENT}}
-            </div>
-            <div class="demo-vue" id="demo-vue-1" data-vue="1" role="group" aria-label="Étape 2 en exemple : Zoé rédige le post « Vendu »">
-              <div class="dv-tete"><img src="/assets/equipe/boucles/zoe@256.webp" width="32" height="32" alt="" loading="lazy" /><b>Zoé rédige</b><span class="dv-pill">Brouillon</span><time class="dv-heure">23 h 40</time></div>
-              <div class="dv-post">
-                <img class="dv-photo" src="/assets/accueil/post-vendu.webp" width="800" height="320" alt="La photo du post : la remise des clés aux nouveaux propriétaires." loading="lazy" />
-                <p class="dv-texte">{{VENDU_MOTS}}</p>
-                <p class="dv-canaux">Instagram · Facebook</p>
-              </div>
-            </div>
-            <div class="demo-vue" id="demo-vue-2" data-vue="2" role="group" aria-label="Étape 3 en exemple : tu valides le post, il part">
-              <div class="dv-carte">
-                <div class="carte-tete"><img src="/assets/equipe/boucles/zoe@256.webp" width="36" height="36" alt="" loading="lazy" /><p><b>Zoé</b> a préparé</p><span class="dv-pill">À valider</span></div>
-                <p class="carte-objet">{{VENDU_OBJET}}</p>
-                <img class="dv-photo dv-photo-carte" src="/assets/accueil/post-vendu.webp" width="800" height="320" alt="" loading="lazy" />
-                <p class="dv-extrait">{{VENDU_TEXTE}}</p>
-                <div class="dv-issue">
-                  <div class="dv-actions" aria-hidden="true"><span class="dv-valider">Valider</span><span class="dv-refuser">Refuser</span></div>
-                  <p class="dv-fait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span>Validé : publié sur Instagram et Facebook</span></p>
-                </div>
-              </div>
-              <p class="dv-ou">Dans l'appli, sur WhatsApp ou Telegram : tu valides, il part.</p>
-            </div>
-          </div>
-        </div>
+      {{TETE_CYCLE}}
+      <div class="cy-bloc auto" id="cy-bloc" data-ap>
+        <div class="cy-onglets" role="tablist" aria-label="Les moments de la vente">{{CYCLE_ONGLETS}}</div>
+        <ol class="cy-frise" aria-hidden="true">{{CYCLE_FRISE}}</ol>
+        <div class="cy-zone halo"><div class="cy-panneaux">{{CYCLE_PANNEAUX}}</div></div>
+        <p class="cy-quotidien">Et tous les jours : le point du matin, le bilan du soir à 19&nbsp;h, tes vocaux WhatsApp et Telegram transformés en tâches.</p>
       </div>
       {{PAIRE_CTA}}
     </div>
@@ -983,6 +961,20 @@
       <div class="eq-fleches"><button type="button" class="eq-fleche" data-sens="-1" aria-label="Agent précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button><button type="button" class="eq-fleche" data-sens="1" aria-label="Agent suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button></div>
     </div>
     {{PAIRE_CTA}}
+    </div>
+  </section>
+
+  <!-- ═══════════════ 5. TU NE CHANGES PAS D'OUTIL : Modelo en premier, et ce que l'équipe fait dedans ═══════════════ -->
+  <section class="hp-s" id="outils" aria-labelledby="t-outils">
+    <div class="wrap">
+      {{TETE_OUTILS}}
+      <div data-ap>{{OUTILS_TUILES}}</div>
+      <div class="ot-modelo-bloc" data-ap>
+        <p class="ot-modelo-t"><img src="/assets/logos/modelo.svg" width="86" height="22" alt="Modelo" loading="lazy"><span>Ce que ton équipe fait dans Modelo</span></p>
+        <ul class="ot-liste">{{DANS_MODELO}}</ul>
+        <p class="ot-note">Toute écriture dans Modelo passe par une carte à valider. Rien à migrer.</p>
+      </div>
+      {{PAIRE_CTA}}
     </div>
   </section>
 
@@ -1171,6 +1163,70 @@
     </div>
   </section>
 
+  <!-- ═══════════════ 8. MISE EN ROUTE : trois étapes qui avancent seules (5 s), et le panneau qui montre chaque étape en vrai ═══════════════ -->
+  <section class="hp-s" id="comment" aria-labelledby="t-solution">
+    <div class="wrap hp-wide">
+      {{TETE_SOLUTION}}
+      <div class="etapes-bloc auto" id="etapes" data-ap>
+        <ol class="etapes">
+          <li class="etape" data-ouvert="true">
+            <h3><button type="button" id="etape-b0" aria-controls="demo-vue-0" aria-current="step"><span class="etape-n" aria-hidden="true">1</span><span class="etape-t">On branche Modelo, ta boîte mail et ton agenda avec toi.</span></button></h3>
+            <div class="etape-corps" id="etape-c0">
+              <p>Rien à migrer : Modelo reste ton CRM.</p>
+              <p class="etape-offert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" /><path d="m2 22 3-3" /><path d="M7.5 13.5 10 11" /><path d="M10.5 16.5 13 14" /><path d="m18 3-4 4h6l-4 4" /></svg><span>Installation faite avec toi, offerte.</span></p>
+            </div>
+            <span class="etape-barre" aria-hidden="true"><i></i></span>
+          </li>
+          <li class="etape" data-ouvert="false">
+            <h3><button type="button" id="etape-b1" aria-controls="demo-vue-1"><span class="etape-n" aria-hidden="true">2</span><span class="etape-t">Ton équipe prépare, jour et nuit.</span></button></h3>
+            <div class="etape-corps" id="etape-c1">
+              <p>Confirmations, bons de visite, bilans de commercialisation, relances, posts, avis de valeur.</p>
+            </div>
+            <span class="etape-barre" aria-hidden="true"><i></i></span>
+          </li>
+          <li class="etape" data-ouvert="false">
+            <h3><button type="button" id="etape-b2" aria-controls="demo-vue-2"><span class="etape-n" aria-hidden="true">3</span><span class="etape-t">Tu valides d'un geste.</span></button></h3>
+            <div class="etape-corps" id="etape-c2">
+              <p>Sur ton téléphone, dans l'appli, sur WhatsApp ou Telegram. Rien ne part sans toi.</p>
+              <p>Un vocal depuis ta voiture suffit : Max confie la tâche au bon équipier.</p>
+            </div>
+            <span class="etape-barre" aria-hidden="true"><i></i></span>
+          </li>
+        </ol>
+        <div class="demo-zone halo">
+          <div class="demo">
+            <div class="demo-vue active" id="demo-vue-0" data-vue="0" role="group" aria-label="Étape 1 en exemple : tes outils branchés">
+              <div class="dv-tete"><span class="dv-r" aria-hidden="true">R.</span><b>Ton installation</b><span class="dv-note">avec toi, offerte</span></div>
+              {{OUTILS_BRANCHEMENT}}
+            </div>
+            <div class="demo-vue" id="demo-vue-1" data-vue="1" role="group" aria-label="Étape 2 en exemple : Zoé rédige le post « Vendu »">
+              <div class="dv-tete"><img src="/assets/equipe/boucles/zoe@256.webp" width="32" height="32" alt="" loading="lazy" /><b>Zoé rédige</b><span class="dv-pill">Brouillon</span><time class="dv-heure">23 h 40</time></div>
+              <div class="dv-post">
+                <img class="dv-photo" src="/assets/accueil/post-vendu.webp" width="800" height="320" alt="La photo du post : la remise des clés aux nouveaux propriétaires." loading="lazy" />
+                <p class="dv-texte">{{VENDU_MOTS}}</p>
+                <p class="dv-canaux">Instagram · Facebook</p>
+              </div>
+            </div>
+            <div class="demo-vue" id="demo-vue-2" data-vue="2" role="group" aria-label="Étape 3 en exemple : tu valides le post, il part">
+              <div class="dv-carte">
+                <div class="carte-tete"><img src="/assets/equipe/boucles/zoe@256.webp" width="36" height="36" alt="" loading="lazy" /><p><b>Zoé</b> a préparé</p><span class="dv-pill">À valider</span></div>
+                <p class="carte-objet">{{VENDU_OBJET}}</p>
+                <img class="dv-photo dv-photo-carte" src="/assets/accueil/post-vendu.webp" width="800" height="320" alt="" loading="lazy" />
+                <p class="dv-extrait">{{VENDU_TEXTE}}</p>
+                <div class="dv-issue">
+                  <div class="dv-actions" aria-hidden="true"><span class="dv-valider">Valider</span><span class="dv-refuser">Refuser</span></div>
+                  <p class="dv-fait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span>Validé : publié sur Instagram et Facebook</span></p>
+                </div>
+              </div>
+              <p class="dv-ou">Dans l'appli, sur WhatsApp ou Telegram : tu valides, il part.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{PAIRE_CTA}}
+    </div>
+  </section>
+
   <!-- ═══════════════ 8. FAQ ═══════════════ -->
   <section class="hp-s" id="faq" aria-labelledby="t-faq">
     <div class="wrap">
@@ -1188,14 +1244,7 @@
   <section class="hp-s" id="demo" aria-labelledby="t-fin">
     <div class="wrap">
     <div class="final halo">
-      <span class="faces" aria-hidden="true" data-ap>
-        <img src="/assets/equipe/boucles/max@256.webp" width="56" height="56" alt="" loading="lazy" />
-        <img src="/assets/equipe/boucles/emma@256.webp" width="56" height="56" alt="" loading="lazy" />
-        <img src="/assets/equipe/boucles/lucas@256.webp" width="56" height="56" alt="" loading="lazy" />
-        <img src="/assets/equipe/boucles/christine@256.webp" width="56" height="56" alt="" loading="lazy" />
-        <img src="/assets/equipe/boucles/zoe@256.webp" width="56" height="56" alt="" loading="lazy" />
-        <img src="/assets/equipe/boucles/raphael@256.webp" width="56" height="56" alt="" loading="lazy" />
-      </span>
+      <span class="faces" aria-hidden="true" data-ap>{{VISAGES_FIN}}</span>
       {{TETE_FIN}}
     </div>
     </div>
@@ -1544,6 +1593,54 @@
       bloc.classList.toggle('en-vue', enVue);
       if (enVue && !REDUCED && !vues[actif].classList.contains('joue')) vues[actif].classList.add('joue');
     }, { threshold: 0.45 }).observe(bloc);
+  })();
+
+  // ── De la prospection à l'acte : un onglet par moment de la vente (flèches gauche/droite, Début, Fin). La frise mène la
+  //    rotation (7 s par moment, figée au survol, au focus et en pause générale) ; un choix, un toucher ou un balayage
+  //    l'arrêtent. Le panneau se rejoue à chaque moment : la réponse s'écrit, puis ce qui est prêt arrive. ──
+  (() => {
+    const bloc = document.getElementById('cy-bloc');
+    if (!bloc) return;
+    const liste = bloc.querySelector('[role="tablist"]'), onglets = Array.from(liste.querySelectorAll('[role="tab"]'));
+    const panneaux = Array.from(bloc.querySelectorAll('.cy-panneau')), frise = Array.from(bloc.querySelectorAll('.cy-frise li'));
+    const zone = bloc.querySelector('.cy-zone'), n = onglets.length;
+    let actif = 0, enVue = false;
+    const montre = (k, focus) => {
+      actif = ((k % n) + n) % n;
+      onglets.forEach((o, i) => { o.setAttribute('aria-selected', String(i === actif)); o.tabIndex = i === actif ? 0 : -1; });
+      frise.forEach((f, i) => { f.classList.toggle('actif', i === actif); f.classList.toggle('passe', i < actif); });
+      panneaux.forEach((p, i) => { p.classList.toggle('actif', i === actif); if (!REDUCED) p.classList.remove('joue'); });
+      const o = onglets[actif];
+      if (liste.scrollWidth > liste.clientWidth + 1) liste.scrollTo({ left: o.offsetLeft - (liste.clientWidth - o.offsetWidth) / 2, behavior: REDUCED ? 'auto' : 'smooth' });
+      if (focus) o.focus();
+      void bloc.offsetWidth;
+      if (enVue || REDUCED) panneaux[actif].classList.add('joue');
+    };
+    const manuel = () => bloc.classList.remove('auto');
+    onglets.forEach((o, i) => {
+      o.addEventListener('click', () => { manuel(); montre(i); });
+      o.addEventListener('keydown', (e) => {
+        const d = { ArrowRight: 1, ArrowLeft: -1, Home: -actif, End: n - 1 - actif }[e.key];
+        if (d === undefined) return;
+        e.preventDefault(); manuel(); montre(actif + d, true);
+      });
+    });
+    let x0 = null, y0 = 0;
+    zone.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; manuel(); }, { passive: true });
+    zone.addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) montre(actif + (dx < 0 ? 1 : -1));
+      x0 = null;
+    }, { passive: true });
+    bloc.addEventListener('animationend', (e) => { if (e.target.matches('.cy-frise li i') && bloc.classList.contains('auto')) montre(actif + 1); });
+    if (REDUCED) { manuel(); panneaux.forEach((p) => p.classList.add('joue')); return; }
+    if (!('IntersectionObserver' in window)) { enVue = true; bloc.classList.add('en-vue'); panneaux[actif].classList.add('joue'); return; }
+    new IntersectionObserver((en) => {
+      enVue = en[0].isIntersecting;
+      bloc.classList.toggle('en-vue', enVue);
+      if (enVue && !panneaux[actif].classList.contains('joue')) panneaux[actif].classList.add('joue');
+    }, { threshold: 0.4 }).observe(zone);
   })();
 
   // ── L'équipe : onglets (flèches gauche/droite, Début, Fin) et carrousel. Rotation toutes les 6 s menée par la barre de
