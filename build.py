@@ -198,13 +198,14 @@ def _doc(nom, cls, alt):
 def _appel(a):
     tete = (f'<img class="av" src="{_visage(a["agent"])}" width="24" height="24" alt="" loading="lazy">' if a.get("agent")
             else _COCHE if a.get("ok") else "")
-    note = f' <small>· {_esc(_typo(a["note"]))}</small>' if a.get("note") else ""
+    note = f' <small>· {logo_app(a["appli"], "lg lg-s") if a.get("appli") else ""}{_esc(_typo(a["note"]))}</small>' if a.get("note") else ""
     return f'<span class="sc-call {a["place"]}{" ok" if a.get("ok") else ""}">{tete}{_esc(_typo(a["texte"]))}{note}</span>'
 
 def _mail(m, cls=""):
     pj = (f'<span class="sc-pj">{_ico("file-pen-line")}{_esc(m["piece"])}</span>' if m.get("piece")
           else f'<span class="sc-avis">{_ico("star")}{_esc(m["avis"])}</span>' if m.get("avis") else "")
-    return (f'<div class="sc-obj sc-mail{cls}"><div class="sc-mail-t"><div><span>À</span><b>{_esc(m["a"])}</b></div>'
+    app = f'<div class="sc-mail-app">{logo_app(m["appli"], "lg lg-s")}{_esc(APPLIS[m["appli"]]["nom"])} · brouillon</div>' if m.get("appli") else ""
+    return (f'<div class="sc-obj sc-mail{cls}"><div class="sc-mail-t">{app}<div><span>À</span><b>{_esc(m["a"])}</b></div>'
             f'<div><span>Objet</span><b>{_esc(_typo(m["objet"]))}</b></div></div>'
             f'<div class="sc-mail-c"><p>{_esc(_typo(m["texte"]))}</p>{pj}</div>'
             f'<div class="sc-mail-pied"><span>{_esc(_typo(m["pied"]))}</span><b>À valider</b></div></div>')
@@ -221,7 +222,7 @@ def scene_html(ident):
     elif t == "agenda":
         heures = "".join(f"<i>{h}</i><s></s>" for h in v["heures"])
         corps = (_doc(v["document"], "sc-visite-bon", v["alt"]) +
-                 f'<div class="sc-obj sc-agenda"><div class="sc-agenda-t"><b>{_esc(v["jour"])}</b><span>{_esc(v["outil"])}</span></div>'
+                 f'<div class="sc-obj sc-agenda"><div class="sc-agenda-t"><b>{_esc(v["jour"])}</b><span>{logo_app(v["appli"], "lg lg-s")}{_esc(v["outil"])}</span></div>'
                  f'<div class="sc-heures">{heures}<div class="sc-ev"><b>{_esc(_typo(v["evenement"]["titre"]))}</b>'
                  f'<span>{_esc(_typo(v["evenement"]["detail"]))}</span></div></div></div>' + "".join(map(_appel, v["appels"])))
     elif t == "documents":
@@ -230,20 +231,22 @@ def scene_html(ident):
         lis = "".join(f'<li>{_COCHE}{_esc(_typo(p))}</li>' for p in v["pieces"])
         lis += "".join(f'<li class="att" style="--k:{k}">{_COCHE}{_esc(_typo(p["texte"]))}<em>{_esc(p["note"])}</em></li>'
                        for k, p in enumerate(v["attendues"]))
+        src = f'<div class="sc-source">{logo_app(v["source"]["appli"], "lg lg-s")}{_esc(v["source"]["texte"])}</div>' if v.get("source") else ""
         corps = (f'<div class="sc-obj sc-dossier"><div class="sc-dossier-t"><div><b>{_esc(_typo(v["titre"]))}</b><span>{_esc(_typo(v["sous"]))}</span></div>'
                  f'<div class="sc-ring" style="--p:{v["pct"]}"><span>{v["avant"]}</span><span>{v["apres"]}</span></div></div>'
-                 f'<ul class="sc-pieces">{lis}</ul></div>' + "".join(map(_appel, v["appels"])))
+                 f'<ul class="sc-pieces">{lis}</ul>{src}</div>' + "".join(map(_appel, v["appels"])))
     elif t == "frise":
         lis = "".join(f'<li class="{e.get("etat", "")}"><i>{_COCHE if e.get("etat") == "fait" else ""}</i>'
                       f'{"<b>" if e.get("etat") == "now" else "<em>"}{_esc(_typo(e["texte"]))}{"</b>" if e.get("etat") == "now" else "</em>"}'
                       f'<span>{_esc(e["date"])}</span></li>' for e in v["etapes"])
-        corps = (f'<div class="sc-obj sc-frise"><div class="sc-frise-t"><b>{_esc(_typo(v["titre"]))}</b></div><ul class="sc-etapes">{lis}</ul></div>'
+        src = f'<span class="sc-source">{logo_app(v["source"]["appli"], "lg lg-s")}{_esc(v["source"]["texte"])}</span>' if v.get("source") else ""
+        corps = (f'<div class="sc-obj sc-frise"><div class="sc-frise-t"><b>{_esc(_typo(v["titre"]))}</b>{src}</div><ul class="sc-etapes">{lis}</ul></div>'
                  + "".join(map(_appel, v["appels"])))
     elif t == "mail":
         corps = _doc(v["document"], "sc-acte-facture", v["alt"]) + _mail(v["mail"]) + "".join(map(_appel, v["appels"]))
     elif t == "post":
         corps = (f'<div class="sc-obj sc-post"><div class="sc-post-t"><i>{v["compte"][:1].upper()}{v["compte"][-4:-3].upper()}</i><div><b>{_esc(v["compte"])}</b>'
-                 f'<span> · {_esc(v["lieu"])}</span></div></div><div class="sc-post-ph"><img src="/assets/accueil/post-vendu.webp" width="800" height="320" '
+                 f'<span> · {_esc(v["lieu"])}</span></div>{logo_app(v["appli"], "lg lg-m")}</div><div class="sc-post-ph"><img src="/assets/accueil/post-vendu.webp" width="800" height="320" '
                  f'alt="La photo du post : la remise des clés aux nouveaux propriétaires." loading="lazy"><b>{_esc(v["badge"])}</b>'
                  f'<span>{_esc(_typo(v["legende"]))}</span><u></u></div><p class="sc-post-c"><b>{_esc(v["compte"])}</b> {_esc(_typo(v["texte"]))}</p></div>'
                  + _mail(v["mail"], " sc-apres-mail") + "".join(map(_appel, v["appels"])))
@@ -423,6 +426,25 @@ def _ico(nom, cls=""):
     return (f'<svg{c} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
             f'stroke-linejoin="round" aria-hidden="true">{LUCIDE[nom]}</svg>')
 
+# ── Les applis d'où viennent les tâches et les documents (logos officiels de assets/logos/, glyphes CC0 de simple-icons
+#    à la couleur de la marque, Modelo = son mot-symbole). Comme de vraies notifications de téléphone (Julien, 13/10).
+APPLIS = {
+    "modelo": {"nom": "Modelo", "fichier": "modelo.svg", "mot": True},
+    "gmail": {"nom": "Gmail", "fichier": "gmail.svg", "couleur": "#EA4335"},
+    "instagram": {"nom": "Instagram", "fichier": "instagram.svg", "couleur": "#E4405F"},
+    "whatsapp": {"nom": "WhatsApp", "fichier": "whatsapp.svg", "couleur": "#25D366"},
+    "google-agenda": {"nom": "Google Agenda", "fichier": "google-agenda.svg", "couleur": "#4285F4"},
+    "telegram": {"nom": "Telegram", "fichier": "telegram.svg", "couleur": "#26A5E4"},
+    "outlook": {"nom": "Outlook", "fichier": "outlook.svg", "couleur": "#0078D4"},
+}
+
+def logo_app(cle, cls="lg"):
+    """Le logo d'une appli : glyphe masqué à la couleur de la marque (lisible en clair et en sombre), ou le mot-symbole (Modelo)."""
+    a = APPLIS[cle]
+    if a.get("mot"):
+        return f'<img class="{cls} lg-mot" src="/assets/logos/{a["fichier"]}" alt="{a["nom"]}" loading="lazy">'
+    return f'<i class="{cls}" style="--logo:url(/assets/logos/{a["fichier"]});--c:{a["couleur"]}" role="img" aria-label="{a["nom"]}"></i>'
+
 def pile_probleme(items):
     """Le problème, en vrai : la pile de ce qui attend. Dans la page, la liste est dans l'ordre de lecture (le vendeur
     sans nouvelles en haut) ; le script la fait arriver par le bas, une notification après l'autre, compteur compris."""
@@ -434,8 +456,9 @@ def pile_probleme(items):
         else:
             lis.append((i, rang_m)); rang_m += 1
     lis = "".join(
-        f'<li class="notif" style="--rang:{i};--rang-m:{0 if m is None else m}"{" data-bureau" if m is None else ""}><span class="notif-ico">{_ico(items[i]["icone"])}</span>'
-        f'<span class="notif-txt">{_esc(_typo(items[i]["texte"]))}</span><span class="notif-quand">{_esc(items[i]["quand"])}</span></li>'
+        f'<li class="notif" style="--rang:{i};--rang-m:{0 if m is None else m}"{" data-bureau" if m is None else ""}><span class="notif-ico">{logo_app(items[i]["appli"])}</span>'
+        f'<span class="notif-corps"><span class="notif-app">{_esc(APPLIS[items[i]["appli"]]["nom"])}<span class="notif-quand"> · {_esc(items[i]["quand"])}</span></span>'
+        f'<span class="notif-txt">{_esc(_typo(items[i]["texte"]))}</span></span></li>'
         for i, m in lis)
     return (f'<div class="pile-zone halo" data-ap><div class="pile" id="pile" style="--n:{len(items)}">'
             f'<div class="pile-tete">{_ico("bell")}<span>À faire aujourd\'hui</span>'

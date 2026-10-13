@@ -540,8 +540,10 @@ for e in _ea:
     must(f'href="/agents/{e["slug"]}/"' in _eq, f"fiche de {e['slug']} reliée")
 _pb = idx.split('id="probleme"', 1)[1].split("</section>", 1)[0]
 _pile = json.loads((ROOT / "data" / "probleme.json").read_text())
-must(_pb.count('<li class="notif"') == len(_pile) == 6 and "M21.25 8.2A10 10 0 1 0 16 21.16" in _pb and all(it["icone"] in _build.LUCIDE for it in _pile),
-     "la pile du problème : six notifications, icônes Lucide (aucun SVG fait main)")
+must(_pb.count('<li class="notif"') == len(_pile) == 6 and all(it["appli"] in _build.APPLIS for it in _pile) and [it["appli"] for it in _pile] == ["modelo", "gmail", "instagram", "whatsapp", "gmail", "google-agenda"],
+     "la pile du problème : six notifications, chacune avec l'appli d'où vient la tâche (Julien, 13/10)")
+must(_pb.count('class="notif-app"') == 6 and 'aria-label="Gmail"' in _pb and 'src="/assets/logos/modelo.svg"' in _pb and "--logo:url(/assets/logos/instagram.svg)" in _pb
+     and all((dist / "assets" / "logos" / _build.APPLIS[a]["fichier"]).is_file() for a in _build.APPLIS), "notifications de téléphone : logo officiel + nom de l'appli + heure")
 must('class="sticky-cta"' in idx and ">Démo<" in idx.split('class="sticky-cta"', 1)[1][:600], "barre collante : Essayer 7 jours + Démo")
 # Police : Geist partout, aucune police à empattements chargée
 for page in sorted(dist.rglob("*.html")):
@@ -804,6 +806,8 @@ must(not re.search(r"\d{3} ?\d{3} ?€", html.unescape(_cy.split('id="cy-apres"'
 must(".cy-prets li:nth-child(n+4) { display: none; }" in idx and "    .cy-prets li:nth-child(n+3) { display: none; }" in idx, "« ce qui est prêt » : trois lignes au bureau, deux sur téléphone")
 must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in idx and re.search(r"\.cy-prets li \{[^}]*font-size: 15px", idx), "mobile : onglets aimantés, texte des cartes ≥ 15 px")
 must((ROOT / "docs" / "visuels" / "documents.ts").is_file() and (ROOT / "docs" / "visuels" / "carte.py").is_file() and (ROOT / "docs" / "visuels" / "README.md").is_file(), "générateurs et sources des visuels notés dans docs/visuels/")
+must('aria-label="WhatsApp"' in _cy and 'aria-label="Google Agenda"' in _cy and _cy.count('class="sc-mail-app"') == 2 and _cy.count('class="sc-source"') == 2 and 'aria-label="Instagram"' in _cy,
+     "les mêmes logos partout où une source apparaît dans les scènes (agenda, WhatsApp, Gmail, Modelo, Instagram)")
 print("OK la vente moment par moment, les outils")
 
 # ── Interrupteurs : éteints, rien de Hugo ni de la fiche Google ; allumés (construction à part), Hugo à la place de Raphaël ──

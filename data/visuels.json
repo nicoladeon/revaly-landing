@@ -1,35 +1,215 @@
 {
-  "prospection": {"type": "carte", "appel": {"agent": "lucas", "texte": "Radar DPE", "note": "3 nouveaux ce matin", "place": "tl"},
-    "pastilles": [{"classe": "F", "texte": "Maison · rue des Écoles", "note": "112 m²", "x": 40, "y": 46},
-                  {"classe": "D", "texte": "Appartement", "note": "72 m²", "x": 68, "y": 66},
-                  {"classe": "C", "texte": "Maison", "note": "118 m²", "x": 30, "y": 80}]},
-  "visite": {"type": "agenda", "jour": "Vendredi 16 octobre", "outil": "Google Agenda", "heures": ["16:00", "17:00", "18:00"],
-    "evenement": {"titre": "Visite · 12 rue des Lilas", "detail": "17:15 – 18:00 · Camille Durand"},
-    "document": "bon-de-visite", "alt": "Le bon de visite de l'agence, prêt à imprimer, généré par l'appli.",
-    "appels": [{"ok": true, "texte": "Confirmée hier soir", "note": "WhatsApp", "place": "bl"},
-               {"agent": "christine", "texte": "Bon de visite", "note": "prêt à imprimer", "place": "tr"}]},
-  "vendeur": {"type": "documents", "gauche": "avis-couverture", "droite": "bilan",
-    "alt_gauche": "La couverture de l'avis de valeur, aux couleurs de l'agence.", "alt_droite": "La première page du bilan de commercialisation : visites, offres, retours.",
-    "appels": [{"agent": "lucas", "texte": "Avis de valeur", "note": "242 000 – 255 000 €", "place": "tl"},
-               {"agent": "lucas", "texte": "Bilan", "note": "6 visites, 1 offre, prêt avant le RDV", "place": "br"}]},
-  "mandat": {"type": "dossier", "titre": "Dossier de mandat · Perrin", "sous": "Appartement T3, rue Verte", "avant": "5/7", "apres": "7/7", "pct": 71,
-    "pieces": ["Titre de propriété", "Pièce d'identité du vendeur", "Dernier avis de taxe foncière", "DPE", "Règlement de copropriété"],
-    "attendues": [{"texte": "PV des 3 dernières AG", "note": "relancé par Emma"}, {"texte": "Mesurage Carrez", "note": "relancé par Emma"}],
-    "appels": [{"agent": "christine", "texte": "Mandat pré-rempli", "note": "sur ton modèle", "place": "br"}]},
-  "compromis": {"type": "frise", "titre": "Échéances · vente Martin",
-    "etapes": [{"texte": "Offre acceptée", "date": "6 oct.", "etat": "fait"}, {"texte": "Compromis signé", "date": "14 oct.", "etat": "fait"},
-               {"texte": "Fin de rétractation", "date": "25 oct.", "etat": "now"}, {"texte": "Accord de principe du prêt", "date": "4 nov."},
-               {"texte": "Obtention du prêt", "date": "29 nov."}, {"texte": "Acte chez le notaire", "date": "15 janv."}],
-    "appels": [{"agent": "emma", "texte": "Relance du prêt", "note": "5 jours avant", "place": "tr"}]},
-  "acte": {"type": "mail", "document": "facture", "alt": "La facture d'honoraires de l'agence, générée par l'appli.",
-    "mail": {"a": "Me Lambert, notaire", "objet": "Facture d'honoraires · 7 allée des Tilleuls, Bihorel",
-             "texte": "Maître, vous trouverez ci-joint la facture d'honoraires de l'agence pour la vente Lefèvre / Roux, à régler lors de la signature de jeudi.",
-             "piece": "Facture-2026-041.pdf", "pied": "Brouillon d'Emma · dans ta boîte"},
-    "appels": [{"agent": "emma", "texte": "Facture d'honoraires", "note": "12 000 € TTC", "place": "tr"}]},
-  "apres": {"type": "post", "compte": "agenceduparc", "lieu": "Bihorel", "badge": "VENDU", "legende": "Maison 5 pièces · Bihorel",
+  "prospection": {
+    "type": "carte",
+    "appel": {
+      "agent": "lucas",
+      "texte": "Radar DPE",
+      "note": "3 nouveaux ce matin",
+      "place": "tl"
+    },
+    "pastilles": [
+      {
+        "classe": "F",
+        "texte": "Maison · rue des Écoles",
+        "note": "112 m²",
+        "x": 40,
+        "y": 46
+      },
+      {
+        "classe": "D",
+        "texte": "Appartement",
+        "note": "72 m²",
+        "x": 68,
+        "y": 66
+      },
+      {
+        "classe": "C",
+        "texte": "Maison",
+        "note": "118 m²",
+        "x": 30,
+        "y": 80
+      }
+    ]
+  },
+  "visite": {
+    "type": "agenda",
+    "jour": "Vendredi 16 octobre",
+    "outil": "Google Agenda",
+    "heures": [
+      "16:00",
+      "17:00",
+      "18:00"
+    ],
+    "evenement": {
+      "titre": "Visite · 12 rue des Lilas",
+      "detail": "17:15 – 18:00 · Camille Durand"
+    },
+    "document": "bon-de-visite",
+    "alt": "Le bon de visite de l'agence, prêt à imprimer, généré par l'appli.",
+    "appels": [
+      {
+        "ok": true,
+        "texte": "Confirmée hier soir",
+        "note": "WhatsApp",
+        "place": "bl",
+        "appli": "whatsapp"
+      },
+      {
+        "agent": "christine",
+        "texte": "Bon de visite",
+        "note": "prêt à imprimer",
+        "place": "tr"
+      }
+    ],
+    "appli": "google-agenda"
+  },
+  "vendeur": {
+    "type": "documents",
+    "gauche": "avis-couverture",
+    "droite": "bilan",
+    "alt_gauche": "La couverture de l'avis de valeur, aux couleurs de l'agence.",
+    "alt_droite": "La première page du bilan de commercialisation : visites, offres, retours.",
+    "appels": [
+      {
+        "agent": "lucas",
+        "texte": "Avis de valeur",
+        "note": "242 000 – 255 000 €",
+        "place": "tl"
+      },
+      {
+        "agent": "lucas",
+        "texte": "Bilan",
+        "note": "6 visites, 1 offre, prêt avant le RDV",
+        "place": "br"
+      }
+    ]
+  },
+  "mandat": {
+    "type": "dossier",
+    "titre": "Dossier de mandat · Perrin",
+    "sous": "Appartement T3, rue Verte",
+    "avant": "5/7",
+    "apres": "7/7",
+    "pct": 71,
+    "pieces": [
+      "Titre de propriété",
+      "Pièce d'identité du vendeur",
+      "Dernier avis de taxe foncière",
+      "DPE",
+      "Règlement de copropriété"
+    ],
+    "attendues": [
+      {
+        "texte": "PV des 3 dernières AG",
+        "note": "relancé par Emma"
+      },
+      {
+        "texte": "Mesurage Carrez",
+        "note": "relancé par Emma"
+      }
+    ],
+    "appels": [
+      {
+        "agent": "christine",
+        "texte": "Mandat pré-rempli",
+        "note": "sur ton modèle",
+        "place": "br"
+      }
+    ],
+    "source": {
+      "appli": "modelo",
+      "texte": "pièces lues dans Modelo"
+    }
+  },
+  "compromis": {
+    "type": "frise",
+    "titre": "Échéances · vente Martin",
+    "etapes": [
+      {
+        "texte": "Offre acceptée",
+        "date": "6 oct.",
+        "etat": "fait"
+      },
+      {
+        "texte": "Compromis signé",
+        "date": "14 oct.",
+        "etat": "fait"
+      },
+      {
+        "texte": "Fin de rétractation",
+        "date": "25 oct.",
+        "etat": "now"
+      },
+      {
+        "texte": "Accord de principe du prêt",
+        "date": "4 nov."
+      },
+      {
+        "texte": "Obtention du prêt",
+        "date": "29 nov."
+      },
+      {
+        "texte": "Acte chez le notaire",
+        "date": "15 janv."
+      }
+    ],
+    "appels": [
+      {
+        "agent": "emma",
+        "texte": "Relance du prêt",
+        "note": "5 jours avant",
+        "place": "tr"
+      }
+    ],
+    "source": {
+      "appli": "modelo",
+      "texte": "dates lues dans Modelo"
+    }
+  },
+  "acte": {
+    "type": "mail",
+    "document": "facture",
+    "alt": "La facture d'honoraires de l'agence, générée par l'appli.",
+    "mail": {
+      "a": "Me Lambert, notaire",
+      "objet": "Facture d'honoraires · 7 allée des Tilleuls, Bihorel",
+      "texte": "Maître, vous trouverez ci-joint la facture d'honoraires de l'agence pour la vente Lefèvre / Roux, à régler lors de la signature de jeudi.",
+      "piece": "Facture-2026-041.pdf",
+      "pied": "Brouillon d'Emma · dans ta boîte",
+      "appli": "gmail"
+    },
+    "appels": [
+      {
+        "agent": "emma",
+        "texte": "Facture d'honoraires",
+        "note": "12 000 € TTC",
+        "place": "tr"
+      }
+    ]
+  },
+  "apres": {
+    "type": "post",
+    "compte": "agenceduparc",
+    "lieu": "Bihorel",
+    "badge": "VENDU",
+    "legende": "Maison 5 pièces · Bihorel",
     "texte": "Vendu ! Merci à nos vendeurs et à nos acquéreurs pour leur confiance.",
-    "mail": {"a": "Mme Lefèvre", "objet": "Merci pour votre confiance",
-             "texte": "Madame, votre maison a trouvé ses nouveaux propriétaires. Accepteriez-vous de partager votre expérience ?",
-             "avis": "Laisser un avis Google", "pied": "Brouillon d'Emma"},
-    "appels": [{"agent": "zoe", "texte": "Post « Vendu »", "note": "jamais de prix", "place": "tl"}]}
+    "mail": {
+      "a": "Mme Lefèvre",
+      "objet": "Merci pour votre confiance",
+      "texte": "Madame, votre maison a trouvé ses nouveaux propriétaires. Accepteriez-vous de partager votre expérience ?",
+      "avis": "Laisser un avis Google",
+      "pied": "Brouillon d'Emma",
+      "appli": "gmail"
+    },
+    "appels": [
+      {
+        "agent": "zoe",
+        "texte": "Post « Vendu »",
+        "note": "jamais de prix",
+        "place": "tl"
+      }
+    ],
+    "appli": "instagram"
+  }
 }
