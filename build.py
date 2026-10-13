@@ -188,9 +188,14 @@ def _cycle_moments():
 _VISUELS = json.loads((ROOT / "data" / "visuels.json").read_text())
 _COCHE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'  # trait réglé en CSS (.sc svg)
 
+# Les rendus : page entière (960 × 1358) ou le haut de la page recadré et agrandi pour rester lisible à 390 px (R47)
+DOCS_DIM = {"bon-de-visite-haut": (900, 804), "facture-haut": (900, 744), "bilan-haut": (900, 609), "avis-haut": (900, 716)}
+
 def _doc(nom, cls, alt):
-    return (f'<div class="sc-obj sc-a4 {cls}"><img src="/assets/accueil/docs/{nom}.webp" width="960" height="1358" '
-            f'alt="{html.escape(alt, quote=True)}" loading="lazy" decoding="async"></div>')
+    w, h = DOCS_DIM.get(nom, (960, 1358))
+    petit = f'<source media="(max-width: 640px)" srcset="/assets/accueil/docs/{nom}@450.webp">' if nom in DOCS_DIM else ""
+    return (f'<div class="sc-obj sc-doc {cls}"><picture>{petit}<img src="/assets/accueil/docs/{nom}.webp" width="{w}" height="{h}" '
+            f'alt="{html.escape(alt, quote=True)}" loading="lazy" decoding="async"></picture></div>')
 
 def _appel(a):
     tete = (f'<img class="av" src="{_visage(a["agent"])}" width="24" height="24" alt="" loading="lazy">' if a.get("agent")
@@ -219,11 +224,14 @@ def scene_html(ident):
                  f'<svg aria-hidden="true"><use href="/assets/accueil/carte-secteur.svg#carte"/></svg><span class="sc-moi"></span>{pins}'
                  f'<span class="sc-osm">© OpenStreetMap</span></div>' + _appel(v["appel"]))
     elif t == "agenda":
-        heures = "".join(f"<i>{h}</i><s></s>" for h in v["heures"])
-        corps = (_doc(v["document"], "sc-visite-bon", v["alt"]) +
-                 f'<div class="sc-obj sc-agenda"><div class="sc-agenda-t"><b>{_esc(v["jour"])}</b><span>{logo_app(v["appli"], "lg lg-s")}{_esc(v["outil"])}</span></div>'
-                 f'<div class="sc-heures">{heures}<div class="sc-ev"><b>{_esc(_typo(v["evenement"]["titre"]))}</b>'
-                 f'<span>{_esc(_typo(v["evenement"]["detail"]))}</span></div></div></div>' + "".join(map(_appel, v["appels"])))
+        # La grille horaire comme un vrai agenda : une ligne par heure, l'événement commence pile à sa place
+        # (--debut en heures depuis la première ligne) et sa hauteur suit sa durée (--duree)
+        e = v["evenement"]
+        heures = "".join(f'<i style="--h:{k}">{h}</i>' for k, h in enumerate(v["heures"]))
+        corps = (_doc(v["document"], "sc-doc-visite", v["alt"]) +
+                 f'<div class="sc-obj sc-agenda" style="--n:{len(v["heures"])}"><div class="sc-agenda-t"><b>{_esc(v["jour"])}</b><span>{logo_app(v["appli"], "lg lg-s")}{_esc(v["outil"])}</span></div>'
+                 f'<div class="sc-heures">{heures}<div class="sc-ev" style="--debut:{e["debut"]};--duree:{e["duree"]}"><b>{_esc(_typo(e["titre"]))}</b>'
+                 f'<span>{_esc(_typo(e["detail"]))}</span></div></div></div>' + "".join(map(_appel, v["appels"])))
     elif t == "documents":
         corps = _doc(v["gauche"], "sc-doc-g", v["alt_gauche"]) + _doc(v["droite"], "sc-doc-d", v["alt_droite"]) + "".join(map(_appel, v["appels"]))
     elif t == "dossier":
@@ -251,7 +259,7 @@ def scene_html(ident):
                  + _mail(v["mail"], " sc-apres-mail") + "".join(map(_appel, v["appels"])))
     else:
         raise SystemExit(f"visuels.json : type inconnu {t}")
-    return f'<div class="sc"><div class="sc-fond"></div><div class="sc-scene">{corps}</div></div>'
+    return f'<div class="sc-scene">{corps}</div>'
 
 # ── Section Max (13/10) : un vocal depuis le terrain, Max répartit, deux cartes à valider. Seulement ce que la prod fait :
 #    vocaux WhatsApp/Telegram transformés en tâches (orchestrateur), bon de visite (Christine), relance par e-mail (Emma).
@@ -293,18 +301,18 @@ def cycle_vente():
         onglets.append(f'<button type="button" role="tab" class="cy-onglet" id="cy-o-{m["id"]}" aria-controls="cy-{m["id"]}" '
                        f'aria-selected="{"true" if sel else "false"}" tabindex="{0 if sel else -1}">{_esc(m["onglet"])}</button>')
         frise.append(f'<li class="{"actif" if sel else ""}" style="--k:{i}"><i></i></li>')
-        prets = "".join(f'<li style="--v:{j}"><img src="{_visage(p["agent"])}" width="24" height="24" alt="" loading="lazy">'
-                        f'<span>{_esc(_typo(p["texte"]))} <em>{_esc(noms[p["agent"]])}</em></span>{_ico("check", "cy-coche")}</li>'
-                        for j, p in enumerate(m["prets"]))
+        # « Ce qui est prêt » : une rangée de pastilles courtes (le texte complet en infobulle)
+        prets = "".join(f'<li style="--v:{j}" title="{html.escape(p["texte"], quote=True)}">{_ico("check", "cy-coche")}<span>{_esc(_typo(p["chip"]))}</span>'
+                        f'<em>{_esc(noms[p["agent"]])}</em></li>' for j, p in enumerate(m["prets"]))
         chute = f'<p class="cy-chute">{_esc(_typo(m["chute"]))}</p>' if m.get("chute") else ""
         # R42 : le vrai livrable en grand (scene_html), la conversation plus courte et « ce qui est prêt » à côté
         panneaux.append(
             f'<div class="cy-panneau{" actif" if sel else ""}" id="cy-{m["id"]}" role="tabpanel" aria-labelledby="cy-o-{m["id"]}">'
-            f'{scene_html(m["id"])}<div class="cy-cote">'
+            f'<div class="sc">{scene_html(m["id"])}'
             f'<div class="cy-conv"><p class="cy-q"><span class="cy-toi">Toi</span>{_esc(_typo(m["question"]))}</p>'
             f'<div class="cy-r"><img src="{_visage(m["agent"])}" width="40" height="40" alt="" loading="lazy">'
-            f'<div><b>{_esc(noms[m["agent"]])}</b><p>{_mots(m["reponse"])}</p></div></div></div>'
-            f'<div class="cy-prets"><p class="cy-prets-t">Ce qui est prêt</p><ul>{prets}</ul>{chute}</div></div></div>')
+            f'<div><b>{_esc(noms[m["agent"]])}</b><p>{_mots(m["reponse"])}</p></div></div></div></div>'
+            f'<div class="cy-prets"><p class="cy-prets-t">Prêt :</p><ul>{prets}</ul>{chute}</div></div>')
     return {"CYCLE_ONGLETS": "".join(onglets), "CYCLE_FRISE": "".join(frise), "CYCLE_PANNEAUX": "".join(panneaux)}
 
 # ── Tu ne changes pas d'outil (révision du 13/10, à la manière des intégrations de Limova) : les tuiles des outils, Modelo

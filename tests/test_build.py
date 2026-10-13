@@ -776,7 +776,7 @@ for m in _moments:
     _pn = _cy.split(f'id="cy-{m["id"]}"', 1)[1].split('class="cy-panneau', 1)[0]
     _pt = html.unescape(re.sub(r"<[^>]+>", "", _pn)).replace("\u00a0", " ")
     must(m["question"].replace(" :", " :") in _pt and f"<b>{_noms[m['agent']]}</b>" in html.unescape(_pn) and m.get("source"), f"moment {m['id']} : ta question, la réponse de {m['agent']}, source notée")
-    must(re.sub(r"\s+", " ", m["reponse"]) in re.sub(r"\s+", " ", _pt) and all(p["texte"] in _pt for p in m["prets"]), f"moment {m['id']} : la réponse et ce qui est prêt")
+    must(re.sub(r"\s+", " ", m["reponse"]) in re.sub(r"\s+", " ", _pt) and all(p["chip"] in _pt and html.escape(p["texte"], quote=True) in _pn for p in m["prets"]), f"moment {m['id']} : la réponse et ce qui est prêt")
 _vis = next(m for m in _moments if m["id"] == "visite")
 must(any(p["agent"] == "christine" and "bon de visite" in p["texte"].lower() for p in _vis["prets"]), "le bon de visite est préparé par Christine")
 _vend = next(m for m in _moments if m["id"] == "vendeur")
@@ -798,15 +798,17 @@ must(set(_visuels) == {m["id"] for m in _moments} and [_visuels[m["id"]]["type"]
      "un visuel par moment : carte, agenda, documents, dossier, frise, mail, post")
 for m in _moments:
     _pn = _cy.split(f'id="cy-{m["id"]}"', 1)[1].split('class="cy-panneau', 1)[0]
-    must(_pn.count('<div class="sc">') == 1 and _pn.find('<div class="sc">') < _pn.find('class="cy-cote"') and 'class="sc-scene"' in _pn, f"moment {m['id']} : la scène avant la conversation")
+    must(_pn.count('<div class="sc">') == 1 and _pn.find('class="sc-scene"') < _pn.find('class="cy-conv"') < _pn.find('class="cy-prets"') and 'cy-cote' not in _pn,
+         f"moment {m['id']} : un seul cadre, la conversation flotte sur la scène, les pastilles dessous (R47)")
     must(len(m["reponse"]) <= 150, f"moment {m['id']} : réponse courte ({len(m['reponse'])} car.)")
-for _d in ["bon-de-visite", "facture", "bilan", "avis-couverture"]:
-    must((dist / "assets" / "accueil" / "docs" / f"{_d}.webp").is_file() and (dist / "assets" / "accueil" / "docs" / f"{_d}@520.webp").is_file() and f"/assets/accueil/docs/{_d}.webp" in _cy, f"document {_d} : vrai rendu publié et affiché")
+for _d in ["bon-de-visite-haut", "facture-haut", "bilan-haut", "avis-haut"]:
+    must((dist / "assets" / "accueil" / "docs" / f"{_d}.webp").is_file() and (dist / "assets" / "accueil" / "docs" / f"{_d}@450.webp").is_file() and f"/assets/accueil/docs/{_d}.webp" in _cy, f"document {_d} : vrai rendu, haut de page lisible, publié et affiché")
+must('style="--debut:1.25;--duree:0.75"' in _cy and "top: calc(var(--debut) * var(--hr) + .6em); height: calc(var(--duree) * var(--hr))" in idx, "agenda exact : 17:15 – 18:00 posé sur la grille, hauteur selon la durée")
 must((dist / "assets" / "accueil" / "carte-secteur.svg").is_file() and 'href="/assets/accueil/carte-secteur.svg#carte"' in _cy and "© OpenStreetMap" in _cy, "carte du secteur : vraies rues, attribution OpenStreetMap")
 must('class="sc-pin"' in _cy and 'class="sc-ev"' in _cy and 'class="sc-ring"' in _cy and 'class="sc-etapes"' in _cy and 'class="sc-pj"' in _cy and 'class="sc-post-ph"' in _cy and 'class="sc-avis"' in _cy,
      "pastilles DPE, événement d'agenda, dossier 5/7, frise des échéances, pièce jointe, post Vendu, avis Google")
 must(not re.search(r"\d{3} ?\d{3} ?€", html.unescape(_cy.split('id="cy-apres"', 1)[1].split('class="cy-cote"', 1)[0])), "post « Vendu » : jamais de prix")
-must(".cy-prets li:nth-child(n+4) { display: none; }" in idx and "    .cy-prets li:nth-child(n+3) { display: none; }" in idx, "« ce qui est prêt » : trois lignes au bureau, deux sur téléphone")
+must(".cy-prets li:nth-child(n+4) { display: none; }" in idx and "    .cy-prets li:nth-child(n+3) { display: none; }" in idx, "« prêt » : trois pastilles au bureau, deux sur téléphone")
 must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in idx and re.search(r"\.cy-prets li \{[^}]*font-size: 15px", idx), "mobile : onglets aimantés, texte des cartes ≥ 15 px")
 must((ROOT / "docs" / "visuels" / "documents.ts").is_file() and (ROOT / "docs" / "visuels" / "carte.py").is_file() and (ROOT / "docs" / "visuels" / "README.md").is_file(), "générateurs et sources des visuels notés dans docs/visuels/")
 must('aria-label="WhatsApp"' in _cy and 'aria-label="Google Agenda"' in _cy and _cy.count('class="sc-mail-app"') == 2 and _cy.count('class="sc-source"') == 2 and 'aria-label="Instagram"' in _cy,

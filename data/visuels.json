@@ -50,31 +50,27 @@
     ],
     "evenement": {
       "titre": "Visite · 12 rue des Lilas",
-      "detail": "17:15 – 18:00 · Camille Durand"
+      "detail": "17:15 – 18:00 · Camille Durand",
+      "debut": 1.25,
+      "duree": 0.75
     },
-    "document": "bon-de-visite",
+    "document": "bon-de-visite-haut",
     "alt": "Le bon de visite de l'agence, prêt à imprimer, généré par l'appli.",
     "appels": [
       {
         "ok": true,
         "texte": "Confirmée hier soir",
         "note": "WhatsApp",
-        "place": "bl",
-        "appli": "whatsapp"
-      },
-      {
-        "agent": "christine",
-        "texte": "Bon de visite",
-        "note": "prêt à imprimer",
-        "place": "tr"
+        "appli": "whatsapp",
+        "place": "etat"
       }
     ],
     "appli": "google-agenda"
   },
   "vendeur": {
     "type": "documents",
-    "gauche": "avis-couverture",
-    "droite": "bilan",
+    "gauche": "avis-haut",
+    "droite": "bilan-haut",
     "alt_gauche": "La couverture de l'avis de valeur, aux couleurs de l'agence.",
     "alt_droite": "La première page du bilan de commercialisation : visites, offres, retours.",
     "appels": [
@@ -176,7 +172,7 @@
   },
   "acte": {
     "type": "mail",
-    "document": "facture",
+    "document": "facture-haut",
     "alt": "La facture d'honoraires de l'agence, générée par l'appli.",
     "mail": {
       "a": "Me Lambert, notaire",
