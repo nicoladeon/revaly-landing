@@ -220,8 +220,9 @@ def _vignette(ident, v):
         grand = _carte_dpe()
     elif v["type"] == "post":
         mini = f'<span class="nc-mini"><img src="/assets/accueil/scenes/{v["src"]}-m@520.webp" width="520" height="650" alt="" loading="lazy"><b class="nc-vendu">VENDU</b></span>'
-        grand = (f'<div class="lb-post"><img src="/assets/accueil/scenes/{v["src"]}-m@820.webp" width="820" height="1025" alt="{html.escape(v["alt"], quote=True)}">'
-                 f'<p><b>agenceduparc</b> Vendu ! Merci à nos vendeurs et à nos acquéreurs pour leur confiance.</p></div>')
+        grand = (f'<div class="lb-post"><p class="lb-post-t"><img src="/assets/accueil/docs/logo-agence-du-parc.svg" width="150" height="36" alt="Agence du Parc"><span>agence.du.parc · Bois-Guillaume</span></p>'
+                 f'<img src="/assets/accueil/scenes/{v["src"]}-m@820.webp" width="820" height="1025" alt="{html.escape(v["alt"], quote=True)}">'
+                 f'<p><b>agence.du.parc</b> Vendu ! Merci à nos vendeurs et à nos acquéreurs pour leur confiance. Un appartement T3 a trouvé ses nouveaux propriétaires à Bois-Guillaume.</p></div>')
     else:
         mini = f'<span class="nc-mini"><img src="/assets/accueil/docs/{v["src"]}" width="480" height="320" alt="" loading="lazy"></span>'
         grand = f'<img src="/assets/accueil/docs/{v["grand"]}" width="1200" height="1697" alt="{html.escape(v["alt"], quote=True)}">'
@@ -234,12 +235,13 @@ def carte_agentique(ident, m, noms):
     if not EQUIPE_V2 and v.get("v1"):
         c.update(v["v1"].get("carte", {}))
     coches = "".join(f'<li style="--v:{k}">{_COCHE}<span>{_esc(_typo(x))}</span></li>' for k, x in enumerate(c["coches"][:3]))
-    agenda = _agenda(c["agenda"]) if c.get("agenda") else ""
+    # une puce impossible à rater à la place du mini-agenda (retour Julien) : « Google Agenda · ven. 16 oct. · 17:15 – 18:00 · … »
+    agenda = f'<p class="nc-puce">{logo_app(c["puce"]["appli"], "lg lg-s")}{_esc(_typo(c["puce"]["texte"]))}</p>' if c.get("puce") else ""
     return (f'<article class="nc" aria-label="Notification de {_esc(noms[c["agent"]])}">'
             f'<header class="nc-tete"><img src="{_visage(c["agent"])}" width="36" height="36" alt="" loading="lazy"><b>{_esc(noms[c["agent"]])}</b><time>{_esc(c["quand"])}</time></header>'
             f'<p class="nc-decl">{_esc(_typo(c["declencheur"]))}</p>'
             f'<p class="nc-action">{_esc(_typo(c["action"]))}</p>'
-            f'<ul class="nc-coches">{coches}</ul>{agenda}{_vignette(ident, c.get("vignette"))}'
+            f'<ul class="nc-coches">{coches}</ul>{agenda}{_vignette(ident, c.get("vignette"))}{_vignette(ident + "-2", c.get("vignette2"))}'
             f'<div class="nc-issue"><div class="nc-actions" aria-hidden="true"><span class="nc-ok">{_esc(c["bouton"])}</span><span class="nc-non">Modifier</span></div>'
             f'<p class="nc-fait">{_COCHE}<span>{_esc(c["fait"])}</span></p></div></article>')
 
@@ -249,7 +251,7 @@ MAX_SCENE = {
     "vocal": {"duree": "0:12", "texte": "Max, relance le notaire pour jeudi et prépare le bon de visite de 17 h."},
     "reponse": "C'est noté. Christine prépare le bon de visite, Emma prépare la relance du notaire. Je te mets les deux à valider.",
     "cartes": [{"agent": "christine", "objet": "Bon de visite · 12 rue des Lilas · 17 h 15", "detail": "PDF au format de l'agence, visiteur et mandat lus dans ton CRM."},
-               {"agent": "emma", "objet": "Relance du notaire · Me Lambert · jeudi", "detail": "E-mail en brouillon dans ta boîte : tu relis, tu envoies."}],
+               {"agent": "emma", "objet": "Relance du notaire · Me Marchand · jeudi", "detail": "E-mail en brouillon dans ta boîte : tu relis, tu envoies."}],
     "points": [("mic", "Vocal ou texte, depuis le terrain", "Sur WhatsApp ou Telegram, entre deux visites : Max comprend ce que tu lui confies."),
                ("users", "Il confie chaque tâche au bon équipier", "Le bon de visite à Christine, la relance à Emma, l'annonce du bien à Zoé. Tu n'as rien à répartir."),
                ("check", "Tu valides d'un geste", "Chaque préparation t'attend sur une carte « À valider ». Rien ne part sans toi.")],
@@ -340,7 +342,7 @@ def tes_documents():
             '<figure><button type="button" class="ot-apres" data-lightbox="lb-doc-bon" aria-haspopup="dialog"><img src="/assets/accueil/docs/bon-de-visite-rempli@600.webp" width="600" height="848" alt="Le même bon de visite, rempli par ton équipe : visiteur, bien, date, conseiller." loading="lazy"></button>'
             '<figcaption>Rempli par ton équipe<em>Ouvrir en grand</em></figcaption></figure>'
             '<template id="lb-doc-bon"><p class="lb-titre">Bon de visite · rempli sur le modèle de l\'agence</p><img src="/assets/accueil/docs/bon-de-visite-plat.webp" width="1200" height="1697" alt="Le bon de visite rempli, à plat."></template>'
-            '</div><p class="ot-docs-n">Exemple fictif : « Agence du Parc ». Bon de visite, compte rendu, mandat et facture d\'honoraires ; sans modèle, l\'équipe utilise le sien, à ton nom et à ta couleur.</p></div>')
+            '</div><p class="ot-docs-n">Exemple fictif : « Agence du Parc ». Bon de visite, mandat et facture d\'honoraires ; sans modèle, l\'équipe utilise le sien, à ton nom et à ta couleur.</p></div>')
 
 
 def equipe_onglets():

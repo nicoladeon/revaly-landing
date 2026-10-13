@@ -133,10 +133,14 @@
       const rang = Array.from(el.parentElement.children).filter((x) => x.hasAttribute('data-ap')).indexOf(el);
       el.style.setProperty('--ap-i', String(Math.min(rang, 6)));
     });
-    const o = new IntersectionObserver((entries) => entries.forEach((e) => {
-      if (e.isIntersecting) { o.unobserve(e.target); e.target.classList.add('vu'); }
-    }), { rootMargin: '0px 0px -6% 0px', threshold: 0.1 });
+    const vu = (el) => { o.unobserve(el); el.classList.add('vu'); };
+    // seuil 0 avec une marge : un bloc plus grand que l'écran (carte sur téléphone) entre dès son premier pixel
+    const o = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) vu(e.target); }), { rootMargin: '0px 0px -4% 0px', threshold: 0 });
     els.forEach((el) => o.observe(el));
+    // filet de sécurité : rien ne peut rester flou — tout bloc qui touche l'écran est révélé après 1,5 s, et à chaque défilement
+    const filet = () => els.forEach((el) => { if (!el.classList.contains('vu')) { const r = el.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) vu(el); } });
+    setTimeout(filet, 1500);
+    let t = 0; addEventListener('scroll', () => { if (!t) t = setTimeout(() => { t = 0; filet(); }, 1500); }, { passive: true });
   })();
 
   // ── « Réserver une démo » : la fenêtre Calendly s'ouvre par-dessus la page. widget.js et sa feuille de style ne sont

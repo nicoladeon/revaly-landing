@@ -808,14 +808,22 @@ for m in _moments:
          f"moment {m['id']} : déclencheur, action, 2-3 coches, bouton → fait, prénom de l'agent")
     must(not re.search(r"<p class=\"cy-q\"|\bToi\b", _pn) and len(_c["coches"]) <= 3, f"moment {m['id']} : agentique (aucune question du conseiller), 3 coches au plus")
     if _c.get("vignette"):
-        must(_pn.count('class="nc-vignette"') == 1 and f'data-lightbox="lb-{m["id"]}"' in _pn and f'<template id="lb-{m["id"]}">' in _pn, f"moment {m['id']} : vignette reliée à sa lightbox")
+        must(_pn.count('class="nc-vignette"') == (2 if _c.get("vignette2") else 1) and f'data-lightbox="lb-{m["id"]}"' in _pn and f'<template id="lb-{m["id"]}">' in _pn, f"moment {m['id']} : vignette reliée à sa lightbox")
         if _c["vignette"]["type"] == "document":
             for _f in (_c["vignette"]["src"], _c["vignette"]["grand"]):
                 must((dist / "assets" / "accueil" / "docs" / _f).is_file() and f"/assets/accueil/docs/{_f}" in _pn, f"moment {m['id']} : document {_f} publié (vrai rendu)")
     else:
         must('class="nc-vignette"' not in _pn, f"moment {m['id']} : pas de vignette")
     must(len(re.findall(r"<li style=\"--v:", _pn.split('class="cy-prets"', 1)[1])) <= 4 and ".cy-prets li:nth-child(n+4) { display: none; }" in idx, f"moment {m['id']} : rangée « prêt » à 3 pastilles au plus")
-must('style="--debut:1.25;--duree:0.75"' in _cy and "top: calc(var(--debut) * var(--hr) + 1.5em); height: calc(var(--duree) * var(--hr))" in idx, "agenda exact (carte d'Emma) : 17:15 – 18:00 posé sur la grille, hauteur selon la durée")
+must("Google Agenda · ven. 16 oct. · 17:15 – 18:00 · Visite 12 rue des Lilas" in html.unescape(_cy).replace("\u00a0", " ") and 'class="nc-puce"' in _cy and "sc-heures" not in _cy, "carte d'Emma : la puce d'agenda impossible à rater (plus de mini-agenda)")
+_cy_txt = html.unescape(re.sub(r"<[^>]+>", " ", _cy)).replace("\u00a0", " ")
+for _x in ["12 rue des Lilas", "Camille Durand", "Perrin", "Me Marchand", "15/01/2027", "1029"]:
+    must(_x in _cy_txt, f"une seule vente dans les cartes : {_x}")
+for _x in ["Lefèvre", "Martin", "Tilleuls", "Bihorel", "Lambert", "rue Verte", "Jeanne-d'Arc"]:
+    must(_x not in _cy_txt, f"plus d'autre vente dans les cartes : {_x}")
+must("✓" not in _cy_txt, "« Envoyé » : l'icône seule, pas de caractère coche")
+must("threshold: 0 }" in idx and "setTimeout(filet, 1500)" in idx, "apparitions : seuil 0 et filet de sécurité à 1,5 s (rien ne reste flou sur téléphone)")
+must("Bon de visite, mandat et facture d'honoraires ;" in html.unescape(_ot) and "compte rendu, mandat" not in _ot, "la promesse « tes documents » ne cite que ce que l'import accepte")
 must('<dialog class="lb" id="lb"' in _cy and "lb.showModal()" in idx and "lb.close()" in idx and 'id="lb-fermer"' in _cy, "lightbox : une boîte de dialogue native (Échap ferme), bouton Fermer")
 must('href="/assets/accueil/carte-secteur.svg#carte"' in _cy and "© OpenStreetMap" in _cy and (dist / "assets" / "accueil" / "carte-secteur.svg").is_file(), "carte du secteur (vignette et lightbox de Hugo) : vraies rues, attribution")
 must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in idx and re.search(r"\.cy-prets li \{[^}]*font-size: 15px", idx), "mobile : onglets aimantés, pastilles à 15 px")
