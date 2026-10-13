@@ -514,7 +514,7 @@ must("hugo" not in _hero.lower(), "Hugo absent du haut de page")
 # Ordre : celui du brief, sauf « Rien ne part sans toi » remonté après « Comment ça marche » (crainte n° 1, demande du 12/10)
 # Ronde Julien 1 (playbook des références) : preuve juste après le haut, les collègues avant « Rien ne part sans toi »,
 # « Ce que voient tes clients » dans le même bloc que « Plus rien d'oublié ».
-_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="probleme"', 'id="cycle"', 'id="equipe"', 'id="outils"',
+_ordre = ['id="hero"', 'id="bande-reseaux"', 'id="film-cadre"', 'id="probleme"', 'id="cycle"', 'id="max"', 'id="equipe"', 'id="outils"',
           'id="bande-outils"', 'id="controle"', 'id="calculateur"', 'id="tarif"', 'id="comment"', 'id="faq"', 'id="demo"']
 _pos = [idx.find(x) for x in _ordre]
 must(all(x > 0 for x in _pos) and _pos == sorted(_pos), "ordre des blocs")
@@ -556,7 +556,7 @@ must(not re.search(r"data:image/(?!svg)[\w+.-]+;base64,", idx), "aucune image ba
 # Tâche 17 : les démos vivantes (pile, étapes, onglets) ajoutent du balisage ; le poids qui compte est celui transféré (gzip)
 import gzip
 # R42 : les sept scènes du cycle (visuels dans la page) ajoutent ~20 Ko bruts, ~2 Ko compressés
-must(len(idx.encode()) < 262_000 and len(gzip.compress(idx.encode())) < 56_000, f"accueil < 262 Ko de HTML, < 56 Ko compressé ({len(idx.encode())} o, {len(gzip.compress(idx.encode()))} o)")
+must(len(idx.encode()) < 280_000 and len(gzip.compress(idx.encode())) < 58_000, f"accueil < 280 Ko de HTML, < 58 Ko compressé ({len(idx.encode())} o, {len(gzip.compress(idx.encode()))} o)")
 # Métadonnées : H1 et sous-titre
 must("<title>Revaly — Une équipe d'agents IA qui travaille vraiment pour toi</title>" in idx, "title = H1")
 must('property="og:title" content="Une équipe d&#x27;agents IA qui travaille vraiment pour toi."' in idx
@@ -674,10 +674,10 @@ print("OK aucune image cassée")
 
 # ── L'enchaînement comme une histoire (retour de Julien, 12/10) ──
 _sections = re.findall(r'<section class="([^"]*)" id="([\w-]+)"', idx.split("<main", 1)[1].split("</main>", 1)[0])
-must([s[1] for s in _sections] == ["hero", "probleme", "cycle", "equipe", "outils", "controle", "calculateur", "tarif", "comment", "faq", "demo"],
-     "ordre (révision du 13/10) : héros, problème, la vente moment par moment, équipe, outils, confiance, temps, prix, mise en route, FAQ, fin")
+must([s[1] for s in _sections] == ["hero", "probleme", "cycle", "max", "equipe", "outils", "controle", "calculateur", "tarif", "comment", "faq", "demo"],
+     "ordre (révision du 13/10) : héros, problème, la vente moment par moment, Max, équipe, outils, confiance, temps, prix, mise en route, FAQ, fin")
 _sur = {sid: re.search(r'<p class="tete-sur" data-ap>([^<]+)</p>', idx.split(f'id="{sid}"', 1)[1].split("</section>", 1)[0]) for _, sid in _sections[1:]}
-must({k: (v.group(1) if v else None) for k, v in _sur.items()} == {"probleme": "Le problème", "cycle": "La solution", "equipe": "L'équipe",
+must({k: (v.group(1) if v else None) for k, v in _sur.items()} == {"probleme": "Le problème", "cycle": "La solution", "max": "Max, ton coordinateur", "equipe": "L'équipe",
      "outils": "Tes outils", "controle": "Pourquoi nous faire confiance", "calculateur": "Ton temps", "tarif": "Le prix",
      "comment": "Mise en route", "faq": "Questions", "demo": "Essai 7 jours"},
      "un sur-titre court par section")
@@ -808,6 +808,12 @@ must("scroll-snap-type: x mandatory" in idx and "scroll-snap-align: center" in i
 must((ROOT / "docs" / "visuels" / "documents.ts").is_file() and (ROOT / "docs" / "visuels" / "carte.py").is_file() and (ROOT / "docs" / "visuels" / "README.md").is_file(), "générateurs et sources des visuels notés dans docs/visuels/")
 must('aria-label="WhatsApp"' in _cy and 'aria-label="Google Agenda"' in _cy and _cy.count('class="sc-mail-app"') == 2 and _cy.count('class="sc-source"') == 2 and 'aria-label="Instagram"' in _cy,
      "les mêmes logos partout où une source apparaît dans les scènes (agenda, WhatsApp, Gmail, Modelo, Instagram)")
+# Section Max (13/10) : un vocal depuis le terrain, Max répartit, deux cartes à valider ; notre maquette, pas celle de Limova
+_mx = idx.split('id="max"', 1)[1].split("</section>", 1)[0]
+_mxt = html.unescape(re.sub(r"<[^>]+>", "", _mx)).replace("\u00a0", " ")
+must("Un vocal depuis ta voiture. Max s'occupe du reste." in _mxt and _build.MAX_SCENE["vocal"]["texte"] in _mxt and _build.MAX_SCENE["reponse"] in _mxt, "Max : titre à nous, le vocal et sa réponse")
+must(_mx.count('class="mx-carte"') == 2 and _mx.count('>Valider<') == 2 and 'aria-label="Telegram"' in _mx and "0:12" in _mx and _mx.count("<li data-ap") == 3, "Max : deux cartes à valider, Telegram, vocal de 0:12, trois points")
+must("Pilotez" not in _mxt and "Charly" not in _mxt and "WhatsApp" in _mxt and not re.search(r'<h2[^>]*>[^<]*<img', _mx), "anti-copie : ni leur formule, ni avatar dans le titre ; WhatsApp et Telegram sont réels en prod")
 print("OK la vente moment par moment, les outils")
 
 # ── Interrupteurs : éteints, rien de Hugo ni de la fiche Google ; allumés (construction à part), Hugo à la place de Raphaël ──

@@ -254,6 +254,37 @@ def scene_html(ident):
         raise SystemExit(f"visuels.json : type inconnu {t}")
     return f'<div class="sc"><div class="sc-fond"></div><div class="sc-scene">{corps}</div></div>'
 
+# ── Section Max (13/10) : un vocal depuis le terrain, Max répartit, deux cartes à valider. Seulement ce que la prod fait :
+#    vocaux WhatsApp/Telegram transformés en tâches (orchestrateur), bon de visite (Christine), relance par e-mail (Emma).
+MAX_SCENE = {
+    "vocal": {"duree": "0:12", "texte": "Max, relance le notaire pour jeudi et prépare le bon de visite de 17 h."},
+    "reponse": "C'est noté. Christine prépare le bon de visite, Emma prépare la relance du notaire. Je te mets les deux à valider.",
+    "cartes": [{"agent": "christine", "objet": "Bon de visite · 12 rue des Lilas · 17 h 15", "detail": "PDF au format de l'agence, visiteur et mandat lus dans Modelo."},
+               {"agent": "emma", "objet": "Relance du notaire · Me Lambert · jeudi", "detail": "E-mail en brouillon dans ta boîte : tu relis, tu envoies."}],
+    "points": [("mic", "Vocal ou texte, depuis le terrain", "Sur WhatsApp ou Telegram, entre deux visites : Max comprend ce que tu lui confies."),
+               ("users", "Il confie chaque tâche au bon équipier", "Le bon de visite à Christine, la relance à Emma, le post à Zoé. Tu n'as rien à répartir."),
+               ("check", "Tu valides d'un geste", "Chaque préparation t'attend sur une carte « À valider ». Rien ne part sans toi.")],
+}
+
+def max_scene():
+    m = MAX_SCENE
+    noms = {a["slug"]: a["name"] for a in AGENTS}
+    barres = "".join(f'<i style="--b:{h}"></i>' for h in [3, 6, 9, 5, 10, 7, 4, 8, 11, 6, 3, 7, 9, 5, 4, 8, 6, 3])
+    cartes = "".join(
+        f'<div class="mx-carte" data-ap style="--ap-i:{3 + k}"><div class="mx-carte-t"><img src="{_visage(c["agent"])}" width="28" height="28" alt="" loading="lazy">'
+        f'<span><b>{_esc(noms[c["agent"]])}</b> a préparé</span><em>À valider</em></div><p class="mx-objet">{_esc(_typo(c["objet"]))}</p>'
+        f'<p class="mx-detail">{_esc(_typo(c["detail"]))}</p><div class="mx-boutons"><span class="mx-ok">Valider</span><span class="mx-non">Refuser</span></div></div>'
+        for k, c in enumerate(m["cartes"]))
+    points = "".join(f'<li data-ap style="--ap-i:{k}">{_ico(ic, "mx-ico")}<div><b>{_esc(_typo(t))}</b><p>{_esc(_typo(x))}</p></div></li>' for k, (ic, t, x) in enumerate(m["points"]))
+    return {"MAX_PHONE": (
+        f'<div class="mx-tel" role="group" aria-label="Exemple : une conversation avec Max sur Telegram">'
+        f'<div class="mx-tete">{logo_app("telegram", "lg lg-s")}<b>Max</b><span>Revaly · en ligne</span></div>'
+        f'<div class="mx-fil">'
+        f'<div class="mx-b mx-toi" data-ap style="--ap-i:0"><span class="mx-vocal"><i class="mx-play">{_ico("play")}</i><span class="mx-ondes" aria-hidden="true">{barres}</span><b>{m["vocal"]["duree"]}</b></span>'
+        f'<span class="mx-transcrit">« {_esc(_typo(m["vocal"]["texte"]))} »</span></div>'
+        f'<div class="mx-b mx-max" data-ap style="--ap-i:2"><img src="{_visage("max")}" width="28" height="28" alt="" loading="lazy"><p>{_esc(_typo(m["reponse"]))}</p></div>'
+        f'{cartes}</div></div>'), "MAX_POINTS": f'<ul class="mx-points">{points}</ul>'}
+
 def cycle_vente():
     noms = {a["slug"]: a["name"] for a in AGENTS}
     moments = _cycle_moments()
@@ -410,6 +441,8 @@ LUCIDE = {
     "paperclip": '<path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551" />',
     "printer": '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" /><rect x="6" y="14" width="12" height="8" rx="1" />',
     "check": '<path d="M20 6 9 17l-5-5" />',
+    "play": '<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />',
+    "users": '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><path d="M16 3.128a4 4 0 0 1 0 7.744" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><circle cx="9" cy="7" r="4" />',
     "mic": '<path d="M12 19v3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><rect x="9" y="2" width="6" height="13" rx="3" />',
     "circle-check": '<circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" />',
     "circle": '<circle cx="12" cy="12" r="10" />',
@@ -781,6 +814,8 @@ TETES = {
     "TETE_SOLUTION": dict(sur_titre="Mise en route", titre="Ton équipe en place en 3 étapes",
                           sous_titre="Pas de logiciel à apprendre : on branche tes outils avec toi, ton équipe prépare, tu valides.",
                           id_titre="t-solution"),
+    "TETE_MAX": dict(sur_titre="Max, ton coordinateur", titre="Un vocal depuis ta voiture. Max s'occupe du reste.",
+                     sous_titre="Sur WhatsApp ou Telegram : tu parles, il confie chaque tâche au bon équipier, tu valides d'un geste.", id_titre="t-max"),
     "TETE_EQUIPE": dict(sur_titre="L'équipe", titre="Six spécialistes. Un seul abonnement.",
                         sous_titre="Chacun porte un vrai métier de l'agence. Tu leur parles comme à des collègues.", id_titre="t-equipe"),
     "TETE_CONTROLE": dict(sur_titre="Pourquoi nous faire confiance", titre="Rien ne part sans toi.",
@@ -815,6 +850,7 @@ body_home = render("home-body.html", {
     "EQUIPE_ONGLETS": equipe_onglets(),
     "VISAGES_FIN": "".join(f'<img src="{_visage(e["slug"])}" width="56" height="56" alt="" loading="lazy" />' for e in _equipe_accueil()),
     **cycle_vente(),
+    **max_scene(),
     **outils_tuiles(),
     "PREUVE": preuve_reseaux(json.loads((ROOT / "data" / "reseaux.json").read_text())),
     "OUTILS_BRANCHEMENT": outils_branchement(json.loads((ROOT / "data" / "outils.json").read_text())),
