@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 72" width="600" height="144">
+  <title>Agence du Parc — Bois-Guillaume</title>
+  <g fill="none" stroke="#1F3A2E" stroke-linecap="round">
+    <circle cx="36" cy="36" r="26" stroke-width="1.45"/>
+    <line x1="36" y1="50.3" x2="36" y2="34.7" stroke-width="1.8"/>
+    <line x1="27.2" y1="50.3" x2="44.8" y2="50.3" stroke-width="1.45"/>
+  </g>
+  <circle cx="36" cy="28.7" r="7.8" fill="#1F3A2E"/>
+  <text x="74" y="40" font-family="'Cormorant Garamond', Georgia, serif" font-weight="600" font-size="22" letter-spacing="3.4" fill="#1F3A2E">AGENCE DU PARC</text>
+  <text x="112" y="56" font-family="Montserrat, Arial, sans-serif" font-weight="500" font-size="8" letter-spacing="2.6" fill="#757A85">BOIS-GUILLAUME</text>
+</svg>
