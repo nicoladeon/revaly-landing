@@ -27,13 +27,15 @@
     "question": "Comment j'annule ?",
     "reponse": "L'annulation se fait directement depuis ton compte, en 2 clics, à tout moment — pendant l'essai ou après. Aucun appel, aucun email à envoyer : tu confirmes, et l'abonnement s'arrête à la fin de la période en cours. Si tu annules pendant les 7 jours d'essai, tu ne seras jamais débité : 0 € aujourd'hui reste vrai jusqu'au bout.",
     "schema": true,
-    "accueil": true
+    "accueil": true,
+    "vente_directe": true
   },
   {
     "question": "Pourquoi demander ma carte pour l'essai ?",
     "reponse": "On te demande une carte parce que l'essai s'enchaîne directement sur l'abonnement si tu ne fais rien — pas d'étape supplémentaire à recréer plus tard. Concrètement : 0 € aujourd'hui, l'essai dure 7 jours et rien n'est débité avant la fin. Si ce n'est pas pour toi, l'annulation se fait en 2 clics, sans justification à donner.",
     "schema": true,
-    "accueil": true
+    "accueil": true,
+    "vente_directe": true
   },
   {
     "question": "Est-ce que l'IA écrit à mes clients sans moi ?",

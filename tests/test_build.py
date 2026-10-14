@@ -1,8 +1,12 @@
 # tests/test_build.py — exécuter avec: python3 tests/test_build.py
-import html, json, pathlib, re, shutil, subprocess, sys
+import html, json, os, pathlib, re, shutil, subprocess, sys, tempfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+# La vente directe (essai 7 jours, Payment Links Stripe) est éteinte depuis le 13/10 au soir : les contrôles d'origine portent
+# sur sa variante allumée, construite à part ; la page livrée (démo seule) est contrôlée à la fin. dist/ n'est pas touché.
+_VENTE = pathlib.Path(tempfile.mkdtemp()) / "dist-vente"
+os.environ.update(REVALY_VENTE_DIRECTE="1", REVALY_DIST=str(_VENTE))
 subprocess.run([sys.executable, str(ROOT / "build.py")], check=True)
-dist = ROOT / "dist"
+dist = _VENTE
 def must(cond, msg):
     if not cond: print("FAIL:", msg); sys.exit(1)
 idx = (dist / "index.html").read_text()
@@ -873,3 +877,25 @@ must("Ta fiche Google vit" in _i2 and (_v2 / "assets" / "logos" / "googlemybusin
      "fiche Google allumée : dans « Après la vente » et dans les outils")
 shutil.rmtree(_v2.parent, ignore_errors=True)
 print("OK interrupteurs (équipe v2, fiche Google)")
+
+# ── Vente directe éteinte (Julien, 13/10 au soir : « stop les paiements, juste réserver une démo ») : la page livrée ──
+_demo = pathlib.Path(tempfile.mkdtemp()) / "dist-demo"
+subprocess.run([sys.executable, str(ROOT / "build.py")], check=True, capture_output=True,
+               env={**{k: v for k, v in os.environ.items() if k != "REVALY_VENTE_DIRECTE"}, "REVALY_DIST": str(_demo)})
+for page in sorted(_demo.rglob("*.html")):
+    _t, _rel = page.read_text(), page.relative_to(_demo).as_posix()
+    must("buy.stripe.com" not in _t and "data-waitlist=" not in _t and 'data-track="essai"' not in _t and ">Essayer 7 jours" not in _t,
+         f"démo seule : ni paiement ni essai ({_rel})")
+_d = (_demo / "index.html").read_text()
+must("const PAYMENT_LINKS = {};" in _d, "démo seule : aucun lien de paiement publié")
+_dh = _d.split('class="hp-cta"', 1)[1][:700]
+must(re.search(r'<a class="btn" href="https://calendly\.com/[^"]+" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>', _dh)
+     and '<a class="hp-demo" href="/#tarif">Voir les tarifs</a>' in _dh, "démo seule : le haut propose la démo, puis les tarifs")
+_dt = _d.split('id="tarif"', 1)[1].split("</section>", 1)[0]
+must(_dt.count('data-track="demo"') == 2 and "Essai 7 jours" not in _dt and "0 € aujourd'hui" not in _dt and "129 €" in _dt and "249 €" in _dt,
+     "démo seule : les offres restent affichées, leurs boutons mènent à la démo")
+must(">Tarifs</a>" in _d.split('class="sticky-cta"', 1)[1][:600], "démo seule : barre collante Démo + Tarifs")
+must("carte pour l'essai" not in html.unescape(_d) and "Comment j'annule" not in html.unescape(_d), "démo seule : FAQ sans l'essai ni la carte")
+shutil.rmtree(_demo.parent, ignore_errors=True)
+shutil.rmtree(_VENTE.parent, ignore_errors=True)
+print("OK démo seule (vente directe éteinte)")
