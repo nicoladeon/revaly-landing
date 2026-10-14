@@ -14,6 +14,10 @@ ROOT = pathlib.Path(__file__).parent
 # 13/10 (Julien : « on a encore Raphaël mais pas celui qui fait la prospection ») : EQUIPE_V2 allumé, médias de Hugo livrés.
 EQUIPE_V2 = os.environ.get("REVALY_EQUIPE_V2", "1") == "1"
 GOOGLE_FICHE = os.environ.get("REVALY_GOOGLE_FICHE") == "1"
+# VENTE_DIRECTE (Julien, 13/10 au soir : « stop les paiements, juste réserver une démo ») : éteint. Aucun lien de paiement
+# n'est publié, chaque « Essayer 7 jours » devient « Réserver une démo » (Calendly), les offres restent affichées.
+# REVALY_VENTE_DIRECTE=1 rend la vente directe d'avant (essai 7 jours, Payment Links Stripe) ; les tests la construisent à part.
+VENTE_DIRECTE = os.environ.get("REVALY_VENTE_DIRECTE") == "1"
 
 def uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode((ROOT / path).read_bytes()).decode()
@@ -51,7 +55,7 @@ FONDATEURS_API = ""
 repl = {"__CALENDLY__": CALENDLY_URL}
 repl["__META_PIXEL_ID__"] = META_PIXEL_ID
 repl["__CALCUL_JSON__"] = json.dumps(json.loads((ROOT / "data" / "calculateur.json").read_text()), ensure_ascii=False).replace("</", "<\\/")
-repl["__PAYMENT_LINKS_JSON__"] = json.dumps(PAYMENT_LINKS, ensure_ascii=False)
+repl["__PAYMENT_LINKS_JSON__"] = json.dumps(PAYMENT_LINKS if VENTE_DIRECTE else {}, ensure_ascii=False)
 # ── Les agents : data/agents.json, et avec EQUIPE_V2 la relève de data/equipe-v2.json (Hugo à la place de Raphaël,
 # Zoé « réseaux et visuels »). Une seule liste pour l'accueil, les cartes du haut et les pages agents.
 _V2 = json.loads((ROOT / "data" / "equipe-v2.json").read_text())
@@ -690,6 +694,26 @@ def jsonld_blocks(faq):
         + json.dumps(b, ensure_ascii=False).replace("</", "<\\/")
         + "</script>" for b in blocks)
 
+def demo_seule(page: str) -> str:
+    """Vente directe éteinte : chaque « Essayer 7 jours » devient « Réserver une démo », la démo qui l'accompagnait
+    devient le lien vers les offres, et les promesses de l'essai (0 € aujourd'hui, annulable) laissent place à la démo."""
+    page = page.replace('<a class="hp-demo" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>',
+                        '<a class="hp-demo" href="/#tarif">Voir les tarifs</a>')
+    page = page.replace('<a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo" aria-label="Réserver une démo">Démo</a>',
+                        '<a class="btn ghost" href="/#tarif">Tarifs</a>')
+    page = re.sub(r'<button type="button" class="(btn[^"]*)" data-waitlist="(solo|agence)" data-track="essai">Essayer 7 jours</button>'
+                  r'(\s*)<p class="plan-hint">.*?</p>',
+                  lambda m: DEMO_BTN.format(cls=m[1], attrs=f' data-plan="{m[2]}"', suite="")
+                  + f'{m[3]}<p class="plan-hint">{RISQUE_DEMO}</p>', page, flags=re.S)
+    page = re.sub(r'<button type="button" class="(btn[^"]*)" data-goto-tarif( style="[^"]*")? data-track="essai">Essayer 7 jours(.*?)</button>',
+                  lambda m: DEMO_BTN.format(cls=m[1], attrs=m[2] or "", suite=m[3]), page, flags=re.S)
+    page = page.replace('<span class="nw">0 € aujourd\'hui ·</span> <span class="nw">Annulable en 2 clics ·</span>',
+                        '<span class="nw">30 min en visio ·</span> <span class="nw">Sans engagement ·</span>')
+    page = re.sub(r'(<svg[^>]*><path[^>]*/></svg>)Essai 7 jours avec carte, 0 € aujourd\'hui</li>',
+                  r'\1Démo de 30 min en visio, avec toi</li>', page)
+    page = re.sub(r'\s*<li><svg[^>]*><path[^>]*/></svg>Annulable en 2 clics</li>', "", page)
+    return page.replace(RISQUE, RISQUE_DEMO)
+
 def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
                og_title: str = None, og_desc: str = None, noindex: bool = False, head: str = ""):
     # og_title/og_desc par défaut = title/desc (comportement générique pour les pages
@@ -700,6 +724,8 @@ def write_page(rel: str, body: str, *, title: str, desc: str, path: str,
         "CANONICAL": f"https://revaly.io{path}",
         "OG_TITLE": og_title or title, "OG_DESC": og_desc or desc, "BODY": body, "HEAD_EXTRA": head,
     })
+    if not VENTE_DIRECTE:
+        shell = demo_seule(shell)
     for token, value in repl.items():
         shell = shell.replace(token, value)
     # Pages de tunnel (ex. /bienvenue) : noindex + hors sitemap.
@@ -723,7 +749,9 @@ OUT.mkdir()
 # ── Home ──
 # L'accueil n'affiche (et ne décrit en JSON-LD) que les questions marquées « accueil » ; les autres restent
 # dans data/faq.json pour une future page FAQ.
-faq = [f for f in json.loads((ROOT / "data" / "faq.json").read_text()) if f.get("accueil")]
+# Vente directe éteinte : les questions sur l'essai et la carte (« vente_directe ») ne s'affichent pas.
+faq = [f for f in json.loads((ROOT / "data" / "faq.json").read_text())
+       if f.get("accueil") and (VENTE_DIRECTE or not f.get("vente_directe"))]
 # ── Logos des outils (étape 1 de « La solution ») : données dans data/outils.json ; Modelo est un logo-mot (le nom est dans le logo)
 _HAUTEUR_LOGO = {"modelo.svg": 22}
 
@@ -793,9 +821,14 @@ def fondateur_visuel():
 # taille → sous-titre court → (option) la paire de boutons. Chaque section de l'accueil passe par tete_section() ;
 # paire_cta() referme les sections qui finissent par un pas vers l'action. data-ap = apparition au défilement.
 RISQUE = "0 € aujourd'hui · Annulable en 2 clics"
+RISQUE_DEMO = "30 min en visio · Sans engagement"
+DEMO_BTN = '<a class="{cls}" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo"{attrs}>Réserver une démo{suite}</a>'
 
 def paire_cta(fin_de_section=True):
     cls = "paire paire-fin" if fin_de_section else "paire"
+    if not VENTE_DIRECTE:
+        return (f'<div class="{cls}" data-ap><div class="paire-boutons">' + DEMO_BTN.format(cls="btn", attrs="", suite="")
+                + f'</div><p class="paire-risque">{_esc(RISQUE_DEMO)}</p></div>')
     return (f'<div class="{cls}" data-ap><div class="paire-boutons">'
             '<button type="button" class="btn" data-goto-tarif data-track="essai">Essayer 7 jours</button>'
             '<a class="btn ghost" href="__CALENDLY__" target="_blank" rel="noopener" data-track="demo">Réserver une démo</a>'
@@ -833,10 +866,11 @@ TETES = {
                         sous_titre="Mets ton rythme du mois : on compte ce que ton équipe prépare à ta place, tâche par tâche.", id_titre="t-calcul"),
     "TETE_TARIF": dict(sur_titre="Le prix", titre="Une équipe entière pour moins qu'une demi-journée d'assistante par mois.",
                        sous_titre="Une assistante à mi-temps, c'est ~1 200 €/mois. Ici, les six agents sont inclus. "
-                                  "Essai 7 jours avec carte, sans engagement. Pas de frais de mise en place.", id_titre="t-tarif"),
+                                  + ("Essai 7 jours avec carte, sans engagement." if VENTE_DIRECTE else "Démo de 30 min en visio, sans engagement.")
+                                  + " Pas de frais de mise en place.", id_titre="t-tarif"),
     "TETE_FAQ": dict(sur_titre="Questions", titre="Les questions qu'on nous pose",
                      sous_titre="Et si tu préfères en parler, écris-nous : un humain répond.", id_titre="t-faq"),
-    "TETE_FIN": dict(sur_titre="Essai 7 jours", titre="Ton équipe peut commencer ce soir.",
+    "TETE_FIN": dict(sur_titre="Essai 7 jours" if VENTE_DIRECTE else "La démo", titre="Ton équipe peut commencer ce soir.",
                      sous_titre="Chaque semaine sans équipe, ce sont des relances oubliées et des mandats qui expirent en silence. "
                                 "Demain matin, ça peut être : annonce du bien prête, relances rédigées, dossier complet.", boutons=True, id_titre="t-fin"),
 }
